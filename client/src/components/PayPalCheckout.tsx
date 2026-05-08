@@ -241,35 +241,9 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     const sdkInstance = sdkInstanceRef.current;
     let isMounted = true;
 
-    const cardStyle = {
-      input: {
-        fontFamily: "DM Sans, system-ui, sans-serif",
-        fontSize: "14px",
-        color: "#111111",
-        padding: "0 12px",
-      },
-    };
-
     let cardSession: any;
     try {
-      cardSession = sdkInstance.createCardFieldsOneTimePaymentSession({
-        createOrder: async () => {
-          const result = await createOrder();
-          return result.orderId; // v6 requires plain string
-        },
-        onApprove: async ({ orderId }: { orderId: string }) => {
-          if (import.meta.env.DEV) { console.log("[PayPal Card] onApprove", orderId); }
-          try {
-            const captureResult = await captureOrder(orderId);
-            onSuccess?.(captureResult, orderId);
-          } catch (e) {
-            console.error("[PayPal Card] capture error:", e);
-            onError?.(e);
-          }
-        },
-        onError: handleError,
-        onCancel: handleCancel,
-      });
+      cardSession = sdkInstance.createCardFieldsOneTimePaymentSession();
       cardSessionRef.current = cardSession;
     } catch (sessionErr) {
       console.error("[PayPal] Failed to create card session:", sessionErr);
@@ -286,9 +260,9 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     expiryEl.innerHTML = "";
     cvvEl.innerHTML    = "";
 
-    const numberComponent = cardSession.createCardFieldsComponent({ type: "number", placeholder: "Card number", style: cardStyle });
-    const expiryComponent = cardSession.createCardFieldsComponent({ type: "expiry", placeholder: "MM / YY",     style: cardStyle });
-    const cvvComponent    = cardSession.createCardFieldsComponent({ type: "cvv",    placeholder: "CVV",         style: cardStyle });
+    const numberComponent = cardSession.createCardFieldsComponent({ type: "number", placeholder: "Card number" });
+    const expiryComponent = cardSession.createCardFieldsComponent({ type: "expiry", placeholder: "MM / YY" });
+    const cvvComponent    = cardSession.createCardFieldsComponent({ type: "cvv",    placeholder: "CVV" });
 
     numberEl.appendChild(numberComponent);
     expiryEl.appendChild(expiryComponent);
@@ -326,12 +300,29 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   };
 
   // Handle card payment submission
-  // v6: createOrder + onApprove live on the session; submit() fires the full flow
+  // v6: create order first, then pass orderId directly to submit()
   const handleCardSubmit = async () => {
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
     setIsProcessingCard(true);
     try {
-      await cardSessionRef.current.submit();
+      const { orderId } = await createOrder();
+      const { state, data } = await cardSessionRef.current.submit(orderId);
+      if (state === "succeeded") {
+        if (import.meta.env.DEV) { console.log("[PayPal Card] submit succeeded", orderId); }
+        try {
+          const captureResult = await captureOrder(orderId);
+          onSuccess?.(captureResult, orderId);
+        } catch (e) {
+          console.error("[PayPal Card] capture error:", e);
+          onError?.(e);
+        }
+      } else if (state === "canceled") {
+        handleCancel(data ?? {});
+      } else {
+        const err = data?.message ?? "Card payment failed";
+        console.error("[PayPal Card] submit failed:", state, data);
+        onError?.(new Error(err));
+      }
     } catch (e: any) {
       console.error("Card payment error:", e);
       onError?.(e);
@@ -407,10 +398,10 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
               {/* Skeleton while iframes are mounting */}
               {!cardFieldsReady && (
                 <div className="space-y-3" data-testid="card-fields-skeleton">
-                  <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                  <div className="h-12 bg-muted/30 border border-border rounded-md animate-pulse" />
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
-                    <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                    <div className="h-12 bg-muted/30 border border-border rounded-md animate-pulse" />
+                    <div className="h-12 bg-muted/30 border border-border rounded-md animate-pulse" />
                   </div>
                 </div>
               )}
@@ -421,7 +412,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                     <CreditCard className="h-3 w-3" />
                     Card Number
                   </Label>
-                  <div ref={numberContainerRef} className="min-h-[44px] bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-number-container" />
+                  <div ref={numberContainerRef} className="h-12 bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-number-container" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -429,14 +420,14 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                       <Calendar className="h-3 w-3" />
                       Expiry
                     </Label>
-                    <div ref={expiryContainerRef} className="min-h-[44px] bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-expiry-container" />
+                    <div ref={expiryContainerRef} className="h-12 bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-expiry-container" />
                   </div>
                   <div>
                     <Label className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
                       <Shield className="h-3 w-3" />
                       CVV
                     </Label>
-                    <div ref={cvvContainerRef} className="min-h-[44px] bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-cvv-container" />
+                    <div ref={cvvContainerRef} className="h-12 bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-cvv-container" />
                   </div>
                 </div>
               </div>
