@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, CreditCard, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 
@@ -19,6 +18,7 @@ interface PayPalCheckoutProps {
   onError?: (error: any) => void;
   onCancel?: () => void;
   onCardIneligible?: () => void;
+  defaultMethod?: "card" | "paypal";
   disabled?: boolean;
   className?: string;
   showCardFields?: boolean;
@@ -34,20 +34,25 @@ export default function PayPalCheckout({
   onError,
   onCancel,
   onCardIneligible,
+  defaultMethod = "card",
   disabled = false,
   className = "",
   showCardFields = true,
 }: PayPalCheckoutProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("card");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(defaultMethod);
   const [isProcessingCard, setIsProcessingCard] = useState(false);
   const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const [cardIneligible, setCardIneligible] = useState(false);
+  const [cardSessionCreated, setCardSessionCreated] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
   const cardSessionRef = useRef<any>(null);
   const paypalSessionRef = useRef<any>(null);
+  const numberContainerRef = useRef<HTMLDivElement>(null);
+  const expiryContainerRef = useRef<HTMLDivElement>(null);
+  const cvvContainerRef = useRef<HTMLDivElement>(null);
 
   const createOrder = async () => {
     const orderPayload = {
@@ -195,27 +200,28 @@ export default function PayPalCheckout({
         // Initialize Card Fields only if eligible
         if (showCardFields && cardEligible) {
           try {
-            const cardSession = sdkInstance.createCardFieldsOneTimePaymentSession();
+            const cardSession = sdkInstance.createCardFieldsOneTimePaymentSession({
+              createOrder: async () => {
+                const result = await createOrder();
+                return result.orderId; // v6 requires plain string, not { orderId }
+              },
+              onApprove: async ({ orderId }: { orderId: string }) => {
+                if (import.meta.env.DEV) { console.log("[PayPal Card] onApprove", orderId); }
+                try {
+                  const captureResult = await captureOrder(orderId);
+                  onSuccess?.(captureResult, orderId);
+                } catch (e) {
+                  console.error("[PayPal Card] capture error:", e);
+                  onError?.(e);
+                }
+              },
+              onError: handleError,
+              onCancel: handleCancel,
+            });
             cardSessionRef.current = cardSession;
-            
-            // Render card fields to their containers
-            setTimeout(() => {
-              const numberField = document.getElementById("card-number-field-container");
-              const expiryField = document.getElementById("card-expiry-field-container");
-              const cvvField = document.getElementById("card-cvv-field-container");
-              const nameField = document.getElementById("card-name-field-container");
-              
-              if (numberField && expiryField && cvvField && nameField) {
-                cardSession.NumberField().render(numberField);
-                cardSession.ExpiryField().render(expiryField);
-                cardSession.CVVField().render(cvvField);
-                cardSession.NameField().render(nameField);
-                if (isMounted) setCardFieldsReady(true);
-              }
-            }, 200);
+            if (isMounted) setCardSessionCreated(true); // triggers mounting useEffect after render
           } catch (cardError) {
             console.warn("Card fields not available - PayPal Advanced Checkout may not be enabled:", cardError);
-            // Card fields not enabled - switch to PayPal as default
             if (isMounted) {
               setSelectedMethod("paypal");
               setCardFieldsReady(false);
@@ -242,6 +248,51 @@ export default function PayPalCheckout({
     };
   }, [amount, currency, intent, disabled]);
 
+  // Mount card field web components into their DOM containers once the session
+  // is created and refs are guaranteed to be populated (runs after paint)
+  useEffect(() => {
+    if (!cardSessionCreated || !cardSessionRef.current) return;
+    const session = cardSessionRef.current;
+    const numberEl = numberContainerRef.current;
+    const expiryEl = expiryContainerRef.current;
+    const cvvEl = cvvContainerRef.current;
+    if (!numberEl || !expiryEl || !cvvEl) return;
+
+    const cardStyle = {
+      input: {
+        fontFamily: "DM Sans, system-ui, sans-serif",
+        fontSize: "14px",
+        color: "#ffffff",
+        backgroundColor: "#0a0a0a",
+        padding: "0 12px",
+      },
+      ":focus": { color: "#ffffff" },
+      ".invalid": { color: "#f87171" },
+    };
+
+    // Clear any stale children (StrictMode / HMR safety)
+    numberEl.innerHTML = "";
+    expiryEl.innerHTML = "";
+    cvvEl.innerHTML = "";
+
+    const numberComponent = session.createCardFieldsComponent({ type: "number", placeholder: "Card number", style: cardStyle });
+    const expiryComponent = session.createCardFieldsComponent({ type: "expiry", placeholder: "MM / YY",     style: cardStyle });
+    const cvvComponent    = session.createCardFieldsComponent({ type: "cvv",    placeholder: "CVV",         style: cardStyle });
+
+    numberEl.appendChild(numberComponent);
+    expiryEl.appendChild(expiryComponent);
+    cvvEl.appendChild(cvvComponent);
+
+    setCardFieldsReady(true);
+
+    return () => {
+      if (numberContainerRef.current) numberContainerRef.current.innerHTML = "";
+      if (expiryContainerRef.current) expiryContainerRef.current.innerHTML = "";
+      if (cvvContainerRef.current)    cvvContainerRef.current.innerHTML = "";
+      setCardFieldsReady(false);
+    };
+  }, [cardSessionCreated]);
+
   // Handle PayPal button click
   const handlePayPalClick = async () => {
     if (disabled || !paypalSessionRef.current) return;
@@ -262,29 +313,12 @@ export default function PayPalCheckout({
   };
 
   // Handle card payment submission
+  // v6: createOrder + onApprove live on the session; submit() fires the full flow
   const handleCardSubmit = async () => {
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
-    
     setIsProcessingCard(true);
     try {
-      // Create the order first
-      const orderResult = await createOrder();
-      
-      // Submit the card payment
-      const result = await cardSessionRef.current.submit({
-        orderId: orderResult.orderId,
-      });
-      
-      if (result.liabilityShift === 'POSSIBLE' || result.liabilityShift === 'YES' || result.status === 'COMPLETED') {
-        // Card payment successful - capture the order
-        const captureResult = await captureOrder(result.orderId || orderResult.orderId);
-        onSuccess?.(captureResult, result.orderId || orderResult.orderId);
-      } else if (result.status === 'PAYER_ACTION_REQUIRED') {
-        // 3D Secure required - PayPal will handle this
-        if (import.meta.env.DEV) { console.log("3D Secure required", result); }
-      } else {
-        throw new Error("Card payment failed. Please try again.");
-      }
+      await cardSessionRef.current.submit();
     } catch (e: any) {
       console.error("Card payment error:", e);
       onError?.(e);
@@ -346,34 +380,41 @@ export default function PayPalCheckout({
             </div>
           )}
 
-          {/* Card Fields Section - only show if card fields are ready */}
-          {selectedMethod === "card" && cardFieldsReady && (
+          {/* Card Fields Section */}
+          {selectedMethod === "card" && (cardFieldsReady || cardSessionCreated) && (
             <div className="space-y-4">
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="card-name" className="text-xs text-muted-foreground mb-1.5 block">Name on Card</Label>
-                  <div id="card-name-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+              {/* Skeleton while iframes are mounting */}
+              {!cardFieldsReady && (
+                <div className="space-y-3" data-testid="card-fields-skeleton">
+                  <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                    <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                  </div>
                 </div>
+              )}
+
+              <div className={`space-y-3 ${!cardFieldsReady ? "hidden" : ""}`}>
                 <div>
-                  <Label htmlFor="card-number" className="text-xs text-muted-foreground mb-1.5 block">Card Number</Label>
-                  <div id="card-number-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                  <Label className="text-xs text-muted-foreground mb-1.5 block">Card Number</Label>
+                  <div ref={numberContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-number-container" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="card-expiry" className="text-xs text-muted-foreground mb-1.5 block">Expiry</Label>
-                    <div id="card-expiry-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                    <Label className="text-xs text-muted-foreground mb-1.5 block">Expiry</Label>
+                    <div ref={expiryContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-expiry-container" />
                   </div>
                   <div>
-                    <Label htmlFor="card-cvv" className="text-xs text-muted-foreground mb-1.5 block">CVV</Label>
-                    <div id="card-cvv-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                    <Label className="text-xs text-muted-foreground mb-1.5 block">CVV</Label>
+                    <div ref={cvvContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-cvv-container" />
                   </div>
                 </div>
               </div>
-              
+
               <Button
                 onClick={handleCardSubmit}
                 disabled={disabled || isProcessingCard || !cardFieldsReady}
-                className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-display text-base gap-2"
+                className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
                 size="lg"
                 data-testid="button-pay-card"
               >
@@ -389,7 +430,7 @@ export default function PayPalCheckout({
                   </>
                 )}
               </Button>
-              
+
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Lock className="h-3 w-3" />
                 <span>Secured by PayPal</span>
@@ -397,8 +438,8 @@ export default function PayPalCheckout({
             </div>
           )}
 
-          {/* PayPal Button Section - show when PayPal selected OR when card fields not available */}
-          {(selectedMethod === "paypal" || !cardFieldsReady) && (
+          {/* PayPal Button Section - only shown when PayPal tab is active */}
+          {selectedMethod === "paypal" && (
             <div className="space-y-3">
               {cardIneligible && (
                 <p className="text-xs text-center text-muted-foreground pb-1" data-testid="card-ineligible-notice">

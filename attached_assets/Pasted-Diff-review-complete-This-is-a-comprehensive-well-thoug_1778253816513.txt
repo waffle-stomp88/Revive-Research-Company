@@ -1,0 +1,74 @@
+Diff review complete. **This is a comprehensive, well-thought-out plan.** Replit caught critical v6 API issues I would have missed — including that `submit()` takes no args in v6 and `createOrder/onApprove` live on the session itself. Their decision to bundle these with 5c rather than punt to 5d is correct: holding them would leave an uncallable session.
+
+Let me flag **two real concerns** before approval and one smaller polish question.
+
+## What's right
+
+- ✅ v6 API correctness: no-arg `submit()`, callbacks on session config, plain string return from createOrder
+- ✅ `useRef` pattern replaces setTimeout — clean React idiom
+- ✅ `useEffect([cardSessionCreated])` mounts fields only when refs are guaranteed attached
+- ✅ Cleanup with `innerHTML = ""` prevents StrictMode/HMR duplicates
+- ✅ Concrete dark-theme styling values applied
+- ✅ Skeleton loading state with `animate-pulse`
+- ✅ Name field dropped per spec
+- ✅ `defaultMethod` prop wired so internal `selectedMethod` matches user's top-level Card click
+- ✅ Card branch in checkout.tsx mirrors PayPal branch's guard cascade (ZIP, EARLY_ACCESS, subscriptions)
+- ✅ Standalone `createOrder()` function preserved (still used by PayPal button path)
+
+## Concern 1 — Duplicate `createOrder` logic (real, fixable)
+
+In Replit's Edit 2, the new `createOrder` callback inside `createCardFieldsOneTimePaymentSession({...})` duplicates what the existing standalone `createOrder()` function (lines 52-77) already does. They're now two near-identical implementations of "POST to /paypal/order with cart items."
+
+**Why this matters:** in 5e we add `payment_source.card`, shipping address, and `PayPal-Request-Id` to the order creation flow. If we have two implementations of `createOrder`, we have to remember to update both. Easy to miss one and end up with subtle bugs where card orders get the new fields but PayPal orders don't (or vice versa).
+
+**Fix:** Have the v6 inline callback call the existing standalone `createOrder()` function:
+
+```js
+createOrder: async () => {
+  const result = await createOrder();
+  return result.orderId; // unwrap to plain string for v6
+},
+```
+
+This way 5e only has to update one place. Replit even noted "the standalone createOrder function on lines 52–77 is no longer called anywhere after 5c" — so they were aware of the duplication. Just consolidate now.
+
+## Concern 2 — PayPal popup button conflict (real, ambiguous)
+
+The user clicks the top-level Card button → checkout.tsx renders `<PayPalCheckout defaultMethod="card" />` → PayPalCheckout's internal `selectedMethod` is "card" → card fields render.
+
+**But what about the existing PayPal popup button INSIDE PayPalCheckout?** Replit's spec answer (D) said:
+> "Pay button: Visible when cardFieldsReady, disabled in 5c... No PayPal popup button shown when card tab active."
+
+The diff doesn't show the JSX rendering logic for the PayPal popup button — just the card fields section. I want to verify that when `selectedMethod === "card"`, the "Pay with PayPal" button (the one that fires `handlePayPalClick` to launch the popup) is **hidden**, not just visually de-emphasized.
+
+If both buttons render simultaneously, the user sees a confusing two-button area: yellow PAY $XX.XX (card) and the PayPal-blue button. They'd wonder which to click.
+
+**Fix:** Replit needs to confirm the PayPal popup button is gated behind `selectedMethod === "paypal"` — invisible when Card is the active tab.
+
+## Smaller flag (non-blocking)
+
+The cleanup function in the new useEffect resets `cardFieldsReady` to false. That's correct on unmount, but if the effect runs twice in StrictMode (it will), the second run's cleanup fires before the second mount, briefly flipping `cardFieldsReady` to false → showing the skeleton → then back to true. User sees a flash of skeleton.
+
+Not worth fixing now — only happens in dev StrictMode, doesn't affect production. Just flagging.
+
+## Message to send Replit
+
+Paste this in:
+
+> Plan is solid — good catches on the v6 submit() and callback-on-session issues. Two fixes before approval:
+>
+> **1. Consolidate the duplicate `createOrder` logic.** The new inline `createOrder` callback inside `createCardFieldsOneTimePaymentSession({...})` duplicates the existing standalone `createOrder()` function (lines 52-77). When 5e adds `payment_source.card`, shipping address, and `PayPal-Request-Id` to order creation, we'd have to update both implementations. Risky.
+>
+> Have the v6 callback delegate to the standalone function:
+> ```js
+> createOrder: async () => {
+>   const result = await createOrder();
+>   return result.orderId; // unwrap to plain string for v6
+> },
+> ```
+>
+> One source of truth. 5e becomes a single-place edit.
+>
+> **2. Confirm the PayPal popup button is hidden when card tab is active.** Your spec answer said "No PayPal popup button shown when card tab active" but the diff only shows the card fields JSX, not the PayPal button JSX. Show me the JSX block for the existing "Pay with PayPal" button and confirm it's gated behind `selectedMethod === "paypal"` so users don't see two competing pay buttons when Card is selected.
+>
+> Update the diff with both fixes and show me before applying.Pick one.

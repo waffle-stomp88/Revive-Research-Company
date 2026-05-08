@@ -1,0 +1,89 @@
+Excellent — sandbox account fully configured, both PayPal flows verified end-to-end, eligibility gate working. We're in great shape.
+
+5c is the most consequential remaining sub-step. It builds the actual card UI customers will use. Let me prep what to send Replit.
+
+## What 5c needs to do
+
+Three jobs, all interconnected:
+
+1. **`checkout.tsx`**: Open up the Card branch. Replace "Card Payments Coming Soon" disabled button with `<PayPalCheckout showCardFields={true} onCardIneligible={...} />`. This is finally what makes Card a real option.
+
+2. **`PayPalCheckout.tsx`**: Replace the v5 render API with the v6 web-component pattern. The current code uses `cardSession.NumberField().render(element)` (v5) — needs to become `cardSession.createCardFieldsComponent({type: "number"})` + `appendChild`.
+
+3. **`PayPalCheckout.tsx`**: Fix the timing. The current `setTimeout(200)` is fragile — replace with a proper React pattern that mounts after refs are attached.
+
+## Things I want clarified before Replit writes the diff
+
+A few things in Replit's preview need to be locked down:
+
+**A. Dark-theme styling specifics.** Replit said "dark-mode styling via the `style` option" but the values weren't specified. We agreed in the original plan:
+
+```js
+style: {
+  input: {
+    fontFamily: "DM Sans, system-ui, sans-serif",
+    fontSize: "14px",
+    color: "#ffffff",
+    backgroundColor: "#0a0a0a",
+    padding: "0 12px",
+  },
+  ":focus": { color: "#ffffff" },
+  ".invalid": { color: "#f87171" },
+}
+```
+
+Need Replit to use these exact values, plus the wrapper div CSS `min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]`.
+
+**B. Field order and which fields to mount.** Spec called for:
+- Card number (full width)
+- Expiry / CVV (50/50 grid below)
+- Name field optional — let's skip it. Keeps the form simpler. Most card forms in 2026 don't ask for cardholder name explicitly.
+
+**C. Layout integration with checkout.tsx.** When `<PayPalCheckout showCardFields={true} />` mounts inside the Card branch, it needs to fit into the existing checkout layout — same dark panel container as PayPal-selected, same width, same spacing. Should look like a native part of the page, not a bolted-on widget.
+
+**D. Pay button state.** The Pay button INSIDE PayPalCheckout (which already exists for the PayPal popup flow) should NOT show when card fields are mounting. We want a single "PAY $XX.XX" button for cards — not a confusing two-button state. 5d wires the actual submit logic; 5c just needs to make sure the right button renders.
+
+**E. Loading state.** While card fields are mounting (after eligibility check passes, before iframes have appeared), there should be a loading skeleton or spinner. Not just blank space.
+
+## Message to send Replit
+
+Paste this in:
+
+> **5b.5 verified — eligibility gate working, both PayPal paths confirmed. Proceed with 5c planning.**
+>
+> Before writing the diff, confirm scope with these specifics:
+>
+> **1. Concrete styling values for v6 `createCardFieldsComponent({type, style})`:**
+> ```js
+> style: {
+>   input: {
+>     fontFamily: "DM Sans, system-ui, sans-serif",
+>     fontSize: "14px",
+>     color: "#ffffff",
+>     backgroundColor: "#0a0a0a",
+>     padding: "0 12px",
+>   },
+>   ":focus": { color: "#ffffff" },
+>   ".invalid": { color: "#f87171" },
+> }
+> ```
+>
+> Wrapper div CSS: `min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]`. Match the existing Input component styling on the rest of the checkout.
+>
+> **2. Field set:** Card number (full width row) → Expiry / CVV (50/50 grid below). **Skip the Name field** — keeps the form simple, modern card forms rarely require it.
+>
+> **3. Layout integration:** When `<PayPalCheckout showCardFields={true}/>` mounts inside the Card branch in `checkout.tsx`, it should fit into the same dark panel container the existing payment areas use. Same width, padding, and visual treatment as the existing PayPal-selected render path. Should look native to the page, not bolted on.
+>
+> **4. Pay button:** When card fields are showing, hide/replace the existing PayPal-flow button. Show a single "PAY $XX.XX" button styled in brand yellow (`bg-[#d4ed1f] text-[#0a0a0a]`) below the card fields. The actual submit wiring is 5d's job — for 5c just render the button (it can be a no-op onClick or `disabled` until 5d).
+>
+> **5. Loading state:** While the card iframes are mounting (after eligibility passes, before they're visible), show a skeleton or spinner where the fields will appear. Not blank space.
+>
+> **6. Timing / mounting strategy:** Replace the `setTimeout(200)` with a proper React pattern. Likely options:
+>    - `useEffect` watching all four (or three, since we're skipping Name) container refs being non-null
+>    - Or `useCallback` ref pattern that fires when the DOM element mounts
+>
+> Show me which approach you go with and why.
+>
+> **7. Gotcha to watch for:** v6's `createCardFieldsComponent` returns a web component. Make sure the `appendChild` happens to the right container in the right order. If a previous field's web component is already in the DOM and the component re-renders (React StrictMode, HMR), you can end up with duplicates. Handle cleanup correctly.
+>
+> Show me the 5c plan with concrete diff (or pseudocode if file is large) before applying. Don't apply yet.Pick one.

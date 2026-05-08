@@ -1695,15 +1695,54 @@ export default function Checkout() {
                       Items Out of Stock
                     </Button>
                   ) : selectedPaymentMethod === "card" ? (
-                    <Button
-                      size="lg"
-                      className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
-                      disabled
-                      data-testid="button-card-coming-soon"
-                    >
-                      <Clock className="h-5 w-5" />
-                      Card Payments Coming Soon
-                    </Button>
+                    <div className="space-y-3">
+                      {!hasValidZip ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          disabled
+                          data-testid="button-enter-zip-required"
+                        >
+                          <AlertTriangle className="h-5 w-5" />
+                          Enter ZIP Code to Continue
+                        </Button>
+                      ) : EARLY_ACCESS_MODE ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                          disabled
+                          data-testid="button-checkout-disabled"
+                        >
+                          <Clock className="h-5 w-5" />
+                          Coming Soon
+                        </Button>
+                      ) : isSubscription || cartSubscriptionItem ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                          disabled
+                          data-testid="button-subscription-coming-soon"
+                        >
+                          <Clock className="h-5 w-5" />
+                          Subscriptions Coming Soon
+                        </Button>
+                      ) : (
+                        <PayPalCheckout
+                          amount={cartTotal.toFixed(2)}
+                          currency="USD"
+                          intent="CAPTURE"
+                          cartItems={cartItems}
+                          customerEmail={user?.email || customerEmail}
+                          showCardFields={true}
+                          defaultMethod="card"
+                          onCardIneligible={() => setSelectedPaymentMethod("paypal")}
+                          onSuccess={handlePayPalSuccess}
+                          onError={handlePayPalError}
+                          onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
+                          className="w-full"
+                        />
+                      )}
+                    </div>
                   ) : selectedPaymentMethod === "paypal" ? (
                     <div className="space-y-3">
                       {!hasValidZip ? (
@@ -1743,6 +1782,7 @@ export default function Checkout() {
                           intent="CAPTURE"
                           cartItems={cartItems}
                           customerEmail={user?.email || customerEmail}
+                          defaultMethod="paypal"
                           onSuccess={handlePayPalSuccess}
                           onError={handlePayPalError}
                           onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
