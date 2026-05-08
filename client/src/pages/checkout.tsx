@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, COLD_PACK_FEE } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
-import PayPalCheckout from "@/components/PayPalCheckout";
+import PayPalCheckout, { type PayPalCheckoutHandle } from "@/components/PayPalCheckout";
 import SubscriptionCheckout from "@/components/SubscriptionCheckout";
 import { calculateTaxFromZip, getTaxRateDisplay, getStateFromZip, isValidZipCode } from "@shared/taxRates";
 import {
@@ -76,6 +76,9 @@ export default function Checkout() {
   const { login, logout } = useAuth();
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("card");
+  const cardPaypalRef = useRef<PayPalCheckoutHandle | null>(null);
+  const [isCardReady, setIsCardReady] = useState(false);
+  const [isSubmittingCard, setIsSubmittingCard] = useState(false);
   const [manualPaymentStep, setManualPaymentStep] = useState<"select" | "instructions" | "confirm">("select");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -1346,6 +1349,29 @@ export default function Checkout() {
                     )}
                   </AnimatePresence>
 
+                  {/* Card fields rendered in LEFT column — submit triggered via ref from right column Pay button */}
+                  {selectedPaymentMethod === "card" && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
+                    <div className="mt-4">
+                      <PayPalCheckout
+                        ref={cardPaypalRef}
+                        amount={cartTotal.toFixed(2)}
+                        currency="USD"
+                        intent="CAPTURE"
+                        cartItems={cartItems}
+                        customerEmail={user?.email || customerEmail}
+                        showCardFields={true}
+                        defaultMethod="card"
+                        hideSubmitButton={true}
+                        onReadyChange={setIsCardReady}
+                        onCardIneligible={() => setSelectedPaymentMethod("paypal")}
+                        onSuccess={handlePayPalSuccess}
+                        onError={handlePayPalError}
+                        onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+
                 </Card>
 
                 {/* Mobile spacer for sticky bar */}
@@ -1727,20 +1753,29 @@ export default function Checkout() {
                           Subscriptions Coming Soon
                         </Button>
                       ) : (
-                        <PayPalCheckout
-                          amount={cartTotal.toFixed(2)}
-                          currency="USD"
-                          intent="CAPTURE"
-                          cartItems={cartItems}
-                          customerEmail={user?.email || customerEmail}
-                          showCardFields={true}
-                          defaultMethod="card"
-                          onCardIneligible={() => setSelectedPaymentMethod("paypal")}
-                          onSuccess={handlePayPalSuccess}
-                          onError={handlePayPalError}
-                          onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
-                          className="w-full"
-                        />
+                        <Button
+                          size="lg"
+                          onClick={async () => {
+                            setIsSubmittingCard(true);
+                            try { await cardPaypalRef.current?.submit(); }
+                            finally { setIsSubmittingCard(false); }
+                          }}
+                          disabled={isSubmittingCard || !isCardReady}
+                          className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-lg gap-2"
+                          data-testid="button-pay-card"
+                        >
+                          {isSubmittingCard ? (
+                            <>
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="h-5 w-5" />
+                              Pay ${cartTotal.toFixed(2)}
+                            </>
+                          )}
+                        </Button>
                       )}
                     </div>
                   ) : selectedPaymentMethod === "paypal" ? (

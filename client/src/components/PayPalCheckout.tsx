@@ -1,12 +1,16 @@
 // PayPal Advanced Checkout Component
 // Supports both PayPal button and embedded card fields for direct card entry
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Loader2, CreditCard, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 
 type PaymentMethod = "paypal" | "card";
+
+export interface PayPalCheckoutHandle {
+  submit: () => void;
+}
 
 interface PayPalCheckoutProps {
   amount: string;
@@ -22,9 +26,11 @@ interface PayPalCheckoutProps {
   disabled?: boolean;
   className?: string;
   showCardFields?: boolean;
+  hideSubmitButton?: boolean;
+  onReadyChange?: (ready: boolean) => void;
 }
 
-export default function PayPalCheckout({
+const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(function PayPalCheckout({
   amount,
   currency = "USD",
   intent = "CAPTURE",
@@ -38,7 +44,9 @@ export default function PayPalCheckout({
   disabled = false,
   className = "",
   showCardFields = true,
-}: PayPalCheckoutProps) {
+  hideSubmitButton = false,
+  onReadyChange,
+}: PayPalCheckoutProps, ref) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(defaultMethod);
@@ -234,16 +242,15 @@ export default function PayPalCheckout({
     let isMounted = true;
 
     const cardStyle = {
-      body: { backgroundColor: "#0a0a0a" },
+      body: { background: "transparent" },
       input: {
         fontFamily: "DM Sans, system-ui, sans-serif",
         fontSize: "14px",
         color: "#ffffff",
-        backgroundColor: "#0a0a0a",
         padding: "0 12px",
       },
       ":focus": { color: "#ffffff" },
-      "::placeholder": { color: "#6b7280" },
+      "input::placeholder": { color: "#6b7280" },
       ".invalid": { color: "#f87171" },
     };
 
@@ -337,6 +344,14 @@ export default function PayPalCheckout({
     }
   };
 
+  // Expose submit to parent via ref
+  useImperativeHandle(ref, () => ({ submit: handleCardSubmit }));
+
+  // Notify parent when card fields become ready or unready
+  useEffect(() => {
+    onReadyChange?.(cardFieldsReady);
+  }, [cardFieldsReady]);
+
   if (error) {
     return (
       <div className={`w-full p-3 bg-red-500/10 border border-red-500/30 rounded-md text-center text-sm text-red-400 ${className}`} data-testid="paypal-error">
@@ -421,25 +436,27 @@ export default function PayPalCheckout({
                 </div>
               </div>
 
-              <Button
-                onClick={handleCardSubmit}
-                disabled={disabled || isProcessingCard || !cardFieldsReady}
-                className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
-                size="lg"
-                data-testid="button-pay-card"
-              >
-                {isProcessingCard ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="h-4 w-4" />
-                    Pay ${amount}
-                  </>
-                )}
-              </Button>
+              {!hideSubmitButton && (
+                <Button
+                  onClick={handleCardSubmit}
+                  disabled={disabled || isProcessingCard || !cardFieldsReady}
+                  className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
+                  size="lg"
+                  data-testid="button-pay-card"
+                >
+                  {isProcessingCard ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      Pay ${amount}
+                    </>
+                  )}
+                </Button>
+              )}
 
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Lock className="h-3 w-3" />
@@ -514,4 +531,6 @@ export default function PayPalCheckout({
       )}
     </div>
   );
-}
+});
+
+export default PayPalCheckout;
