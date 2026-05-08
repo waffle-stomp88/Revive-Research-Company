@@ -1,0 +1,29 @@
+Now I see exactly what's wrong. The placement IS now correct — fields ARE in the left column. But the styling has TWO real problems making it look bad:
+Problem 1 — White iframe backgrounds
+The card number, expiry, and CVV inputs all have white backgrounds against your dark theme. This is the same Issue 2 from before — the v6 style API fixes never got applied (background: "transparent", removing input.backgroundColor, fixing the placeholder selector).
+So when Replit applied "Problem 1" (move card fields to left column), they didn't also apply "Problem 2" (styling fix). The fields moved but they're rendering with default PayPal white.
+Problem 2 — Fields are way too tall
+Look at how much vertical space each input takes. The Card Number field is roughly 80-100px tall. Expiry/CVV are similar. This is massive compared to a typical card input field which should be 44-48px tall.
+This is happening because:
+
+Wrapper <div> has min-h-[48px] (correct minimum)
+PayPal's iframe inside the wrapper might be growing larger than expected
+OR the wrapper has padding inflating the visible height
+
+Either way, the fields are visually overwhelming the form. Should be slim, professional, modern.
+Problem 3 — "Secured by PayPal" text alignment
+Looking at the bottom: the lock icon + "Secured by PayPal" text appears centered below the fields. Where's that coming from? That's not in our spec — it might be PayPal's own footer that snuck in, or Replit added it as "trust copy." Either way, it's redundant since we already have the "Secure card checkout" trust card right above the fields.
+What I'd send Replit
+
+Card field placement is now correct (in left column) but THREE styling issues need fixing immediately:
+Issue 1 — White iframe backgrounds. The card fields are rendering with default white backgrounds against the dark theme. Apply the style API corrections we already discussed (you proposed these in Change B):
+jsbody: { background: "transparent" }  // was backgroundColor
+// remove input.backgroundColor entirely (unsupported by v6)
+"input::placeholder": { color: "#6b7280" }  // was "::placeholder"
+If background: "transparent" doesn't work, try background: "#0a0a0a" (literal dark hex).
+Issue 2 — Fields are way too tall. Each input is rendering at ~80-100px tall. Standard card input height is 44-48px. The wrapper <div> should be a fixed 48px height (h-12 not min-h-[48px]), so the iframe doesn't grow beyond that.
+Change wrapper class from min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f] to:
+h-12 bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f] overflow-hidden
+The overflow-hidden ensures the iframe can't push the wrapper taller. The fixed h-12 (48px) gives a consistent compact field.
+Issue 3 — "Secured by PayPal" text appearing below fields. Looking at the screenshot there's a "🔒 Secured by PayPal" line at the bottom. Where's that coming from? Either PayPal's iframe is rendering it, or you added it. Either way, it's redundant — we already have the "Secure card checkout" trust card directly above the fields. Remove or hide it.
+Don't apply yet. Show me the diff for all three fixes first
