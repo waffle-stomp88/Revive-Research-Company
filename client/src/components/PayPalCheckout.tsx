@@ -73,6 +73,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const numberContainerRef = useRef<HTMLDivElement>(null);
   const expiryContainerRef = useRef<HTMLDivElement>(null);
   const cvvContainerRef = useRef<HTMLDivElement>(null);
+  const declineErrorRef = useRef<HTMLDivElement>(null);
 
   const createOrder = async () => {
     const orderPayload = {
@@ -456,6 +457,13 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     onReadyChange?.(cardFieldsReady);
   }, [cardFieldsReady]);
 
+  // Scroll the decline error banner into view whenever a new decline is set.
+  // cardDeclineError starts as null so the null guard also prevents firing on mount.
+  useEffect(() => {
+    if (!cardDeclineError) return;
+    declineErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [cardDeclineError]);
+
   if (error) {
     return (
       <div className={`w-full p-3 bg-red-500/10 border border-red-500/30 rounded-md text-center text-sm text-red-400 ${className}`} data-testid="paypal-error">
@@ -602,6 +610,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
 
               {cardDeclineError && (
                 <div
+                  ref={declineErrorRef}
                   className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
                   data-testid="card-decline-error"
                   role="alert"
