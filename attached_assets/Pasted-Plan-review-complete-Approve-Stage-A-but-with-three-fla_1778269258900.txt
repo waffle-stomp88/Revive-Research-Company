@@ -1,0 +1,74 @@
+Plan review complete. **Approve Stage A** — but with three flags Replit needs to address before applying or as part of the diff.
+
+## What's right
+
+- ✅ Single file scope (checkout.tsx) — surgical
+- ✅ 4 atomic edits, each easy to verify
+- ✅ A1/A2 checkmark additions follow the existing CashApp/Venmo pattern
+- ✅ A3/A4 button move scoped correctly — only the desktop button + disclaimer move, "What Happens Next" stays
+- ✅ Brand colors per payment method are correct (CashApp green, Venmo blue, Zelle purple)
+- ✅ Mobile sticky bar preserved (separate concern)
+- ✅ Stage B correctly deferred until Stage A verifies
+
+## Concerns to address before applying
+
+### Concern 1 — Edge case button states need to be specified
+
+A4 says:
+> "Otherwise → full-width branded Confirm button"
+
+But what about the `isSubscription || cartSubscriptionItem` blocker? Card and PayPal branches handle this with a "Subscriptions Coming Soon" disabled button. The new CashApp/Venmo/Zelle right-column branch should handle this consistently — when there's a subscription item in cart and user picks CashApp, what shows?
+
+Either:
+- (a) Same "Subscriptions Coming Soon" disabled button, OR
+- (b) Hide the right-column button entirely (let the user know subscriptions don't work via the cart, not the payment method picker)
+
+Probably (a) for consistency. Replit should specify this.
+
+### Concern 2 — Loading/disabled state during mutation
+
+The current desktop Confirm button uses `createManualOrderMutation.isPending` to show a spinner + "PROCESSING..." label. The right-column version needs the same treatment, including:
+- Button disabled
+- Spinner replacing the icon
+- Label changes to "PROCESSING..." or similar
+- User can't double-click
+
+Replit should explicitly include this in A4, not assume it.
+
+### Concern 3 — The trust disclaimer line
+
+> "Remove only the `<Button size='lg' className='w-full hidden md:flex ...'>` block AND the `<p>` disclaimer beneath it"
+
+The `<p>` disclaimer ("You'll receive your order number, then send payment separately") is useful UX context. If we just delete it, that context is lost. Where does it go?
+
+Options:
+- (a) Move it to the right column below the new Confirm button (matches where it was contextually)
+- (b) Move it to the "What Happens Next" block in the left column (group all instructional copy together)
+- (c) Just delete it (lose the context)
+
+(a) is probably right — it lives next to the button it disclaims.
+
+### Smaller note (non-blocking)
+
+The CheckCircle import — confirm `CheckCircle` is already imported from `lucide-react` in checkout.tsx. If not, A1/A2 add an import. Easy to verify.
+
+## Message to send Replit
+
+Paste this in:
+
+> Plan approved with three things to address before applying:
+>
+> **1. Subscription edge case in A4.** When `isSubscription || cartSubscriptionItem` and the user selects CashApp/Venmo/Zelle, what does the right-column button show? Match the Card/PayPal branches — show a disabled "Subscriptions Coming Soon" button. Don't leave it ambiguous.
+>
+> **2. Loading state on the new right-column Confirm buttons (A4).** The existing left-column Confirm button uses `createManualOrderMutation.isPending` to show:
+> - Disabled state
+> - Spinner replacing the brand icon
+> - Label change to "PROCESSING..." or equivalent
+>
+> Replicate exactly that behavior on the new right-column buttons. Don't lose the loading affordance.
+>
+> **3. The disclaimer line "You'll receive your order number, then send payment separately"** — when you remove it from the left column (A3), move it to the right column directly below the new Confirm button. It's contextually about the button, so it should stay next to it.
+>
+> **4. Confirm `CheckCircle` import.** A1/A2 use `<CheckCircle>` — if it's not already imported from `lucide-react`, add the import.
+>
+> Address #1 and #2 with specific implementation. Confirm #3 placement and #4 import. Then apply all 4 edits as Stage A. Restart and hand back to me for verification.Pick when ready.
