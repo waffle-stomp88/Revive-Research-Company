@@ -795,11 +795,12 @@ export default function Checkout() {
 
                   {/* ── Shipping Details (always visible, lifted to page level) ── */}
                   <div className="mb-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                      <MapPin className="h-3 w-3" />
-                      Shipping Details
-                    </p>
-                    <div className="space-y-3">
+                    <div className="bg-[#0d0d0d] border-[0.5px] border-white/[0.08] rounded-xl p-4">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <MapPin className="h-3 w-3" />
+                        Shipping Details
+                      </p>
+                      <div className="space-y-3">
                       {/* Full Name + Email */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -968,6 +969,7 @@ export default function Checkout() {
                           {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
                         </div>
                       </div>
+                    </div>
                     </div>
                   </div>
 
