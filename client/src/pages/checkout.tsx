@@ -91,6 +91,58 @@ export default function Checkout() {
   });
   const [copied, setCopied] = useState(false);
 
+  // SessionStorage keys for checkout form persistence
+  const CHECKOUT_KEYS = {
+    name: "rr_checkout_name",
+    email: "rr_checkout_email",
+    phone: "rr_checkout_phone",
+    street: "rr_checkout_street",
+    city: "rr_checkout_city",
+    state: "rr_checkout_state",
+    zip: "rr_checkout_zip",
+  } as const;
+
+  const clearCheckoutStorage = () => {
+    Object.values(CHECKOUT_KEYS).forEach(key => sessionStorage.removeItem(key));
+  };
+
+  // Restore checkout fields from sessionStorage on mount
+  // Logged-in user profile data (loaded later) will overwrite via its own effect
+  useEffect(() => {
+    const name = sessionStorage.getItem(CHECKOUT_KEYS.name);
+    const email = sessionStorage.getItem(CHECKOUT_KEYS.email);
+    const phone = sessionStorage.getItem(CHECKOUT_KEYS.phone);
+    const street = sessionStorage.getItem(CHECKOUT_KEYS.street);
+    const city = sessionStorage.getItem(CHECKOUT_KEYS.city);
+    const state = sessionStorage.getItem(CHECKOUT_KEYS.state);
+    const zip = sessionStorage.getItem(CHECKOUT_KEYS.zip);
+    if (name) setCustomerName(name);
+    if (email) setCustomerEmail(email);
+    if (phone) setCustomerPhone(phone);
+    if (street || city || state || zip) {
+      setShippingAddress(prev => ({
+        street: street || prev.street,
+        city: city || prev.city,
+        state: state || prev.state,
+        zip: zip || prev.zip,
+      }));
+    }
+  }, []); // run once on mount only
+
+  // Debounced save of checkout fields to sessionStorage whenever they change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      sessionStorage.setItem(CHECKOUT_KEYS.name, customerName);
+      sessionStorage.setItem(CHECKOUT_KEYS.email, customerEmail);
+      sessionStorage.setItem(CHECKOUT_KEYS.phone, customerPhone);
+      sessionStorage.setItem(CHECKOUT_KEYS.street, shippingAddress.street);
+      sessionStorage.setItem(CHECKOUT_KEYS.city, shippingAddress.city);
+      sessionStorage.setItem(CHECKOUT_KEYS.state, shippingAddress.state);
+      sessionStorage.setItem(CHECKOUT_KEYS.zip, shippingAddress.zip);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [customerName, customerEmail, customerPhone, shippingAddress]);
+
   // Derived: true when all required shipping fields are valid
   const shippingValid = useMemo(() => {
     return (
@@ -146,6 +198,13 @@ export default function Checkout() {
     };
     validateCartStock();
   }, [cartItems]);
+
+  // Clear saved checkout data when cart becomes empty (order complete or user empties cart)
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      clearCheckoutStorage();
+    }
+  }, [cartItems.length]);
 
   // Query for BAC water product
   const { data: bacWaterProducts } = useQuery<Product[]>({
@@ -353,6 +412,7 @@ export default function Checkout() {
       }});
       
       clearCart();
+      clearCheckoutStorage();
       localStorage.removeItem("appliedDiscount");
       // Redirect to order confirmation or orders page
       window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;
@@ -454,6 +514,7 @@ export default function Checkout() {
     }});
     
     clearCart();
+    clearCheckoutStorage();
     localStorage.removeItem("appliedDiscount");
     window.location.href = `/order-confirmation?paypalOrderId=${paypalOrderId}`;
   };
