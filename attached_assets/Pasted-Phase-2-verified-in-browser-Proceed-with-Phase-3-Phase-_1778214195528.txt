@@ -1,0 +1,67 @@
+Phase 2 verified in browser. Proceed with Phase 3.
+Phase 3 spec recap (from the original document):
+Replace the existing 2×2 payment grid (PayPal/CashApp/Venmo/Zelle) with a two-tier structure:
+Top tier — two large buttons (50/50 grid on desktop, stacked vertically on mobile)
+
+Credit / Debit Card button (left)
+
+Card icon (lucide-react CreditCard or similar)
+Label: "Credit / Debit Card"
+Subtitle: "Pay directly on this page"
+"RECOMMENDED" badge in top-right corner — ALWAYS visible regardless of selection state
+Preselected by default (change selectedPaymentMethod initial value from "paypal" to "card")
+
+
+PayPal button (right)
+
+PayPal "PP" badge or PayPal icon in PayPal blue (#0070ba per existing codebase)
+Label: "PayPal"
+Subtitle: "Sign in to your PayPal"
+Small italic helper text below subtitle: "PayPal will use the shipping address on your PayPal account"
+
+
+
+Selection visual rule (LOCKED — no deviation):
+
+Selected = fully filled with brand color
+
+Card selected: bg-[#d4ed1f] (yellow), text #0a0a0a (black) — including all icons and badges
+PayPal selected: bg-[#0070ba] (PayPal blue), text white
+
+
+Unselected = bordered in brand color, dark fill
+
+Card unselected: dark fill, border-2 border-[#d4ed1f], white text — yellow border ALWAYS visible since Card is recommended
+PayPal unselected: dark fill, border-2 border-[#0070ba], white text
+
+
+
+RECOMMENDED badge:
+
+Always visible on Card regardless of selection
+When Card selected (yellow background): badge is dark text on slightly tinted dark background
+When Card unselected (dark background): badge is yellow text on slightly tinted yellow background
+
+Mobile breakpoint:
+
+Stack the two top buttons vertically (Card on top, PayPal below) below ~640px viewport
+Maintain full width per button when stacked
+
+Phase 2 gating preserved:
+
+Both top buttons must respect disabled={!shippingSaved} and the opacity-40 cursor-not-allowed treatment when shipping isn't saved
+The "Save your shipping address above to continue" helper text stays visible below the buttons when not yet saved
+
+Temporary state for Phase 3:
+
+CashApp/Venmo/Zelle tiles get TEMPORARILY moved below the two new top buttons (still as the existing 2×2 grid or just stacked) so they continue working until Phase 4 wraps them in the "Pay another way" expandable grid. Don't delete them.
+Their existing click behavior + animated content section (instructions + Confirm button) stays unchanged
+
+Do NOT touch:
+
+PayPal popup integration code (Phase 6 wires the click trigger)
+The shipping form (Phase 1+2 done)
+The "what happens next" instruction blocks for CashApp/Venmo/Zelle
+Order summary
+
+Show me the diff before applying. Don't apply yet.
