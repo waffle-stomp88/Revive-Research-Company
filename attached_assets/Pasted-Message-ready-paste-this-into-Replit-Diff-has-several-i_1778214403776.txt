@@ -1,0 +1,27 @@
+Message ready — paste this into Replit:
+
+---
+
+> Diff has several issues that need addressing before I approve:
+>
+> **1. CRITICAL — Bottom-row grid math:** You changed it to `grid-cols-2` but there are 3 buttons (CashApp, Venmo, Zelle) since PayPal moved up. That'll wrap to a 2+1 layout that looks broken. Change to `grid-cols-3` for cleaner intermediate state. (This whole section restructures in Phase 4 anyway.)
+>
+> **2. CRITICAL — Default to "card" with no card payment flow yet:** Phase 5 wires the actual card payment integration. Right now defaulting to `"card"` means a user lands on checkout with Card preselected, and there's no functional path to complete a card purchase. The "Secure card checkout" preview block is good copy but doesn't solve the functional gap.
+>
+> Two options:
+> - **Keep default as `"paypal"` for now.** Change Card to be visually preselected/highlighted but leave `selectedPaymentMethod = "paypal"` until Phase 5 makes card payment actually work. (Visual lie but prevents broken state.)
+> - **Disable order completion when `selectedPaymentMethod === "card"`.** Show a "Card payments available soon" message in the card-info block, and disable any complete-order button.
+>
+> Which do you recommend? I think option 2 is more honest. Show the user the new design, tell them card is coming, let them complete via PayPal/CashApp/Venmo until Phase 5.
+>
+> **3. RECOMMENDED badge contrast:** `bg-[#d4ed1f]/10` is too subtle on dark. Change to `bg-[#d4ed1f]/20` for the unselected state.
+>
+> **4. PayPal selected icon block:** `bg-white/20` on PayPal blue background looks muddy. Change to `bg-white/25` or `bg-white/30` for cleaner separation.
+>
+> **5. Confirm intermediate state:** When `selectedPaymentMethod === "card"` and user clicks the existing "Confirm Order" button — what happens? Does it crash, no-op, or process incorrectly? Tell me explicitly so we know the failure mode.
+>
+> Show me the updated diff with these fixes plus your answer to #5. Don't apply yet.
+
+---
+
+Standing by for the updated diff.
