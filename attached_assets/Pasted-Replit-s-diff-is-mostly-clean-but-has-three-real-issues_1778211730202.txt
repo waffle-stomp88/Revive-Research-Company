@@ -1,0 +1,104 @@
+Replit's diff is mostly clean but has **three real issues** that need to be fixed before approval. Let me walk through them.
+
+## What's right
+
+- ✅ `customerPhone` state added correctly
+- ✅ Shipping form lifted to correct location (between account strip and payment selector)
+- ✅ Phone field marked optional with helper text — exactly as spec'd
+- ✅ State changed from Input to select (50-state dropdown)
+- ✅ ZIP validation accepts 5-digit and 5+4 formats
+- ✅ Shipping fields removed from CashApp/Venmo/Zelle expansion (not just hidden)
+- ✅ `handleManualPaymentSubmit` validation correctly identified as needing no changes (already reads page-level state)
+- ✅ Order summary ZIP duplicate input removed
+- ✅ Tax calculation logic preserved
+- ✅ PayPal flow not touched
+- ✅ Out-of-scope items explicitly listed as untouched
+
+## What needs to be fixed before approval
+
+### Issue 1 — Phase 1 is missing the `shippingValid` boolean
+
+The spec for Phase 1 explicitly says:
+
+> **State management:**
+> - Form state lifted to checkout page component
+> - Validation state computed at form level (all required fields valid + ZIP format valid)
+> - **Expose a `shippingValid` boolean and a `shippingData` object to child components (payment tiles)**
+
+Replit's diff adds the form fields but **doesn't add the `shippingValid` derived boolean.** This is needed for Phase 2 (where SAVE ADDRESS button enables only when shipping is valid). Adding it now is trivial — adding it later means revisiting the file. Cleaner to do it now.
+
+**What's needed:** A computed `shippingValid` value derived from the form state, e.g.:
+```typescript
+const shippingValid = useMemo(() => {
+  return (
+    customerName.trim().length > 0 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) &&
+    shippingAddress.street.trim().length > 0 &&
+    shippingAddress.city.trim().length > 0 &&
+    shippingAddress.state.length === 2 &&
+    /^\d{5}(-\d{4})?$/.test(shippingAddress.zip)
+  );
+}, [customerName, customerEmail, shippingAddress]);
+```
+
+### Issue 2 — `<select>` styling is a hand-wave
+
+The diff shows:
+```
+className="w-full mt-1 h-9 rounded-md border border-input bg-background px-3 py-1 text-sm ..."
+```
+
+That `...` at the end is doing too much work. Native `<select>` elements need careful styling to match the dark Revive theme — they have OS-default dropdowns, focus rings, and arrow icons that look terrible by default. If your codebase uses shadcn/ui (which it likely does given the `Input` and `Label` components), there's a `<Select>` component that handles all of this properly with a consistent look.
+
+**What's needed:** Replit should either:
+- Use the existing shadcn `<Select>` component (`SelectTrigger`, `SelectContent`, `SelectItem`) — preferred if available
+- OR show the **complete** className string for the native `<select>`, including dark-theme overrides for the dropdown panel, hover states, and the chevron icon
+
+I want to see this resolved before approving.
+
+### Issue 3 — Tax calculation breakage risk
+
+The `AFTER` block shows:
+```jsx
+{!hasValidZip ? (
+  <span className="text-xs text-muted-foreground/50 italic">Enter ZIP above</span>
+) : (
+  <span className={cartTax === 0 ? "text-green-500" : ""}>
+    {cartTax === 0 ? "No tax" : `$${cartTax.toFixed(2)}`}
+  </span>
+  // "Edit" button removed
+)}
+```
+
+The "Edit" button removal is fine in principle (user edits in the shipping form now), but **there's no visible verification that `hasValidZip` and `calculateTaxFromZip` will still receive ZIP updates correctly when the only ZIP input is now in the shipping form.** The shipping form's ZIP `onChange` writes to the same `shippingAddress.zip` state, so it should work — but Replit hasn't explicitly demonstrated that the tax recalculation is wired to the shipping form ZIP changes.
+
+**What's needed:** Replit should explicitly confirm:
+- `calculateTaxFromZip(shippingAddress.zip, ...)` still triggers when shipping form ZIP changes
+- Tax recalculates without a manual trigger
+- "Edit" button removal doesn't leave any orphan handlers
+
+This is probably fine, but I want it stated explicitly, not assumed.
+
+## Smaller flags (non-blocking)
+
+- The diff doesn't show the **complete list of 50 states** in the dropdown — uses `... all 50 states ...`. Before applying, Replit should paste the full list to verify completeness (no missing states, no DC if not wanted, no territories if not wanted)
+- ZIP `onChange` strips with `/[^\d-]/g` which allows multiple dashes (`78701---1234` would pass). Tighter regex would be better but it's a polish issue, not a Phase 1 blocker.
+- Phone field has no validation. Spec said optional with no validation requirement, so this is fine. Just flagging.
+
+## What to send back to Replit
+
+Paste this in:
+
+> Diff is mostly good. Three things to fix before I approve:
+>
+> **1. Add the `shippingValid` derived boolean in Phase 1.** The spec calls for this and it's needed for Phase 2's SAVE ADDRESS button gating. Add a `useMemo` that returns true when all required fields are valid (Name non-empty, Email matches a basic email regex, Street non-empty, City non-empty, State is a 2-letter code, ZIP matches `/^\d{5}(-\d{4})?$/`).
+>
+> **2. State dropdown styling.** Don't use a raw `<select>` with truncated className. If shadcn/ui's `<Select>` component is available in the codebase (it likely is — you're already using `Input` and `Label`), use that instead for visual consistency with the dark theme. If not, show me the complete className for the native select including dark-mode overrides.
+>
+> **3. Confirm tax wiring.** Explicitly verify in your response: when the user types a ZIP into the shipping form, does `calculateTaxFromZip` still fire and update `cartTax`? The state lives at page level so it should, but I want it confirmed not assumed.
+>
+> **Also:** Paste the **complete** list of 50 states in your dropdown (don't abbreviate to `... all 50 states ...` in the diff). I want to verify completeness — and confirm whether you're including DC and US territories or not.
+>
+> Show me the updated diff with these three changes plus the full state list. Don't apply yet.
+
+Once Replit comes back with the corrected diff, paste it here and I'll do final review before you approve.

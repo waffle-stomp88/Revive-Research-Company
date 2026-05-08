@@ -1,0 +1,405 @@
+# Checkout Restructure — Implementation Spec for Replit Assistant
+
+## Context for the assistant
+
+This is a **multi-phase refactor** of the existing checkout page. The user's checkout currently uses a payment-method-first architecture where each payment tile renders its own shipping form when expanded. We're restructuring to a **shipping-first architecture** where the shipping form lives at the top of the page and is shared across all payment rails — except PayPal, which keeps its existing popup-based shipping flow.
+
+**Critical workflow rules (no exceptions):**
+- Show the diff first
+- Wait for explicit approval before applying
+- Apply the diff and restart the app
+- Hand back to the user for browser verification — do NOT declare any phase complete yourself
+- Do NOT modify `vite.config.ts` without explicit per-instance approval
+- No lazy-loading at the App.tsx routing level
+- Component-level lazy-loading inside pages only
+
+**Stage this work into the phases below. Complete one phase fully — including user browser verification — before starting the next.** Do not bundle phases into a single diff.
+
+---
+
+## Phase 1 — Lift shipping form to page level
+
+**Goal:** Extract the shipping form from inside the per-tile expansion sections (currently in CashApp/Venmo/Zelle/Bank tile components) and create a single page-level shipping form component that lives above the payment selection.
+
+**What changes:**
+- Create a new `ShippingForm` component (or similar) that renders at the top of the checkout page, below the customer identity card and above the payment method selection
+- Extract the form fields (Full Name, Email, Phone, Street Address, City, State, ZIP) from wherever they currently live in tile components
+- Lift form state up to the parent checkout page component so all payment paths can read the shipping data
+- Pre-fill Email from the logged-in user's profile (Auth0 token)
+
+**Field requirements:**
+- **Full Name** — required, text input
+- **Email** — required, pre-filled from logged-in user, text input
+- **Phone** — **optional**, text input, with helper text below it: "Recommended for shipping updates"
+- **Street Address** — required, text input
+- **City** — required, text input
+- **State** — required, **50-state dropdown** (do NOT use a free text input — use a select with all 50 US states)
+- **ZIP Code** — required, text input with 5-digit format validation (also accept 5+4 with optional dash)
+
+**No country field** — US shipping only, implicit.
+
+**State management:**
+- Form state lifted to checkout page component
+- Validation state computed at form level (all required fields valid + ZIP format valid)
+- Expose a `shippingValid` boolean and a `shippingData` object to child components (payment tiles)
+
+**What to remove:**
+- The shipping form fields currently rendered inside CashApp/Venmo/Zelle/Bank tile expansions
+- Those tile components should now consume `shippingData` from props instead of rendering their own form
+
+**What to leave alone in Phase 1:**
+- Do NOT change PayPal integration code
+- Do NOT change the payment method selection visual treatment yet
+- Do NOT change the "what happens next" instruction blocks inside tiles
+- Do NOT change the order summary, cart logic, tax calculation, or any other checkout area
+
+**Deliverable for Phase 1:**
+- Shipping form rendered at page level
+- All fields validate correctly
+- Existing tile-click behavior still works (tiles read shipping data from page state instead of rendering own form)
+- No regressions to existing payment flows
+
+---
+
+## Phase 2 — Add Save Address / collapse behavior
+
+**Goal:** After the shipping form is filled and valid, customer clicks a "Save Address" button below the form. Form collapses into a two-line summary. Edit link re-expands.
+
+**What changes:**
+- Add a "SAVE ADDRESS" button below the shipping form, inside the same block
+- Button is disabled until the form is valid (all required fields filled, ZIP format valid)
+- On click, the form collapses to a two-line summary:
+  - Line 1: `{Full Name}`
+  - Line 2: `{Street Address}, {City} {State} {ZIP}`
+  - To the right of the summary: an "Edit" text link
+- Clicking "Edit" re-expands the form (with the data still populated)
+- Payment method buttons stay disabled until shipping is in collapsed (saved) state
+
+**Visual:**
+- Use existing typography and spacing patterns from the rest of the checkout
+- Summary line uses the same dark panel background as the form block
+- "Edit" link uses standard secondary text color, underlined on hover
+
+**What to leave alone:**
+- PayPal integration
+- Payment method visual treatment
+- Tile expansion behavior
+
+**Deliverable for Phase 2:**
+- Customer fills form, clicks SAVE ADDRESS, sees collapsed summary
+- Customer clicks Edit, form re-expands with data preserved
+- Payment buttons disabled until shipping is saved
+
+---
+
+## Phase 3 — Restructure payment method buttons (Card + PayPal as top tier)
+
+**Goal:** Replace the existing flat tile layout (PayPal / CashApp / Venmo / Zelle) with a two-tier structure: Card and PayPal as primary buttons on top, the rest hidden behind a "Pay another way" expandable row.
+
+**What changes:**
+
+### Top tier — two buttons (50/50 grid on desktop, stacked vertically on mobile)
+1. **Credit / Debit Card** button (left)
+   - Icon: card icon
+   - Label: "Credit / Debit Card"
+   - Subtitle: "Pay directly on this page"
+   - Always shows a "RECOMMENDED" badge (top-right corner)
+   - **Preselected by default**
+
+2. **PayPal** button (right)
+   - PayPal "PP" icon block in PayPal blue (#009cde)
+   - Label: "PayPal"
+   - Subtitle: "Sign in to your PayPal"
+
+### Selection visual treatment (locked from design discussion)
+- **Selected** = fully filled with brand color
+  - Card selected: `background: #d4ed1f` (yellow), text `#0a0a0a` (black)
+  - PayPal selected: `background: #009cde` (PayPal blue), text `#ffffff` (white)
+- **Unselected** = bordered in brand color, dark fill
+  - Card unselected: `background: #141414`, `border: 2px solid #d4ed1f`, text white
+  - PayPal unselected: `background: #141414`, `border: 2px solid #009cde`, text white
+- The RECOMMENDED badge on Card stays visible regardless of selection state — its background tint changes between selected (dark on yellow) and unselected (yellow tint on dark) states for contrast
+
+### Mobile breakpoint
+- Stack the two top buttons vertically (Card on top, PayPal below) below ~640px viewport
+- Maintain full width per button when stacked
+
+**What to leave alone in Phase 3:**
+- PayPal integration code (popup launch behavior)
+- The four bottom-tier rails (CashApp/Venmo/Zelle/Bank) — Phase 4 handles those
+- Card details panel (no Advanced Checkout integration yet — that's Phase 5)
+
+**Deliverable for Phase 3:**
+- Two top buttons render correctly with the selection rules above
+- Card preselected on page load
+- Clicking PayPal does nothing visual yet beyond updating selection state (full popup behavior wired in Phase 5)
+- Existing CashApp/Venmo/Zelle/Bank tile flow temporarily duplicated below — will be moved into the expandable grid in Phase 4
+
+---
+
+## Phase 4 — "Pay another way" expandable grid
+
+**Goal:** Move the four secondary payment rails (CashApp, Venmo, Zelle, Bank/Link Money) from their current visible tile positions into an expandable section below the top tier.
+
+**What changes:**
+
+### Collapsed row (default state)
+- Single horizontal row below the Card details panel area
+- Left side: row of 4 small (22px) brand-color icons in a horizontal flex strip — CashApp green $, Venmo blue V, Zelle purple Z, Bank yellow ACH
+- Center-left text: "Pay another way"
+- Right side: down-chevron icon
+- Background: `#141414`, subtle border
+- Cursor: pointer
+- Click anywhere on the row toggles expansion
+
+### Expanded state
+- Up-chevron replaces down-chevron
+- Below the row, a 2x2 grid (single column on mobile) of the four payment tiles:
+  - **CashApp** (top left) — green icon, "$reviveresearchco" subtitle
+  - **Venmo** (top right) — blue icon, "@reviveresearchco" subtitle
+  - **Zelle** (bottom left) — purple icon, "Manual transfer" subtitle, opacity 0.7 (slight de-emphasis)
+  - **Bank transfer** (bottom right) — yellow ACH icon, "Link Money" subtitle
+
+### Tile selection (locked from design discussion)
+- Selected tile = fully filled with that rail's brand color
+  - CashApp: `background: #00d563`
+  - Venmo: `background: #008fff`
+  - Zelle: `background: #a78bfa`
+  - Bank: `background: #d4ed1f` (with dark text since yellow)
+- Unselected tiles: dark background with brand-color icon, no border highlight
+
+### Tile click behavior
+- When customer selects a tile from the grid:
+  - Card details panel collapses (if Card was previously selected)
+  - PayPal blue border treatment goes away (if PayPal was previously selected)
+  - The "what happens next" instruction block + brand-colored "CONFIRM ORDER" CTA appears below the grid (existing behavior — DO NOT CHANGE the instruction copy or CTA logic)
+  - The shipping form at top is NOT re-rendered (already saved)
+
+**Backend:**
+- Tile-click handlers should consume `shippingData` from page state (no longer have their own shipping forms)
+- Order creation flow on CONFIRM ORDER click stays exactly as it works today
+
+**What to remove:**
+- The old visible CashApp/Venmo/Zelle tiles outside the expandable grid (the temporarily-duplicated ones from Phase 3)
+
+**What to leave alone:**
+- PayPal integration (Phase 5)
+- "What happens next" instruction copy
+- Order creation backend logic
+
+**Deliverable for Phase 4:**
+- Customer can expand "Pay another way," pick a tile, see existing instruction flow
+- All four rails work end-to-end with shipping data flowing from the top form
+- No old tile remnants visible outside the grid
+
+---
+
+## Phase 5 — Card path: PayPal Advanced Checkout integration
+
+**Goal:** When Card is selected (default state), render the embedded PayPal Advanced Checkout card fields below the payment buttons. This is where we address the existing `xe.createCardPaymentSession is not a function` error from earlier in the session.
+
+**Critical context:**
+The user has been approved for PayPal Advanced Checkout but the SDK is currently failing to initialize the card fields. Before building this phase, the assistant must diagnose why. Likely causes (in order of probability):
+1. Wrong client ID in production env vars (sandbox vs live mismatch)
+2. PayPal SDK script tag missing required components (needs `components=buttons,card-fields` or `components=buttons,hosted-fields`)
+3. Live account approval not fully propagated
+4. Vertical/regional restriction on the live account
+
+**Phase 5 sub-steps:**
+
+### 5a — Diagnose Advanced Checkout failure
+- Show the user the current PayPal SDK script tag URL with all query parameters
+- Show which env var is supplying `VITE_PAYPAL_CLIENT_ID` (or equivalent) and confirm whether it's pointing at sandbox or live
+- Show the live PayPal Business dashboard status of "Advanced Credit and Debit Card Payments" (user will need to verify this manually)
+- Hand back to user with findings before proceeding
+
+### 5b — Fix the SDK initialization (only after 5a)
+- Update the PayPal SDK script tag to include the required `components=` parameter
+- Confirm the live client ID is in production env vars
+- Test in dev that `createCardPaymentSession` is now defined
+
+### 5c — Render card fields panel
+- When Card is selected, render a Card Details panel below the top buttons
+- Panel contents (in order):
+  - Header: "CARD DETAILS" with Visa/MC/Amex logo strip on the right
+  - Card number field (PayPal-rendered iframe inside Revive-styled wrapper)
+  - Expiry / CVV in a 50/50 grid (PayPal iframes inside Revive-styled wrappers)
+  - **Checkbox: "Billing address same as shipping"** — checked by default
+    - When unchecked, billing address fields appear below the checkbox (Street, City, State, ZIP — same field set as shipping but separate state)
+  - "PAY $XX.XX" button in yellow (`#d4ed1f`) with black text
+  - Trust micro-copy below the button: lock icon + "Card data secured by PayPal"
+
+### 5d — PAY button behavior
+- Disabled until: shipping is saved (collapsed state) AND all card fields are valid AND (billing-same checkbox is checked OR billing fields are valid)
+- On click: invoke PayPal Advanced Checkout's `submit()` to process payment
+- On success: redirect to confirmation page with order number
+- On failure: show error inline (use existing toast system if present, otherwise inline error message — DO NOT use native `alert()`)
+
+### 5e — Card field styling
+- PayPal iframe styling options to apply (font family matching site, font size, text color matching shipping form inputs)
+- Wrapper div around each iframe: `background: #1a1a1a`, `border: 0.5px solid rgba(255,255,255,0.12)`, `border-radius: 6px`, `padding: 11px 12px`
+
+**What to leave alone:**
+- PayPal popup integration (the existing flow when "PayPal" top button is clicked)
+- Bottom-tier tile flows
+- Order creation backend logic for PayPal popup orders
+
+**Deliverable for Phase 5:**
+- Card fields render correctly on page load when Card is selected
+- Customer can complete a real test purchase via card with no popup
+- Billing-same checkbox works as expected
+- PAY button enables/disables based on full form validity
+
+---
+
+## Phase 6 — PayPal popup behavior (top button)
+
+**Goal:** When the customer clicks the PayPal top button, the existing PayPal popup flow launches immediately. This is the **hybrid (Option 2.5)** approach: PayPal continues to collect shipping inside its own popup, even though Revive has a shipping form at the top of the page.
+
+**What changes:**
+- Clicking the PayPal top button (when not selected) selects it AND launches the PayPal popup immediately
+- Card details panel collapses when PayPal is selected
+- Do NOT pass shipping address to PayPal as a parameter
+- Do NOT add `shipping_preference: "SET_PROVIDED_ADDRESS"` to the PayPal SDK call
+- Existing PayPal integration code stays exactly as it works today — only the trigger point (top button click) is wired up
+
+**Helper text under the PayPal button:**
+- Below the PayPal button: small italic helper text in muted color: "PayPal will use the shipping address on your PayPal account"
+- This sets customer expectations that the shipping form they filled at the top will not apply to PayPal
+
+**What to leave alone:**
+- PayPal popup contents and behavior
+- PayPal API parameters
+- Order creation flow for PayPal-paid orders
+
+**Deliverable for Phase 6:**
+- Clicking PayPal top button launches the existing popup
+- Customer can complete a real test purchase via PayPal popup
+- Helper text is visible
+
+---
+
+## Phase 7 — Fallback state for Advanced Checkout failure
+
+**Goal:** If PayPal Advanced Checkout fails to initialize (the same `createCardPaymentSession` error or any iframe load failure), the page degrades gracefully to a state where the customer can still complete a purchase.
+
+**Detection:**
+- Listen for PayPal SDK initialization failures
+- Specifically detect: `xe.createCardPaymentSession is not a function`, iframe load failures, or eligibility check failures
+- Set a `cardFieldsAvailable: false` state on detection
+
+**Fallback UI changes when `cardFieldsAvailable` is false:**
+
+### Top buttons
+- **Card button**: 
+  - Background: `#1a1a1a`
+  - Border: `0.5px solid rgba(255,255,255,0.08)`
+  - Opacity: 0.45
+  - Cursor: not-allowed
+  - "RECOMMENDED" badge replaced with "UNAVAILABLE" badge in muted gray
+  - Subtitle text: "Temporarily unavailable"
+  - Click does nothing
+- **PayPal button**: 
+  - Subtitle changes from "Sign in to your PayPal" to "Sign in or pay with card"
+  - Otherwise unchanged
+
+### Card details panel area (where the card form would render)
+- Replaced with an amber warning panel:
+  - Background: `rgba(251,191,36,0.06)`
+  - Border: `0.5px solid rgba(251,191,36,0.25)`
+  - Border-radius: large
+  - Padding: 1.25rem
+  - Contents: warning triangle icon + "Card payments temporarily unavailable" header + body text "We're working on it. In the meantime, you can pay with PayPal (which also accepts cards), CashApp, Venmo, Zelle, or bank transfer below."
+
+### "Pay another way" row
+- **Auto-expanded** in fallback state (instead of collapsed default)
+- All four tiles visible immediately
+
+**What to leave alone:**
+- PayPal popup flow
+- Bottom-tier tile flows
+- Shipping form
+
+**Deliverable for Phase 7:**
+- Force-trigger the failure state in dev to verify the fallback renders correctly
+- Customer can still pay via PayPal popup or any of the four alternative rails
+- Visual treatment matches the spec above
+
+---
+
+## Phase 8 — Saved-address auto-fill (returning customers)
+
+**Goal:** When a logged-in customer returns to checkout and they've previously placed an order, the shipping form auto-fills with their last-used shipping address.
+
+**What changes:**
+
+### Backend
+- On order completion, save the shipping address to the customer's profile (Auth0 user_metadata for now; will migrate to Supabase later per the existing migration plan)
+- Add an API endpoint or use the user profile object to read the saved address on checkout page load
+
+### Frontend
+- On checkout page load:
+  - If user is logged in AND has a saved shipping address → pre-fill all shipping form fields with that data
+  - If user is logged in but no saved address → blank form
+  - If user is not logged in → blank form (or trigger login flow if checkout requires auth)
+- Customer can edit any field freely — pre-fill is just a starting point
+- On order completion, the address used for that order overwrites the saved address
+
+**No UI for "use different address" or "saved address dropdown"** — keeping it simple per spec. Customer just edits the pre-filled fields if they want to ship somewhere else.
+
+**Deliverable for Phase 8:**
+- Returning customer sees their last shipping address pre-filled
+- Editing fields works as expected
+- New address gets saved on next order completion
+
+---
+
+## Final verification checklist
+
+After all 8 phases are complete, the user should verify the following end-to-end flows on the live site:
+
+1. **Card payment, first-time customer**
+   - Page loads, shipping form blank
+   - Fill shipping → Save Address → form collapses
+   - Card preselected → fill card fields → PAY → confirmation
+2. **Card payment, returning customer**
+   - Page loads, shipping form pre-filled with last address
+   - Edit a field → Save Address → form collapses with new data
+   - Card preselected → fill card fields → PAY → confirmation
+   - Verify the new address is saved for next visit
+3. **PayPal popup, any customer**
+   - Fill or skip shipping form (doesn't matter for PayPal)
+   - Click PayPal top button → popup launches
+   - Complete payment in popup → confirmation
+4. **CashApp / Venmo / Zelle / Bank, any rail**
+   - Fill shipping → Save Address
+   - Click "Pay another way" → expand grid → pick rail
+   - "What happens next" instructions appear → CONFIRM ORDER → order number generated
+5. **Fallback state**
+   - Force-trigger Advanced Checkout failure
+   - Verify Card button greyed out, warning panel shows, "Pay another way" auto-expanded
+   - Verify customer can still complete purchase via PayPal popup or grid rail
+6. **Mobile**
+   - Test all of the above on a phone viewport
+   - Top buttons stack vertically
+   - All interactions work with touch
+
+---
+
+## What NOT to do at any phase
+
+- Do NOT modify the PayPal popup integration code (Phase 6 only wires the trigger; the popup itself stays untouched)
+- Do NOT add the `shipping_preference` parameter to PayPal API calls
+- Do NOT change order summary, cart logic, tax calculation, or shipping cost calculation
+- Do NOT change the COA verification, product pages, or any non-checkout area
+- Do NOT add subscriptions, recurring payments, or any payment feature outside the explicit scope
+- Do NOT use `alert()` for error display — use the existing toast system (grep for it if unsure which library is used)
+- Do NOT modify `vite.config.ts` without explicit per-instance approval
+- Do NOT lazy-load at App.tsx routing level
+- Do NOT bundle phases together — each phase gets its own diff, approval, apply, restart, verify cycle
+
+---
+
+## Start with Phase 1
+
+After reading this entire spec, start with Phase 1 only. Show the diff, wait for approval, apply, restart, and hand back for browser verification. Do not begin Phase 2 until the user confirms Phase 1 is verified working.

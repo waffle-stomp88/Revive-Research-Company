@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, COLD_PACK_FEE } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
@@ -9,6 +9,13 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
@@ -72,6 +79,7 @@ export default function Checkout() {
   const [manualPaymentStep, setManualPaymentStep] = useState<"select" | "instructions" | "confirm">("select");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState({
     street: "",
     city: "",
@@ -79,6 +87,18 @@ export default function Checkout() {
     zip: "",
   });
   const [copied, setCopied] = useState(false);
+
+  // Derived: true when all required shipping fields are valid
+  const shippingValid = useMemo(() => {
+    return (
+      customerName.trim().length > 0 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) &&
+      shippingAddress.street.trim().length > 0 &&
+      shippingAddress.city.trim().length > 0 &&
+      shippingAddress.state.length === 2 &&
+      /^\d{5}(-\d{4})?$/.test(shippingAddress.zip)
+    );
+  }, [customerName, customerEmail, shippingAddress]);
   
   // RUO/Age reminder state - shown once per session on checkout
   const [showRuoReminder, setShowRuoReminder] = useState(false);
@@ -773,6 +793,184 @@ export default function Checkout() {
                     )}
                   </div>
 
+                  {/* ── Shipping Details (always visible, lifted to page level) ── */}
+                  <div className="mb-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                      <MapPin className="h-3 w-3" />
+                      Shipping Details
+                    </p>
+                    <div className="space-y-3">
+                      {/* Full Name + Email */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
+                          <Input
+                            id="ship-name"
+                            value={customerName}
+                            onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
+                            placeholder="John Doe"
+                            autoComplete="name"
+                            className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                            data-testid="input-customer-name"
+                          />
+                          {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
+                        </div>
+                        <div>
+                          <Label htmlFor="ship-email" className="text-xs">Email *</Label>
+                          <Input
+                            id="ship-email"
+                            type="email"
+                            value={customerEmail}
+                            onChange={(e) => setCustomerEmail(e.target.value)}
+                            placeholder="john@example.com"
+                            autoComplete="email"
+                            className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                            data-testid="input-customer-email"
+                          />
+                          {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
+                        </div>
+                      </div>
+
+                      {/* Phone (optional) */}
+                      <div>
+                        <Label htmlFor="ship-phone" className="text-xs">
+                          Phone <span className="text-muted-foreground/60 font-normal italic">(optional)</span>
+                        </Label>
+                        <Input
+                          id="ship-phone"
+                          type="tel"
+                          value={customerPhone}
+                          onChange={(e) => setCustomerPhone(e.target.value)}
+                          placeholder="(555) 000-0000"
+                          autoComplete="tel"
+                          className="mt-1"
+                          data-testid="input-customer-phone"
+                        />
+                        <p className="text-[10px] text-muted-foreground/60 mt-1">Recommended for shipping updates</p>
+                      </div>
+
+                      {/* Street Address */}
+                      <div>
+                        <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
+                        <Input
+                          id="ship-street"
+                          value={shippingAddress.street}
+                          onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                          placeholder="123 Research Lane"
+                          autoComplete="street-address"
+                          className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          data-testid="input-street"
+                        />
+                        {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
+                      </div>
+
+                      {/* City / State / ZIP — 2fr 1fr 1fr */}
+                      <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
+                        <div>
+                          <Label htmlFor="ship-city" className="text-xs">City *</Label>
+                          <Input
+                            id="ship-city"
+                            value={shippingAddress.city}
+                            onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                            placeholder="Austin"
+                            autoComplete="address-level2"
+                            className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                            data-testid="input-city"
+                          />
+                          {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
+                        </div>
+                        <div>
+                          <Label htmlFor="ship-state" className="text-xs">State *</Label>
+                          <Select
+                            value={shippingAddress.state}
+                            onValueChange={(v) => setShippingAddress({...shippingAddress, state: v})}
+                          >
+                            <SelectTrigger
+                              className={`mt-1 ${submitAttempted && !shippingAddress.state ? "border-red-500" : ""}`}
+                              data-testid="select-state"
+                            >
+                              <SelectValue placeholder="—" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                              <SelectItem value="AL">AL</SelectItem>
+                              <SelectItem value="AK">AK</SelectItem>
+                              <SelectItem value="AZ">AZ</SelectItem>
+                              <SelectItem value="AR">AR</SelectItem>
+                              <SelectItem value="CA">CA</SelectItem>
+                              <SelectItem value="CO">CO</SelectItem>
+                              <SelectItem value="CT">CT</SelectItem>
+                              <SelectItem value="DC">DC</SelectItem>
+                              <SelectItem value="DE">DE</SelectItem>
+                              <SelectItem value="FL">FL</SelectItem>
+                              <SelectItem value="GA">GA</SelectItem>
+                              <SelectItem value="HI">HI</SelectItem>
+                              <SelectItem value="ID">ID</SelectItem>
+                              <SelectItem value="IL">IL</SelectItem>
+                              <SelectItem value="IN">IN</SelectItem>
+                              <SelectItem value="IA">IA</SelectItem>
+                              <SelectItem value="KS">KS</SelectItem>
+                              <SelectItem value="KY">KY</SelectItem>
+                              <SelectItem value="LA">LA</SelectItem>
+                              <SelectItem value="ME">ME</SelectItem>
+                              <SelectItem value="MD">MD</SelectItem>
+                              <SelectItem value="MA">MA</SelectItem>
+                              <SelectItem value="MI">MI</SelectItem>
+                              <SelectItem value="MN">MN</SelectItem>
+                              <SelectItem value="MS">MS</SelectItem>
+                              <SelectItem value="MO">MO</SelectItem>
+                              <SelectItem value="MT">MT</SelectItem>
+                              <SelectItem value="NE">NE</SelectItem>
+                              <SelectItem value="NV">NV</SelectItem>
+                              <SelectItem value="NH">NH</SelectItem>
+                              <SelectItem value="NJ">NJ</SelectItem>
+                              <SelectItem value="NM">NM</SelectItem>
+                              <SelectItem value="NY">NY</SelectItem>
+                              <SelectItem value="NC">NC</SelectItem>
+                              <SelectItem value="ND">ND</SelectItem>
+                              <SelectItem value="OH">OH</SelectItem>
+                              <SelectItem value="OK">OK</SelectItem>
+                              <SelectItem value="OR">OR</SelectItem>
+                              <SelectItem value="PA">PA</SelectItem>
+                              <SelectItem value="RI">RI</SelectItem>
+                              <SelectItem value="SC">SC</SelectItem>
+                              <SelectItem value="SD">SD</SelectItem>
+                              <SelectItem value="TN">TN</SelectItem>
+                              <SelectItem value="TX">TX</SelectItem>
+                              <SelectItem value="UT">UT</SelectItem>
+                              <SelectItem value="VT">VT</SelectItem>
+                              <SelectItem value="VA">VA</SelectItem>
+                              <SelectItem value="WA">WA</SelectItem>
+                              <SelectItem value="WV">WV</SelectItem>
+                              <SelectItem value="WI">WI</SelectItem>
+                              <SelectItem value="WY">WY</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {submitAttempted && !shippingAddress.state && <p className="text-xs text-red-500 mt-1">Required</p>}
+                        </div>
+                        <div>
+                          <Label htmlFor="ship-zip" className="text-xs">ZIP *</Label>
+                          <Input
+                            id="ship-zip"
+                            value={shippingAddress.zip}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                              const zip = digits.length > 5
+                                ? `${digits.slice(0, 5)}-${digits.slice(5)}`
+                                : digits;
+                              setShippingAddress({...shippingAddress, zip});
+                            }}
+                            placeholder="78701"
+                            inputMode="numeric"
+                            autoComplete="postal-code"
+                            className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                            data-testid="input-zip"
+                          />
+                          {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Payment Method Selector — 2×2 compact pill grid */}
                   <div className="mb-5">
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">How do you want to pay?</p>
@@ -886,103 +1084,6 @@ export default function Checkout() {
                         transition={{ duration: 0.18 }}
                         className="space-y-5"
                       >
-                        {/* Shipping Details — inline */}
-                        <div>
-                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                            <MapPin className="h-3 w-3" />
-                            Shipping Details
-                          </p>
-                          <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
-                                <Input
-                                  id="ship-name"
-                                  value={customerName}
-                                  onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
-                                  placeholder="John Doe"
-                                  autoComplete="name"
-                                  className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                  data-testid="input-customer-name"
-                                />
-                                {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
-                              </div>
-                              <div>
-                                <Label htmlFor="ship-email" className="text-xs">Email *</Label>
-                                <Input
-                                  id="ship-email"
-                                  type="email"
-                                  value={customerEmail}
-                                  onChange={(e) => setCustomerEmail(e.target.value)}
-                                  placeholder="john@example.com"
-                                  autoComplete="email"
-                                  className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                  data-testid="input-customer-email"
-                                />
-                                {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
-                              </div>
-                            </div>
-                            <div>
-                              <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
-                              <Input
-                                id="ship-street"
-                                value={shippingAddress.street}
-                                onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
-                                placeholder="123 Research Lane"
-                                autoComplete="street-address"
-                                className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                data-testid="input-street"
-                              />
-                              {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
-                            </div>
-                            <div className="grid grid-cols-3 gap-3">
-                              <div className="col-span-1">
-                                <Label htmlFor="ship-city" className="text-xs">City *</Label>
-                                <Input
-                                  id="ship-city"
-                                  value={shippingAddress.city}
-                                  onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                                  placeholder="Austin"
-                                  autoComplete="address-level2"
-                                  className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                  data-testid="input-city"
-                                />
-                                {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
-                              </div>
-                              <div>
-                                <Label htmlFor="ship-state" className="text-xs">State *</Label>
-                                <Input
-                                  id="ship-state"
-                                  value={shippingAddress.state}
-                                  onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                                  placeholder="TX"
-                                  maxLength={2}
-                                  autoComplete="address-level1"
-                                  className={`mt-1 ${submitAttempted && !shippingAddress.state ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                  data-testid="input-state"
-                                />
-                                {submitAttempted && !shippingAddress.state && <p className="text-xs text-red-500 mt-1">Required</p>}
-                              </div>
-                              <div>
-                                <Label htmlFor="ship-zip" className="text-xs">ZIP Code *</Label>
-                                <Input
-                                  id="ship-zip"
-                                  value={shippingAddress.zip}
-                                  onChange={(e) => setShippingAddress({...shippingAddress, zip: e.target.value})}
-                                  placeholder="78701"
-                                  maxLength={5}
-                                  autoComplete="postal-code"
-                                  className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                                  data-testid="input-zip"
-                                />
-                                {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Separator />
-
                         {/* What happens next */}
                         <div>
                           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">What happens next</p>
@@ -1314,36 +1415,11 @@ export default function Checkout() {
                         )}
                       </span>
                       {!hasValidZip ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="text"
-                            inputMode="numeric"
-                            placeholder="ZIP code"
-                            value={shippingAddress.zip}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '').slice(0, 5);
-                              setShippingAddress(prev => ({ ...prev, zip: value }));
-                            }}
-                            className="w-24 h-8 text-sm text-center bg-background border-[#E7FB10]/50 focus:border-[#E7FB10] placeholder:text-muted-foreground/50"
-                            data-testid="input-tax-zip"
-                          />
-                        </div>
+                        <span className="text-xs text-muted-foreground/50 italic">Enter ZIP above</span>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <span className={cartTax === 0 ? "text-green-500" : ""}>
-                            {cartTax === 0 
-                              ? "No tax" 
-                              : `$${cartTax.toFixed(2)}`}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setShippingAddress(prev => ({ ...prev, zip: '' }))}
-                            className="text-xs text-muted-foreground hover:text-[#E7FB10] transition-colors"
-                            data-testid="button-edit-zip"
-                          >
-                            Edit
-                          </button>
-                        </div>
+                        <span className={cartTax === 0 ? "text-green-500" : ""}>
+                          {cartTax === 0 ? "No tax" : `$${cartTax.toFixed(2)}`}
+                        </span>
                       )}
                     </div>
                   </div>
