@@ -1,0 +1,64 @@
+What we're shipping to Replit — full spec
+Now let me consolidate everything we've decided so Replit gets a single clean brief:
+
+Page background: #2a2a2a (was #0a0a0a)
+Card containers: keep #141414
+Inner inputs / nested elements: #0a0a0a
+Section header pattern: numbered yellow badge (#d4ed1f background, #0a0a0a number) + section title + small gray subtitle
+Card details section: gets its own numbered section ("3. Card details — Encrypted by PayPal")
+Card field iframes: dark backgrounds (apply v6 style fixes already designed: body: { background: "#0a0a0a" }, remove input.backgroundColor, use input::placeholder selector)
+Card field height: min-h-[44px] (NOT h-12 overflow-hidden — we rejected the clipping hack to preserve validation error visibility)
+Spacing: ~14px between major sections (was tight)
+Trust copy: REMOVE the yellow "Secure card checkout" alert box — its message moves into the Card details section subtitle ("Encrypted by PayPal"). Also remove the redundant "Secured by PayPal" footer line.
+Sticky right column: keep what we already shipped (md:sticky md:top-20 md:self-start z-[40], no internal scrollbar)
+
+Message to send Replit
+Paste this in:
+
+Design loop closed. Here's the consolidated Phase 5c polish spec — apply all of this in one pass:
+Page background change:
+
+Page background: #0a0a0a → #2a2a2a (lighter mid-charcoal for breathing room)
+Keep card containers at #141414
+Keep nested inputs / panels at #0a0a0a
+Result: 3-tier depth (page #2a → cards #14 → inputs #0a)
+
+Section headers — apply to all sections (Account, Shipping, Payment, Card Details):
+
+Numbered yellow badge: 26px circle, bg-[#d4ed1f], dark number inside (text-[#0a0a0a], font-weight 700)
+Section title: white, ~13-14px, font-weight 600
+Section subtitle: small gray, ~10-11px, descriptive ("Where we'll send your order", "How you want to pay", "Encrypted by PayPal")
+Account section can keep its existing avatar treatment instead of a numbered badge
+Shipping = badge 1, Payment = badge 2, Card Details = badge 3
+
+Card Details section (the new one):
+
+Add a proper section wrapper matching the others (bg-[#141414] rounded card)
+Section header: badge 3 + "Card details" + "Encrypted by PayPal"
+Render card fields inside this section
+
+Card field iframe styling fixes (v6 style API):
+
+body: { background: "#0a0a0a" } (NOT transparent, NOT backgroundColor)
+Remove input.backgroundColor entirely (unsupported by v6)
+Use "input::placeholder": { color: "#6b7280" } (NOT just ::placeholder)
+Wrapper class: min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]
+DO NOT use h-12 overflow-hidden — that clips inline validation errors. Use min-h- so the iframe can grow for error messages.
+
+Spacing:
+
+Bump margin between major sections from current to ~14px
+
+Remove:
+
+The yellow "Secure card checkout" alert box (the message lives in the Card Details section subtitle now)
+The "Secured by PayPal" footer line below the card fields (redundant with the section subtitle)
+
+Don't change:
+
+Sticky right column behavior (already shipped, working)
+Existing PayPal popup / CashApp / Venmo flows
+Order summary on the right
+
+Plan first, no code yet: show me which files you'll touch, the order of edits, and the diff outline. After approval, apply, restart, hand back to me for browser verification.
+Pick when ready. After this we get back to actually shipping Phase 5d.
