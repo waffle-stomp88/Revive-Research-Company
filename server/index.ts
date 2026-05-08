@@ -111,27 +111,26 @@ export function log(message: string, source = "express") {
     next();
   });
 
-  // Ensure blend product slugs are canonically set in the DB
-  // (guards against older records created before slug auto-generation was in place)
-  await fixBlendProductSlugs().catch((err) => {
-    console.warn("[startup] fixBlendProductSlugs failed (non-fatal):", err?.message ?? err);
-  });
-
-  await seedStripePresetsIfEmpty().catch((err) => {
-    console.warn("[startup] seedStripePresetsIfEmpty failed (non-fatal):", err?.message ?? err);
-  });
-
-  await seedHormonalEducationArticlesIfMissing().catch((err) => {
-    console.warn("[startup] seedHormonalEducationArticlesIfMissing failed (non-fatal):", err?.message ?? err);
-  });
-
-  await ensureLabNotesTable().catch((err) => {
-    console.warn("[startup] ensureLabNotesTable failed (non-fatal):", err?.message ?? err);
-  });
-
-  await seedLabNotesIfEmpty().catch((err) => {
-    console.warn("[startup] seedLabNotesIfEmpty failed (non-fatal):", err?.message ?? err);
-  });
+  // Run DB seed/migration tasks in the background so they never block
+  // the server from binding to port 5000. Each task is independently
+  // caught — a slow or unavailable DB at startup won't prevent the
+  // health check from passing or traffic from being served.
+  Promise.resolve()
+    .then(() => fixBlendProductSlugs().catch((err) => {
+      console.warn("[startup] fixBlendProductSlugs failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => seedStripePresetsIfEmpty().catch((err) => {
+      console.warn("[startup] seedStripePresetsIfEmpty failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => seedHormonalEducationArticlesIfMissing().catch((err) => {
+      console.warn("[startup] seedHormonalEducationArticlesIfMissing failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => ensureLabNotesTable().catch((err) => {
+      console.warn("[startup] ensureLabNotesTable failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => seedLabNotesIfEmpty().catch((err) => {
+      console.warn("[startup] seedLabNotesIfEmpty failed (non-fatal):", err?.message ?? err);
+    }));
 
   await registerRoutes(httpServer, app);
 
