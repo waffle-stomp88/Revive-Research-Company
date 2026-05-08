@@ -699,7 +699,7 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden">
+        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#2a2a2a]">
           <SEOHead title="Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto w-full">
             {/* Mobile Header - Compact */}
@@ -749,10 +749,10 @@ export default function Checkout() {
                 transition={{ delay: 0.1 }}
                 className="order-2 md:order-1"
               >
-                {/* Unified Checkout Card */}
-                <Card className="p-4 md:p-6 mb-4">
+                {/* Account Panel */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
                   {/* Account Strip */}
-                  <div className="flex items-center justify-between pb-4 mb-5 border-b border-border/50">
+                  <div className="flex items-center justify-between">
                     {userLoading ? (
                       <div className="h-5 w-40 bg-muted rounded animate-pulse" />
                     ) : isAuthenticated ? (
@@ -795,29 +795,31 @@ export default function Checkout() {
                       </>
                     )}
                   </div>
+                </div>
 
-                  {/* ── Shipping Details (always visible, lifted to page level) ── */}
-                  <div className="mb-5">
-                    <div className="bg-[#0d0d0d] border-[0.5px] border-white/[0.08] rounded-xl p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                          <MapPin className="h-3 w-3" />
-                          Shipping Details
-                        </p>
-                        {shippingSaved && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShippingSaved(false);
-                              setSelectedPaymentMethod("card");
-                            }}
-                            className="text-xs text-[#d4ed1f] hover:text-[#d4ed1f]/80 underline-offset-2 hover:underline transition-colors"
-                            data-testid="button-edit-shipping"
-                          >
-                            Edit
-                          </button>
-                        )}
-                      </div>
+                {/* Shipping Panel */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">1</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-none">Shipping</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Where we'll send your order</p>
+                    </div>
+                    {shippingSaved && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShippingSaved(false);
+                          setSelectedPaymentMethod("card");
+                        }}
+                        className="text-xs text-[#d4ed1f] hover:text-[#d4ed1f]/80 underline-offset-2 hover:underline transition-colors"
+                        data-testid="button-edit-shipping"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                  <div className="bg-[#0a0a0a] border-[0.5px] border-white/[0.08] rounded-xl p-4">
                       {shippingSaved ? (
                         <div className="space-y-0.5" data-testid="shipping-summary">
                           <p className="text-sm font-medium">{customerName}</p>
@@ -1021,12 +1023,18 @@ export default function Checkout() {
                           </div>
                         </>
                       )}
+                  </div>
+                </div>
+
+                {/* Payment Panel */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">2</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-none">Payment</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">How you want to pay</p>
                     </div>
                   </div>
-
-                  {/* Payment Method Selector — two-tier */}
-                  <div className="mb-5">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">How do you want to pay?</p>
 
                     {/* ── Top tier: Card + PayPal — 50/50 desktop, stacked mobile ── */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
@@ -1219,29 +1227,9 @@ export default function Checkout() {
                     {!shippingSaved && (
                       <p className="text-[10px] text-muted-foreground/40 text-center italic mt-2">Save your shipping address above to continue</p>
                     )}
-                  </div>
 
                   {/* Animated content per method */}
                   <AnimatePresence mode="wait">
-                    {selectedPaymentMethod === "card" && (
-                      <motion.div
-                        key="card-info"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.18 }}
-                        className="rounded-lg bg-[#d4ed1f]/10 border border-[#d4ed1f]/30 p-3 flex items-center gap-3"
-                      >
-                        <div className="w-9 h-9 bg-[#d4ed1f]/20 rounded-md flex items-center justify-center flex-shrink-0">
-                          <Lock className="h-4 w-4 text-[#d4ed1f]" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">Secure card checkout</p>
-                          <p className="text-xs text-muted-foreground">Enter your card details below. Your payment is processed securely by PayPal — we never see your card number.</p>
-                        </div>
-                      </motion.div>
-                    )}
-
                     {selectedPaymentMethod === "paypal" && (
                       <motion.div
                         key="paypal-info"
@@ -1347,30 +1335,37 @@ export default function Checkout() {
                     )}
                   </AnimatePresence>
 
-                  {/* Card fields rendered in LEFT column — submit triggered via ref from right column Pay button */}
-                  {selectedPaymentMethod === "card" && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
-                    <div className="mt-4">
-                      <PayPalCheckout
-                        ref={cardPaypalRef}
-                        amount={cartTotal.toFixed(2)}
-                        currency="USD"
-                        intent="CAPTURE"
-                        cartItems={cartItems}
-                        customerEmail={user?.email || customerEmail}
-                        showCardFields={true}
-                        defaultMethod="card"
-                        hideSubmitButton={true}
-                        onReadyChange={setIsCardReady}
-                        onCardIneligible={() => setSelectedPaymentMethod("paypal")}
-                        onSuccess={handlePayPalSuccess}
-                        onError={handlePayPalError}
-                        onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
-                        className="w-full"
-                      />
-                    </div>
-                  )}
+                </div>
 
-                </Card>
+                {/* Card Details Panel */}
+                {selectedPaymentMethod === "card" && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
+                  <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">3</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold leading-none">Card details</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Encrypted by PayPal</p>
+                      </div>
+                    </div>
+                    <PayPalCheckout
+                      ref={cardPaypalRef}
+                      amount={cartTotal.toFixed(2)}
+                      currency="USD"
+                      intent="CAPTURE"
+                      cartItems={cartItems}
+                      customerEmail={user?.email || customerEmail}
+                      showCardFields={true}
+                      defaultMethod="card"
+                      hideSubmitButton={true}
+                      onReadyChange={setIsCardReady}
+                      onCardIneligible={() => setSelectedPaymentMethod("paypal")}
+                      onSuccess={handlePayPalSuccess}
+                      onError={handlePayPalError}
+                      onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
+                      className="w-full"
+                    />
+                  </div>
+                )}
 
                 {/* Mobile spacer for sticky bar */}
                 {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (

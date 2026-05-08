@@ -1,0 +1,48 @@
+Planning only — reading the relevant sections of both files in parallel before writing a single line of code.
+
+
+6 actions
+Good — I have everything I need. Here's the plan before a single line changes.
+
+Plan — Phase 5c Polish
+Files touched
+client/src/pages/checkout.tsx — all visual and structural changes
+client/src/components/PayPalCheckout.tsx — one-line placeholder selector fix
+Diff outline
+A. Page background (checkout.tsx — <main> wrapper, line 705)
+
+- <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden">
++ <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#2a2a2a]">
+
+B. Restructure: one unified Card → four separate section panels (checkout.tsx)
+
+Currently everything lives inside <Card className="p-4 md:p-6 mb-4">. That outer Card is removed and replaced with four independent bg-[#141414] rounded-xl p-4 mb-3.5 panels — 14px gap between each:
+
+Panel	Badge	Title	Subtitle
+Account	(existing avatar/auth, no badge)	—	—
+Shipping	1 yellow circle	"Shipping"	"Where we'll send your order"
+Payment	2 yellow circle	"Payment"	"How you want to pay"
+Card Details	3 yellow circle	"Card details"	"Encrypted by PayPal"
+Card Details panel is conditional: only renders when selectedPaymentMethod === "card" && hasValidZip && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0.
+
+Badge spec: w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0
+
+The Shipping form's inner panel background changes: bg-[#0d0d0d] → bg-[#0a0a0a] (deepest tier, inputs live there).
+
+C. Remove "Secure card checkout" alert box (checkout.tsx lines 1226–1243)
+
+The yellow AnimatePresence block for selectedPaymentMethod === "card" is deleted entirely. The PayPal info block and the CashApp/Venmo/Zelle instruction block stay.
+
+D. PayPalCheckout.tsx — placeholder selector fix (one line)
+
+- "::placeholder": { color: "#6b7280" },
++ "input::placeholder": { color: "#6b7280" },
+
+(Note: we found in console testing that this triggers a ERR_DEV_UNSUPPORTED_CSS_SELECTOR sandbox warning regardless — the spec explicitly calls for this form, so we'll apply it as written. The warning is non-blocking.)
+
+What is NOT changing
+Sticky right column — untouched
+PayPal / CashApp / Venmo / Zelle flows — untouched
+Order summary right column — untouched
+"Secure PayPal checkout" and "Secure card checkout" PayPal info blocks inside Payment panel — PayPal's stays, card's is removed per spec
+"Secured by PayPal" footer — already removed in a prior session
