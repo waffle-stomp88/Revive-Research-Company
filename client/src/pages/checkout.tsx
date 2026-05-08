@@ -1339,12 +1339,20 @@ export default function Checkout() {
 
                 {/* Card Details Panel */}
                 {selectedPaymentMethod === "card" && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
-                  <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
-                    <div className="flex items-center gap-3 mb-4">
+                  <div className="relative bg-[#141414] rounded-xl p-4 mb-3.5 border border-[#d4ed1f]/20 overflow-hidden">
+                    {/* ambient glow */}
+                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#d4ed1f]/6 rounded-full blur-2xl pointer-events-none" />
+                    <div className="flex items-center gap-3 mb-4 relative">
                       <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">3</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold leading-none">Card details</p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">Encrypted by PayPal</p>
+                      </div>
+                      {/* card brand indicators */}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#1a1f6b] text-[#aab4ff] border border-[#aab4ff]/20">VISA</span>
+                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#3d1a00] text-[#ff8c42] border border-[#ff8c42]/20">MC</span>
+                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#001a3d] text-[#60a5fa] border border-[#60a5fa]/20">AMEX</span>
                       </div>
                     </div>
                     <PayPalCheckout

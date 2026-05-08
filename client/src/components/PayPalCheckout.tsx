@@ -1,7 +1,7 @@
 // PayPal Advanced Checkout Component
 // Supports both PayPal button and embedded card fields for direct card entry
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Loader2, CreditCard, Lock } from "lucide-react";
+import { Loader2, CreditCard, Lock, Calendar, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
@@ -420,17 +420,26 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
 
               <div className={`space-y-3 ${!cardFieldsReady ? "hidden" : ""}`}>
                 <div>
-                  <Label className="text-xs text-muted-foreground mb-1.5 block">Card Number</Label>
-                  <div ref={numberContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-number-container" />
+                  <Label className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
+                    <CreditCard className="h-3 w-3" />
+                    Card Number
+                  </Label>
+                  <div ref={numberContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-number-container" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">Expiry</Label>
-                    <div ref={expiryContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-expiry-container" />
+                    <Label className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
+                      <Calendar className="h-3 w-3" />
+                      Expiry
+                    </Label>
+                    <div ref={expiryContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-expiry-container" />
                   </div>
                   <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">CVV</Label>
-                    <div ref={cvvContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-cvv-container" />
+                    <Label className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
+                      <Shield className="h-3 w-3" />
+                      CVV
+                    </Label>
+                    <div ref={cvvContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-cvv-container" />
                   </div>
                 </div>
               </div>
