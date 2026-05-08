@@ -1337,6 +1337,7 @@ export default function Checkout() {
                       defaultMethod="card"
                       hideSubmitButton={true}
                       onReadyChange={setIsCardReady}
+                      onProcessingChange={setIsSubmittingCard}
                       onCardIneligible={() => setSelectedPaymentMethod("paypal")}
                       onCardDeclineError={setCheckoutCardDeclineError}
                       onSuccess={handlePayPalSuccess}
@@ -1681,11 +1682,9 @@ export default function Checkout() {
                         <>
                           <Button
                             size="lg"
-                            onClick={async () => {
+                            onClick={() => {
                               setCheckoutCardDeclineError(null);
-                              setIsSubmittingCard(true);
-                              try { await cardPaypalRef.current?.submit(); }
-                              finally { setIsSubmittingCard(false); }
+                              cardPaypalRef.current?.submit();
                             }}
                             disabled={isSubmittingCard || !isCardReady}
                             className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-lg gap-2"

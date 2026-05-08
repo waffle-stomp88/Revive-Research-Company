@@ -30,6 +30,7 @@ interface PayPalCheckoutProps {
   showCardFields?: boolean;
   hideSubmitButton?: boolean;
   onReadyChange?: (ready: boolean) => void;
+  onProcessingChange?: (isProcessing: boolean) => void;
 }
 
 const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(function PayPalCheckout({
@@ -49,6 +50,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   showCardFields = true,
   hideSubmitButton = false,
   onReadyChange,
+  onProcessingChange,
 }: PayPalCheckoutProps, ref) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -337,6 +339,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const handleCardSubmit = async () => {
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
     setIsProcessingCard(true);
+    onProcessingChange?.(true);
     setCardDeclineError(null);
     onCardDeclineError?.(null);
     try {
@@ -368,6 +371,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       onError?.(e);
     } finally {
       setIsProcessingCard(false);
+      onProcessingChange?.(false);
     }
   };
 
