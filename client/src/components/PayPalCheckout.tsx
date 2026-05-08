@@ -249,8 +249,6 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         color: "#ffffff",
         padding: "0 12px",
       },
-      "input::placeholder": { color: "#6b7280" },
-      ".invalid": { color: "#f87171" },
     };
 
     let cardSession: any;
