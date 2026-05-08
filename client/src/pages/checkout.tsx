@@ -173,6 +173,7 @@ export default function Checkout() {
   const [selectedBacWaterSize, setSelectedBacWaterSize] = useState<string>("30ML");
   const [selectedBacWaterQty, setSelectedBacWaterQty] = useState<number>(1);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [shippingSaved, setShippingSaved] = useState(false);
   
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
@@ -796,12 +797,34 @@ export default function Checkout() {
                   {/* ── Shipping Details (always visible, lifted to page level) ── */}
                   <div className="mb-5">
                     <div className="bg-[#0d0d0d] border-[0.5px] border-white/[0.08] rounded-xl p-4">
-                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <MapPin className="h-3 w-3" />
-                        Shipping Details
-                      </p>
-                      <div className="space-y-3">
-                      {/* Full Name + Email */}
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <MapPin className="h-3 w-3" />
+                          Shipping Details
+                        </p>
+                        {shippingSaved && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShippingSaved(false);
+                              setSelectedPaymentMethod("paypal");
+                            }}
+                            className="text-xs text-[#d4ed1f] hover:text-[#d4ed1f]/80 underline-offset-2 hover:underline transition-colors"
+                            data-testid="button-edit-shipping"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                      {shippingSaved ? (
+                        <div className="space-y-0.5" data-testid="shipping-summary">
+                          <p className="text-sm font-medium">{customerName}</p>
+                          <p className="text-xs text-muted-foreground">{shippingAddress.street}, {shippingAddress.city} {shippingAddress.state} {shippingAddress.zip}</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="space-y-3">
+                          {/* Full Name + Email */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
@@ -969,7 +992,23 @@ export default function Checkout() {
                           {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
                         </div>
                       </div>
-                    </div>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                            <Button
+                              type="button"
+                              onClick={() => { if (shippingValid) setShippingSaved(true); }}
+                              disabled={!shippingValid}
+                              className="w-full"
+                              data-testid="button-save-address"
+                            >
+                              Save Address
+                            </Button>
+                            {!shippingValid && (
+                              <p className="text-[10px] text-muted-foreground/50 text-center mt-2">Fill all required fields to continue</p>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -982,7 +1021,8 @@ export default function Checkout() {
                           selectedPaymentMethod === "paypal"
                             ? "border-[#0070ba] bg-[#0070ba]/10"
                             : "border-border hover:border-[#0070ba]/40"
-                        }`}
+                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                        disabled={!shippingSaved}
                         onClick={() => { setSelectedPaymentMethod("paypal"); setManualPaymentStep("select"); }}
                         data-testid="payment-method-paypal"
                       >
@@ -1003,7 +1043,8 @@ export default function Checkout() {
                           selectedPaymentMethod === "cashapp"
                             ? "border-[#00D632] bg-[#00D632]/10"
                             : "border-border hover:border-[#00D632]/40"
-                        }`}
+                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                        disabled={!shippingSaved}
                         onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
                         data-testid="payment-method-cashapp"
                       >
@@ -1024,7 +1065,8 @@ export default function Checkout() {
                           selectedPaymentMethod === "venmo"
                             ? "border-[#00AFF1] bg-[#00AFF1]/10"
                             : "border-border hover:border-[#00AFF1]/40"
-                        }`}
+                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                        disabled={!shippingSaved}
                         onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
                         data-testid="payment-method-venmo"
                       >
@@ -1054,6 +1096,9 @@ export default function Checkout() {
                         </div>
                       </button>
                     </div>
+                    {!shippingSaved && (
+                      <p className="text-[10px] text-muted-foreground/40 text-center italic mt-2">Save your shipping address above to continue</p>
+                    )}
                   </div>
 
                   {/* Animated content per method */}
