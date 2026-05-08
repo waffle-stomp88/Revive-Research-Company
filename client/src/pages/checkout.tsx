@@ -1031,7 +1031,7 @@ export default function Checkout() {
 
                       {/* Credit / Debit Card */}
                       <button
-                        className={`relative flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
+                        className={`flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "card"
                             ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
                             : "border-[#d4ed1f] bg-transparent text-white"
@@ -1040,17 +1040,17 @@ export default function Checkout() {
                         onClick={() => { setSelectedPaymentMethod("card"); setManualPaymentStep("select"); }}
                         data-testid="payment-method-card"
                       >
-                        <span className={`absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                          selectedPaymentMethod === "card"
-                            ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
-                            : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
-                        }`}>RECOMMENDED</span>
                         <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
                           selectedPaymentMethod === "card" ? "bg-[#0a0a0a]/20" : "bg-[#d4ed1f]/10"
                         }`}>
                           <CreditCard className="h-4 w-4" />
                         </div>
-                        <div className="min-w-0 flex-1 pr-14">
+                        <div className="min-w-0 flex-1">
+                          <span className={`inline-block text-[7px] font-bold px-1.5 py-0.5 rounded mb-1 ${
+                            selectedPaymentMethod === "card"
+                              ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
+                              : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
+                          }`}>RECOMMENDED</span>
                           <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
                           <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
                             Pay directly on this page
@@ -1070,23 +1070,26 @@ export default function Checkout() {
                         data-testid="payment-method-paypal"
                       >
                         <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
-                          selectedPaymentMethod === "paypal" ? "bg-white/30" : "bg-[#0070ba]/20"
+                          selectedPaymentMethod === "paypal" ? "bg-white/30" : "bg-[#0070ba]/30"
                         }`}>
-                          <span className={`text-[9px] font-extrabold leading-none ${
-                            selectedPaymentMethod === "paypal" ? "text-white" : "text-[#0070ba]"
-                          }`}>PP</span>
+                          <span className="text-sm font-black leading-none text-white">PP</span>
                         </div>
                         <div className="min-w-0 flex-1">
+                          <span className="inline-block text-[7px] px-1.5 py-0.5 mb-1 invisible select-none" aria-hidden="true">x</span>
                           <p className="text-sm font-semibold leading-tight">PayPal</p>
                           <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
                             Sign in to your PayPal
                           </p>
-                          <p className={`text-[9px] italic mt-0.5 ${selectedPaymentMethod === "paypal" ? "text-white/50" : "text-muted-foreground/50"}`}>
-                            PayPal will use the shipping address on your PayPal account
-                          </p>
                         </div>
                       </button>
                     </div>
+
+                    {/* Option A: PayPal address note — outside button, only when selected */}
+                    {selectedPaymentMethod === "paypal" && (
+                      <p className="text-[9px] italic text-muted-foreground/50 mt-1.5 px-1">
+                        PayPal will use the shipping address on your PayPal account
+                      </p>
+                    )}
 
                     {/* ── Bottom row: CashApp / Venmo / Zelle (Phase 4 wraps these) ── */}
                     <div className="grid grid-cols-3 gap-2">
