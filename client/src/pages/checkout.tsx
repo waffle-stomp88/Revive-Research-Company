@@ -56,7 +56,7 @@ import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
-type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo" | "card";
+type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo" | "card" | "bank";
 
 const subscriptionDiscounts: { [key: string]: number } = {
   weekly: 15,
@@ -174,6 +174,7 @@ export default function Checkout() {
   const [selectedBacWaterQty, setSelectedBacWaterQty] = useState<number>(1);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [shippingSaved, setShippingSaved] = useState(false);
+  const [payAnotherWayExpanded, setPayAnotherWayExpanded] = useState(false);
   
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
@@ -1090,66 +1091,129 @@ export default function Checkout() {
                       </p>
                     )}
 
-                    {/* ── Bottom row: CashApp / Venmo / Zelle (Phase 4 wraps these) ── */}
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
-                          selectedPaymentMethod === "cashapp"
-                            ? "border-[#00D632] bg-[#00D632]/10"
-                            : "border-border hover:border-[#00D632]/40"
-                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                        disabled={!shippingSaved}
-                        onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
-                        data-testid="payment-method-cashapp"
-                      >
-                        <div className="w-8 h-8 bg-[#00D632] rounded-md flex items-center justify-center flex-shrink-0">
-                          <DollarSign className="h-3.5 w-3.5 text-white" />
+                    {/* ── Pay another way — collapsed toggle row ── */}
+                    <button
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.08] bg-[#141414] transition-all text-left ${
+                        !shippingSaved ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                      }`}
+                      disabled={!shippingSaved}
+                      onClick={() => setPayAnotherWayExpanded(prev => !prev)}
+                      data-testid="pay-another-way-toggle"
+                    >
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <div className="w-[22px] h-[22px] bg-[#00D632] rounded flex items-center justify-center">
+                          <DollarSign className="h-3 w-3 text-white" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold leading-tight">CashApp</p>
-                          <p className="text-[10px] text-muted-foreground">{CASHAPP_TAG}</p>
+                        <div className="w-[22px] h-[22px] bg-[#00AFF1] rounded flex items-center justify-center">
+                          <span className="text-[10px] font-black text-white leading-none">V</span>
                         </div>
-                        {selectedPaymentMethod === "cashapp" && (
-                          <CheckCircle className="h-3.5 w-3.5 text-[#00D632] flex-shrink-0" />
-                        )}
-                      </button>
+                        <div className="w-[22px] h-[22px] bg-[#6D1ED4] rounded flex items-center justify-center">
+                          <span className="text-[10px] font-black text-white leading-none">Z</span>
+                        </div>
+                        <div className="w-[22px] h-[22px] bg-[#d4ed1f] rounded flex items-center justify-center">
+                          <span className="text-[8px] font-black leading-none text-[#0a0a0a]">ACH</span>
+                        </div>
+                      </div>
+                      <span className="flex-1 text-sm text-muted-foreground">Pay another way</span>
+                      {payAnotherWayExpanded
+                        ? <ChevronUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        : <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      }
+                    </button>
 
-                      <button
-                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
-                          selectedPaymentMethod === "venmo"
-                            ? "border-[#00AFF1] bg-[#00AFF1]/10"
-                            : "border-border hover:border-[#00AFF1]/40"
-                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                        disabled={!shippingSaved}
-                        onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
-                        data-testid="payment-method-venmo"
-                      >
-                        <div className="w-8 h-8 bg-[#00AFF1] rounded-md flex items-center justify-center flex-shrink-0">
-                          <CreditCard className="h-3.5 w-3.5 text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold leading-tight">Venmo</p>
-                          <p className="text-[10px] text-muted-foreground">{VENMO_HANDLE}</p>
-                        </div>
-                        {selectedPaymentMethod === "venmo" && (
-                          <CheckCircle className="h-3.5 w-3.5 text-[#00AFF1] flex-shrink-0" />
-                        )}
-                      </button>
+                    {/* ── Expanded 2×2 grid ── */}
+                    <AnimatePresence>
+                      {payAnotherWayExpanded && (
+                        <motion.div
+                          key="pay-another-way-grid"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="grid grid-cols-2 gap-2 pt-1">
 
-                      <button
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
-                        disabled
-                        data-testid="payment-method-zelle"
-                      >
-                        <div className="w-8 h-8 bg-[#6D1ED4] rounded-md flex items-center justify-center flex-shrink-0">
-                          <Building2 className="h-3.5 w-3.5 text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold leading-tight">Zelle</p>
-                          <p className="text-[10px] text-muted-foreground">Coming soon</p>
-                        </div>
-                      </button>
-                    </div>
+                            {/* CashApp */}
+                            <button
+                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                                selectedPaymentMethod === "cashapp"
+                                  ? "border-[#00D632] bg-[#00D632]/10"
+                                  : "border-border hover:border-[#00D632]/40"
+                              } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                              disabled={!shippingSaved}
+                              onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
+                              data-testid="payment-method-cashapp"
+                            >
+                              <div className="w-8 h-8 bg-[#00D632] rounded-md flex items-center justify-center flex-shrink-0">
+                                <DollarSign className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold leading-tight">CashApp</p>
+                                <p className="text-[10px] text-muted-foreground">{CASHAPP_TAG}</p>
+                              </div>
+                              {selectedPaymentMethod === "cashapp" && (
+                                <CheckCircle className="h-3.5 w-3.5 text-[#00D632] flex-shrink-0" />
+                              )}
+                            </button>
+
+                            {/* Venmo */}
+                            <button
+                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                                selectedPaymentMethod === "venmo"
+                                  ? "border-[#00AFF1] bg-[#00AFF1]/10"
+                                  : "border-border hover:border-[#00AFF1]/40"
+                              } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                              disabled={!shippingSaved}
+                              onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
+                              data-testid="payment-method-venmo"
+                            >
+                              <div className="w-8 h-8 bg-[#00AFF1] rounded-md flex items-center justify-center flex-shrink-0">
+                                <span className="text-sm font-black text-white leading-none">V</span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold leading-tight">Venmo</p>
+                                <p className="text-[10px] text-muted-foreground">{VENMO_HANDLE}</p>
+                              </div>
+                              {selectedPaymentMethod === "venmo" && (
+                                <CheckCircle className="h-3.5 w-3.5 text-[#00AFF1] flex-shrink-0" />
+                              )}
+                            </button>
+
+                            {/* Zelle — disabled */}
+                            <button
+                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
+                              disabled
+                              data-testid="payment-method-zelle"
+                            >
+                              <div className="w-8 h-8 bg-[#6D1ED4] rounded-md flex items-center justify-center flex-shrink-0">
+                                <Building2 className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold leading-tight">Zelle</p>
+                                <p className="text-[10px] text-muted-foreground">Coming soon</p>
+                              </div>
+                            </button>
+
+                            {/* Bank Transfer — disabled */}
+                            <button
+                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
+                              disabled
+                              data-testid="payment-method-bank"
+                            >
+                              <div className="w-8 h-8 bg-[#d4ed1f] rounded-md flex items-center justify-center flex-shrink-0">
+                                <Building2 className="h-3.5 w-3.5 text-[#0a0a0a]" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold leading-tight">Bank Transfer</p>
+                                <p className="text-[10px] text-muted-foreground">Coming soon · Link Money</p>
+                              </div>
+                            </button>
+
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {!shippingSaved && (
                       <p className="text-[10px] text-muted-foreground/40 text-center italic mt-2">Save your shipping address above to continue</p>
