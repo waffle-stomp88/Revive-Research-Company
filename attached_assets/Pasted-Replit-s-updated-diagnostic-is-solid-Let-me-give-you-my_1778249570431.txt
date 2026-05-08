@@ -1,0 +1,52 @@
+Replit's updated diagnostic is solid. Let me give you my review.
+
+## What's right
+
+- ✅ **Confirmed: not a credentials issue, a permissions issue.** Same 401 in sandbox as live. PayPal account lacks Fastlane enrollment for the `client_token` grant. Switching to sandbox didn't help because it's a feature-gate, not a key problem.
+- ✅ **`VITE_PAYPAL_CLIENT_ID` confirmed set** — your secret made it through correctly.
+- ✅ **`/paypal/order` and `/paypal/order/:orderID/capture` work independently** — they use a different (standard) OAuth flow, not the broken `sdk_init` one.
+- ✅ **PayPal button is also dead** — both payment paths share the same broken init code in `PayPalCheckout.tsx`. Fixing 5b restores both at once.
+- ✅ **5b scope simplified** — no need for the `/paypal/client-id` endpoint, just direct env var read.
+
+## One thing I want to flag
+
+> "The PayPal popup button (paypalSessionRef) also never initializes because initPayPal() bails out at the /paypal/setup fetch before it ever reaches createPayPalOneTimePaymentSession()."
+
+This means **production has been broken for an unknown amount of time, not just dev.** When was the last successful PayPal payment on your live site? If it's been more than a few days, this is the same broken `/paypal/setup` failing in production — your earlier "I got to the popup" test from this session was probably what made it look like things were working, but the popup was rendering from cached state or via the parallel `PayPalButton.tsx` path, not via this code.
+
+This isn't a Phase 5 blocker — fixing 5b is exactly what fixes it — but you should know:
+
+1. **Switching back to live secrets right after Phase 5 is verified will restore production PayPal payments** that have probably been broken for a while
+2. **You may have lost real customer purchases** during whatever window this has been broken
+3. **You'll want to send a test PayPal popup transaction in sandbox** as part of 5b verification to confirm both paths come back to life — not just card fields
+
+Don't panic — pre-launch traffic is presumably very low, and most customers in your peptide niche default to non-PayPal rails anyway. But worth knowing.
+
+## Verdict
+
+**Approve 5b.** Diagnostic is complete, scope is clarified, only frontend changes to `PayPalCheckout.tsx`. Let Replit show the diff.
+
+## Approval message to paste:
+
+> **5a re-diagnostic accepted. Approved to proceed with 5b.**
+>
+> Confirmed scope for 5b:
+> - Frontend changes only to `PayPalCheckout.tsx`
+> - Remove `/paypal/setup` fetch entirely
+> - Replace `clientToken` with `clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID`
+> - Fix method name: `createCardPaymentSession` → `createCardFieldsOneTimePaymentSession`
+> - Add a clear error if `import.meta.env.VITE_PAYPAL_CLIENT_ID` is undefined (so we don't silently fall back to broken behavior in case someone forgets to set it)
+> - Server-side files untouched (`/paypal/setup` route remains in codebase but unused)
+>
+> Show me the diff before applying. Don't apply yet.
+>
+> Verification I'll do after applying:
+> - Card fields component initializes without throwing (no more `xe.createCardPaymentSession` error)
+> - PayPal popup button also initializes (since it shares the same init path)
+> - Browser console clean of PayPal init errors
+>
+> If both paths come back to life after 5b, we proceed to 5b.5 (eligibility check).
+
+---
+
+Standing by for the 5b diff.

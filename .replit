@@ -165,6 +165,7 @@ SES_SMTP_PORT = "587"
 SES_FROM_EMAIL = "orders@reviveresearch.co"
 ADMIN_EMAIL = "admin@reviveresearch.co"
 AWS_REGION = "us-east-2"
+VITE_PAYPAL_CLIENT_ID = "AVJy-C_ppc1WhkuYbBJMfR2zxAmcaiOhHpV5WI__6NSMtuBU33A2Vy1iQ-nISunJCNPauICJK34OKqf1"
 
 [userenv.development]
 PORT = "5000"
