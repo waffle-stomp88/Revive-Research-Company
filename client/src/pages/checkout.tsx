@@ -1232,11 +1232,11 @@ export default function Checkout() {
                         className="rounded-lg bg-[#d4ed1f]/10 border border-[#d4ed1f]/30 p-3 flex items-center gap-3"
                       >
                         <div className="w-9 h-9 bg-[#d4ed1f]/20 rounded-md flex items-center justify-center flex-shrink-0">
-                          <CreditCard className="h-4 w-4 text-[#d4ed1f]" />
+                          <Lock className="h-4 w-4 text-[#d4ed1f]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium">Card payments coming soon</p>
-                          <p className="text-xs text-muted-foreground">Direct card checkout is being wired now. Select PayPal or another method below to complete your order today.</p>
+                          <p className="text-sm font-medium">Secure card checkout</p>
+                          <p className="text-xs text-muted-foreground">Enter your card details below. Your payment is processed securely by PayPal — we never see your card number.</p>
                         </div>
                       </motion.div>
                     )}

@@ -46,8 +46,10 @@ export default function PayPalCheckout({
   const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const [cardIneligible, setCardIneligible] = useState(false);
-  const [cardSessionCreated, setCardSessionCreated] = useState(false);
+  // sdkReady flips true once the SDK is initialized and card eligibility confirmed
+  const [sdkReady, setSdkReady] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const sdkInstanceRef = useRef<any>(null); // stored for use in mounting effect
   const cardSessionRef = useRef<any>(null);
   const paypalSessionRef = useRef<any>(null);
   const numberContainerRef = useRef<HTMLDivElement>(null);
@@ -197,36 +199,10 @@ export default function PayPalCheckout({
           }
         }
 
-        // Initialize Card Fields only if eligible
+        // Store SDK instance for mounting effect; flip sdkReady to trigger it
         if (showCardFields && cardEligible) {
-          try {
-            const cardSession = sdkInstance.createCardFieldsOneTimePaymentSession({
-              createOrder: async () => {
-                const result = await createOrder();
-                return result.orderId; // v6 requires plain string, not { orderId }
-              },
-              onApprove: async ({ orderId }: { orderId: string }) => {
-                if (import.meta.env.DEV) { console.log("[PayPal Card] onApprove", orderId); }
-                try {
-                  const captureResult = await captureOrder(orderId);
-                  onSuccess?.(captureResult, orderId);
-                } catch (e) {
-                  console.error("[PayPal Card] capture error:", e);
-                  onError?.(e);
-                }
-              },
-              onError: handleError,
-              onCancel: handleCancel,
-            });
-            cardSessionRef.current = cardSession;
-            if (isMounted) setCardSessionCreated(true); // triggers mounting useEffect after render
-          } catch (cardError) {
-            console.warn("Card fields not available - PayPal Advanced Checkout may not be enabled:", cardError);
-            if (isMounted) {
-              setSelectedMethod("paypal");
-              setCardFieldsReady(false);
-            }
-          }
+          sdkInstanceRef.current = sdkInstance;
+          if (isMounted) setSdkReady(true);
         }
 
         // Mark as ready
@@ -248,17 +224,17 @@ export default function PayPalCheckout({
     };
   }, [amount, currency, intent, disabled]);
 
-  // Mount card field web components into their DOM containers once the session
-  // is created and refs are guaranteed to be populated (runs after paint)
+  // Mount card field web components. Runs (and re-runs cleanly) whenever sdkReady
+  // flips true. Creating a fresh session each time makes this StrictMode-safe:
+  // StrictMode's double-invoke gets a brand-new PayPal session, so there is no
+  // "duplicate card field" error from reusing the same session across cycles.
   useEffect(() => {
-    if (!cardSessionCreated || !cardSessionRef.current) return;
-    const session = cardSessionRef.current;
-    const numberEl = numberContainerRef.current;
-    const expiryEl = expiryContainerRef.current;
-    const cvvEl = cvvContainerRef.current;
-    if (!numberEl || !expiryEl || !cvvEl) return;
+    if (!sdkReady || !sdkInstanceRef.current) return;
+    const sdkInstance = sdkInstanceRef.current;
+    let isMounted = true;
 
     const cardStyle = {
+      body: { backgroundColor: "#0a0a0a" },
       input: {
         fontFamily: "DM Sans, system-ui, sans-serif",
         fontSize: "14px",
@@ -267,31 +243,65 @@ export default function PayPalCheckout({
         padding: "0 12px",
       },
       ":focus": { color: "#ffffff" },
+      "::placeholder": { color: "#6b7280" },
       ".invalid": { color: "#f87171" },
     };
 
-    // Clear any stale children (StrictMode / HMR safety)
+    let cardSession: any;
+    try {
+      cardSession = sdkInstance.createCardFieldsOneTimePaymentSession({
+        createOrder: async () => {
+          const result = await createOrder();
+          return result.orderId; // v6 requires plain string
+        },
+        onApprove: async ({ orderId }: { orderId: string }) => {
+          if (import.meta.env.DEV) { console.log("[PayPal Card] onApprove", orderId); }
+          try {
+            const captureResult = await captureOrder(orderId);
+            onSuccess?.(captureResult, orderId);
+          } catch (e) {
+            console.error("[PayPal Card] capture error:", e);
+            onError?.(e);
+          }
+        },
+        onError: handleError,
+        onCancel: handleCancel,
+      });
+      cardSessionRef.current = cardSession;
+    } catch (sessionErr) {
+      console.error("[PayPal] Failed to create card session:", sessionErr);
+      return;
+    }
+
+    const numberEl = numberContainerRef.current;
+    const expiryEl = expiryContainerRef.current;
+    const cvvEl    = cvvContainerRef.current;
+    if (!numberEl || !expiryEl || !cvvEl) return;
+
+    // Clear any stale children from prior cycle
     numberEl.innerHTML = "";
     expiryEl.innerHTML = "";
-    cvvEl.innerHTML = "";
+    cvvEl.innerHTML    = "";
 
-    const numberComponent = session.createCardFieldsComponent({ type: "number", placeholder: "Card number", style: cardStyle });
-    const expiryComponent = session.createCardFieldsComponent({ type: "expiry", placeholder: "MM / YY",     style: cardStyle });
-    const cvvComponent    = session.createCardFieldsComponent({ type: "cvv",    placeholder: "CVV",         style: cardStyle });
+    const numberComponent = cardSession.createCardFieldsComponent({ type: "number", placeholder: "Card number", style: cardStyle });
+    const expiryComponent = cardSession.createCardFieldsComponent({ type: "expiry", placeholder: "MM / YY",     style: cardStyle });
+    const cvvComponent    = cardSession.createCardFieldsComponent({ type: "cvv",    placeholder: "CVV",         style: cardStyle });
 
     numberEl.appendChild(numberComponent);
     expiryEl.appendChild(expiryComponent);
     cvvEl.appendChild(cvvComponent);
 
-    setCardFieldsReady(true);
+    if (isMounted) setCardFieldsReady(true);
 
     return () => {
+      isMounted = false;
+      cardSessionRef.current = null;
       if (numberContainerRef.current) numberContainerRef.current.innerHTML = "";
       if (expiryContainerRef.current) expiryContainerRef.current.innerHTML = "";
       if (cvvContainerRef.current)    cvvContainerRef.current.innerHTML = "";
       setCardFieldsReady(false);
     };
-  }, [cardSessionCreated]);
+  }, [sdkReady]);
 
   // Handle PayPal button click
   const handlePayPalClick = async () => {
@@ -346,8 +356,8 @@ export default function PayPalCheckout({
       
       {!isLoading && showCardFields && (
         <>
-          {/* Payment Method Tabs - only show if card fields are available */}
-          {cardFieldsReady && (
+          {/* Payment Method Tabs - only show when consumer hasn't pre-selected a method */}
+          {cardFieldsReady && defaultMethod !== "card" && defaultMethod !== "paypal" && (
             <div className="flex gap-2 p-1 bg-muted/30 rounded-lg">
               <button
                 type="button"
@@ -381,7 +391,7 @@ export default function PayPalCheckout({
           )}
 
           {/* Card Fields Section */}
-          {selectedMethod === "card" && (cardFieldsReady || cardSessionCreated) && (
+          {selectedMethod === "card" && (cardFieldsReady || sdkReady) && (
             <div className="space-y-4">
               {/* Skeleton while iframes are mounting */}
               {!cardFieldsReady && (
