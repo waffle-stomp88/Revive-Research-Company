@@ -1,0 +1,92 @@
+Replit's research is **excellent** — they read the actual PayPal v6 docs and caught real things I had wrong in the reference doc I gave them. Let me give you my review.
+
+## What's right
+
+Replit's findings are accurate and well-sourced from PayPal's official docs:
+
+- ✅ **Method name**: `createCardFieldsOneTimePaymentSession()` — confirmed from official v6 docs
+- ✅ **Don't use clientToken**: `clientId` is correct for card fields; clientToken is for Fastlane only. Your existing `/paypal/setup` roundtrip is wasted work and we can drop it from this code path.
+- ✅ **Imperative flow, not callback flow**: v6 is fundamentally different from v5 — no `createOrder/onApprove` callbacks passed to the constructor. You create the order, then call `submit(orderId, options)`. Clean catch.
+- ✅ **Eligibility uses `findEligibleMethods()` async**: completely different API than v5's `isEligible()`. Important to get right.
+- ✅ **`createCardFieldsComponent({type})` + `appendChild`**: the render API is web-component-based in v6, not the v5 named-factory pattern.
+- ✅ **`{data, state}` response shape**: clean state-machine handling for succeeded/canceled/failed.
+- ✅ **Plan structure preserved**: 5a (diagnose) → 5b (SDK init) → 5c (render) → 5d (pay button) → 5e (server) — matches the original spec's staging.
+
+## My honest meta-comment
+
+Replit caught that **the v5 reference doc I gave you was the wrong document for your stack.** The reference doc said "stay on v5, downgrade if needed" — Replit said "no, stay on v6, here's how v6 actually works." Replit was right to push back and read the source docs themselves rather than just take my doc as gospel. That's exactly the engineering judgment we want from them. Worth noting for trust-calibration purposes.
+
+## Issues with the plan to flag before approval
+
+The plan is good but I have **three small flags** before you approve.
+
+### Flag 1 — Sub-step 5b is doing two things at once
+
+5b combines:
+- Removing the `/paypal/setup` clientToken fetch
+- Fixing the method name
+- Adding the eligibility check
+
+That's three discrete changes. If something breaks after applying 5b, we won't immediately know which change caused it. Ideally these get split:
+
+- 5b: Fix method name + remove clientToken fetch (atomic minimum to get card fields functional)
+- 5b.5: Add eligibility check
+
+Not a big deal. But cleaner debugging if separated.
+
+### Flag 2 — The state machine handling needs more spec
+
+5d says:
+> `state === "failed"` → show `data.message` if present, allow retry
+
+What about the actual user UX when this fires? A toast? Inline error below the card fields? Replace the form with an error block? Replit needs to specify the visual treatment, not just the logic.
+
+Same for `state === "canceled"` — "non-blocking retry message" needs a concrete decision: where does it appear, what does it say.
+
+### Flag 3 — 3DS handling not explicitly addressed
+
+The reference doc covers 3DS as a meaningful chunk. The plan mentions `SCA_WHEN_REQUIRED` in 5e for the order body but doesn't explicitly cover what happens when the iframe-based 3DS challenge fires.
+
+In v6, when 3DS triggers, the iframe handles the modal automatically — `submit()` doesn't return until 3DS completes. The `state` will be `succeeded`/`canceled`/`failed` after 3DS. But:
+- What about `liabilityShift === "NO"` or `"UNKNOWN"`? Plan doesn't say whether to capture or refuse.
+- What about the rare `PAYER_ACTION_REQUIRED` capture response? Plan doesn't address it.
+
+Probably fine to defer to a Phase 5 polish pass, but worth flagging now so it doesn't get forgotten.
+
+## Smaller flags (non-blocking)
+
+- The `setTimeout(200) hack` removal in 5c is the right call but Replit should show how the new useEffect-based mounting handles the timing
+- Debouncing the Pay button (5d) is good — prevents the double-POST race we discussed earlier
+- The dark-theme styling note in 5c is vague ("dark background, white text, neon-yellow focus") — they'll need to be more specific when we get to that diff
+
+## My verdict
+
+**Approve the plan with three pieces of feedback for Replit to integrate before they start writing code.**
+
+## Message to send Replit
+
+> Plan looks good. Three pieces of feedback before you start writing code:
+>
+> **1. Split 5b into two atomic sub-steps:**
+> - **5b**: Fix method name (`createCardPaymentSession` → `createCardFieldsOneTimePaymentSession`) + remove the `/paypal/setup` clientToken fetch (use `clientId` directly).
+> - **5b.5**: Add the `findEligibleMethods()` eligibility check + ineligible-fallback UI.
+>
+> If something breaks after 5b we want to know whether it's the method-name change or the auth change. Splitting them gives us cleaner verification points.
+>
+> **2. Specify the visual treatment for state-machine error handling in 5d.** The plan says "show `data.message`" for `failed` state but doesn't say where or how. Be specific:
+> - Where does the error message render? (inline below card fields? toast? replace the form?)
+> - What's the copy for `canceled` state? Where does it appear?
+> - Does the user have to re-enter card data after a failure, or do the fields stay populated?
+>
+> Use the existing toast system in the codebase if it exists (grep for the import pattern). Don't use native `alert()`.
+>
+> **3. Add 3DS / liability-shift handling to 5d explicitly.** The plan mentions `SCA_WHEN_REQUIRED` for the order body in 5e but doesn't cover what to do with the response. Add to 5d:
+> - When `state === "succeeded"`, check `data.liabilityShift` before calling capture.
+> - If `liabilityShift === "NO"` or `"UNKNOWN"`, log it but still capture (most merchants accept the chargeback liability rather than block sales).
+> - Handle the rare capture response status `PAYER_ACTION_REQUIRED` — extract the `payer-action` HATEOAS link and redirect.
+>
+> **4. Two smaller things to address in your diffs (not blocking the plan):**
+> - In 5c, show me how you're handling the timing without `setTimeout(200)` — useRef pattern, MutationObserver, or whatever you go with.
+> - In 5c styling, "dark background, white text, neon-yellow focus" needs concrete CSS values when you write the diff. Use the existing brand tokens (`#0a0a0a`, `#d4ed1f`).
+>
+> Update the plan with these adjustments and confirm before starting on Sub-step 5a (diagnose).Pick one.

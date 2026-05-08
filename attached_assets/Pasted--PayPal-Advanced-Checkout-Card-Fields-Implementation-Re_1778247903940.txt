@@ -1,0 +1,750 @@
+# PayPal Advanced Checkout (Card Fields) — Implementation Reference for React/Vite
+
+**TL;DR**
+- The `xe.createCardPaymentSession is not a function` error you're hitting is almost certainly because your SDK `<script>` URL is missing `components=card-fields` (or has `components=hosted-fields` from a copy-paste of a legacy guide). The SDK only exposes `paypal.CardFields()` when `card-fields` is explicitly listed in the `components=` query parameter — otherwise the minified factory inside the bundle has no `createCardPaymentSession` method to call. Fix the SDK URL to include `components=buttons,card-fields` (and reload the SDK once, not twice), and `paypal.CardFields(...)` will work.
+- The supported, current pattern for an existing v5-based React/Vite app is: load `https://www.paypal.com/sdk/js?client-id=…&components=buttons,card-fields&intent=capture&currency=USD` once, call `paypal.CardFields({createOrder, onApprove, onError, onCancel})`, gate rendering on `cardFields.isEligible()`, mount `NameField/NumberField/ExpiryField/CVVField` into your styled wrapper divs, then call `cardFields.submit({…billingAddress})` from your own Pay button. Server creates orders with `intent: "CAPTURE"`, `payment_source.card.experience_context`, and (for SCA) `payment_source.card.attributes.verification.method = "SCA_WHEN_REQUIRED"`; capture endpoint handles `COMPLETED` vs `PAYER_ACTION_REQUIRED` (3DS).
+- Live differs from sandbox in two ways that bite real merchants: (1) you must have actually completed Advanced Credit and Debit Card Payments approval and the live REST app must have "Accept payments → Advanced Credit and Debit Card Payments" enabled, and (2) you must remove `buyer-country=` from the SDK URL — it is documented as sandbox-only and PayPal's docs explicitly warn against using it in production. If `isEligible()` returns false in live even after merchant approval, the most common causes are an unsupported buyer/merchant country/currency pair, `disable-funding=card` in the SDK URL, an order created without `intent=capture` matching the SDK, or the live REST app's "Accept payments → Advanced Credit and Debit Card Payments" capability being unchecked.
+
+---
+
+## Key Findings
+
+1. **Your error is a configuration error, not a code bug.** `paypal.CardFields()` exists on the global `paypal` namespace **only** when `components=card-fields` is included in the SDK URL. PayPal's official reference is explicit: *"The PayPal JavaScript SDK dynamically exposes objects and methods based on the components you select. Add components to your `<script>` by passing them in the `src` URL using the `components` query string parameter."* If `components=` is omitted, only `buttons` is loaded by default; calling `paypal.CardFields(...)` then returns an object whose internal session factory (`createCardPaymentSession` in the un-minified source, `xe.createCardPaymentSession` in the minified bundle the browser actually runs) is undefined. The most common variant of this mistake is leaving `components=hosted-fields` (legacy) when migrating to Card Fields, or having two `<script>` tags load the SDK twice with different `components` values — the second load's namespace clobbers the first and you lose either Buttons or CardFields.
+
+2. **You are on v5, and that is fine.** PayPal published v6 of the JS SDK in 2025–2026 (different script URL: `https://www.paypal.com/web-sdk/v6/core`, different API: `paypal.createInstance(...).createCardFieldsOneTimePaymentSession()`). v5 with `paypal.CardFields()` is **explicitly still supported** — the v6 docs page says *"This integration uses the PayPal JavaScript SDK v5, which remains supported. For a faster, more secure integration, use the latest JavaScript SDK v6."* Do **not** mix v5 and v6 patterns; pick one. Given your existing working Buttons integration, stay on v5 (`https://www.paypal.com/sdk/js?...`) for now. Migrating to v6 is a separate project.
+
+3. **`@paypal/react-paypal-js` is optional but recommended.** The official wrapper handles SDK script load order, prevents double-loads under React StrictMode/HMR, and gives you typed React components (`PayPalCardFieldsProvider`, `PayPalNumberField`, `PayPalExpiryField`, `PayPalCVVField`, `PayPalNameField`, `usePayPalCardFields`). For a Vite app this avoids the most common React-specific failure mode where `paypal.CardFields()` is called before the SDK script's `onload` has fired.
+
+4. **3D Secure is server-driven, not client-driven.** You enable it by adding `payment_source.card.attributes.verification.method` to the create-order payload (`SCA_WHEN_REQUIRED` for PSD2 regions like the EU/UK; `SCA_ALWAYS` to force every transaction). The CardFields iframe handles the 3DS challenge UI itself — you do not have to mount or redirect anywhere. Your `onApprove` receives a `liabilityShift` flag so you can decide whether to capture, retry, or hold; the order status will be `PAYER_ACTION_REQUIRED` until the buyer completes the bank challenge, then transitions to one ready for capture.
+
+5. **Capture is a server-only, two-state machine.** After `onApprove`, your server `POST`s to `/v2/checkout/orders/{id}/capture`. A normal response is HTTP 201 with `status: "COMPLETED"`. A response with `status: "PAYER_ACTION_REQUIRED"` (or HTTP 422 with that issue) means 3DS or buyer re-approval is required — you must look at the `links` array for the `rel: "payer-action"` HATEOAS URL. With CardFields, this redirect is rare (the SDK handles 3DS in the iframe), but you must still code defensively against it.
+
+6. **Card Fields styling is whitelist-based and the input border/background is NOT styleable from the `style` object.** PayPal's iframe accepts only the documented CSS properties (font-family, font-size, color, font-weight, line-height, etc.). Borders, box-shadow, background — anything affecting the *container* — must be applied to **your wrapper `<div>`** via your normal stylesheet. The container also needs an explicit height; the iframe fills its parent.
+
+---
+
+## Details
+
+### 1. The SDK `<script>` tag — exact configuration for Card Fields (v5)
+
+The minimum URL that exposes `paypal.CardFields()`:
+
+```html
+<script
+  src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons,card-fields&currency=USD&intent=capture"
+  data-sdk-integration-source="developer-studio">
+</script>
+```
+
+#### Required parameters
+
+| Param | Required? | Purpose / Notes |
+|-------|-----------|-----------------|
+| `client-id` | **Yes** | Your live or sandbox REST app client ID. Read from `import.meta.env.VITE_PAYPAL_CLIENT_ID` in Vite. |
+| `components` | **Yes for Card Fields** | Must include `card-fields`. To keep your existing PayPal popup working too, use `buttons,card-fields`. **This is the parameter that fixes your error.** Do **not** include `hosted-fields` (legacy) — the two are mutually exclusive in practice and using both invites the exact "is not a function" symptom on whichever component the bundle didn't actually wire up. |
+| `currency` | **Yes for Card Fields** | A 3-letter ISO code matching what you'll send in the order's `amount.currency_code`. PayPal will reject orders whose currency disagrees with the SDK currency. Use `USD`, `EUR`, `GBP`, etc. |
+| `intent` | **Strongly recommended** | `capture` (default) or `authorize`. **Whatever you pass here MUST match the `intent` field your server uses in the create-order body** (`"CAPTURE"` or `"AUTHORIZE"`). Mismatch produces the `"action does not match intent"` 422 error from the Orders API. For an e-commerce site you almost certainly want `capture`. |
+
+#### Optional parameters worth setting
+
+| Param | Use when… |
+|-------|-----------|
+| `enable-funding=venmo` | You want Venmo eligible alongside the PayPal button. |
+| `disable-funding=...` | You want to suppress specific buttons. **Never put `card` here** — PayPal's docs explicitly state: *"Don't use this query parameter to disable advanced credit and debit card payments."* |
+| `merchant-id=...` | You're a partner/platform processing on behalf of another seller. Skip otherwise. |
+| `data-partner-attribution-id="..."` | Partner BN code (set as an HTML attribute, not query param). |
+| `data-client-token="..."` | Required for vault/save-card flows; **not required for one-off card payments**. If you're not saving cards, omit it. Adding it without a server endpoint that mints valid client tokens will silently break Card Fields. |
+| `locale=en_US` | Force a specific locale instead of letting PayPal infer it. |
+| `data-csp-nonce="..."` | If you serve a CSP nonce. |
+| `buyer-country=US` | **Sandbox testing only.** PayPal's docs: *"The buyer country is only used in the sandbox. Don't pass this query parameter in production."* Leaving this in your live build is a common cause of weird eligibility behavior. |
+
+#### Common misconfigurations that produce `xe.createCardPaymentSession is not a function`
+
+Ranked by likelihood:
+
+1. **`components=` does not include `card-fields`.** This is overwhelmingly the most common cause. If your URL is `…?client-id=…&currency=USD` (no `components`) or `…&components=buttons` only, `paypal.CardFields` resolves to a stub whose internal session factory (`createCardPaymentSession`) is undefined. **Fix:** change to `components=buttons,card-fields`.
+2. **You have `components=hosted-fields` left over from an older guide.** That exposes `paypal.HostedFields` (legacy) but NOT `paypal.CardFields`. **Fix:** replace `hosted-fields` with `card-fields`.
+3. **The SDK is being loaded twice with conflicting params** (e.g., one tag in `index.html`, another injected by `@paypal/react-paypal-js`, or HMR re-injection in dev). The second load wins and may not include `card-fields`. **Fix:** remove the static `<script>` tag from `index.html` if you're using `@paypal/react-paypal-js` or `loadScript`, or vice versa — load it exactly once.
+4. **Calling `paypal.CardFields()` before the SDK script `onload` fires.** In React, this happens if you don't gate on a "loaded" state. **Fix:** wrap calls in a `useEffect` that waits for `window.paypal?.CardFields` to be defined, or use `loadScript()` from `@paypal/paypal-js`.
+5. **`data-client-token` set to a stale or invalid token** (the SDK then refuses to expose card flows). **Fix:** remove it unless you're vaulting; if vaulting, fetch a fresh client token from your server on every page load.
+
+### 2. JavaScript initialization pattern
+
+```ts
+const cardFields = paypal.CardFields({
+  // 1) Tell the SDK how to mint an order on your server.
+  createOrder: async () => {
+    const res = await fetch("/api/paypal/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cart: getCartLineItems(),       // your data
+        currency: "USD",
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to create order");
+    const order = await res.json();
+    return order.id;                    // MUST return the PayPal order id string
+  },
+
+  // 2) Triggered after card submit succeeds (and after 3DS, if any).
+  onApprove: async (data) => {
+    // data: { orderID: string, liabilityShift?: "POSSIBLE" | "NO" | "UNKNOWN" | "YES" }
+    if (data.liabilityShift === "NO" || data.liabilityShift === "UNKNOWN") {
+      // Optional: route to a manual review queue or refuse capture.
+    }
+    const res = await fetch(`/api/paypal/orders/${data.orderID}/capture`, {
+      method: "POST",
+    });
+    const result = await res.json();
+    if (result.status === "COMPLETED") {
+      window.location.href = `/orders/${data.orderID}/success`;
+    } else if (result.status === "PAYER_ACTION_REQUIRED") {
+      // Rare with CardFields; the iframe usually handles 3DS itself.
+      const action = result.links?.find((l: any) => l.rel === "payer-action");
+      if (action) window.location.href = action.href;
+    } else {
+      showError("Payment did not complete. Please try again.");
+    }
+  },
+
+  // 3) Catch SDK-level errors (network, bad input, declined).
+  onError: (err) => {
+    console.error("PayPal CardFields error:", err);
+    showError("There was a problem processing your card.");
+  },
+
+  // 4) Buyer dismissed a 3DS modal etc.
+  onCancel: () => {
+    showInfo("Payment was canceled. You can try again.");
+  },
+
+  // 5) Optional: parent style object applied to every field iframe.
+  style: {
+    input: {
+      "font-family": "Inter, system-ui, sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      color: "#111827",
+    },
+    ".invalid": { color: "#dc2626" },
+    ":focus": { color: "#111827" },
+  },
+});
+
+// Eligibility gate — DO NOT skip this.
+if (cardFields.isEligible()) {
+  cardFields.NameField({ placeholder: "Name on card" }).render("#card-name");
+  cardFields.NumberField({ placeholder: "1234 1234 1234 1234" }).render("#card-number");
+  cardFields.ExpiryField({ placeholder: "MM/YY" }).render("#card-expiry");
+  cardFields.CVVField({ placeholder: "CVV" }).render("#card-cvv");
+} else {
+  document.querySelector("#card-form")!.style.display = "none";
+  // Fall back to the PayPal button only.
+}
+
+// Wire your own Pay button.
+document.querySelector("#pay-button")!.addEventListener("click", () => {
+  cardFields
+    .submit({
+      // Optional: pass the billing address you collected on your own form.
+      billingAddress: {
+        addressLine1: form.line1.value,
+        addressLine2: form.line2.value,
+        adminArea1: form.state.value,    // state/region
+        adminArea2: form.city.value,     // city
+        postalCode: form.zip.value,
+        countryCode: form.country.value, // 2-letter ISO
+      },
+    })
+    .then(() => { /* onApprove handles the rest */ })
+    .catch((err) => console.error("submit failed", err));
+});
+```
+
+Notes:
+- `NameField` is **optional**; `NumberField`, `ExpiryField`, `CVVField` are required.
+- The `submit()` payload is sent into the iframe and forwarded to PayPal's Orders API; nothing you put there touches your server directly.
+- The `onApprove` data shape includes `liabilityShift` per PayPal's 3DS docs (the official paypal-js TypeScript types historically lagged on this — issue #652 — so cast if your TS complains).
+
+### 3. Eligibility check pattern
+
+```ts
+const cardFields = paypal.CardFields({ createOrder, onApprove, onError });
+
+if (!cardFields.isEligible()) {
+  // Hide your card form. Show only the PayPal button (which has its own eligibility).
+  document.querySelector("#card-form")!.style.display = "none";
+  return;
+}
+```
+
+`isEligible()` may return `false` even with merchant approval when:
+- The **buyer's geolocated country** isn't in PayPal's 37-country Advanced Checkout list, or the **currency** isn't supported for that country (the canonical list is at developer.paypal.com/docs/checkout/advanced/eligibility/ — 37 countries, 22 currencies as of 2026).
+- The SDK URL's `currency=` doesn't match a currency the merchant account is enabled for.
+- The merchant's **live** REST app doesn't have "Advanced Credit and Debit Card Payments" checked under Apps & Credentials → your app → Features → Accept payments. In sandbox this is automatic; in live it requires explicit action even after underwriting approval.
+- `disable-funding=card` was passed (or there's a region/PSP constraint making cards ineligible for the buyer).
+- The buyer is on a browser/device PayPal flags as ineligible (rare — usually old browsers).
+- The merchant has a Pay-Later-only or non-card-eligible product subscription.
+
+For a fallback when ineligible: hide the card form, keep your PayPal Buttons as the only payment option, and consider pulling in Apple Pay / Google Pay separately if you support them.
+
+### 4. Backend order-creation request shape
+
+For card payments, the recommended create-order body is:
+
+```http
+POST https://api-m.sandbox.paypal.com/v2/checkout/orders
+Authorization: Bearer {ACCESS_TOKEN}
+Content-Type: application/json
+PayPal-Request-Id: {unique-uuid-per-order}
+
+{
+  "intent": "CAPTURE",                       // must match SDK intent
+  "purchase_units": [
+    {
+      "reference_id": "cart-abc-123",
+      "amount": {
+        "currency_code": "USD",              // must match SDK currency
+        "value": "129.99",
+        "breakdown": {
+          "item_total": { "currency_code": "USD", "value": "119.99" },
+          "shipping":   { "currency_code": "USD", "value": "10.00" }
+        }
+      },
+      "items": [ /* … */ ],
+      "shipping": {
+        "name": { "full_name": "Jane Doe" },
+        "address": {
+          "address_line_1": "123 Main St",
+          "admin_area_2": "San Jose",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      }
+    }
+  ],
+  "payment_source": {
+    "card": {
+      "attributes": {
+        "verification": { "method": "SCA_WHEN_REQUIRED" }
+      },
+      "experience_context": {
+        "brand_name": "Your Store",
+        "locale": "en-US",
+        "shipping_preference": "SET_PROVIDED_ADDRESS",
+        "return_url": "https://yoursite.com/checkout/return",
+        "cancel_url": "https://yoursite.com/checkout/cancel"
+      }
+    }
+  }
+}
+```
+
+Important shape notes:
+
+- `payment_source.card` is **the** signal that this order is destined for a card payment. Without it, PayPal may wrap the order in a PayPal-wallet flow and trigger weird `PAYER_ACTION_REQUIRED` responses on creation.
+- `experience_context.shipping_preference`:
+  - `GET_FROM_FILE` (default) — pull from buyer wallet (irrelevant for card-only).
+  - `NO_SHIPPING` — for digital goods/donations.
+  - `SET_PROVIDED_ADDRESS` — for physical goods where YOU collected the shipping address. Use this when shipping data is in `purchase_units[].shipping`.
+- **Don't include `payment_source.card.number` etc.** The CardFields iframe injects card data later via the `confirm-payment-source` call it makes internally — your server must NOT submit raw card details, both for PCI scope and because it'll cause duplicate-payment errors.
+- `return_url`/`cancel_url` are required if 3DS may invoke a redirect fallback. With CardFields handling 3DS in-iframe this is rare, but PayPal still requires these in the request schema.
+- Send a unique `PayPal-Request-Id` header on every create-order call for idempotency.
+
+### 5. Capture flow
+
+```
+POST https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture
+Authorization: Bearer {ACCESS_TOKEN}
+Content-Type: application/json
+PayPal-Request-Id: {unique-uuid-per-capture}
+```
+
+Empty body. Possible responses:
+
+| Status | Meaning | Server action |
+|--------|---------|---------------|
+| 201 + `status: "COMPLETED"` | Captured. | Mark order paid; pull `purchase_units[0].payments.captures[0].id` for refunds; fulfill. |
+| 200 + `status: "COMPLETED"` (idempotent retry) | Already captured previously. | Treat as success, deduplicate. |
+| 422 + `issue: "PAYER_ACTION_REQUIRED"` | 3DS or re-approval needed. | Return the `rel: "payer-action"` URL to the client to redirect; do not retry capture until buyer completes. |
+| 422 + `issue: "INSTRUMENT_DECLINED"` | Card declined. | Surface friendly error; allow buyer to try a different card (re-render CardFields). |
+| 422 + `issue: "PAYMENT_ALREADY_DONE"` | Duplicate capture. | Treat as success; investigate for a race condition (see WooCommerce issue #4099 below). |
+| 4xx other | Validation/auth failure. | Log `debug_id` from response headers/body for PayPal support. |
+
+Surfacing 3DS challenge UI: with **CardFields**, PayPal renders the 3DS challenge **inside its own iframe modal** automatically when `submit()` runs, not via a redirect. You only deal with `PAYER_ACTION_REQUIRED` as a fallback (older browsers, popup blockers, edge cases). When that fallback fires, append `&redirect_uri={your-return-url}` to the payer-action URL so PayPal returns the buyer to your site after authentication.
+
+A real bug from the field: WooCommerce PayPal Payments issue #4099 (Feb 2026) documents a race condition where two concurrent POSTs to create-order fire and the second is treated as a payment failure before 3DS completes. Mitigation: use idempotent `PayPal-Request-Id` headers, debounce the Pay button, and don't tear down the order on the first error if a `PAYMENT.CAPTURE.COMPLETED` webhook can still arrive.
+
+### 6. 3D Secure / SCA at a high level
+
+- **When triggered:** PSD2 regions (EU/EEA/UK) when `verification.method = "SCA_WHEN_REQUIRED"`; everywhere when `SCA_ALWAYS`. PayPal's docs: *"3D Secure is supported only in countries with a PSD2 compliance mandate."* The `3D_SECURE` literal value is deprecated — use `SCA_ALWAYS` for new integrations.
+- **Where it goes:** in `payment_source.card.attributes.verification.method` on the **create order** call. (The legacy HostedFields integration used a different `contingencies` location; CardFields uses this attribute.)
+- **UI:** with CardFields, PayPal's iframe presents the issuer's challenge inline. Your custom Pay button stays disabled while it runs; `onApprove` (or `onError`/`onCancel`) fires when it finishes. There is **no** redirect for the happy path.
+- **Liability shift:** `onApprove`'s `data.liabilityShift` tells you whether the issuer accepted authentication (`POSSIBLE`/`YES` → safe to capture; `NO`/`UNKNOWN` → consider declining or holding). This is in the official 3DS response-parameters docs but missing from older `paypal-js` TypeScript types — extend the type yourself.
+- **Fallback path:** if the SDK can't render the challenge inline (popup blocked, mobile WebView), capture returns 422 `PAYER_ACTION_REQUIRED` with a `payer-action` HATEOAS link. Redirect the buyer there; PayPal returns them to your `experience_context.return_url`. After return, call capture again with an empty body.
+
+### 7. Styling Card Fields iframes
+
+PayPal's whitelist for properties accepted inside the `style` object:
+
+```
+appearance, background, border (limited), border-radius, box-shadow, color,
+direction, font, font-family, font-size, font-size-adjust, font-stretch,
+font-style, font-variant, font-variant-alternates, font-variant-caps,
+font-variant-east-asian, font-variant-ligatures, font-variant-numeric,
+font-weight, line-height, opacity, outline, padding, text-align,
+text-shadow, transition, -moz-osx-font-smoothing, -webkit-font-smoothing
+```
+
+Selectors you can target inside `style`:
+- `input` — every field
+- `.valid` / `.invalid` — state
+- `:focus`, `:hover` — interaction
+- `@media (...)` — responsive overrides
+
+What you **cannot** style from `style`:
+- The container `<div>`'s border, background, box-shadow, focus ring — those are on **your** wrapper. Apply them in your own CSS / Tailwind.
+- The container height is **required** to be set in your stylesheet (the iframe fills its parent; PayPal's docs: *"the provided containers must have a defined height and width"*).
+
+Recommended pattern:
+
+```tsx
+<div className="paypal-card-wrap"> {/* You style border/bg/focus on this */}
+  <div id="card-number" className="paypal-card-input" />
+</div>
+```
+
+```css
+.paypal-card-wrap {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: white;
+  transition: border-color 120ms ease;
+}
+.paypal-card-wrap:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.paypal-card-input { height: 44px; }   /* Required */
+```
+
+### 8. Common errors & troubleshooting
+
+| Symptom | Root cause | Fix |
+|---------|------------|-----|
+| `xe.createCardPaymentSession is not a function` (or `paypal.CardFields is not a function`) | `components=card-fields` missing/typo'd; or SDK loaded twice with conflicting params; or v6 API call against v5 script | Set `components=buttons,card-fields`. Ensure exactly one `<script>` load. Stay on v5 OR v6 consistently. |
+| `paypal.CardFields().isEligible()` returns `false` in live | Live REST app doesn't have Advanced Credit and Debit Card Payments capability enabled; or unsupported buyer country/currency; or `disable-funding=card` | Developer Dashboard → Apps & Credentials → live app → Features → Accept payments → enable Advanced Credit and Debit Card Payments. Verify country/currency in eligibility table. Remove `disable-funding=card`. |
+| Iframes never render (empty divs) | SDK script loaded twice (e.g., static `<script>` + `@paypal/react-paypal-js`); or container has zero height; or React StrictMode double-mounted before SDK ready | Load the SDK exactly once; set explicit container height; gate the `paypal.CardFields()` call on a "SDK ready" flag. (See `paypal-js` issue #533 — "PayPalCardFieldsProvider does not render component" — the recurring root cause across that issue's reports is double-load or mismatched components.) |
+| `submit()` rejects with `INVALID_REQUEST` | Currency mismatch SDK ↔ order; or `intent` mismatch; or order created with a `payment_source.paypal` block instead of `payment_source.card` | Match all three: SDK `currency=`, order `amount.currency_code`; SDK `intent=`, order `intent`; payment_source path. |
+| `cors.api.sandbox.paypal.com/.../confirm-payment-source` returns 401/403 | `data-client-token` is stale or generated for a different client-id, OR you accidentally set `payment_method_selected: "PAYPAL"` in `experience_context` for a card flow | Drop `data-client-token` if not vaulting; remove `payment_method_selected: "PAYPAL"` from card orders. |
+| `DOMESTIC_TRANSACTION_REQUIRED` (`paypal-js` issue #644) | Buyer-billing-country / sandbox-account-country / SDK `buyer-country` mismatch in sandbox | Align all three; remove `buyer-country` for production. |
+| CSP blocks SDK | `script-src` / `frame-src` / `connect-src` / `img-src` don't include PayPal domains | Allow `https://www.paypal.com`, `https://www.paypalobjects.com`, `https://*.paypal.com` (and sandbox equivalents) on `script-src`, `frame-src`, `img-src`, `connect-src`. Use `data-csp-nonce` script param if you use a nonce. PayPal also recommends `Cross-Origin-Opener-Policy: same-origin-allow-popups`. |
+| `cardFieldsForm` is undefined inside React custom Pay button | Pay button is rendered **outside** `<PayPalCardFieldsProvider>`/`<PayPalCardFieldsForm>` | Move the button under the provider so `usePayPalCardFields()` can access context. |
+| HMR breaks SDK in Vite dev | SDK script re-injected on hot reload | Set the SDK script in `index.html` only, not in a component, OR if using `loadScript()` cache the result module-level so HMR doesn't re-fetch. |
+
+### 9. Live vs Sandbox differences
+
+| Concern | Sandbox | Live |
+|---------|---------|------|
+| `buyer-country=US` | Useful for testing different geos | **Remove it.** PayPal: *"don't pass this query parameter in production."* |
+| Advanced Credit/Debit Card capability | Auto-enabled on sandbox business accounts | **Must be explicitly enabled** in the live REST app's Features → Accept payments. Underwriting approval ≠ capability flag set. |
+| Endpoints | `https://api-m.sandbox.paypal.com` | `https://api-m.paypal.com` |
+| Test cards | Use the credit-card generator + test card list | Real cards. Use rejection triggers in card NAME field for negative tests in sandbox only. |
+| 3DS | Simulator at `sandbox.paypal.com/webapps/helios?...` | Real issuer challenges. |
+| Rate of `PAYER_ACTION_REQUIRED` | Lower (no real PSD2) | Higher in EU/UK; confirm the 3DS path is wired before launch. |
+| Webhooks | Easy to spoof; verify signatures even in sandbox | **Must verify** webhook signatures with PayPal's verification API in production. |
+
+Pre-launch live checklist:
+1. Live client-id in `VITE_PAYPAL_CLIENT_ID`; **not** the default test client-id.
+2. Live REST app: Features → Accept payments → "Advanced Credit and Debit Card Payments" checked.
+3. Server `PAYPAL_BASE_URL` switched to `api-m.paypal.com`.
+4. `buyer-country` removed.
+5. `verification.method` chosen per region (`SCA_WHEN_REQUIRED` for EU/UK).
+6. Webhook subscription created in live for at least `CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`.
+7. CSP/COOP headers configured.
+8. Real-card smoke test with a low value + immediate refund through the dashboard.
+
+### 10. Working code — copy-pasteable
+
+#### `src/components/PayPalCardFields.tsx` (vanilla v5 SDK in React/Vite)
+
+```tsx
+import { useEffect, useRef, useState } from "react";
+
+type Props = {
+  amount: number;        // e.g. 129.99
+  currency?: string;     // "USD" by default
+  onSuccess: (orderId: string) => void;
+  onFailure: (message: string) => void;
+};
+
+declare global { interface Window { paypal?: any; } }
+
+const SDK_ID = "paypal-sdk-cardfields";
+
+function loadSdk(clientId: string, currency: string): Promise<any> {
+  if (window.paypal?.CardFields) return Promise.resolve(window.paypal);
+  const existing = document.getElementById(SDK_ID) as HTMLScriptElement | null;
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", () => resolve(window.paypal));
+      existing.addEventListener("error", reject);
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.id = SDK_ID;
+    s.src =
+      `https://www.paypal.com/sdk/js` +
+      `?client-id=${encodeURIComponent(clientId)}` +
+      `&components=buttons,card-fields` +
+      `&currency=${encodeURIComponent(currency)}` +
+      `&intent=capture`;
+    s.setAttribute("data-sdk-integration-source", "developer-studio");
+    s.async = true;
+    s.onload = () => resolve(window.paypal);
+    s.onerror = (e) => reject(e);
+    document.head.appendChild(s);
+  });
+}
+
+export default function PayPalCardFields({
+  amount, currency = "USD", onSuccess, onFailure,
+}: Props) {
+  const [ready, setReady] = useState(false);
+  const [eligible, setEligible] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const cardFieldsRef = useRef<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID as string;
+    if (!clientId) {
+      onFailure("PayPal client ID is not configured.");
+      return;
+    }
+
+    loadSdk(clientId, currency).then((paypal) => {
+      if (cancelled) return;
+      if (!paypal?.CardFields) {
+        onFailure("PayPal Card Fields component failed to load. Check the SDK URL includes components=card-fields.");
+        return;
+      }
+
+      const cf = paypal.CardFields({
+        createOrder: async () => {
+          const r = await fetch("/api/paypal/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount, currency }),
+          });
+          if (!r.ok) throw new Error("create order failed");
+          const order = await r.json();
+          return order.id;
+        },
+        onApprove: async (data: { orderID: string; liabilityShift?: string }) => {
+          const r = await fetch(`/api/paypal/orders/${data.orderID}/capture`, { method: "POST" });
+          const result = await r.json();
+          if (result.status === "COMPLETED") {
+            onSuccess(data.orderID);
+          } else if (result.status === "PAYER_ACTION_REQUIRED") {
+            const link = result.links?.find((l: any) => l.rel === "payer-action");
+            if (link) window.location.href = link.href;
+            else onFailure("Additional payer action required.");
+          } else {
+            onFailure(result?.message || "Capture did not complete.");
+          }
+        },
+        onError: (err: unknown) => {
+          console.error("PayPal CardFields onError:", err);
+          onFailure("Payment failed. Please check your card details and try again.");
+        },
+        onCancel: () => onFailure("Payment was canceled."),
+        style: {
+          input: {
+            "font-family": "Inter, system-ui, sans-serif",
+            "font-size": "16px",
+            color: "#111827",
+          },
+          ".invalid": { color: "#dc2626" },
+          ":focus": { color: "#111827" },
+        },
+      });
+
+      if (!cf.isEligible()) {
+        setEligible(false);
+        return;
+      }
+
+      cf.NameField({ placeholder: "Name on card" }).render("#pp-name");
+      cf.NumberField({ placeholder: "1234 1234 1234 1234" }).render("#pp-number");
+      cf.ExpiryField({ placeholder: "MM/YY" }).render("#pp-expiry");
+      cf.CVVField({ placeholder: "CVV" }).render("#pp-cvv");
+
+      cardFieldsRef.current = cf;
+      setReady(true);
+    }).catch((e) => {
+      console.error(e);
+      onFailure("PayPal SDK failed to load.");
+    });
+
+    return () => { cancelled = true; };
+  }, [amount, currency]);
+
+  const handlePay = () => {
+    if (!cardFieldsRef.current || submitting) return;
+    setSubmitting(true);
+    cardFieldsRef.current
+      .submit({})  // pass billingAddress here if you collected it
+      .catch((err: any) => {
+        console.error("submit failed", err);
+        onFailure("Card submission failed.");
+      })
+      .finally(() => setSubmitting(false));
+  };
+
+  if (!eligible) {
+    return <p>Card payment isn't available right now. Please use the PayPal button above.</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="paypal-wrap"><div id="pp-name" /></div>
+      <div className="paypal-wrap"><div id="pp-number" /></div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="paypal-wrap"><div id="pp-expiry" /></div>
+        <div className="paypal-wrap"><div id="pp-cvv" /></div>
+      </div>
+      <button
+        type="button"
+        disabled={!ready || submitting}
+        onClick={handlePay}
+        className="w-full bg-black text-white py-3 rounded disabled:opacity-50"
+      >
+        {submitting ? "Processing…" : `Pay ${currency} ${amount.toFixed(2)}`}
+      </button>
+
+      <style>{`
+        .paypal-wrap {
+          border: 1px solid #d1d5db; border-radius: 8px; padding: 0 12px; background: #fff;
+          transition: border-color 120ms ease, box-shadow 120ms ease;
+        }
+        .paypal-wrap:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+        .paypal-wrap > div { height: 44px; }
+      `}</style>
+    </div>
+  );
+}
+```
+
+#### Alternative: same component using `@paypal/react-paypal-js` (v5)
+
+```tsx
+// npm i @paypal/react-paypal-js
+import {
+  PayPalScriptProvider,
+  PayPalCardFieldsProvider,
+  PayPalNumberField,
+  PayPalExpiryField,
+  PayPalCVVField,
+  PayPalNameField,
+  usePayPalCardFields,
+} from "@paypal/react-paypal-js";
+
+function PayButton() {
+  const { cardFieldsForm } = usePayPalCardFields();
+  return (
+    <button
+      onClick={() => cardFieldsForm?.submit().catch(console.error)}
+      disabled={!cardFieldsForm}
+    >
+      Pay
+    </button>
+  );
+}
+
+export default function Checkout({ amount }: { amount: number }) {
+  return (
+    <PayPalScriptProvider
+      options={{
+        clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID!,
+        components: "buttons,card-fields",
+        currency: "USD",
+        intent: "capture",
+      }}
+    >
+      <PayPalCardFieldsProvider
+        createOrder={async () => {
+          const r = await fetch("/api/paypal/orders", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount, currency: "USD" }),
+          });
+          const o = await r.json();
+          return o.id;
+        }}
+        onApprove={async ({ orderID }) => {
+          await fetch(`/api/paypal/orders/${orderID}/capture`, { method: "POST" });
+        }}
+        onError={(e) => console.error(e)}
+      >
+        <PayPalNameField />
+        <PayPalNumberField />
+        <PayPalExpiryField />
+        <PayPalCVVField />
+        <PayButton />
+      </PayPalCardFieldsProvider>
+    </PayPalScriptProvider>
+  );
+}
+```
+
+#### `server/paypal.ts` (Node/Express, fetch-based)
+
+```ts
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+const BASE = process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com";
+const CLIENT_ID = process.env.PAYPAL_CLIENT_ID!;
+const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET!;
+
+async function getAccessToken() {
+  const creds = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+  const r = await fetch(`${BASE}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${creds}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
+  if (!r.ok) throw new Error(`oauth ${r.status}`);
+  const j = await r.json();
+  return j.access_token as string;
+}
+
+// Create order — designed for card payments via CardFields
+app.post("/api/paypal/orders", async (req, res) => {
+  try {
+    const { amount, currency = "USD" } = req.body as { amount: number; currency?: string };
+    if (!Number.isFinite(amount) || amount <= 0) return res.status(400).json({ error: "bad amount" });
+
+    const token = await getAccessToken();
+    const r = await fetch(`${BASE}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [{
+          amount: { currency_code: currency, value: amount.toFixed(2) },
+        }],
+        payment_source: {
+          card: {
+            attributes: {
+              verification: { method: "SCA_WHEN_REQUIRED" },
+            },
+            experience_context: {
+              brand_name: "Your Store",
+              locale: "en-US",
+              shipping_preference: "NO_SHIPPING",   // or SET_PROVIDED_ADDRESS
+              return_url: `${process.env.PUBLIC_URL}/checkout/return`,
+              cancel_url: `${process.env.PUBLIC_URL}/checkout/cancel`,
+            },
+          },
+        },
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      console.error("create-order failed", data);
+      return res.status(r.status).json(data);
+    }
+    return res.json({ id: data.id });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "server error" });
+  }
+});
+
+// Capture order
+app.post("/api/paypal/orders/:id/capture", async (req, res) => {
+  try {
+    const token = await getAccessToken();
+    const r = await fetch(`${BASE}/v2/checkout/orders/${req.params.id}/capture`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": crypto.randomUUID(),
+      },
+    });
+    const data = await r.json();
+    return res.status(r.status).json(data);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "server error" });
+  }
+});
+
+app.listen(8080);
+```
+
+Where to inject the shipping address: if you collected it on **your** form (typical e-commerce), put it under `purchase_units[0].shipping.address` AND set `experience_context.shipping_preference = "SET_PROVIDED_ADDRESS"`. With CardFields the buyer never sees a PayPal "review" page, so PayPal mostly just records the address for fulfillment purposes; you remain the source of truth.
+
+---
+
+## Recommendations
+
+**Stage 1 — Fix the immediate error (5 minutes).**
+1. Open the file that injects the PayPal SDK script. Confirm the URL matches:
+   `https://www.paypal.com/sdk/js?client-id=…&components=buttons,card-fields&currency=USD&intent=capture`
+2. Search the codebase for any other PayPal SDK `<script>` tag or `loadScript({...})` call. There must be exactly one.
+3. Reload; the `xe.createCardPaymentSession is not a function` error should be gone.
+4. **Threshold to escalate:** if the error persists after the URL fix, log `Object.keys(window.paypal || {})` — if `CardFields` isn't in the list, the SDK URL is still wrong (cache-bust with `?v=` or check for a service worker intercepting it).
+
+**Stage 2 — Wire up server endpoints (1–2 hours).**
+1. Create `/api/paypal/orders` and `/api/paypal/orders/:id/capture` per the Node example above. Use `intent: "CAPTURE"` and `payment_source.card.experience_context`.
+2. Set env vars `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_BASE_URL`. Ensure `VITE_PAYPAL_CLIENT_ID` (frontend) matches `PAYPAL_CLIENT_ID` (backend).
+3. **Threshold to escalate:** create-order returns 422 with `INVALID_REQUEST` → check currency/intent match between SDK and order body.
+
+**Stage 3 — Add SCA + handle 3DS (30 minutes).**
+1. Add `payment_source.card.attributes.verification.method: "SCA_WHEN_REQUIRED"` for EU/UK, or `"SCA_ALWAYS"` if your underwriting requires it.
+2. In `onApprove`, branch on `data.liabilityShift`. If `"NO"` or `"UNKNOWN"`, decide whether to capture (most merchants still capture — the only difference is chargeback liability).
+3. Handle `result.status === "PAYER_ACTION_REQUIRED"` in the capture response by redirecting to the `payer-action` HATEOAS link.
+4. **Threshold to escalate:** repeated PSD2 declines → check that the billing address you pass on `submit()` matches the cardholder's address; PayPal's PSD2 docs require the billing address.
+
+**Stage 4 — Sandbox to live transition checklist (15 minutes).**
+1. Swap to live client ID + secret + base URL.
+2. Remove `buyer-country` from the SDK URL.
+3. Developer Dashboard → Apps & Credentials → live REST app → Features → confirm "Advanced Credit and Debit Card Payments" is checked.
+4. Update CSP to allow `https://www.paypal.com`, `https://www.paypalobjects.com`, `https://*.paypal.com` on `script-src`, `frame-src`, `connect-src`, `img-src`. Set `Cross-Origin-Opener-Policy: same-origin-allow-popups`.
+5. Smoke test with a real low-value transaction; refund from PayPal dashboard.
+6. **Threshold to escalate:** `isEligible()` returns false in live → capability flag isn't checked, OR your country/currency combination isn't in the supported list (37 countries / 22 currencies).
+
+**Stage 5 — Hardening (later).**
+- Subscribe to webhooks `CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `PAYMENT.CAPTURE.REFUNDED`. Verify signatures.
+- Add idempotency: store your own per-cart `PayPal-Request-Id` and reuse on retry.
+- Debounce the Pay button to avoid the WooCommerce-style double-POST race.
+- Consider migrating to **JS SDK v6** in a separate sprint — the API is `paypal.createInstance({clientId, components: ["card-fields"]}).createCardFieldsOneTimePaymentSession()`. v5 keeps working in parallel, so this is not urgent.
+
+---
+
+## Caveats
+
+- **Naming overlap warning.** PayPal's docs use both "Advanced Checkout" and "Expanded Checkout" interchangeably for the same product (Advanced Credit and Debit Card Payments / ACDC). The /studio/ docs path uses "Expanded"; the /docs/checkout/advanced/ path uses "Advanced". Same product.
+- **The `xe.createCardPaymentSession` error name is a minified symbol.** PayPal does not document this exact string anywhere I could find — the unminified name is plausibly `createCardPaymentSession` on an internal session-factory class. The diagnostic above is based on the SDK's documented behavior of dynamically exposing methods per `components=`, not on a PayPal-confirmed root cause for this specific minified variable. If the Stage 1 fix doesn't work, escalate via PayPal's developer support with the `debug_id` from the network response and the full SDK URL you're loading.
+- **TypeScript types lag the runtime.** The official `@paypal/paypal-js` types historically miss `liabilityShift` on `CardFieldsOnApproveData` (issue #652) and other fields. Use type assertions where needed.
+- **v6 vs v5 confusion.** Some recent docs and AI assistants serve v6 examples (`paypal.createInstance(...)`, `https://www.paypal.com/web-sdk/v6/core`). These will NOT work with a v5 script tag and vice versa. Verify which version a code snippet targets before pasting.
+- **3DS regional behavior.** Card brand support for 3DS varies by issuer; some "Maestro"-branded debit cards in the EU still occasionally bypass 3DS challenges because the issuer doesn't support frictionless flows — don't rely on `liabilityShift === "POSSIBLE"` being universal.
+- **PCI scope.** With CardFields you remain PCI DSS SAQ A (PayPal docs reference SAQ A-EP for some edge cases). You must still serve over HTTPS, set CSP, and never log raw card data — but card numbers never reach your server. Keep it that way.
+- **Not researched here:** Apple Pay, Google Pay, Venmo, Pay Later, Fastlane. Each has its own component (`applepay`, `googlepay`) and eligibility rules; out of scope per the task.
+- **Live underwriting status:** the task explicitly excluded eligibility/onboarding checks, but your `isEligible()` returning `false` problem in production is operationally tied to it. If everything else is right and eligibility still fails in live, the operations check is "Has Advanced Credit and Debit Card Payments capability been granted AND turned on in the live REST app?" — both must be true.
