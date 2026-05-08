@@ -18,6 +18,7 @@ interface PayPalCheckoutProps {
   onSuccess?: (orderData: any, paypalOrderId: string) => void;
   onError?: (error: any) => void;
   onCancel?: () => void;
+  onCardIneligible?: () => void;
   disabled?: boolean;
   className?: string;
   showCardFields?: boolean;
@@ -32,6 +33,7 @@ export default function PayPalCheckout({
   onSuccess,
   onError,
   onCancel,
+  onCardIneligible,
   disabled = false,
   className = "",
   showCardFields = true,
@@ -42,6 +44,7 @@ export default function PayPalCheckout({
   const [isProcessingCard, setIsProcessingCard] = useState(false);
   const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
+  const [cardIneligible, setCardIneligible] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
   const cardSessionRef = useRef<any>(null);
   const paypalSessionRef = useRef<any>(null);
@@ -171,8 +174,26 @@ export default function PayPalCheckout({
         });
         paypalSessionRef.current = paypalCheckout;
 
-        // Initialize Card Fields if enabled
+        // Check eligibility for advanced card fields
+        let cardEligible = false;
         if (showCardFields) {
+          try {
+            const paymentMethods = await sdkInstance.findEligibleMethods();
+            cardEligible = paymentMethods.isEligible("advanced_cards");
+          } catch (eligibilityError) {
+            console.warn("[PayPal] findEligibleMethods() failed — defaulting card fields to ineligible:", eligibilityError);
+            cardEligible = false;
+          }
+          if (!cardEligible && isMounted) {
+            setCardIneligible(true);
+            setSelectedMethod("paypal");
+            onCardIneligible?.();
+            if (import.meta.env.DEV) { console.log("[PayPal] advanced_cards ineligible — PayPal fallback active"); }
+          }
+        }
+
+        // Initialize Card Fields only if eligible
+        if (showCardFields && cardEligible) {
           try {
             const cardSession = sdkInstance.createCardFieldsOneTimePaymentSession();
             cardSessionRef.current = cardSession;
@@ -379,6 +400,11 @@ export default function PayPalCheckout({
           {/* PayPal Button Section - show when PayPal selected OR when card fields not available */}
           {(selectedMethod === "paypal" || !cardFieldsReady) && (
             <div className="space-y-3">
+              {cardIneligible && (
+                <p className="text-xs text-center text-muted-foreground pb-1" data-testid="card-ineligible-notice">
+                  Card payments aren't available right now — please use PayPal.
+                </p>
+              )}
               <Button
                 onClick={handlePayPalClick}
                 disabled={disabled || isProcessingPayPal || !paypalSessionRef.current}
