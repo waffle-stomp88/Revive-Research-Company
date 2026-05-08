@@ -406,7 +406,7 @@ export default function Checkout() {
   const isAuthenticated = !!user;
 
   // Fetch saved addresses for logged-in users (for checkout pre-fill)
-  const { data: savedAddresses } = useQuery<SavedAddress[]>({
+  const { data: savedAddresses, isFetched: savedAddressesFetched } = useQuery<SavedAddress[]>({
     queryKey: ["/api/addresses"],
     queryFn: async () => {
       const res = await fetch("/api/addresses", { credentials: "include" });
@@ -414,6 +414,19 @@ export default function Checkout() {
       return res.json();
     },
     enabled: !!user,
+  });
+
+  // Fetch the most recent order's shipping address as a fallback pre-fill source.
+  // Only used when the user has no saved addresses.
+  const { data: latestOrderAddress } = useQuery<{ street: string; city: string; state: string; zip: string } | null>({
+    queryKey: ["/api/orders/latest-shipping-address"],
+    queryFn: async () => {
+      const res = await fetch("/api/orders/latest-shipping-address", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    // Only fetch if the user is logged in and has no saved addresses
+    enabled: !!user && savedAddressesFetched && (savedAddresses?.length ?? 0) === 0,
   });
 
   // Pre-fill customer info from user data
@@ -439,6 +452,19 @@ export default function Checkout() {
     // Fill name from saved address if still blank after user-data effect
     setCustomerName(prev => prev || `${defaultAddr.firstName} ${defaultAddr.lastName}`.trim());
   }, [savedAddresses, user]);
+
+  // Fallback: pre-fill from the most recent order when the user has no saved addresses.
+  // The query above is gated on savedAddressesFetched && length===0, so this effect
+  // only ever runs after saved addresses have been confirmed absent — no race condition.
+  useEffect(() => {
+    if (!latestOrderAddress || !user) return;
+    setShippingAddress(prev => ({
+      street: prev.street || latestOrderAddress.street,
+      city: prev.city || latestOrderAddress.city,
+      state: prev.state || latestOrderAddress.state,
+      zip: prev.zip || latestOrderAddress.zip,
+    }));
+  }, [latestOrderAddress, user]);
 
   // Manual payment order creation
   const createManualOrderMutation = useMutation({

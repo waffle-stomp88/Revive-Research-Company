@@ -1296,6 +1296,36 @@ export async function registerRoutes(
   });
 
 
+  // Return the most recent order's shipping address for the logged-in user.
+  // Used by checkout to pre-fill the address form when no saved address exists.
+  app.get("/api/orders/latest-shipping-address", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+
+      let userOrders = await storage.getOrdersByUserId(userId);
+      if (userOrders.length === 0 && userEmail) {
+        userOrders = await storage.getOrdersByEmail(userEmail);
+      }
+
+      // Find the most recent order that has a non-empty shipping address
+      const recent = userOrders.find(o => o.address && o.city && o.state && o.zipCode);
+      if (!recent) {
+        return res.json(null);
+      }
+
+      res.json({
+        street: recent.address,
+        city: recent.city,
+        state: recent.state,
+        zip: recent.zipCode,
+      });
+    } catch (error) {
+      console.error("Error fetching latest shipping address:", error);
+      res.status(500).json({ error: "Failed to fetch latest shipping address" });
+    }
+  });
+
   // Get user's orders (authenticated)
   app.get("/api/orders/my-orders", isAuthenticated, async (req: any, res) => {
     try {
