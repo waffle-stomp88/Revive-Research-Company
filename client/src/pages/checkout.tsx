@@ -1031,7 +1031,7 @@ export default function Checkout() {
 
                       {/* Credit / Debit Card */}
                       <button
-                        className={`flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
+                        className={`relative flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "card"
                             ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
                             : "border-[#d4ed1f] bg-transparent text-white"
@@ -1040,17 +1040,17 @@ export default function Checkout() {
                         onClick={() => { setSelectedPaymentMethod("card"); setManualPaymentStep("select"); }}
                         data-testid="payment-method-card"
                       >
+                        <span className={`absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded ${
+                          selectedPaymentMethod === "card"
+                            ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
+                            : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
+                        }`}>RECOMMENDED</span>
                         <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
                           selectedPaymentMethod === "card" ? "bg-[#0a0a0a]/20" : "bg-[#d4ed1f]/10"
                         }`}>
                           <CreditCard className="h-4 w-4" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`inline-block text-[7px] font-bold px-1.5 py-0.5 rounded mb-1 ${
-                            selectedPaymentMethod === "card"
-                              ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
-                              : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
-                          }`}>RECOMMENDED</span>
+                        <div className="min-w-0 flex-1 flex flex-col justify-center">
                           <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
                           <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
                             Pay directly on this page
@@ -1074,8 +1074,7 @@ export default function Checkout() {
                         }`}>
                           <span className="text-sm font-black leading-none text-white">PP</span>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <span className="inline-block text-[7px] px-1.5 py-0.5 mb-1 invisible select-none" aria-hidden="true">x</span>
+                        <div className="min-w-0 flex-1 flex flex-col justify-center">
                           <p className="text-sm font-semibold leading-tight">PayPal</p>
                           <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
                             Sign in to your PayPal
