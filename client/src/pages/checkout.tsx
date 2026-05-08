@@ -416,6 +416,18 @@ export default function Checkout() {
     enabled: !!user,
   });
 
+  // Fetch all distinct past shipping addresses for returning users.
+  // Powers the "Use a previous address" dropdown at checkout.
+  const { data: pastShippingAddresses } = useQuery<{ street: string; city: string; state: string; zip: string }[]>({
+    queryKey: ["/api/orders/past-shipping-addresses"],
+    queryFn: async () => {
+      const res = await fetch("/api/orders/past-shipping-addresses", { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user,
+  });
+
   // Fetch the most recent order's shipping address as a fallback pre-fill source.
   // Only used when the user has no saved addresses.
   const { data: latestOrderAddress } = useQuery<{ street: string; city: string; state: string; zip: string } | null>({
@@ -1043,7 +1055,46 @@ export default function Checkout() {
 
                           {/* Address group */}
                           <div>
-                            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-2.5">Address</p>
+                            <div className="flex items-center justify-between mb-2.5">
+                              <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest">Address</p>
+                              {isAuthenticated && (pastShippingAddresses?.length ?? 0) > 1 && (
+                                <Select
+                                  value=""
+                                  onValueChange={(idx) => {
+                                    const addr = pastShippingAddresses?.[parseInt(idx)];
+                                    if (addr) {
+                                      setShippingAddress({
+                                        street: addr.street,
+                                        city: addr.city,
+                                        state: addr.state,
+                                        zip: addr.zip,
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <SelectTrigger
+                                    className="h-7 text-[10px] w-auto gap-1 border-white/20 bg-transparent text-muted-foreground hover:text-foreground"
+                                    data-testid="select-past-address-trigger"
+                                  >
+                                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                                    <SelectValue placeholder="Use a previous address" />
+                                  </SelectTrigger>
+                                  <SelectContent align="end" className="max-w-[280px]">
+                                    {pastShippingAddresses?.map((addr, i) => (
+                                      <SelectItem
+                                        key={i}
+                                        value={String(i)}
+                                        data-testid={`option-past-address-${i}`}
+                                      >
+                                        <span className="text-xs truncate">
+                                          {addr.street}, {addr.city}, {addr.state} {addr.zip}
+                                        </span>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            </div>
                             <div className="space-y-3">
                       <div>
                         <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>

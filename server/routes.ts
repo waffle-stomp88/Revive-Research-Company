@@ -1296,6 +1296,48 @@ export async function registerRoutes(
   });
 
 
+  // Return all distinct past shipping addresses for the logged-in user, most recent first.
+  // Used by checkout to let returning shoppers pick a previous address from a dropdown.
+  app.get("/api/orders/past-shipping-addresses", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+
+      let userOrders = await storage.getOrdersByUserId(userId);
+      if (userOrders.length === 0 && userEmail) {
+        userOrders = await storage.getOrdersByEmail(userEmail);
+      }
+
+      // Sort by most recent first (createdAt desc if available, otherwise rely on insertion order)
+      const sorted = [...userOrders].sort((a, b) => {
+        const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return tb - ta;
+      });
+
+      // Collect distinct addresses (deduplicate by street+city+state+zip)
+      const seen = new Set<string>();
+      const addresses: { street: string; city: string; state: string; zip: string }[] = [];
+      for (const order of sorted) {
+        if (!order.address || !order.city || !order.state || !order.zipCode) continue;
+        const key = `${order.address.toLowerCase()}|${order.city.toLowerCase()}|${order.state.toLowerCase()}|${order.zipCode}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        addresses.push({
+          street: order.address,
+          city: order.city,
+          state: order.state,
+          zip: order.zipCode,
+        });
+      }
+
+      res.json(addresses);
+    } catch (error) {
+      console.error("Error fetching past shipping addresses:", error);
+      res.status(500).json({ error: "Failed to fetch past shipping addresses" });
+    }
+  });
+
   // Return the most recent order's shipping address for the logged-in user.
   // Used by checkout to pre-fill the address form when no saved address exists.
   app.get("/api/orders/latest-shipping-address", isAuthenticated, async (req: any, res) => {
