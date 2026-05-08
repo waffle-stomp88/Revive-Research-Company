@@ -1383,9 +1383,9 @@ export default function Checkout() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="order-1 md:order-2"
+                className="order-1 md:order-2 md:sticky md:top-20 md:self-start md:max-h-[calc(100vh-6rem)] md:overflow-y-auto z-[40]"
               >
-                <Card className="p-3 sm:p-4 md:p-6 md:sticky md:top-24 z-[9999]">
+                <Card className="p-3 sm:p-4 md:p-6">
                   <h2 className="font-display text-lg md:text-xl font-semibold mb-4 md:mb-6">
                     Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
                   </h2>
