@@ -1,0 +1,65 @@
+You're right on both counts. Let me address them clearly.
+
+## Problem 1 — Internal scrollbar on the right column
+
+You don't want the right column to have its own scrollbar. You want it to scroll WITH the page, but stay anchored relative to your viewport when scrolling.
+
+That's a different sticky behavior than what was applied. The current implementation has `max-h-[calc(100vh-6rem)] overflow-y-auto` which forces internal scrolling when the column gets tall.
+
+What you want: just `position: sticky` + `top: 80px` + `align-self: start`. No `max-h`, no `overflow-y: auto`. The column attaches to your viewport at 80px from top and slides naturally with the page.
+
+The tradeoff: if your right column is taller than the viewport (5+ items, lots of upsells), the bottom of it (including the Pay button) will be cut off below the viewport. You'd have to scroll past the bottom of the page to see it.
+
+That tradeoff matters for our current concern about "Pay button always accessible" — but we can solve that differently (a sticky bottom bar for desktop, or just trust that most carts won't be that tall).
+
+## Problem 2 — Card fields STILL in the wrong column
+
+This is the big one. Looking at your screenshot:
+- Card fields (Card Number, Expiry, CVV, PAY $89.05) are in the RIGHT column
+- The "Secure card checkout" trust copy is in the LEFT column where the fields SHOULD be
+
+**This is the same bug from before.** Change A was supposed to fix the sticky scroll, NOT touch card field placement. Change B was supposed to fix card field placement (forwardRef approach). Replit only applied Change A — but the card field placement was never fixed.
+
+So we're seeing:
+- Pre-existing card-fields-in-wrong-column bug (from original 5c) — UNTOUCHED
+- Sticky scroll behavior — applied but not how you wanted
+
+## What needs to happen
+
+Two distinct fixes:
+
+**Fix 1: Sticky behavior** — strip out the `max-h` and `overflow-y-auto`, keep just basic sticky.
+
+**Fix 2: Apply Change B** — move card fields from right column to left column (the original plan we never executed because we paused after Change A).
+
+## Message to send Replit
+
+Paste this in:
+
+> Change A is applied but the result isn't right, and Change B never happened. Two distinct fixes needed:
+>
+> **Fix 1 — Sticky behavior is too aggressive.** I don't want an internal scrollbar on the right column. I want the column to "move with my mouse" when I scroll the page — sticky to the viewport at 80px from top, sliding with page scroll naturally. NO internal column scroll.
+>
+> Strip out `max-h-[calc(100vh-6rem)]` and `overflow-y-auto` from the motion.div. Keep only the sticky positioning:
+>
+> ```diff
+> - className="order-1 md:order-2 md:sticky md:top-20 md:self-start md:max-h-[calc(100vh-6rem)] md:overflow-y-auto z-[40]"
+> + className="order-1 md:order-2 md:sticky md:top-20 md:self-start z-[40]"
+> ```
+>
+> Tradeoff acknowledged: if right column is taller than viewport, the Pay button at the bottom won't be visible at all times. We'll address that separately (probably by extending the existing mobile sticky bar to desktop for Card and PayPal). For now, basic sticky.
+>
+> **Fix 2 — Apply Change B.** Card fields are STILL rendering in the right column instead of the left column. The user is seeing card number / expiry / CVV / PAY button in the right column where the order summary lives, and the "Secure card checkout" trust copy in the left column where the fields SHOULD be.
+>
+> Apply your Change B forwardRef diff with both corrections we agreed on:
+> - **B-1**: `onReadyChange` callback for cross-column ready state
+> - **B-2**: Style API fixes (`background: "transparent"`, remove `input.backgroundColor`, `input::placeholder` selector)
+>
+> Card fields go in the LEFT column below the Card/PayPal big buttons. Pay button stays in the RIGHT column, gated by `isCardReady` state from the `onReadyChange` callback.
+>
+> **Order of work:**
+> 1. Apply Fix 1 first (single class string change, can do immediately)
+> 2. Restart, hand back for verification
+> 3. Once Fix 1 confirmed, proceed with Fix 2 (Change B forwardRef diff)
+>
+> Show me the diff for Fix 1, apply, restart, hand back. THEN show me the diff for Fix 2.Pick when ready.
