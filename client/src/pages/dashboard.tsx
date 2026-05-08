@@ -160,6 +160,8 @@ export default function Dashboard() {
     zipCode: string;
     country: string;
   } | null>(null);
+  const [newAddressDialogOpen, setNewAddressDialogOpen] = useState(false);
+  const [newAddress, setNewAddress] = useState({ label: "", firstName: "", lastName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<{id: string; title: string; content: string} | null>(null);
   const [noteTitle, setNoteTitle] = useState("");
@@ -463,6 +465,21 @@ export default function Dashboard() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to update address. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const createAddressMutation = useMutation({
+    mutationFn: async (data: { label: string; firstName: string; lastName: string; street: string; city: string; state: string; zipCode: string; country: string }) => {
+      return apiRequest("POST", "/api/addresses", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/addresses"] });
+      toast({ title: "Address Added", description: "Your new address has been saved." });
+      setNewAddressDialogOpen(false);
+      setNewAddress({ label: "", firstName: "", lastName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to add address. Please try again.", variant: "destructive" });
     },
   });
 
@@ -2263,12 +2280,10 @@ export default function Dashboard() {
                           </div>
                           <span>Saved Addresses</span>
                         </CardTitle>
-                        <Link href="/account-settings#addresses">
-                          <Button size="sm" variant="outline" className="border-[#E7FB10]/40" data-testid="button-add-address">
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add
-                          </Button>
-                        </Link>
+                        <Button size="sm" variant="outline" className="border-[#E7FB10]/40" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-address">
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add
+                        </Button>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -2278,7 +2293,7 @@ export default function Dashboard() {
                         </div>
                       ) : savedAddresses && savedAddresses.length > 0 ? (
                         <div className="space-y-3">
-                          {savedAddresses.slice(0, 3).map((addr) => (
+                          {savedAddresses.map((addr) => (
                             <div key={addr.id} className="p-4 rounded-lg border border-[#E7FB10]/20 bg-[#E7FB10]/5 flex items-start justify-between gap-3 group" data-testid={`address-${addr.id}`}>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
@@ -2340,20 +2355,15 @@ export default function Dashboard() {
                               </div>
                             </div>
                           ))}
-                          {savedAddresses.length > 3 && (
-                            <p className="text-xs text-muted-foreground text-center">+{savedAddresses.length - 3} more addresses</p>
-                          )}
                         </div>
                       ) : (
                         <div className="text-center py-6">
                           <MapPin className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
                           <p className="text-sm text-muted-foreground mb-3">No saved addresses</p>
-                          <Link href="/account-settings#addresses">
-                            <Button size="sm" variant="outline" data-testid="button-add-first-address">
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add Address
-                            </Button>
-                          </Link>
+                          <Button size="sm" variant="outline" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-first-address">
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add Address
+                          </Button>
                         </div>
                       )}
                     </CardContent>
@@ -2733,6 +2743,112 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+
+      {/* New Address Dialog */}
+      <Dialog open={newAddressDialogOpen} onOpenChange={(open) => {
+        setNewAddressDialogOpen(open);
+        if (!open) setNewAddress({ label: "", firstName: "", lastName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Address</DialogTitle>
+            <DialogDescription>
+              Save a new shipping address to your account.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Label</label>
+              <Input
+                value={newAddress.label}
+                onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
+                placeholder="e.g., Home, Lab, Work"
+                data-testid="input-new-address-label"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">First Name</label>
+                <Input
+                  value={newAddress.firstName}
+                  onChange={(e) => setNewAddress({ ...newAddress, firstName: e.target.value })}
+                  placeholder="First name"
+                  data-testid="input-new-address-firstname"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Last Name</label>
+                <Input
+                  value={newAddress.lastName}
+                  onChange={(e) => setNewAddress({ ...newAddress, lastName: e.target.value })}
+                  placeholder="Last name"
+                  data-testid="input-new-address-lastname"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Street Address</label>
+              <Input
+                value={newAddress.street}
+                onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
+                placeholder="123 Main St"
+                data-testid="input-new-address-street"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">City</label>
+                <Input
+                  value={newAddress.city}
+                  onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                  placeholder="City"
+                  data-testid="input-new-address-city"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">State</label>
+                <Input
+                  value={newAddress.state}
+                  onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })}
+                  placeholder="State"
+                  data-testid="input-new-address-state"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">ZIP Code</label>
+                <Input
+                  value={newAddress.zipCode}
+                  onChange={(e) => setNewAddress({ ...newAddress, zipCode: e.target.value })}
+                  placeholder="ZIP"
+                  data-testid="input-new-address-zipcode"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Country</label>
+                <Input
+                  value={newAddress.country}
+                  onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
+                  data-testid="input-new-address-country"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setNewAddressDialogOpen(false)} data-testid="button-cancel-new-address">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => createAddressMutation.mutate(newAddress)}
+              disabled={createAddressMutation.isPending || !newAddress.firstName || !newAddress.lastName || !newAddress.street || !newAddress.city || !newAddress.state || !newAddress.zipCode}
+              data-testid="button-save-new-address"
+            >
+              {createAddressMutation.isPending ? "Saving..." : "Save Address"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Address Edit Dialog */}
       <Dialog open={addressEditDialogOpen} onOpenChange={(open) => {
