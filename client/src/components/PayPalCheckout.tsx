@@ -61,6 +61,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const [cardIneligible, setCardIneligible] = useState(false);
   const [cardDeclineError, setCardDeclineError] = useState<string | null>(null);
+  const [isAvsError, setIsAvsError] = useState(false);
   const [postalCode, setPostalCode] = useState("");
   const [postalCodeError, setPostalCodeError] = useState<string | null>(null);
   // sdkReady flips true once the SDK is initialized and card eligibility confirmed
@@ -308,35 +309,72 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     }
   };
 
-  // Map PayPal decline codes / messages to user-friendly text
-  const getDeclineMessage = (data: any): string => {
+  // Map PayPal decline codes / messages to user-friendly text.
+  // Returns { message, isAvs } so callers can highlight the postal code field.
+  const getDeclineInfo = (data: any): { message: string; isAvs: boolean } => {
     const raw: string = (data?.message ?? data?.description ?? data?.details?.[0]?.description ?? "").toLowerCase();
     const code: string = (data?.code ?? data?.details?.[0]?.issue ?? "").toLowerCase();
 
+    // AVS / postal-code mismatch — check before generic "declined" fallback
+    if (
+      code.includes("avs") ||
+      code.includes("card_avs") ||
+      code.includes("avs_check") ||
+      raw.includes("avs") ||
+      raw.includes("address verification") ||
+      raw.includes("postal") ||
+      raw.includes("zip") ||
+      raw.includes("billing address")
+    ) {
+      return {
+        message: "Card declined — check your postal code and try again.",
+        isAvs: true,
+      };
+    }
     if (code.includes("insufficient_funds") || raw.includes("insufficient funds") || raw.includes("insufficient_funds")) {
-      return "Your card was declined due to insufficient funds. Please try a different card or payment method.";
+      return { message: "Your card was declined due to insufficient funds. Please try a different card or payment method.", isAvs: false };
     }
     if (code.includes("card_expired") || raw.includes("expired") || raw.includes("expir")) {
-      return "Your card appears to be expired. Please check the expiry date or use a different card.";
+      return { message: "Your card appears to be expired. Please check the expiry date or use a different card.", isAvs: false };
     }
     if (code.includes("invalid_cvv") || raw.includes("cvv") || raw.includes("security code") || raw.includes("cvc")) {
-      return "The security code (CVV) entered is incorrect. Please double-check and try again.";
+      return { message: "The security code (CVV) entered is incorrect. Please double-check and try again.", isAvs: false };
     }
     if (code.includes("invalid_account") || raw.includes("invalid card") || raw.includes("invalid account") || raw.includes("card number")) {
-      return "The card number appears to be invalid. Please check your details and try again.";
+      return { message: "The card number appears to be invalid. Please check your details and try again.", isAvs: false };
     }
     if (code.includes("do_not_honor") || raw.includes("do not honor") || raw.includes("do_not_honor")) {
-      return "Your bank declined the transaction. Please contact your bank or try a different card.";
+      return { message: "Your bank declined the transaction. Please contact your bank or try a different card.", isAvs: false };
     }
     if (code.includes("fraud") || raw.includes("fraud") || raw.includes("restricted")) {
-      return "This transaction was flagged by your bank. Please contact your bank or use a different card.";
+      return { message: "This transaction was flagged by your bank. Please contact your bank or use a different card.", isAvs: false };
     }
     if (raw.includes("declined") || code.includes("declined")) {
-      return "Your card was declined. Please check your details or try a different card.";
+      return { message: "Your card was declined. Please check your details or try a different card.", isAvs: false };
     }
-    return "Your card payment could not be processed. Please check your details or try a different card.";
+    return { message: "Your card payment could not be processed. Please check your details or try a different card.", isAvs: false };
   };
 
+
+  // Detect network/transport-level errors that are NOT card declines.
+  // These errors mean the request never reached the processor (or the response
+  // was never received), so "check your card details" wording is wrong.
+  const isNetworkError = (e: any): boolean => {
+    if (e instanceof TypeError) return true; // "Failed to fetch", "Load failed", "NetworkError when attempting to fetch resource", etc.
+    const msg: string = (e?.message ?? e?.description ?? "").toLowerCase();
+    const code: string = (e?.code ?? "").toLowerCase();
+    return (
+      msg.includes("failed to fetch") ||
+      msg.includes("networkerror") ||
+      msg.includes("network error") ||
+      msg.includes("load failed") ||
+      msg.includes("connection") ||
+      msg.includes("timeout") ||
+      msg.includes("aborted") ||
+      code === "network_error" ||
+      code === "timeout"
+    );
+  };
 
   // Validate postal code per task spec: "5-digit US or alphanumeric international"
   //   US:            exactly 5 digits        e.g. 90210, 75008
@@ -365,6 +403,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     setIsProcessingCard(true);
     onProcessingChange?.(true);
     setCardDeclineError(null);
+    setIsAvsError(false);
     onCardDeclineError?.(null);
     try {
       const { orderId } = await createOrder();
@@ -383,16 +422,24 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       } else if (state === "canceled") {
         handleCancel(data ?? {});
       } else {
-        const friendlyMessage = getDeclineMessage(data);
+        const { message: friendlyMessage, isAvs } = getDeclineInfo(data);
         console.error("[PayPal Card] submit failed:", state, data);
         setCardDeclineError(friendlyMessage);
+        setIsAvsError(isAvs);
         onCardDeclineError?.(friendlyMessage);
         onError?.(new Error(data?.message ?? "Card payment failed"));
       }
     } catch (e: any) {
       console.error("Card payment error:", e);
-      const friendlyMessage = getDeclineMessage(e);
+      let friendlyMessage: string;
+      let isAvs = false;
+      if (isNetworkError(e)) {
+        friendlyMessage = "We couldn't reach the payment service. Please check your connection and try again.";
+      } else {
+        ({ message: friendlyMessage, isAvs } = getDeclineInfo(e));
+      }
       setCardDeclineError(friendlyMessage);
+      setIsAvsError(isAvs);
       onCardDeclineError?.(friendlyMessage);
       onError?.(e);
     } finally {
@@ -511,13 +558,19 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                     onChange={(e) => {
                       setPostalCode(e.target.value);
                       if (postalCodeError) setPostalCodeError(validatePostalCode(e.target.value));
+                      if (isAvsError) { setIsAvsError(false); setCardDeclineError(null); onCardDeclineError?.(null); }
                     }}
                     onBlur={() => setPostalCodeError(validatePostalCode(postalCode))}
                     placeholder="e.g. 90210"
                     maxLength={10}
                     autoComplete="postal-code"
-                    className="h-12 bg-white text-neutral-900 border-neutral-200 focus-visible:border-[#d4ed1f] focus-visible:ring-[rgba(212,237,31,0.35)] focus-visible:ring-2 placeholder:text-neutral-400"
+                    className={`h-12 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-2 ${
+                      isAvsError
+                        ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-300/50"
+                        : "border-neutral-200 focus-visible:border-[#d4ed1f] focus-visible:ring-[rgba(212,237,31,0.35)]"
+                    }`}
                     data-testid="input-postal-code"
+                    aria-invalid={isAvsError || !!postalCodeError}
                   />
                   {postalCodeError && (
                     <p className="mt-1 text-xs text-red-500" data-testid="postal-code-error">{postalCodeError}</p>
@@ -547,7 +600,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                 </Button>
               )}
 
-              {cardDeclineError && !hideSubmitButton && (
+              {cardDeclineError && (
                 <div
                   className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
                   data-testid="card-decline-error"
