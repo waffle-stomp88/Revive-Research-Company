@@ -242,15 +242,14 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     let isMounted = true;
 
     const cardStyle = {
-      body: { background: "transparent" },
+      body: { background: "#0a0a0a", padding: "0" },
       input: {
         fontFamily: "DM Sans, system-ui, sans-serif",
         fontSize: "14px",
         color: "#ffffff",
         padding: "0 12px",
       },
-      ":focus": { color: "#ffffff" },
-      "input::placeholder": { color: "#6b7280" },
+      "::placeholder": { color: "#6b7280" },
       ".invalid": { color: "#f87171" },
     };
 
@@ -411,10 +410,10 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
               {/* Skeleton while iframes are mounting */}
               {!cardFieldsReady && (
                 <div className="space-y-3" data-testid="card-fields-skeleton">
-                  <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                  <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
-                    <div className="min-h-[48px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                    <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
+                    <div className="min-h-[44px] bg-muted/30 border border-border rounded-md animate-pulse" />
                   </div>
                 </div>
               )}
@@ -422,16 +421,16 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
               <div className={`space-y-3 ${!cardFieldsReady ? "hidden" : ""}`}>
                 <div>
                   <Label className="text-xs text-muted-foreground mb-1.5 block">Card Number</Label>
-                  <div ref={numberContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-number-container" />
+                  <div ref={numberContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-number-container" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-muted-foreground mb-1.5 block">Expiry</Label>
-                    <div ref={expiryContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-expiry-container" />
+                    <div ref={expiryContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-expiry-container" />
                   </div>
                   <div>
                     <Label className="text-xs text-muted-foreground mb-1.5 block">CVV</Label>
-                    <div ref={cvvContainerRef} className="min-h-[48px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-cvv-container" />
+                    <div ref={cvvContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-border rounded-md focus-within:border-[#d4ed1f]" data-testid="card-cvv-container" />
                   </div>
                 </div>
               </div>
@@ -458,10 +457,6 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                 </Button>
               )}
 
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <Lock className="h-3 w-3" />
-                <span>Secured by PayPal</span>
-              </div>
             </div>
           )}
 
