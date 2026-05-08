@@ -1066,6 +1066,9 @@ export default function Checkout() {
                             Pay directly on this page
                           </p>
                         </div>
+                        {selectedPaymentMethod === "card" && (
+                          <CheckCircle className="h-3.5 w-3.5 text-[#0a0a0a] flex-shrink-0" />
+                        )}
                       </button>
 
                       {/* PayPal */}
@@ -1090,6 +1093,9 @@ export default function Checkout() {
                             Sign in to your PayPal
                           </p>
                         </div>
+                        {selectedPaymentMethod === "paypal" && (
+                          <CheckCircle className="h-3.5 w-3.5 text-white flex-shrink-0" />
+                        )}
                       </button>
                     </div>
 
@@ -1295,42 +1301,6 @@ export default function Checkout() {
                           })()}
                         </div>
 
-                        {/* Desktop Confirm Button */}
-                        <Button
-                          size="lg"
-                          className={`w-full hidden md:flex font-display text-base gap-2 transition-all duration-300 ${
-                            EARLY_ACCESS_MODE
-                              ? "bg-muted text-muted-foreground cursor-not-allowed"
-                              : selectedPaymentMethod === "cashapp"
-                                ? "bg-[#00D632] text-white"
-                                : selectedPaymentMethod === "venmo"
-                                  ? "bg-[#00AFF1] text-white"
-                                  : "bg-[#6D1ED4] text-white"
-                          }`}
-                          onClick={handleManualPaymentSubmit}
-                          disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
-                          data-testid="button-checkout"
-                        >
-                          {createManualOrderMutation.isPending ? (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              Processing...
-                            </>
-                          ) : EARLY_ACCESS_MODE ? (
-                            <>
-                              <Clock className="h-4 w-4" />
-                              Coming Soon
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="h-4 w-4" />
-                              Confirm Order — Pay via {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"} After
-                            </>
-                          )}
-                        </Button>
-                        <p className="hidden md:block text-xs text-muted-foreground text-center -mt-3">
-                          You'll receive your order number, then send payment separately.
-                        </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -1776,6 +1746,71 @@ export default function Checkout() {
                           onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
                           className="w-full"
                         />
+                      )}
+                    </div>
+                  ) : ['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') ? (
+                    <div className="space-y-2">
+                      {!hasValidZip ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          disabled
+                          data-testid="button-enter-zip-required"
+                        >
+                          <AlertTriangle className="h-5 w-5" />
+                          Enter ZIP Code to Continue
+                        </Button>
+                      ) : EARLY_ACCESS_MODE ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                          disabled
+                          data-testid="button-checkout-disabled"
+                        >
+                          <Clock className="h-5 w-5" />
+                          Coming Soon
+                        </Button>
+                      ) : isSubscription || cartSubscriptionItem ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                          disabled
+                          data-testid="button-subscription-coming-soon"
+                        >
+                          <Clock className="h-5 w-5" />
+                          Subscriptions Coming Soon
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            size="lg"
+                            className={`w-full font-display text-base gap-2 ${
+                              selectedPaymentMethod === "cashapp"
+                                ? "bg-[#00D632] text-white"
+                                : selectedPaymentMethod === "venmo"
+                                  ? "bg-[#00AFF1] text-white"
+                                  : "bg-[#6D1ED4] text-white"
+                            }`}
+                            onClick={handleManualPaymentSubmit}
+                            disabled={createManualOrderMutation.isPending}
+                            data-testid="button-checkout"
+                          >
+                            {createManualOrderMutation.isPending ? (
+                              <>
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="h-5 w-5" />
+                                Confirm Order — Pay via {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"} After
+                              </>
+                            )}
+                          </Button>
+                          <p className="text-xs text-muted-foreground text-center">
+                            You'll receive your order number, then send payment separately.
+                          </p>
+                        </>
                       )}
                     </div>
                   ) : null}
