@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, COLD_PACK_FEE } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -74,7 +74,6 @@ export default function Checkout() {
   const { toast } = useToast();
   const { items: cartItems, getSubtotal, clearCart, addToCart, removeFromCart } = useCart();
   const { login, logout } = useAuth();
-  const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("card");
   const cardPaypalRef = useRef<PayPalCheckoutHandle | null>(null);
   const [isCardReady, setIsCardReady] = useState(false);
@@ -509,8 +508,7 @@ export default function Checkout() {
   const cartSubtotal = getSubtotal();
   // Subscriptions always ship free
   const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
-  const coldPackFee = hasColdPackShipping && !hasSubscriptionItems ? COLD_PACK_FEE : 0;
-  const cartShipping = baseShipping + coldPackFee;
+  const cartShipping = baseShipping;
   // Calculate tax based on ZIP code (applied to subtotal only, not shipping)
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
@@ -1557,48 +1555,6 @@ export default function Checkout() {
                     </motion.div>
                   )}
 
-                  {/* Cold Pack Shipping Upsell */}
-                  {hasPeptides && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`mb-4 md:mb-6 p-3 md:p-4 rounded-lg border ${hasColdPackShipping ? 'bg-blue-500/5 border-blue-500/50' : 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/30'}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Package className="h-5 w-5 text-blue-400 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm">Cold Pack Shipping</h4>
-                          <p className="text-xs text-muted-foreground">Insulated for peptide stability</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-border/30">
-                        <span className="text-sm font-bold text-blue-400">
-                          +${COLD_PACK_FEE.toFixed(2)}
-                        </span>
-                        {hasColdPackShipping ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-xs px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            onClick={() => setHasColdPackShipping(false)}
-                            data-testid="button-remove-cold-pack"
-                          >
-                            Remove
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            className="bg-[#21d8ff] text-black font-semibold text-xs px-4"
-                            onClick={() => setHasColdPackShipping(true)}
-                            data-testid="button-add-cold-pack"
-                          >
-                            Add
-                          </Button>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-
                   <Separator className="my-4 md:my-6" />
 
                   {/* Pricing */}
@@ -1613,12 +1569,6 @@ export default function Checkout() {
                         {baseShipping === 0 ? "FREE" : `$${baseShipping.toFixed(2)}`}
                       </span>
                     </div>
-                    {hasColdPackShipping && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Cold Pack</span>
-                        <span className="text-blue-400">+${COLD_PACK_FEE.toFixed(2)}</span>
-                      </div>
-                    )}
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">
                         Tax {hasValidZip && taxState && (

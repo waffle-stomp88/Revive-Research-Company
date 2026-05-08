@@ -690,7 +690,6 @@ export default function CartPage() {
                         <ExternalLink className="h-3 w-3" />
                       </div>
                     </Link>
-                    <p className="text-muted-foreground/70 pt-1">Cold packs available at checkout.</p>
                   </div>
                 </Card>
 
