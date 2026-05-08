@@ -56,7 +56,7 @@ import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
-type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo";
+type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo" | "card";
 
 const subscriptionDiscounts: { [key: string]: number } = {
   weekly: 15,
@@ -75,7 +75,7 @@ export default function Checkout() {
   const { items: cartItems, getSubtotal, clearCart, addToCart, removeFromCart } = useCart();
   const { login, logout } = useAuth();
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("paypal");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("card");
   const [manualPaymentStep, setManualPaymentStep] = useState<"select" | "instructions" | "confirm">("select");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -807,7 +807,7 @@ export default function Checkout() {
                             type="button"
                             onClick={() => {
                               setShippingSaved(false);
-                              setSelectedPaymentMethod("paypal");
+                              setSelectedPaymentMethod("card");
                             }}
                             className="text-xs text-[#d4ed1f] hover:text-[#d4ed1f]/80 underline-offset-2 hover:underline transition-colors"
                             data-testid="button-edit-shipping"
@@ -1022,32 +1022,74 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                  {/* Payment Method Selector — 2×2 compact pill grid */}
+                  {/* Payment Method Selector — two-tier */}
                   <div className="mb-5">
                     <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">How do you want to pay?</p>
-                    <div className="grid grid-cols-2 gap-2">
+
+                    {/* ── Top tier: Card + PayPal — 50/50 desktop, stacked mobile ── */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+
+                      {/* Credit / Debit Card */}
                       <button
-                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                        className={`relative flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
+                          selectedPaymentMethod === "card"
+                            ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
+                            : "border-[#d4ed1f] bg-transparent text-white"
+                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
+                        disabled={!shippingSaved}
+                        onClick={() => { setSelectedPaymentMethod("card"); setManualPaymentStep("select"); }}
+                        data-testid="payment-method-card"
+                      >
+                        <span className={`absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded ${
+                          selectedPaymentMethod === "card"
+                            ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
+                            : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
+                        }`}>RECOMMENDED</span>
+                        <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
+                          selectedPaymentMethod === "card" ? "bg-[#0a0a0a]/20" : "bg-[#d4ed1f]/10"
+                        }`}>
+                          <CreditCard className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1 pr-14">
+                          <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
+                          <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
+                            Pay directly on this page
+                          </p>
+                        </div>
+                      </button>
+
+                      {/* PayPal */}
+                      <button
+                        className={`flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "paypal"
-                            ? "border-[#0070ba] bg-[#0070ba]/10"
-                            : "border-border hover:border-[#0070ba]/40"
+                            ? "border-[#0070ba] bg-[#0070ba] text-white"
+                            : "border-[#0070ba] bg-transparent text-white"
                         } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
                         disabled={!shippingSaved}
                         onClick={() => { setSelectedPaymentMethod("paypal"); setManualPaymentStep("select"); }}
                         data-testid="payment-method-paypal"
                       >
-                        <div className="w-8 h-8 bg-[#0070ba] rounded-md flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-[9px] font-extrabold leading-none">PP</span>
+                        <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
+                          selectedPaymentMethod === "paypal" ? "bg-white/30" : "bg-[#0070ba]/20"
+                        }`}>
+                          <span className={`text-[9px] font-extrabold leading-none ${
+                            selectedPaymentMethod === "paypal" ? "text-white" : "text-[#0070ba]"
+                          }`}>PP</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold leading-tight">PayPal</p>
-                          <p className="text-[10px] text-[#0070ba] font-medium">Recommended</p>
+                          <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
+                            Sign in to your PayPal
+                          </p>
+                          <p className={`text-[9px] italic mt-0.5 ${selectedPaymentMethod === "paypal" ? "text-white/50" : "text-muted-foreground/50"}`}>
+                            PayPal will use the shipping address on your PayPal account
+                          </p>
                         </div>
-                        {selectedPaymentMethod === "paypal" && (
-                          <CheckCircle className="h-3.5 w-3.5 text-[#0070ba] flex-shrink-0" />
-                        )}
                       </button>
+                    </div>
 
+                    {/* ── Bottom row: CashApp / Venmo / Zelle (Phase 4 wraps these) ── */}
+                    <div className="grid grid-cols-3 gap-2">
                       <button
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "cashapp"
@@ -1106,6 +1148,7 @@ export default function Checkout() {
                         </div>
                       </button>
                     </div>
+
                     {!shippingSaved && (
                       <p className="text-[10px] text-muted-foreground/40 text-center italic mt-2">Save your shipping address above to continue</p>
                     )}
@@ -1113,6 +1156,25 @@ export default function Checkout() {
 
                   {/* Animated content per method */}
                   <AnimatePresence mode="wait">
+                    {selectedPaymentMethod === "card" && (
+                      <motion.div
+                        key="card-info"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18 }}
+                        className="rounded-lg bg-[#d4ed1f]/10 border border-[#d4ed1f]/30 p-3 flex items-center gap-3"
+                      >
+                        <div className="w-9 h-9 bg-[#d4ed1f]/20 rounded-md flex items-center justify-center flex-shrink-0">
+                          <CreditCard className="h-4 w-4 text-[#d4ed1f]" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Card payments coming soon</p>
+                          <p className="text-xs text-muted-foreground">Direct card checkout is being wired now. Select PayPal or another method below to complete your order today.</p>
+                        </div>
+                      </motion.div>
+                    )}
+
                     {selectedPaymentMethod === "paypal" && (
                       <motion.div
                         key="paypal-info"
@@ -1565,6 +1627,16 @@ export default function Checkout() {
                     >
                       <AlertTriangle className="h-5 w-5" />
                       Items Out of Stock
+                    </Button>
+                  ) : selectedPaymentMethod === "card" ? (
+                    <Button
+                      size="lg"
+                      className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                      disabled
+                      data-testid="button-card-coming-soon"
+                    >
+                      <Clock className="h-5 w-5" />
+                      Card Payments Coming Soon
                     </Button>
                   ) : selectedPaymentMethod === "paypal" ? (
                     <div className="space-y-3">
