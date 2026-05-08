@@ -148,12 +148,10 @@ export default function PayPalCheckout({
 
     const initPayPal = async () => {
       try {
-        const response = await fetch("/paypal/setup");
-        if (!response.ok) {
-          throw new Error("Failed to get PayPal client token");
+        const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+        if (!clientId) {
+          throw new Error("PayPal client ID not configured. Set VITE_PAYPAL_CLIENT_ID in Replit Secrets.");
         }
-        const data = await response.json();
-        const clientToken = data.clientToken;
 
         // Initialize SDK with both PayPal payments and card fields
         const components = showCardFields 
@@ -161,7 +159,7 @@ export default function PayPalCheckout({
           : ["paypal-payments"];
 
         const sdkInstance = await (window as any).paypal.createInstance({
-          clientToken,
+          clientId,
           components,
         });
 
@@ -176,7 +174,7 @@ export default function PayPalCheckout({
         // Initialize Card Fields if enabled
         if (showCardFields) {
           try {
-            const cardSession = sdkInstance.createCardPaymentSession();
+            const cardSession = sdkInstance.createCardFieldsOneTimePaymentSession();
             cardSessionRef.current = cardSession;
             
             // Render card fields to their containers
