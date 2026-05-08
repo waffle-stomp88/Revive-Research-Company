@@ -242,7 +242,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     let isMounted = true;
 
     const cardStyle = {
-      body: { background: "#0a0a0a", padding: "0" },
+      body: { background: "#0a0a0a", padding: "0", height: "44px" },
       input: {
         fontFamily: "DM Sans, system-ui, sans-serif",
         fontSize: "14px",
