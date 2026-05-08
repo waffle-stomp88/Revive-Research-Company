@@ -422,7 +422,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                     <CreditCard className="h-3 w-3" />
                     Card Number
                   </Label>
-                  <div ref={numberContainerRef} className="h-[44px] overflow-hidden bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-number-container" />
+                  <div ref={numberContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-number-container" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -430,14 +430,14 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                       <Calendar className="h-3 w-3" />
                       Expiry
                     </Label>
-                    <div ref={expiryContainerRef} className="h-[44px] overflow-hidden bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-expiry-container" />
+                    <div ref={expiryContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-expiry-container" />
                   </div>
                   <div>
                     <Label className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
                       <Shield className="h-3 w-3" />
                       CVV
                     </Label>
-                    <div ref={cvvContainerRef} className="h-[44px] overflow-hidden bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-cvv-container" />
+                    <div ref={cvvContainerRef} className="min-h-[44px] bg-[#0a0a0a] border border-white/10 rounded-md transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_1px_rgba(212,237,31,0.25),0_0_12px_rgba(212,237,31,0.08)]" data-testid="card-cvv-container" />
                   </div>
                 </div>
               </div>

@@ -854,6 +854,15 @@ body.modal-open {
   pointer-events: none;
 }
 
+/* PayPal hosted card field iframes — constrain height without overflow-hidden */
+[data-testid="card-number-container"] iframe,
+[data-testid="card-expiry-container"] iframe,
+[data-testid="card-cvv-container"] iframe {
+  height: 44px !important;
+  display: block;
+  width: 100%;
+}
+
 .holographic-pill .holo-text {
   background: linear-gradient(90deg, #21d8ff, #E7FB10, #a855f7, #21d8ff);
   background-size: 200% auto;
