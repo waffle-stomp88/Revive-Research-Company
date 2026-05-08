@@ -1,0 +1,56 @@
+Phase 3 verified in browser. Proceed with Phase 4.
+Phase 4 spec recap:
+Move CashApp/Venmo/Zelle from their current visible 3-column row into an expandable section below the top-tier buttons. Add a new fourth tile: Bank transfer (Link Money).
+Collapsed row (default state):
+
+Single horizontal row that sits below the Card+PayPal grid
+Left side: a small horizontal flex strip showing 4 mini brand-color icons (~22px each) — CashApp green $, Venmo blue V, Zelle purple Z, Bank yellow ACH
+Center-left text: "Pay another way"
+Right side: down-chevron icon (ChevronDown from lucide-react)
+Background: #141414
+Border: subtle (border-0.5 border-white/[0.08] or use border and let the existing border token handle it)
+Border-radius: rounded-lg or rounded-xl — match the visual weight of the top-tier buttons
+Cursor: pointer
+Click anywhere on the row toggles expansion
+Should respect disabled={!shippingSaved} and the dim treatment when shipping isn't saved
+
+Expanded state:
+
+Up-chevron replaces down-chevron
+Below the row, a 2x2 grid of the four payment tiles:
+
+CashApp (top left) — existing tile, brand-color full-fill when selected (bg-[#00D632])
+Venmo (top right) — existing tile, brand-color full-fill when selected (bg-[#00AFF1])
+Zelle (bottom left) — existing tile, opacity 0.7 (de-emphasis), still hard-disabled with "Coming soon"
+Bank transfer (bottom right) — NEW tile, yellow-on-yellow brand styling, "Link Money" subtitle, disabled with "Coming soon" (since Link Money isn't wired yet)
+
+
+Tile selection rule (from existing pattern): when selected, the tile fills with that rail's brand color (CashApp green, Venmo blue, Bank yellow). Zelle and Bank both stay disabled for now.
+
+Tile click behavior (preserved from existing flow):
+
+Click CashApp/Venmo → existing animated content (instructions + Confirm Order button) appears below as today, no changes
+Click Zelle / Bank → does nothing (both disabled)
+
+PaymentMethod type update:
+
+Add "bank" to the PaymentMethod type union
+
+Helper text:
+
+The "Save your shipping address above to continue" helper text below the entire payment area stays as-is
+
+Do NOT touch:
+
+PayPal popup integration
+Card / PayPal top-tier buttons
+The existing "what happens next" instruction blocks for CashApp/Venmo
+Order summary
+Shipping form
+
+State management:
+
+Add a new state payAnotherWayExpanded (boolean, default false)
+Toggle it when the collapsed row is clicked
+
+Show me the diff before applying. Don't apply yet.
