@@ -10,6 +10,7 @@ type PaymentMethod = "paypal" | "card";
 
 export interface PayPalCheckoutHandle {
   submit: () => void;
+  cardDeclineError: string | null;
 }
 
 interface PayPalCheckoutProps {
@@ -22,6 +23,7 @@ interface PayPalCheckoutProps {
   onError?: (error: any) => void;
   onCancel?: () => void;
   onCardIneligible?: () => void;
+  onCardDeclineError?: (message: string | null) => void;
   defaultMethod?: "card" | "paypal";
   disabled?: boolean;
   className?: string;
@@ -40,6 +42,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   onError,
   onCancel,
   onCardIneligible,
+  onCardDeclineError,
   defaultMethod = "card",
   disabled = false,
   className = "",
@@ -335,6 +338,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
     setIsProcessingCard(true);
     setCardDeclineError(null);
+    onCardDeclineError?.(null);
     try {
       const { orderId } = await createOrder();
       const { state, data } = await cardSessionRef.current.submit(orderId);
@@ -353,20 +357,22 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         const friendlyMessage = getDeclineMessage(data);
         console.error("[PayPal Card] submit failed:", state, data);
         setCardDeclineError(friendlyMessage);
+        onCardDeclineError?.(friendlyMessage);
         onError?.(new Error(data?.message ?? "Card payment failed"));
       }
     } catch (e: any) {
       console.error("Card payment error:", e);
       const friendlyMessage = getDeclineMessage(e);
       setCardDeclineError(friendlyMessage);
+      onCardDeclineError?.(friendlyMessage);
       onError?.(e);
     } finally {
       setIsProcessingCard(false);
     }
   };
 
-  // Expose submit to parent via ref
-  useImperativeHandle(ref, () => ({ submit: handleCardSubmit }));
+  // Expose submit and current decline error to parent via ref
+  useImperativeHandle(ref, () => ({ submit: handleCardSubmit, cardDeclineError }));
 
   // Notify parent when card fields become ready or unready
   useEffect(() => {
@@ -467,38 +473,37 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
               </div>
 
               {!hideSubmitButton && (
-                <div className="space-y-2">
-                  <Button
-                    onClick={handleCardSubmit}
-                    disabled={disabled || isProcessingCard || !cardFieldsReady}
-                    className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
-                    size="lg"
-                    data-testid="button-pay-card"
-                  >
-                    {isProcessingCard ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-4 w-4" />
-                        Pay ${amount}
-                      </>
-                    )}
-                  </Button>
-                  {cardDeclineError && (
-                    <div
-                      className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
-                      data-testid="card-decline-error"
-                      role="alert"
-                    >
-                      <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 10 14z" clipRule="evenodd" />
-                      </svg>
-                      <span>{cardDeclineError}</span>
-                    </div>
+                <Button
+                  onClick={handleCardSubmit}
+                  disabled={disabled || isProcessingCard || !cardFieldsReady}
+                  className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
+                  size="lg"
+                  data-testid="button-pay-card"
+                >
+                  {isProcessingCard ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      Pay ${amount}
+                    </>
                   )}
+                </Button>
+              )}
+
+              {cardDeclineError && !hideSubmitButton && (
+                <div
+                  className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
+                  data-testid="card-decline-error"
+                  role="alert"
+                >
+                  <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 10 14z" clipRule="evenodd" />
+                  </svg>
+                  <span>{cardDeclineError}</span>
                 </div>
               )}
 

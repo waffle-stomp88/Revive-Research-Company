@@ -78,6 +78,7 @@ export default function Checkout() {
   const cardPaypalRef = useRef<PayPalCheckoutHandle | null>(null);
   const [isCardReady, setIsCardReady] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
+  const [checkoutCardDeclineError, setCheckoutCardDeclineError] = useState<string | null>(null);
   const [manualPaymentStep, setManualPaymentStep] = useState<"select" | "instructions" | "confirm">("select");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -1337,6 +1338,7 @@ export default function Checkout() {
                       hideSubmitButton={true}
                       onReadyChange={setIsCardReady}
                       onCardIneligible={() => setSelectedPaymentMethod("paypal")}
+                      onCardDeclineError={setCheckoutCardDeclineError}
                       onSuccess={handlePayPalSuccess}
                       onError={handlePayPalError}
                       onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
@@ -1676,29 +1678,44 @@ export default function Checkout() {
                           Subscriptions Coming Soon
                         </Button>
                       ) : (
-                        <Button
-                          size="lg"
-                          onClick={async () => {
-                            setIsSubmittingCard(true);
-                            try { await cardPaypalRef.current?.submit(); }
-                            finally { setIsSubmittingCard(false); }
-                          }}
-                          disabled={isSubmittingCard || !isCardReady}
-                          className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-lg gap-2"
-                          data-testid="button-pay-card"
-                        >
-                          {isSubmittingCard ? (
-                            <>
-                              <Loader2 className="h-5 w-5 animate-spin" />
-                              Processing...
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="h-5 w-5" />
-                              Pay ${cartTotal.toFixed(2)}
-                            </>
+                        <>
+                          <Button
+                            size="lg"
+                            onClick={async () => {
+                              setCheckoutCardDeclineError(null);
+                              setIsSubmittingCard(true);
+                              try { await cardPaypalRef.current?.submit(); }
+                              finally { setIsSubmittingCard(false); }
+                            }}
+                            disabled={isSubmittingCard || !isCardReady}
+                            className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-lg gap-2"
+                            data-testid="button-pay-card"
+                          >
+                            {isSubmittingCard ? (
+                              <>
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="h-5 w-5" />
+                                Pay ${cartTotal.toFixed(2)}
+                              </>
+                            )}
+                          </Button>
+                          {checkoutCardDeclineError && (
+                            <div
+                              className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
+                              data-testid="checkout-card-decline-error"
+                              role="alert"
+                            >
+                              <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 10 14z" clipRule="evenodd" />
+                              </svg>
+                              <span>{checkoutCardDeclineError}</span>
+                            </div>
                           )}
-                        </Button>
+                        </>
                       )}
                     </div>
                   ) : selectedPaymentMethod === "paypal" ? (
