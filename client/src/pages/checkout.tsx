@@ -524,7 +524,7 @@ export default function Checkout() {
 
   if (fromCart && cartItems.length === 0) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center bg-white text-[#111827]">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center">
         <Card className="p-6 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Your Cart is Empty</h2>
@@ -541,7 +541,7 @@ export default function Checkout() {
 
   if (!productId && !bundleId && !fromCart) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center bg-white text-[#111827]">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center">
         <Card className="p-6 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">No Product Selected</h2>
@@ -577,7 +577,7 @@ export default function Checkout() {
 
   if (!fromCart && !product && !bundle) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center bg-white text-[#111827]">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center">
         <Card className="p-6 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Product Not Found</h2>
@@ -699,7 +699,7 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-white text-[#111827]">
+        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden">
           <SEOHead title="Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto w-full">
             {/* Mobile Header - Compact */}
@@ -1838,7 +1838,7 @@ export default function Checkout() {
   // This simplifies the checkout flow to use cart-based checkout only
   if (bundle || product) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center bg-white text-[#111827]">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center">
         <Card className="p-8 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Add to Cart First</h2>
