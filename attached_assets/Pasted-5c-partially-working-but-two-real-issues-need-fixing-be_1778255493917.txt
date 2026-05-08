@@ -1,0 +1,13 @@
+5c partially working but two real issues need fixing before verification. Don't move on to 5d yet.
+Issue 1 — Card fields rendering in the wrong column. When Card is selected at the top, the card number / expiry / CVV / PAY button are rendering inside the RIGHT column (where the order summary lives), not the LEFT column (where the payment method selector is). The trust micro-copy "Secure card checkout — Enter your card details below" appears in the left column where the fields SHOULD be, but the actual fields are way over on the right.
+Investigate the selectedPaymentMethod === "card" branch in checkout.tsx. The <PayPalCheckout showCardFields={true} /> is being rendered in a JSX slot that lives inside the order summary column instead of the payment-method column. Likely cause: you placed it where the existing PayPal "Complete Order" button lives (right column) instead of where the payment method UI lives (left column).
+Find where the Card / PayPal big buttons render in checkout.tsx. The card field UI should appear directly below them, in the same left column. The right column should ONLY show the order summary + a single "PAY $XX.XX" button at the bottom (matching how the existing PayPal-selected branch shows a Pay button in the right column).
+If the architecture requires it, split the rendering: card field inputs go in the left column directly below the Card/PayPal button row, and the actual PAY button mirrors to the right column with the rest of the order summary footer.
+Issue 2 — Card field iframes have white backgrounds. The style.input.backgroundColor: "#0a0a0a" doesn't appear to be applied. The iframes are rendering with white backgrounds against our dark theme.
+Two possibilities to investigate:
+
+PayPal's v6 style API may not support backgroundColor (only color/font properties). If so, the wrapper div needs the dark background AND we need to make the iframe transparent. Try adding backgroundColor: "transparent" to the style config.
+The wrapper div's bg-[#0a0a0a] should show through if the iframe is transparent. If not, there might be a default PayPal stylesheet inside the iframe overriding it.
+
+Read PayPal's v6 docs on supported style properties for createCardFieldsComponent. Find the actual whitelist and tell me which background-related properties are supported.
+Don't apply changes yet. First investigate both issues, tell me the root cause, and propose a diff. I'll review before approval.
