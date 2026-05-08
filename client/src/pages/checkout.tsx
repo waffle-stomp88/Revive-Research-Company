@@ -1031,7 +1031,7 @@ export default function Checkout() {
 
                       {/* Credit / Debit Card */}
                       <button
-                        className={`relative flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
+                        className={`relative flex items-center gap-3 px-4 py-6 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "card"
                             ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
                             : "border-[#d4ed1f] bg-transparent text-white"
@@ -1060,7 +1060,7 @@ export default function Checkout() {
 
                       {/* PayPal */}
                       <button
-                        className={`flex items-center gap-3 px-4 py-3.5 rounded-lg border-2 transition-all text-left ${
+                        className={`flex items-center gap-3 px-4 py-6 rounded-lg border-2 transition-all text-left ${
                           selectedPaymentMethod === "paypal"
                             ? "border-[#0070ba] bg-[#0070ba] text-white"
                             : "border-[#0070ba] bg-transparent text-white"
