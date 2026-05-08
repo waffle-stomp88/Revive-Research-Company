@@ -1385,7 +1385,7 @@ export default function Checkout() {
                 transition={{ delay: 0.1 }}
                 className="order-1 md:order-2"
               >
-                <Card className="p-3 sm:p-4 md:p-6 md:sticky md:top-32">
+                <Card className="p-3 sm:p-4 md:p-6 md:sticky md:top-24 z-[9999]">
                   <h2 className="font-display text-lg md:text-xl font-semibold mb-4 md:mb-6">
                     Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
                   </h2>
