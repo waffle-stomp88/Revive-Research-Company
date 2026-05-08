@@ -1,9 +1,10 @@
 // PayPal Advanced Checkout Component
 // Supports both PayPal button and embedded card fields for direct card entry
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Loader2, CreditCard, Lock, Calendar, Shield } from "lucide-react";
+import { Loader2, CreditCard, Lock, Calendar, Shield, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 
 type PaymentMethod = "paypal" | "card";
@@ -60,6 +61,8 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const [cardIneligible, setCardIneligible] = useState(false);
   const [cardDeclineError, setCardDeclineError] = useState<string | null>(null);
+  const [postalCode, setPostalCode] = useState("");
+  const [postalCodeError, setPostalCodeError] = useState<string | null>(null);
   // sdkReady flips true once the SDK is initialized and card eligibility confirmed
   const [sdkReady, setSdkReady] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
@@ -334,17 +337,40 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     return "Your card payment could not be processed. Please check your details or try a different card.";
   };
 
+
+  // Validate postal code per task spec: "5-digit US or alphanumeric international"
+  //   US:            exactly 5 digits        e.g. 90210, 75008
+  //   International: 3-10 chars containing at least one letter  e.g. SW1A 1AA, M5V 2H1
+  const validatePostalCode = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (!trimmed) return "Postal code is required";
+    const isUsZip = /^\d{5}$/.test(trimmed);
+    const isInternational = /^(?=.*[A-Za-z])[A-Za-z0-9 -]{3,10}$/.test(trimmed);
+    if (!isUsZip && !isInternational) {
+      return "Enter a valid postal code (e.g. 90210 or SW1A 1AA)";
+    }
+    return null;
+  };
+
   // Handle card payment submission
   // v6: create order first, then pass orderId directly to submit()
   const handleCardSubmit = async () => {
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
+    const pcError = validatePostalCode(postalCode);
+    if (pcError) {
+      setPostalCodeError(pcError);
+      return;
+    }
+    setPostalCodeError(null);
     setIsProcessingCard(true);
     onProcessingChange?.(true);
     setCardDeclineError(null);
     onCardDeclineError?.(null);
     try {
       const { orderId } = await createOrder();
-      const { state, data } = await cardSessionRef.current.submit(orderId);
+      const { state, data } = await cardSessionRef.current.submit(orderId, {
+        billingAddress: { postalCode: postalCode.trim() },
+      });
       if (state === "succeeded") {
         if (import.meta.env.DEV) { console.log("[PayPal Card] submit succeeded", orderId); }
         try {
@@ -473,6 +499,29 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
                     </Label>
                     <div ref={cvvContainerRef} className="h-12 bg-white rounded-md border border-neutral-200 transition-all focus-within:border-[#d4ed1f] focus-within:shadow-[0_0_0_2px_rgba(212,237,31,0.35)]" data-testid="card-cvv-container" />
                   </div>
+                </div>
+                <div>
+                  <Label htmlFor="postal-code" className="text-[10px] font-semibold text-muted-foreground/70 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
+                    <MapPin className="h-3 w-3" />
+                    Postal Code
+                  </Label>
+                  <Input
+                    id="postal-code"
+                    value={postalCode}
+                    onChange={(e) => {
+                      setPostalCode(e.target.value);
+                      if (postalCodeError) setPostalCodeError(validatePostalCode(e.target.value));
+                    }}
+                    onBlur={() => setPostalCodeError(validatePostalCode(postalCode))}
+                    placeholder="e.g. 90210"
+                    maxLength={10}
+                    autoComplete="postal-code"
+                    className="h-12 bg-white text-neutral-900 border-neutral-200 focus-visible:border-[#d4ed1f] focus-visible:ring-[rgba(212,237,31,0.35)] focus-visible:ring-2 placeholder:text-neutral-400"
+                    data-testid="input-postal-code"
+                  />
+                  {postalCodeError && (
+                    <p className="mt-1 text-xs text-red-500" data-testid="postal-code-error">{postalCodeError}</p>
+                  )}
                 </div>
               </div>
 
