@@ -1,0 +1,39 @@
+Big change. Read this all the way through before responding.
+Two real things to fix, plus the polish work that's still pending:
+A — Layout refactor: move ALL Pay/Confirm buttons to the right column.
+Right column currently shows only the order summary. It should also show the active payment method's Pay/Confirm button at the bottom, regardless of which payment method is selected. Left column keeps the form/instructions.
+Per payment method:
+
+Card: right column shows order summary + yellow PAY $XX.XX button (use the forwardRef + onReadyChange pattern we already designed)
+PayPal: right column shows order summary + "Pay with PayPal" button
+CashApp: right column shows order summary + green "CONFIRM ORDER — PAY VIA CASHAPP" button
+Venmo: right column shows order summary + blue "CONFIRM ORDER — PAY VIA VENMO" button
+Zelle (when enabled): right column shows order summary + "CONFIRM ORDER — PAY VIA ZELLE" button
+Edge case buttons: ZIP-not-entered ("Enter ZIP Code to Continue"), EARLY_ACCESS_MODE ("Coming Soon"), subscription blocker ("Subscriptions Coming Soon"), stock errors — all move to right column too
+
+Left column for manual flows (CashApp/Venmo/Zelle) keeps the "WHAT HAPPENS NEXT" instructions block — only the Confirm button moves right.
+B — Selection state cleanup: ALL selected payment tiles get a checkmark.
+Current state visual rule (locked):
+
+Selected = filled with brand color + checkmark indicator (top-right of tile, small circle with checkmark)
+Unselected = brand-color border on dark background, no fill, no checkmark
+
+Currently CashApp shows a checkmark when selected but Card/PayPal don't. Make this consistent across ALL payment tiles (Card, PayPal, CashApp, Venmo, Zelle, Bank). Use the same checkmark style/position on every tile when selected.
+C — Phase 5c polish (still pending from earlier message):
+All the visual polish we discussed: page background to #2a2a2a, four numbered-section panels, card field iframe dark styling, remove redundant trust copy. Same spec as my last message.
+Order of work:
+Don't bundle all of A + B + C into one diff. Do this:
+
+Plan first. Map out the full work across all three. Show me the file list, the order of edits within each stage.
+Stage A — layout refactor + selection states. Apply, restart, hand back to me for browser verification across all 6 payment flows.
+Stage B — visual polish. Apply, restart, hand back for verification against the mockup.
+
+Critical constraints:
+
+Don't break existing PayPal popup flow (verified working)
+Don't break CashApp/Venmo flows
+All 6 payment branches must verify end-to-end after Stage A
+The cross-column communication for Card already uses forwardRef/onReadyChange — same pattern can apply to other branches if needed, OR just lift the relevant action up to checkout.tsx state if simpler
+
+Plan first. Don't write code yet. Show me the plan with file/edit map and I'll approve before you start Stage A.
+Pick when ready. This is a real refactor — better to send Replit a clear, well-scoped brief than have them guess.
