@@ -823,8 +823,10 @@ export default function Checkout() {
                         </div>
                       ) : (
                         <>
-                          <div className="space-y-3">
-                          {/* Full Name + Email */}
+                          {/* Contact group */}
+                          <div className="mb-4">
+                            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-2.5">Contact</p>
+                            <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
@@ -872,8 +874,15 @@ export default function Checkout() {
                         />
                         <p className="text-[10px] text-muted-foreground/60 mt-1">Recommended for shipping updates</p>
                       </div>
+                            </div>
+                          </div>
 
-                      {/* Street Address */}
+                          <div className="border-t border-white/[0.05] my-4" />
+
+                          {/* Address group */}
+                          <div>
+                            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-2.5">Address</p>
+                            <div className="space-y-3">
                       <div>
                         <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
                         <Input
@@ -992,13 +1001,14 @@ export default function Checkout() {
                           {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
                         </div>
                       </div>
+                            </div>
                           </div>
                           <div className="mt-4 pt-3 border-t border-white/[0.06]">
                             <Button
                               type="button"
                               onClick={() => { if (shippingValid) setShippingSaved(true); }}
                               disabled={!shippingValid}
-                              className="w-full"
+                              className="w-full bg-[#E7FB10] text-[#1a1a1f] font-semibold"
                               data-testid="button-save-address"
                             >
                               Save Address
