@@ -54,6 +54,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const [cardIneligible, setCardIneligible] = useState(false);
+  const [cardDeclineError, setCardDeclineError] = useState<string | null>(null);
   // sdkReady flips true once the SDK is initialized and card eligibility confirmed
   const [sdkReady, setSdkReady] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
@@ -299,11 +300,41 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     }
   };
 
+  // Map PayPal decline codes / messages to user-friendly text
+  const getDeclineMessage = (data: any): string => {
+    const raw: string = (data?.message ?? data?.description ?? data?.details?.[0]?.description ?? "").toLowerCase();
+    const code: string = (data?.code ?? data?.details?.[0]?.issue ?? "").toLowerCase();
+
+    if (code.includes("insufficient_funds") || raw.includes("insufficient funds") || raw.includes("insufficient_funds")) {
+      return "Your card was declined due to insufficient funds. Please try a different card or payment method.";
+    }
+    if (code.includes("card_expired") || raw.includes("expired") || raw.includes("expir")) {
+      return "Your card appears to be expired. Please check the expiry date or use a different card.";
+    }
+    if (code.includes("invalid_cvv") || raw.includes("cvv") || raw.includes("security code") || raw.includes("cvc")) {
+      return "The security code (CVV) entered is incorrect. Please double-check and try again.";
+    }
+    if (code.includes("invalid_account") || raw.includes("invalid card") || raw.includes("invalid account") || raw.includes("card number")) {
+      return "The card number appears to be invalid. Please check your details and try again.";
+    }
+    if (code.includes("do_not_honor") || raw.includes("do not honor") || raw.includes("do_not_honor")) {
+      return "Your bank declined the transaction. Please contact your bank or try a different card.";
+    }
+    if (code.includes("fraud") || raw.includes("fraud") || raw.includes("restricted")) {
+      return "This transaction was flagged by your bank. Please contact your bank or use a different card.";
+    }
+    if (raw.includes("declined") || code.includes("declined")) {
+      return "Your card was declined. Please check your details or try a different card.";
+    }
+    return "Your card payment could not be processed. Please check your details or try a different card.";
+  };
+
   // Handle card payment submission
   // v6: create order first, then pass orderId directly to submit()
   const handleCardSubmit = async () => {
     if (!cardSessionRef.current || isProcessingCard || disabled) return;
     setIsProcessingCard(true);
+    setCardDeclineError(null);
     try {
       const { orderId } = await createOrder();
       const { state, data } = await cardSessionRef.current.submit(orderId);
@@ -319,12 +350,15 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       } else if (state === "canceled") {
         handleCancel(data ?? {});
       } else {
-        const err = data?.message ?? "Card payment failed";
+        const friendlyMessage = getDeclineMessage(data);
         console.error("[PayPal Card] submit failed:", state, data);
-        onError?.(new Error(err));
+        setCardDeclineError(friendlyMessage);
+        onError?.(new Error(data?.message ?? "Card payment failed"));
       }
     } catch (e: any) {
       console.error("Card payment error:", e);
+      const friendlyMessage = getDeclineMessage(e);
+      setCardDeclineError(friendlyMessage);
       onError?.(e);
     } finally {
       setIsProcessingCard(false);
@@ -433,25 +467,39 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
               </div>
 
               {!hideSubmitButton && (
-                <Button
-                  onClick={handleCardSubmit}
-                  disabled={disabled || isProcessingCard || !cardFieldsReady}
-                  className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
-                  size="lg"
-                  data-testid="button-pay-card"
-                >
-                  {isProcessingCard ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-4 w-4" />
-                      Pay ${amount}
-                    </>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleCardSubmit}
+                    disabled={disabled || isProcessingCard || !cardFieldsReady}
+                    className="w-full bg-[#d4ed1f] text-[#0a0a0a] font-display text-base gap-2"
+                    size="lg"
+                    data-testid="button-pay-card"
+                  >
+                    {isProcessingCard ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-4 w-4" />
+                        Pay ${amount}
+                      </>
+                    )}
+                  </Button>
+                  {cardDeclineError && (
+                    <div
+                      className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-400"
+                      data-testid="card-decline-error"
+                      role="alert"
+                    >
+                      <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fillRule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 10 14z" clipRule="evenodd" />
+                      </svg>
+                      <span>{cardDeclineError}</span>
+                    </div>
                   )}
-                </Button>
+                </div>
               )}
 
             </div>
