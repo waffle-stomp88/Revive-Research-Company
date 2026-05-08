@@ -52,7 +52,7 @@ import {
   ChevronUp,
   MapPin,
 } from "lucide-react";
-import type { Product, User as UserType } from "@shared/schema";
+import type { Product, User as UserType, SavedAddress } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
@@ -237,6 +237,7 @@ export default function Checkout() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [shippingSaved, setShippingSaved] = useState(false);
   const [payAnotherWayExpanded, setPayAnotherWayExpanded] = useState(false);
+  const [saveToProfile, setSaveToProfile] = useState(false);
   
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
@@ -335,6 +336,48 @@ export default function Checkout() {
     },
   });
 
+  // Save shipping address back to user's profile.
+  // PATCHes the existing default address if one exists; POSTs a new one otherwise.
+  const saveAddressMutation = useMutation({
+    mutationFn: async () => {
+      const parts = customerName.trim().split(" ");
+      const firstName = parts[0] || customerName.trim();
+      const lastName = parts.slice(1).join(" ");
+      const addressPayload = {
+        label: "Default",
+        firstName,
+        lastName,
+        address: shippingAddress.street,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zipCode: shippingAddress.zip,
+        country: "United States",
+        isDefault: true,
+      };
+      const existingDefault = savedAddresses?.find(a => a.isDefault) ?? savedAddresses?.[0];
+      if (existingDefault) {
+        const response = await apiRequest("PATCH", `/api/addresses/${existingDefault.id}`, addressPayload);
+        return response.json();
+      }
+      const response = await apiRequest("POST", "/api/addresses", addressPayload);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/addresses"] });
+      toast({
+        title: "Address saved",
+        description: "Your shipping address has been saved to your profile.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Couldn't save address",
+        description: "Your order will still go through — we just couldn't save the address.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const searchParams = new URLSearchParams(window.location.search);
   const productId = searchParams.get("productId");
   const bundleId = searchParams.get("bundleId");
@@ -362,6 +405,17 @@ export default function Checkout() {
 
   const isAuthenticated = !!user;
 
+  // Fetch saved addresses for logged-in users (for checkout pre-fill)
+  const { data: savedAddresses } = useQuery<SavedAddress[]>({
+    queryKey: ["/api/addresses"],
+    queryFn: async () => {
+      const res = await fetch("/api/addresses", { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user,
+  });
+
   // Pre-fill customer info from user data
   useEffect(() => {
     if (user) {
@@ -369,6 +423,22 @@ export default function Checkout() {
       setCustomerName(`${user.firstName || ""} ${user.lastName || ""}`.trim());
     }
   }, [user]);
+
+  // Pre-fill shipping address from the user's default saved address.
+  // Fills each field individually so a partial sessionStorage restore is topped up.
+  useEffect(() => {
+    if (!savedAddresses || !user) return;
+    const defaultAddr = savedAddresses.find(a => a.isDefault) ?? savedAddresses[0];
+    if (!defaultAddr) return;
+    setShippingAddress(prev => ({
+      street: prev.street || defaultAddr.address,
+      city: prev.city || defaultAddr.city,
+      state: prev.state || defaultAddr.state,
+      zip: prev.zip || defaultAddr.zipCode,
+    }));
+    // Fill name from saved address if still blank after user-data effect
+    setCustomerName(prev => prev || `${defaultAddr.firstName} ${defaultAddr.lastName}`.trim());
+  }, [savedAddresses, user]);
 
   // Manual payment order creation
   const createManualOrderMutation = useMutation({
@@ -1070,9 +1140,40 @@ export default function Checkout() {
                             </div>
                           </div>
                           <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                            {isAuthenticated && (
+                              <div
+                                className="flex items-center gap-2 mb-3 cursor-pointer select-none"
+                                onClick={() => setSaveToProfile(v => !v)}
+                                data-testid="checkbox-save-to-profile-wrapper"
+                              >
+                                <div
+                                  className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
+                                    saveToProfile
+                                      ? "bg-[#E7FB10] border-[#E7FB10]"
+                                      : "border-white/30"
+                                  }`}
+                                >
+                                  {saveToProfile && (
+                                    <svg className="w-2.5 h-2.5 text-[#1a1a1f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="text-xs text-muted-foreground" data-testid="checkbox-save-to-profile">
+                                  Save to my profile for next time
+                                </span>
+                              </div>
+                            )}
                             <Button
                               type="button"
-                              onClick={() => { if (shippingValid) setShippingSaved(true); }}
+                              onClick={() => {
+                                if (shippingValid) {
+                                  setShippingSaved(true);
+                                  if (saveToProfile && isAuthenticated) {
+                                    saveAddressMutation.mutate();
+                                  }
+                                }
+                              }}
                               disabled={!shippingValid}
                               className="w-full bg-[#E7FB10] text-[#1a1a1f] font-semibold"
                               data-testid="button-save-address"
