@@ -1,0 +1,62 @@
+Locked. Two distinct things to fix, and I want to bundle them clearly so Replit doesn't conflate them.
+
+## What we're committing to
+
+1. **Sticky right column fix** — the bug you already noticed (overlapping nav). CSS-only fix.
+2. **Original "all right" architecture for Card** — Replit's forwardRef approach with the two fixes I flagged before.
+
+These are independent changes but they're both part of getting Card payments working correctly. We'll bundle them into a single Phase 5c continuation.
+
+## Message to send Replit
+
+Paste this in:
+
+> Architecture decision locked: **all Pay buttons stay in the right column.** Card branch uses your original cross-column forwardRef approach. We're also fixing the sticky right-column bug at the same time.
+>
+> **Two distinct changes in one work session:**
+>
+> ### Change A — Fix the sticky right column
+>
+> The right column is supposed to scroll with the user but currently overlaps the nav bar. Standard CSS fix:
+>
+> ```css
+> /* whatever class wraps the right column */
+> .order-summary-column {
+>   position: sticky;
+>   top: [nav-height]px; /* check the actual nav height — likely ~64-80px */
+>   align-self: start; /* critical for sticky in grid */
+>   max-height: calc(100vh - [nav-height]px - 16px); /* breathing room */
+>   overflow-y: auto; /* internal scroll if right column itself is taller than viewport */
+> }
+> ```
+>
+> Find the actual nav bar height in the codebase (probably in a `<Header>` or layout component) and use that exact value with `+ 16px` breathing room.
+>
+> Test scenarios:
+> - Short cart (1 item): right column shouldn't need to stick — behaves normally
+> - Long cart (5+ items, all upsells, complex shipping): right column sticks under nav, Pay button stays visible. If column itself is taller than viewport, internal scroll engages so Pay button at the bottom is still reachable.
+> - Scroll up from far down the page: nav doesn't get covered by sticky column
+>
+> ### Change B — Apply your original Phase 5c forwardRef diff with two corrections
+>
+> Going back to your original cross-column diff. Apply it with these two fixes:
+>
+> **Fix 1 — Cross-column ready state.** `disabled={!cardPaypalRef.current}` doesn't trigger re-renders when the ref is set. Add explicit ready state:
+> - Pass `cardFieldsReady` up via `onReadyChange?: (ready: boolean) => void` callback prop
+> - Use that state in checkout.tsx to gate the right-column Pay button's `disabled`
+>
+> **Fix 2 — White iframe backgrounds.** Apply your style API research:
+> - `body: { background: "transparent" }` instead of `backgroundColor`
+> - Remove unsupported `input.backgroundColor`
+> - Use `input::placeholder` selector form
+> - If transparency doesn't fully solve it, try `background: "#000000"` (literal black, in the whitelist)
+> - **Do NOT use the "fixed height to clip" fallback** — breaks on Amex (15-digit), focus rings, inline error text
+>
+> ### Order of work
+>
+> 1. Plan first — show me which files you'll touch and a rough diff outline for both changes
+> 2. After I approve plan: apply Change A first (sticky CSS fix), restart, hand back for verification
+> 3. Once sticky is verified: apply Change B (forwardRef + style fixes), restart, hand back
+> 4. Don't bundle them into one diff — separate so we can isolate any issues
+>
+> Show me the plan. Don't write code yet.Pick when ready.
