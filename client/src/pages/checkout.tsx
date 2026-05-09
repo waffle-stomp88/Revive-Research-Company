@@ -1560,14 +1560,14 @@ export default function Checkout() {
                       </div>
                       {/* card brand logos */}
                       <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
-                          <img src="/card-logos/visa.svg" alt="Visa" className="h-[13px] w-auto object-contain" />
+                        <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm px-1">
+                          <img src="/card-logos/visa.svg" alt="Visa" className="h-[11px] w-auto object-contain" />
                         </div>
                         <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
-                          <img src="/card-logos/mastercard.svg" alt="Mastercard" className="h-[18px] w-auto object-contain" />
+                          <img src="/card-logos/mastercard.svg" alt="Mastercard" className="h-[16px] w-auto object-contain" />
                         </div>
                         <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
-                          <img src="/card-logos/amex.svg" alt="American Express" className="h-[18px] w-auto object-contain" />
+                          <img src="/card-logos/amex.svg" alt="American Express" className="h-[16px] w-auto object-contain" />
                         </div>
                       </div>
                     </div>
