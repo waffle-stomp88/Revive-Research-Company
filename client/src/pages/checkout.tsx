@@ -1558,11 +1558,17 @@ export default function Checkout() {
                         <p className="text-sm font-semibold leading-none">Card details</p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">Encrypted by PayPal</p>
                       </div>
-                      {/* card brand indicators */}
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#1a1f6b] text-[#aab4ff] border border-[#aab4ff]/20">VISA</span>
-                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#3d1a00] text-[#ff8c42] border border-[#ff8c42]/20">MC</span>
-                        <span className="text-[9px] font-black tracking-tight px-1.5 py-0.5 rounded bg-[#001a3d] text-[#60a5fa] border border-[#60a5fa]/20">AMEX</span>
+                      {/* card brand logos */}
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
+                          <img src="/card-logos/visa.svg" alt="Visa" className="h-[13px] w-auto object-contain" />
+                        </div>
+                        <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
+                          <img src="/card-logos/mastercard.svg" alt="Mastercard" className="h-[18px] w-auto object-contain" />
+                        </div>
+                        <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm">
+                          <img src="/card-logos/amex.svg" alt="American Express" className="h-[18px] w-auto object-contain" />
+                        </div>
                       </div>
                     </div>
                     <PayPalCheckout
