@@ -869,7 +869,7 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#2a2a2a]">
+        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#1f1f1f]">
           <SEOHead title="Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto w-full">
             {/* Mobile Header - Compact */}
