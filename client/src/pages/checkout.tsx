@@ -1588,6 +1588,11 @@ export default function Checkout() {
                       intent="CAPTURE"
                       cartItems={cartItems}
                       customerEmail={user?.email || customerEmail}
+                      customerName={customerName}
+                      shippingAddress={shippingAddress}
+                      subtotal={cartSubtotal}
+                      shippingCost={cartShipping}
+                      taxAmount={cartTax}
                       showCardFields={true}
                       defaultMethod="card"
                       hideSubmitButton={true}
@@ -2011,6 +2016,11 @@ export default function Checkout() {
                           intent="CAPTURE"
                           cartItems={cartItems}
                           customerEmail={user?.email || customerEmail}
+                          customerName={customerName}
+                          shippingAddress={shippingAddress}
+                          subtotal={cartSubtotal}
+                          shippingCost={cartShipping}
+                          taxAmount={cartTax}
                           defaultMethod="paypal"
                           onSuccess={handlePayPalSuccess}
                           onError={handlePayPalError}

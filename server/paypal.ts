@@ -110,7 +110,7 @@ export async function getClientToken() {
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
     const { ordersController } = initPayPalClient();
-    const { amount, currency, intent } = req.body;
+    const { amount, currency, intent, shippingAddress, lineItems, breakdown } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       return res
@@ -132,18 +132,89 @@ export async function createPaypalOrder(req: Request, res: Response) {
         .json({ error: "Invalid intent. Intent is required." });
     }
 
+    const total = parseFloat(amount);
+
+    // Build enriched purchase unit when shipping address and line items are provided
+    let purchaseUnit: Record<string, any>;
+
+    if (
+      shippingAddress &&
+      Array.isArray(lineItems) &&
+      lineItems.length > 0 &&
+      breakdown
+    ) {
+      const shippingAmt = parseFloat(breakdown.shipping ?? "0") || 0;
+      const taxAmt = parseFloat(breakdown.taxTotal ?? "0") || 0;
+      // Derive item total so that itemTotal + shipping + tax === total exactly
+      const itemTotal = parseFloat((total - shippingAmt - taxAmt).toFixed(2));
+
+      // Distribute itemTotal across line items proportional to their unit prices.
+      // Apply a last-item adjustment guardrail so the sum is exact.
+      const enrichedItems: Array<{ name: string; sku?: string; quantity: string; unitAmount: { currencyCode: string; value: string } }> = [];
+      let runningSum = 0;
+      for (let i = 0; i < lineItems.length; i++) {
+        const item = lineItems[i];
+        const qty = Math.max(1, parseInt(String(item.quantity), 10) || 1);
+        const isLast = i === lineItems.length - 1;
+        let unitAmt: number;
+        if (isLast) {
+          // Guardrail: last item absorbs rounding delta
+          const remaining = parseFloat((itemTotal - runningSum).toFixed(2));
+          unitAmt = parseFloat((remaining / qty).toFixed(2));
+          // If per-unit amount doesn't divide evenly, nudge the total via the last unit
+          const check = parseFloat((unitAmt * qty).toFixed(2));
+          if (check !== remaining) {
+            unitAmt = parseFloat(((remaining + (remaining - check)) / qty).toFixed(2));
+          }
+        } else {
+          unitAmt = parseFloat(parseFloat(String(item.unitAmount)).toFixed(2));
+        }
+        runningSum = parseFloat((runningSum + unitAmt * qty).toFixed(2));
+        const entry: Record<string, any> = {
+          name: String(item.name).substring(0, 127),
+          quantity: String(qty),
+          unitAmount: { currencyCode: currency, value: unitAmt.toFixed(2) },
+        };
+        if (item.sku) entry.sku = String(item.sku).substring(0, 127);
+        enrichedItems.push(entry as any);
+      }
+
+      purchaseUnit = {
+        amount: {
+          currencyCode: currency,
+          value: amount,
+          breakdown: {
+            itemTotal: { currencyCode: currency, value: itemTotal.toFixed(2) },
+            shipping: { currencyCode: currency, value: shippingAmt.toFixed(2) },
+            taxTotal: { currencyCode: currency, value: taxAmt.toFixed(2) },
+          },
+        },
+        items: enrichedItems,
+        shipping: {
+          name: { fullName: String(shippingAddress.fullName || "").substring(0, 300) },
+          address: {
+            addressLine1: String(shippingAddress.street || "").substring(0, 300),
+            adminArea2: String(shippingAddress.city || "").substring(0, 120),
+            adminArea1: String(shippingAddress.state || "").substring(0, 2),
+            postalCode: String(shippingAddress.zip || "").substring(0, 60),
+            countryCode: "US",
+          },
+        },
+      };
+    } else {
+      purchaseUnit = {
+        amount: {
+          currencyCode: currency,
+          value: amount,
+        },
+      };
+    }
+
     const collect = {
       body: {
         intent: intent,
-        purchaseUnits: [
-          {
-            amount: {
-              currencyCode: currency,
-              value: amount,
-            },
-          },
-        ],
-      },
+        purchaseUnits: [purchaseUnit],
+      } as any,
       prefer: "return=minimal",
     };
 

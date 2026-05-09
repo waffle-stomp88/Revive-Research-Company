@@ -1,0 +1,78 @@
+Excellent agent work. The trace surfaced two genuinely important findings that change the implementation. Let me unpack what they mean and confirm the plan update is right.
+
+**Finding 1: The values are inline-derived, but it's actually fine — with one caveat**
+
+The agent correctly identified that `cartSubtotal`, `cartShipping`, and `cartTax` recompute on every render rather than being stored state. Initially that sounds risky, but their analysis of why it's safe is correct: the `useEffect` on `[amount, currency, intent, disabled]` re-initializes the PayPal session whenever the amount changes, so by the time the user can click Pay, the session amount matches the cart. No mismatch window.
+
+**The caveat I'd add:** if the customer changes BAC water quantity *while* a PayPal session is already initialized but before they click Pay, the session re-initializes — but is there a brief moment where the old session is still clickable with stale data? The agent's analysis suggests no, because re-init replaces the session. Worth confirming during sandbox testing: change BAC water quantity, immediately click Pay, see if the captured amount matches the new total. If yes, you're solid. If no, you have a race condition to fix.
+
+Add this to the test sequence:
+
+> *"Edge case test: load checkout with one launch SKU, wait for PayPal session to initialize, then change BAC water quantity, then click Pay within 1 second. Verify the captured amount matches the new cart total, not the pre-change total."*
+
+**Finding 2: PayPal returns 422 on breakdown mismatch with zero tolerance — this is the real win**
+
+This is the finding that matters most. The agent correctly identified that:
+
+- The current minimal payload passes because there's no `breakdown` block, so PayPal skips validation entirely
+- Adding `breakdown` activates strict math validation
+- PayPal returns **422 UNPROCESSABLE_ENTITY** (not 400) with **no rounding tolerance**
+- Independently rounding three values can cause floating-point drift even when the math should be exact
+
+**Their recommended fix is correct and important.** The naive approach:
+
+```javascript
+itemTotal = round(sum_of_items)
+shipping = round(shippingCost)  
+taxTotal = round(taxAmount)
+amount = round(itemTotal + shipping + taxTotal)
+```
+
+...can produce `itemTotal + shipping + taxTotal !== amount` due to rounding edge cases (e.g., `$67.995` rounds up, three of those compound).
+
+**The derivation pattern they proposed is the right answer:**
+
+```javascript
+const shippingValue = parseFloat(cartShipping.toFixed(2));
+const taxValue = parseFloat(cartTax.toFixed(2));
+const totalValue = parseFloat(cartTotal.toFixed(2));
+const itemTotalValue = parseFloat((totalValue - shippingValue - taxValue).toFixed(2));
+// guarantees itemTotalValue + shippingValue + taxValue === totalValue exactly
+```
+
+This guarantees the breakdown sums to the total because `itemTotal` is derived *from* the total, not computed independently.
+
+**One refinement worth adding to step 3 of the plan:**
+
+The line items in `purchaseUnits[0].items[]` each have their own `unitAmount`. PayPal *also* validates that:
+
+```
+sum(items[i].quantity * items[i].unitAmount) === breakdown.itemTotal
+```
+
+If your derived `itemTotal` is `$87.05` but the actual line items sum to `$87.06` due to per-item rounding, PayPal rejects with 422 again. So the line items need to be reconciled too.
+
+Two ways to handle this:
+
+**Option A (recommended):** Compute line items first, sum them to get itemTotal, then compute total from itemTotal + shipping + tax. Pass that final total as `amount.value`. This means the final total may differ by a cent or two from what the customer saw — usually rounding favoring them.
+
+**Option B:** Use line item amounts as-is but let one "filler" line item absorb the rounding delta. Messy. Don't do this.
+
+**Option C (also viable):** Make `cartSubtotal` itself the sum of `(unitPrice × quantity)` for each cart item rounded to 2 decimals. If `cartSubtotal` is already computed that way, then `itemTotal` derived as `total - shipping - tax` should match the sum of line items naturally. Worth checking how `getSubtotal()` is implemented — if it does `items.reduce((sum, item) => sum + item.price * item.quantity, 0)` without per-item rounding, you might get drift.
+
+**Recommended addition to step 3:**
+
+> *Before sending to PayPal, validate that `sum(items[i].quantity × items[i].unitAmount)` equals `breakdown.itemTotal` exactly. If they don't match, log the discrepancy and adjust the LAST line item's `unitAmount` by the delta to force exact equality. This is a defensive guardrail against floating-point drift in the cart subtotal calculation. Most transactions will hit this with delta = 0 (clean math); the guard only activates on rare drift cases.*
+
+**My final take:**
+
+The plan as updated is solid. Have your agent:
+
+1. Apply the derivation pattern they proposed for `itemTotal` (`total - shipping - tax`)
+2. Add the line-item sum reconciliation guardrail above
+3. Add the BAC water mid-session edge case to the test sequence
+4. Proceed with implementation
+
+After their first sandbox test, if any 422 errors appear, the math integrity log they're already adding will tell you exactly which value mismatched. That's your debugging breadcrumb.
+
+Anything else you want me to weigh in on before they execute?

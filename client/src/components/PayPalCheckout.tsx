@@ -5,6 +5,7 @@ import { Loader2, CreditCard, Lock, Calendar, Shield, MapPin } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { getSkuCode } from "@/lib/sku-codes";
 
 
 type PaymentMethod = "paypal" | "card";
@@ -20,6 +21,11 @@ interface PayPalCheckoutProps {
   intent?: string;
   cartItems?: any[];
   customerEmail?: string;
+  shippingAddress?: { street: string; city: string; state: string; zip: string };
+  customerName?: string;
+  subtotal?: number;
+  shippingCost?: number;
+  taxAmount?: number;
   onSuccess?: (orderData: any, paypalOrderId: string) => void;
   onError?: (error: any) => void;
   onCancel?: () => void;
@@ -40,6 +46,11 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   intent = "CAPTURE",
   cartItems,
   customerEmail,
+  shippingAddress,
+  customerName,
+  subtotal,
+  shippingCost,
+  taxAmount,
   onSuccess,
   onError,
   onCancel,
@@ -76,7 +87,19 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
   const declineErrorRef = useRef<HTMLDivElement>(null);
 
   const createOrder = async () => {
-    const orderPayload = {
+    const hasEnrichment =
+      shippingAddress &&
+      shippingAddress.street &&
+      shippingAddress.city &&
+      shippingAddress.state &&
+      shippingAddress.zip &&
+      cartItems &&
+      cartItems.length > 0 &&
+      subtotal !== undefined &&
+      shippingCost !== undefined &&
+      taxAmount !== undefined;
+
+    const orderPayload: Record<string, any> = {
       amount: amount,
       currency: currency,
       intent: intent,
@@ -86,6 +109,27 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         quantity: item.quantity,
       })),
     };
+
+    if (hasEnrichment) {
+      orderPayload.shippingAddress = {
+        fullName: customerName || "",
+        street: shippingAddress!.street,
+        city: shippingAddress!.city,
+        state: shippingAddress!.state,
+        zip: shippingAddress!.zip,
+      };
+      orderPayload.lineItems = cartItems!.map(item => ({
+        name: item.name,
+        sku: getSkuCode(item.name, item.dosage || ""),
+        quantity: item.quantity,
+        unitAmount: item.price,
+      }));
+      orderPayload.breakdown = {
+        shipping: (shippingCost!).toFixed(2),
+        taxTotal: (taxAmount!).toFixed(2),
+      };
+    }
+
     const response = await fetch("/paypal/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -207,7 +251,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
             const paymentMethods = await sdkInstance.findEligibleMethods();
             cardEligible = paymentMethods.isEligible("advanced_cards");
           } catch (eligibilityError) {
-            console.warn("[PayPal] findEligibleMethods() failed — defaulting card fields to ineligible:", eligibilityError);
+            if (import.meta.env.DEV) { console.warn("[PayPal] findEligibleMethods() failed — defaulting card fields to ineligible:", eligibilityError); }
             cardEligible = false;
           }
           if (!cardEligible && isMounted) {

@@ -1,0 +1,129 @@
+Brief: PayPal pre-launch hardening (v2 — refined after trace)
+Two issues to fix before going live with PayPal.
+Issue 1: PayPal order-create payload missing shipping address and line items
+Context from trace:
+
+Address and customer name are collected in React state (shippingAddress, customerName) and mirrored to sessionStorage
+POST /api/paypal/create-order currently sends only { amount, currency, intent }
+server/paypal.ts → createPaypalOrder builds a minimal purchaseUnits with only amount — no shipping, no items
+Address IS already stored in our orders table after capture via POST /api/orders/paypal
+Result: PayPal's transaction record shows blank address and blank line items, even though we have the data
+
+Required changes:
+A. Frontend — expand the create-order request payload
+In the component that calls POST /api/paypal/create-order (PayPalCheckout / PayPalButton / card fields component), update the request body from:
+javascript{ amount, currency, intent }
+To:
+javascript{
+  amount,
+  currency,
+  intent,
+  shippingAddress: {
+    fullName: customerName,
+    street: shippingAddress.street,
+    city: shippingAddress.city,
+    state: shippingAddress.state,
+    postalCode: shippingAddress.zip,
+    countryCode: "US"
+  },
+  cartItems: cart.items.map(item => ({
+    skuCode: item.skuCode,        // SKU code, not display name
+    quantity: item.quantity,
+    unitPrice: item.unitPrice
+  })),
+  breakdown: {
+    itemTotal: itemSubtotal,
+    shipping: shippingCost,
+    taxTotal: taxAmount
+  }
+}
+Apply this to both the PayPal button flow AND the direct-card flow. They both go through the same create-order endpoint, so the payload shape needs to be consistent.
+B. Server — expand createPaypalOrder to build full purchaseUnits
+In server/paypal.ts, update createPaypalOrder to accept the new fields and pass them to PayPal:
+javascript// New purchaseUnits structure
+purchaseUnits: [{
+  amount: {
+    currencyCode: currency,
+    value: amount,
+    breakdown: {
+      itemTotal: { currencyCode: currency, value: breakdown.itemTotal.toFixed(2) },
+      shipping: { currencyCode: currency, value: breakdown.shipping.toFixed(2) },
+      taxTotal: { currencyCode: currency, value: breakdown.taxTotal.toFixed(2) }
+    }
+  },
+  items: cartItems.map(item => ({
+    name: item.skuCode,
+    quantity: String(item.quantity),
+    unitAmount: { 
+      currencyCode: currency, 
+      value: item.unitPrice.toFixed(2) 
+    },
+    category: "PHYSICAL_GOODS"
+  })),
+  shipping: {
+    name: { 
+      fullName: shippingAddress.fullName 
+    },
+    address: {
+      addressLine1: shippingAddress.street,
+      adminArea2: shippingAddress.city,
+      adminArea1: shippingAddress.state,
+      postalCode: shippingAddress.postalCode,
+      countryCode: shippingAddress.countryCode || "US"
+    }
+  }
+}]
+Note: the PayPal Node SDK uses camelCase field names internally (currencyCode, addressLine1, adminArea1) which the SDK maps to PayPal's underscore_case wire format. Confirm the field names match what the existing createPaypalOrder already uses for consistency.
+C. SKU code naming convention
+Use internal SKU codes for items[].name:
+
+Format: RR-{productCode}-{dosageMg} (e.g., RR-BPC157-10, RR-TB500-5)
+For GLP-1s: use the existing RR-A1/A2/A3 codes (e.g., RR-A1-10 for Retatrutide 10mg)
+Add-ons: RR-COLDPACK-1, RR-BACWATER-3ML, etc.
+If a skuCode field doesn't exist on products yet, generate one consistently from product code + dosage when building the cart payload
+Never use full compound names in the PayPal payload
+Customer-facing site, emails, and admin dashboard continue to show full names — only the PayPal API uses SKU codes
+
+D. Math integrity check
+PayPal validates that itemTotal + shipping + taxTotal === amount.value. If breakdown sum doesn't match the total, PayPal rejects with a 400 error. Add a safety check before the API call that the sum equals the total within 1 cent tolerance, and log a warning if it doesn't.
+E. Card fields submit call — no change needed
+The trace showed the card fields submit only passes orderId and billing postal code. That's correct — PayPal carries shipping data forward from the order itself once it's set at create time, so no changes needed in the card submit step.
+Issue 2: Production console.logs in PayPal components
+From the recent debug scan: PayPalCheckout.tsx and PayPalButton.tsx log full order capture results and PayPal API responses to the browser console in production. Standard hygiene cleanup before launch.
+Fix:
+
+Remove or gate behind if (import.meta.env.DEV) all console.log, console.debug, console.info statements in:
+
+client/src/components/PayPalCheckout.tsx
+client/src/components/PayPalButton.tsx
+Card fields component (whichever file handles the card submit)
+
+
+Keep console.error for actual error cases — useful for production monitoring
+
+Test sequence
+
+Show me the diff for both fixes before applying
+Apply changes after approval
+Restart server
+In sandbox, run a direct-card test transaction:
+
+Use sandbox test card 4032039999038333, exp 01/30, CVV 123
+Use a launch SKU with cold pack add-on (tests multi-line orders)
+Fill in real-looking shipping address (use mine: [your real address])
+
+
+Log into sandbox business account at https://www.sandbox.paypal.com/
+Open the test transaction → verify all of the following are populated:
+
+Shipping address: full name, street, city, state, ZIP, country
+Order details: each line item shows the SKU code, quantity, unit price
+Subtotal, shipping, tax breakdown displayed correctly
+Purchase Total matches amount captured
+
+
+Run a second sandbox test using the PayPal button flow → verify same data appears with consistent SKU naming
+Open production browser console on deployed app → confirm no PayPal-related logs appear during sandbox transaction
+Hand back for browser verification before declaring complete
+
+Constraints: do not modify vite.config.ts and do not introduce App.tsx-level lazy loading.
