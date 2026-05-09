@@ -510,6 +510,11 @@ export default function Checkout() {
         discount: 0,
         total: cartTotal,
         customerEmail: customerEmail,
+        customerName: customerName,
+        address: shippingAddress.street,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zip: shippingAddress.zip,
       };
       sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
       
@@ -612,6 +617,11 @@ export default function Checkout() {
       discount: 0, // Discount already applied to item prices
       total: subTotal + shippingCost,
       customerEmail: user?.email || customerEmail,
+      customerName: customerName,
+      address: shippingAddress.street,
+      city: shippingAddress.city,
+      state: shippingAddress.state,
+      zip: shippingAddress.zip,
     };
     sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
     

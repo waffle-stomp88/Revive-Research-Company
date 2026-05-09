@@ -39,6 +39,11 @@ interface OrderSummary {
   discount: number;
   total: number;
   customerEmail: string;
+  customerName?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
 }
 
 export default function OrderConfirmation() {
@@ -464,6 +469,25 @@ export default function OrderConfirmation() {
                   <p className="font-mono text-sm font-medium text-[#E7FB10]">
                     #{getShortOrderRef(paypalOrderId || orderId || '')}
                   </p>
+                </div>
+              )}
+
+              {/* Ship To */}
+              {orderSummary?.customerName && (
+                <div className="bg-muted/20 border border-border/40 rounded-lg p-4 mb-5">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5" />
+                    Ship To
+                  </p>
+                  <p className="font-semibold text-sm text-foreground">{orderSummary.customerName}</p>
+                  {orderSummary.address && (
+                    <p className="text-sm text-muted-foreground mt-0.5">{orderSummary.address}</p>
+                  )}
+                  {orderSummary.city && (
+                    <p className="text-sm text-muted-foreground">
+                      {orderSummary.city}{orderSummary.state ? `, ${orderSummary.state}` : ''}{orderSummary.zip ? ` ${orderSummary.zip}` : ''}
+                    </p>
+                  )}
                 </div>
               )}
 
