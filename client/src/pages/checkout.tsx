@@ -1559,8 +1559,8 @@ export default function Checkout() {
 
                 </div>
 
-                {/* Card Details Panel — always mounted when eligible so PayPal SDK session survives tab switches */}
-                {hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
+                {/* Card Details Panel — only shown once shipping is saved */}
+                {shippingSaved && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
                   <div className={`relative bg-[#141414] rounded-xl p-4 mb-3.5 border border-[#d4ed1f]/20 overflow-hidden${selectedPaymentMethod !== "card" ? " hidden" : ""}`}>
                     {/* ambient glow */}
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#d4ed1f]/6 rounded-full blur-2xl pointer-events-none" />
