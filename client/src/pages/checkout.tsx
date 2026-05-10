@@ -1720,18 +1720,22 @@ export default function Checkout() {
                       </div>
                       <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30 flex-wrap">
                         {bacWaterSizes.length > 1 ? (
-                          <select
+                          <Select
                             value={selectedBacWaterSize}
-                            onChange={(e) => setSelectedBacWaterSize(e.target.value)}
-                            className="bg-background border border-border rounded-md px-2 py-1.5 text-sm flex-1 min-w-0"
+                            onValueChange={(val) => setSelectedBacWaterSize(val)}
                             data-testid="select-bac-water-size"
                           >
-                            {bacWaterSizes.map((size) => (
-                              <option key={size.dosage} value={size.dosage}>
-                                {size.dosage} - ${Number(size.price || bacWater.price).toFixed(2)}
-                              </option>
-                            ))}
-                          </select>
+                            <SelectTrigger className="flex-1 min-w-0 h-9 text-sm bg-background border-border">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {bacWaterSizes.map((size) => (
+                                <SelectItem key={size.dosage} value={size.dosage}>
+                                  {size.dosage} — ${Number(size.price || bacWater.price).toFixed(2)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         ) : (
                           <span className="text-sm font-bold text-[#21d8ff] flex-1">
                             ${Number(bacWater.price).toFixed(2)}
