@@ -217,6 +217,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         if (!isMounted) return;
         setIsLoading(true);
         setError(null);
+        setSdkReady(false); // reset so card field mounting effect re-runs after re-init
 
         if (!(window as any).paypal) {
           const script = document.createElement("script");
