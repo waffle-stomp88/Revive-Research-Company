@@ -602,9 +602,8 @@ export default function Checkout() {
       });
     }
     
-    // Store order details for confirmation page before clearing cart
-    const subTotal = getSubtotal();
-    const shippingCost = subTotal >= 175 ? 0 : 20;
+    // Store order details for confirmation page before clearing cart.
+    // Use the same cart variables that were sent to PayPal so totals always match.
     const orderSummary = {
       paypalOrderId,
       items: cartItems.map(item => ({
@@ -613,10 +612,11 @@ export default function Checkout() {
         quantity: item.quantity,
         price: item.price,
       })),
-      subtotal: subTotal,
-      shipping: shippingCost,
+      subtotal: cartSubtotal,
+      shipping: cartShipping,
+      tax: cartTax,
       discount: 0, // Discount already applied to item prices
-      total: subTotal + shippingCost,
+      total: cartTotal,
       customerEmail: user?.email || customerEmail,
       customerName: customerName,
       address: shippingAddress.street,

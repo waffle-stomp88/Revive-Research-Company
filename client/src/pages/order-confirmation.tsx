@@ -36,6 +36,7 @@ interface OrderSummary {
   items: OrderItem[];
   subtotal: number;
   shipping: number;
+  tax?: number;
   discount: number;
   total: number;
   customerEmail: string;
@@ -546,6 +547,12 @@ export default function OrderConfirmation() {
                         <span>{orderSummary.shipping === 0 ? (
                           <Badge variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30 text-xs">FREE</Badge>
                         ) : `$${orderSummary.shipping.toFixed(2)}`}</span>
+                      </div>
+                    )}
+                    {orderSummary.subtotal > 0 && (orderSummary.tax ?? 0) > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Sales Tax</span>
+                        <span>${orderSummary.tax!.toFixed(2)}</span>
                       </div>
                     )}
                     {(orderSummary.subtotal > 0 || orderSummary.discount > 0) && (
