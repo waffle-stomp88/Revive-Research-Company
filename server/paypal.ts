@@ -111,7 +111,7 @@ export async function getClientToken() {
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
     const { ordersController } = initPayPalClient();
-    const { amount, currency, intent, shippingAddress, lineItems, breakdown } = req.body;
+    const { amount, currency, intent, shippingAddress, lineItems, breakdown, payer } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       return res
@@ -214,6 +214,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
     const collect = {
       body: {
         intent: intent,
+        ...(payer ? { payer } : {}),
         purchaseUnits: [purchaseUnit],
       } as any,
       prefer: "return=minimal",

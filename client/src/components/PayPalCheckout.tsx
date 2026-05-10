@@ -137,6 +137,18 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       })),
     };
 
+    // Always include payer info so card transactions show the customer name
+    // in PayPal's activity list (not just PayPal-wallet transactions).
+    if (customerName || customerEmail) {
+      const nameParts = (customerName || "").trim().split(/\s+/);
+      const givenName = nameParts[0] || "";
+      const surname = nameParts.slice(1).join(" ") || "";
+      orderPayload.payer = {
+        ...(customerEmail ? { emailAddress: customerEmail } : {}),
+        ...(givenName ? { name: { givenName, surname } } : {}),
+      };
+    }
+
     if (hasEnrichment) {
       orderPayload.shippingAddress = {
         fullName: customerName || "",
