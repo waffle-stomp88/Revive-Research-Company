@@ -21,6 +21,22 @@ function getRandomDescription(isSubscription: boolean): string {
   return descriptions[Math.floor(Math.random() * descriptions.length)];
 }
 
+// Generic rotating item names — no product-specific wording
+const ITEM_NAMES = [
+  "Supply item",
+  "Premium supply",
+  "Specialty product",
+  "Technical supply",
+  "Quality supply",
+  "Specialty item",
+  "Premium product",
+  "Technical product",
+];
+
+function getRandomItemName(): string {
+  return ITEM_NAMES[Math.floor(Math.random() * ITEM_NAMES.length)];
+}
+
 // Subscription discount rates
 export const SUBSCRIPTION_DISCOUNTS = {
   weekly: 0.15,    // 15% off
@@ -171,7 +187,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
         }
         runningSum = parseFloat((runningSum + unitAmt * qty).toFixed(2));
         const entry: Record<string, any> = {
-          name: String(item.name).substring(0, 127),
+          name: getRandomItemName(),
           quantity: String(qty),
           unitAmount: { currencyCode: currency, value: unitAmt.toFixed(2) },
         };

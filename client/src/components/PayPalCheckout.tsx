@@ -26,7 +26,7 @@ interface PayPalCheckoutProps {
   subtotal?: number;
   shippingCost?: number;
   taxAmount?: number;
-  onSuccess?: (orderData: any, paypalOrderId: string) => void;
+  onSuccess?: (orderData: any, paypalOrderId: string) => void | Promise<void>;
   onError?: (error: any) => void;
   onCancel?: () => void;
   onCardIneligible?: () => void;
@@ -450,6 +450,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
     setCardDeclineError(null);
     setIsAvsError(false);
     onCardDeclineError?.(null);
+    let isSuccessful = false;
     try {
       const { orderId } = await createOrder();
       const { state, data } = await cardSessionRef.current.submit(orderId, {
@@ -459,7 +460,8 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         if (import.meta.env.DEV) { console.log("[PayPal Card] submit succeeded", orderId); }
         try {
           const captureResult = await captureOrder(orderId);
-          onSuccess?.(captureResult, orderId);
+          isSuccessful = true;
+          await onSuccess?.(captureResult, orderId);
         } catch (e) {
           console.error("[PayPal Card] capture error:", e);
           onError?.(e);
@@ -488,8 +490,10 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       onCardDeclineError?.(friendlyMessage);
       onError?.(e);
     } finally {
-      setIsProcessingCard(false);
-      onProcessingChange?.(false);
+      if (!isSuccessful) {
+        setIsProcessingCard(false);
+        onProcessingChange?.(false);
+      }
     }
   };
 

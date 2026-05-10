@@ -76,6 +76,7 @@ export default function Checkout() {
   const { login, logout } = useAuth();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("card");
   const cardPaypalRef = useRef<PayPalCheckoutHandle | null>(null);
+  const orderCompleteRef = useRef(false);
   const [isCardReady, setIsCardReady] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
   const [checkoutCardDeclineError, setCheckoutCardDeclineError] = useState<string | null>(null);
@@ -243,7 +244,7 @@ export default function Checkout() {
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
   const bacWaterInCart = cartItems.find(item => item.name.toLowerCase().includes("bacteriostatic"));
   const hasBacWater = !!bacWaterInCart;
-  const shouldShowBacUpsell = hasPeptides && bacWater;
+  const shouldShowBacUpsell = hasPeptides && bacWater && !hasBacWater;
   
   // Detect subscription items in cart
   const subscriptionItems = cartItems.filter(item => item.isSubscription);
@@ -631,6 +632,7 @@ export default function Checkout() {
       return typeof key === 'string' && key.startsWith('/api/products');
     }});
     
+    orderCompleteRef.current = true;
     clearCart();
     clearCheckoutStorage();
     localStorage.removeItem("appliedDiscount");
@@ -702,7 +704,7 @@ export default function Checkout() {
   const VENMO_HANDLE = "@reviveresearchco";
   const ZELLE_INFO = "Coming Soon"; // Placeholder until user provides
 
-  if (fromCart && cartItems.length === 0) {
+  if (fromCart && cartItems.length === 0 && !orderCompleteRef.current) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 flex items-center justify-center">
         <Card className="p-6 md:p-12 text-center max-w-md w-full">
@@ -1707,86 +1709,61 @@ export default function Checkout() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`mb-3 md:mb-4 p-3 md:p-4 rounded-lg border ${hasBacWater ? 'bg-[#21d8ff]/5 border-[#21d8ff]/50' : 'bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border-[#21d8ff]/30'}`}
+                      className="mb-3 md:mb-4 p-3 md:p-4 rounded-lg border bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border-[#21d8ff]/30"
                     >
                       <div className="flex items-center gap-3">
                         <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm">Bacteriostatic Water</h4>
-                          <p className="text-xs text-muted-foreground">Reconstitute peptides properly</p>
+                          <h4 className="font-display font-semibold text-sm">Missing something?</h4>
+                          <p className="text-xs text-muted-foreground">Add bacteriostatic water to reconstitute your peptides</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30 flex-wrap">
-                        {hasBacWater ? (
-                          <>
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <span className="text-sm text-[#21d8ff] font-medium">{bacWaterInCart?.dosage}</span>
-                              {(bacWaterInCart?.quantity ?? 1) > 1 && (
-                                <span className="text-xs text-muted-foreground">x{bacWaterInCart?.quantity}</span>
-                              )}
-                              <span className="text-sm font-bold text-[#21d8ff]">
-                                ${((bacWaterInCart?.price ?? 0) * (bacWaterInCart?.quantity ?? 1)).toFixed(2)}
-                              </span>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                              onClick={handleRemoveBacWater}
-                              data-testid="button-remove-bac-water"
-                            >
-                              Remove
-                            </Button>
-                          </>
+                        {bacWaterSizes.length > 1 ? (
+                          <select
+                            value={selectedBacWaterSize}
+                            onChange={(e) => setSelectedBacWaterSize(e.target.value)}
+                            className="bg-background border border-border rounded-md px-2 py-1.5 text-sm flex-1 min-w-0"
+                            data-testid="select-bac-water-size"
+                          >
+                            {bacWaterSizes.map((size) => (
+                              <option key={size.dosage} value={size.dosage}>
+                                {size.dosage} - ${Number(size.price || bacWater.price).toFixed(2)}
+                              </option>
+                            ))}
+                          </select>
                         ) : (
-                          <>
-                            {bacWaterSizes.length > 1 ? (
-                              <select
-                                value={selectedBacWaterSize}
-                                onChange={(e) => setSelectedBacWaterSize(e.target.value)}
-                                className="bg-background border border-border rounded-md px-2 py-1.5 text-sm flex-1 min-w-0"
-                                data-testid="select-bac-water-size"
-                              >
-                                {bacWaterSizes.map((size) => (
-                                  <option key={size.dosage} value={size.dosage}>
-                                    {size.dosage} - ${Number(size.price || bacWater.price).toFixed(2)}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <span className="text-sm font-bold text-[#21d8ff] flex-1">
-                                ${Number(bacWater.price).toFixed(2)}
-                              </span>
-                            )}
-                            <div className="flex items-center border border-border rounded-md overflow-hidden flex-shrink-0" data-testid="bac-water-qty-control">
-                              <button
-                                className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
-                                onClick={() => setSelectedBacWaterQty(q => Math.max(1, q - 1))}
-                                data-testid="button-bac-water-qty-minus"
-                              >
-                                −
-                              </button>
-                              <span className="w-7 text-center text-sm font-medium" data-testid="text-bac-water-qty">
-                                {selectedBacWaterQty}
-                              </span>
-                              <button
-                                className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
-                                onClick={() => setSelectedBacWaterQty(q => Math.min(10, q + 1))}
-                                data-testid="button-bac-water-qty-plus"
-                              >
-                                +
-                              </button>
-                            </div>
-                            <Button
-                              size="sm"
-                              className="bg-[#21d8ff] text-black font-semibold text-xs px-4 flex-shrink-0"
-                              onClick={() => handleAddBacWater()}
-                              data-testid="button-add-bac-water"
-                            >
-                              Add
-                            </Button>
-                          </>
+                          <span className="text-sm font-bold text-[#21d8ff] flex-1">
+                            ${Number(bacWater.price).toFixed(2)}
+                          </span>
                         )}
+                        <div className="flex items-center border border-border rounded-md overflow-hidden flex-shrink-0" data-testid="bac-water-qty-control">
+                          <button
+                            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
+                            onClick={() => setSelectedBacWaterQty(q => Math.max(1, q - 1))}
+                            data-testid="button-bac-water-qty-minus"
+                          >
+                            −
+                          </button>
+                          <span className="w-7 text-center text-sm font-medium" data-testid="text-bac-water-qty">
+                            {selectedBacWaterQty}
+                          </span>
+                          <button
+                            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
+                            onClick={() => setSelectedBacWaterQty(q => Math.min(10, q + 1))}
+                            data-testid="button-bac-water-qty-plus"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="bg-[#21d8ff] text-black font-semibold text-xs px-4 flex-shrink-0"
+                          onClick={() => handleAddBacWater()}
+                          data-testid="button-add-bac-water"
+                        >
+                          Add
+                        </Button>
                       </div>
                     </motion.div>
                   )}
