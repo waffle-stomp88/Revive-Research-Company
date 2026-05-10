@@ -7,6 +7,33 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { getSkuCode } from "@/lib/sku-codes";
 
+// Generic rotating item names — client picks one per order since the PayPal v6
+// SDK patches the order with the client-supplied name, overriding any server value.
+const ITEM_NAMES = [
+  "Lab Supplies",
+  "Lab Consumables",
+  "Research Materials",
+  "Research Reagents",
+  "Scientific Supplies",
+  "Laboratory Supplies",
+  "Biochemical Supplies",
+  "Analytical Supplies",
+  "Lab Grade Materials",
+  "Research Grade Supplies",
+  "Scientific Materials",
+  "Laboratory Consumables",
+  "Analytical Reagents",
+  "Biochemical Materials",
+  "Research Tools",
+  "Scientific Reagents",
+  "Laboratory Materials",
+  "Specialty Lab Supplies",
+];
+
+function getRandomItemName(): string {
+  return ITEM_NAMES[Math.floor(Math.random() * ITEM_NAMES.length)];
+}
+
 
 type PaymentMethod = "paypal" | "card";
 
@@ -119,7 +146,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         zip: shippingAddress!.zip,
       };
       orderPayload.lineItems = cartItems!.map(item => ({
-        name: "Lab Supplies",  // generic name — never the real product name
+        name: getRandomItemName(),
         sku: getSkuCode(item.name, item.dosage || ""),
         quantity: item.quantity,
         unitAmount: item.price,
