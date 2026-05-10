@@ -313,7 +313,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       isMounted = false;
       cleanupRef.current?.();
     };
-  }, [amount, currency, intent, disabled]);
+  }, [currency, intent, disabled]);
 
   // Mount card field web components. Runs (and re-runs cleanly) whenever sdkReady
   // flips true. Creating a fresh session each time makes this StrictMode-safe:
