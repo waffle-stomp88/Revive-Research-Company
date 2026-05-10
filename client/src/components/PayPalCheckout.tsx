@@ -119,7 +119,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         zip: shippingAddress!.zip,
       };
       orderPayload.lineItems = cartItems!.map(item => ({
-        name: item.name,
+        // name intentionally omitted — server assigns a generic rotating name
         sku: getSkuCode(item.name, item.dosage || ""),
         quantity: item.quantity,
         unitAmount: item.price,

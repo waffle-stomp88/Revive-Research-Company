@@ -88,11 +88,19 @@ export default function OrderConfirmation() {
       try {
         const summary = JSON.parse(storedSummary);
         setOrderSummary(summary);
-        // Clear after reading so it doesn't persist
-        sessionStorage.removeItem('orderSummary');
+        // Keep in sessionStorage so refreshes and HMR remounts still show the data.
+        // It is naturally overwritten when the next checkout begins.
       } catch (e) {
         console.error('Failed to parse order summary:', e);
       }
+    } else if (paypalId) {
+      // Fallback for hard refreshes or when sessionStorage was cleared:
+      // fetch minimal order data from the server using the PayPal order ID as
+      // a possession proof (no auth required — the ID itself is unguessable).
+      fetch(`/api/orders/by-paypal/${encodeURIComponent(paypalId)}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then(data => { if (data) setOrderSummary(data); })
+        .catch(() => { /* silently fail — page still shows the reference number */ });
     }
   }, []);
   
@@ -512,29 +520,37 @@ export default function OrderConfirmation() {
                             <p className="text-xs text-muted-foreground mt-0.5">{item.dosage} × {item.quantity}</p>
                           </div>
                         </div>
-                        <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
+                        {item.price > 0 && (
+                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
+                        )}
                       </motion.div>
                     ))}
                   </div>
                   
                   <div className="bg-muted/20 rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span>${orderSummary.subtotal.toFixed(2)}</span>
-                    </div>
+                    {orderSummary.subtotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span>${orderSummary.subtotal.toFixed(2)}</span>
+                      </div>
+                    )}
                     {orderSummary.discount > 0 && (
                       <div className="flex justify-between text-sm text-green-400">
                         <span>Discount</span>
                         <span>-${orderSummary.discount.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Shipping</span>
-                      <span>{orderSummary.shipping === 0 ? (
-                        <Badge variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30 text-xs">FREE</Badge>
-                      ) : `$${orderSummary.shipping.toFixed(2)}`}</span>
-                    </div>
-                    <Separator className="my-3 bg-border/50" />
+                    {orderSummary.subtotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span>{orderSummary.shipping === 0 ? (
+                          <Badge variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30 text-xs">FREE</Badge>
+                        ) : `$${orderSummary.shipping.toFixed(2)}`}</span>
+                      </div>
+                    )}
+                    {(orderSummary.subtotal > 0 || orderSummary.discount > 0) && (
+                      <Separator className="my-3 bg-border/50" />
+                    )}
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total</span>
                       <span className="text-[#E7FB10]">${orderSummary.total.toFixed(2)}</span>

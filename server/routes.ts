@@ -1167,6 +1167,73 @@ export async function registerRoutes(
     }
   });
 
+  // Public fallback: return minimal order summary by PayPal order ID.
+  // The PayPal order ID is unguessable, so it acts as a possession proof.
+  // Only fields shown on the order confirmation page are returned — no extra PII.
+  app.get("/api/orders/by-paypal/:paypalOrderId", async (req, res) => {
+    try {
+      const { paypalOrderId } = req.params;
+      if (!paypalOrderId || typeof paypalOrderId !== "string" || paypalOrderId.length > 64) {
+        return res.status(400).json({ error: "Invalid paypalOrderId" });
+      }
+
+      const rows = await db
+        .select({
+          email: ordersTable.email,
+          firstName: ordersTable.firstName,
+          lastName: ordersTable.lastName,
+          address: ordersTable.address,
+          city: ordersTable.city,
+          state: ordersTable.state,
+          zipCode: ordersTable.zipCode,
+          totalAmount: ordersTable.totalAmount,
+          fulfillmentNotes: ordersTable.fulfillmentNotes,
+        })
+        .from(ordersTable)
+        .where(eq(ordersTable.paypalOrderId, paypalOrderId))
+        .limit(1);
+
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      const row = rows[0];
+
+      // Parse items from fulfillmentNotes.
+      // Stored format: "PayPal Order: {id}. Payer: {id}. Items: {name} ({dosage}) x{qty}, ..."
+      const items: Array<{ name: string; dosage: string; quantity: number; price: number }> = [];
+      if (row.fulfillmentNotes) {
+        const itemsMatch = row.fulfillmentNotes.match(/Items: (.+)$/);
+        if (itemsMatch) {
+          for (const itemStr of itemsMatch[1].split(", ")) {
+            const m = itemStr.match(/^(.+?) \((.+?)\) x(\d+)$/);
+            if (m) {
+              items.push({ name: m[1], dosage: m[2], quantity: parseInt(m[3], 10), price: 0 });
+            }
+          }
+        }
+      }
+
+      res.json({
+        paypalOrderId,
+        items,
+        subtotal: 0,
+        shipping: 0,
+        discount: 0,
+        total: parseFloat(row.totalAmount || "0"),
+        customerEmail: row.email || "",
+        customerName: `${row.firstName || ""} ${row.lastName || ""}`.trim(),
+        address: row.address || "",
+        city: row.city || "",
+        state: row.state || "",
+        zip: row.zipCode || "",
+      });
+    } catch (error) {
+      console.error("Error fetching order by PayPal ID:", error);
+      res.status(500).json({ error: "Failed to fetch order" });
+    }
+  });
+
   // Helper function to mark order as paid and send notifications (email + SMS)
   async function markOrderPaidAndNotify(orderId: string): Promise<{ 
     success: boolean; 
