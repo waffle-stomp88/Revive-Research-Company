@@ -137,18 +137,6 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       })),
     };
 
-    // Always include payer info so card transactions show the customer name
-    // in PayPal's activity list (not just PayPal-wallet transactions).
-    if (customerName || customerEmail) {
-      const nameParts = (customerName || "").trim().split(/\s+/);
-      const givenName = nameParts[0] || "";
-      const surname = nameParts.slice(1).join(" ") || "";
-      orderPayload.payer = {
-        ...(customerEmail ? { emailAddress: customerEmail } : {}),
-        ...(givenName ? { name: { givenName, surname } } : {}),
-      };
-    }
-
     if (hasEnrichment) {
       orderPayload.shippingAddress = {
         fullName: customerName || "",
@@ -494,6 +482,11 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       const { orderId } = await createOrder();
       const { state, data } = await cardSessionRef.current.submit(orderId, {
         billingAddress: { postalCode: postalCode.trim() },
+        // Passes cardholder name into the card iframe so it appears on
+        // the PayPal transaction detail page (payment_source.card.name).
+        // The activity list Name column is always "--" for direct card
+        // payments — that is a PayPal platform limitation, not a code issue.
+        ...(customerName ? { cardholderName: customerName } : {}),
       });
       if (state === "succeeded") {
         if (import.meta.env.DEV) { console.log("[PayPal Card] submit succeeded", orderId); }
