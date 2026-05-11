@@ -660,17 +660,31 @@ export default function ProductDetail() {
   }
 
   if (error || !product) {
+    const isServerError = error instanceof Error && !error.message.startsWith("404:");
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-12 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Compound Unavailable</h2>
           <p className="text-muted-foreground mb-6">
-            This research compound is not currently available. Browse our full catalog below.
+            {isServerError
+              ? "There was a problem loading this compound. Please try again."
+              : "This research compound is not currently available. Browse our full catalog below."}
           </p>
-          <Link href="/peptides">
-            <Button data-testid="button-browse-products">Browse All Compounds</Button>
-          </Link>
+          <div className="flex flex-wrap gap-3 justify-center">
+            {isServerError && (
+              <Button
+                variant="outline"
+                data-testid="button-retry-product"
+                onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/products", params.id] })}
+              >
+                Try Again
+              </Button>
+            )}
+            <Link href="/peptides">
+              <Button data-testid="button-browse-products">Browse All Compounds</Button>
+            </Link>
+          </div>
         </Card>
       </main>
     );
