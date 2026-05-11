@@ -52,6 +52,7 @@ export const ARTICLE_ALIAS_MAP: Record<string, string[]> = {
 
 export const ARTICLE_STOP_WORDS = new Set([
   "the", "and", "for", "with", "from", "this", "that", "vial", "kit",
+  "peptide", "complex", "compound", "research", "guide", "analog", "blend", "stack",
 ]);
 
 /**
@@ -87,20 +88,25 @@ export function buildProductKeywords(
 
 /**
  * Filter a list of articles to those relevant to a product (pure, no DB access).
+ * Articles matched via relatedProductIds are returned first (explicit links),
+ * followed by articles matched via keyword (coincidental matches).
  */
 export function filterArticlesByProduct<
   A extends { id?: string; slug?: string | null; title?: string | null; relatedProductIds?: string[] | null }
 >(articles: A[], productKeywords: string[], productId: string): A[] {
-  return articles.filter(article => {
+  const explicit: A[] = [];
+  const keyword: A[] = [];
+
+  for (const article of articles) {
     if (article.relatedProductIds && article.relatedProductIds.includes(productId)) {
-      return true;
-    }
-    if (productKeywords.length > 0) {
+      explicit.push(article);
+    } else if (productKeywords.length > 0) {
       const haystack = `${article.slug ?? ""} ${article.title ?? ""}`.toLowerCase();
       if (productKeywords.some(kw => haystack.includes(kw))) {
-        return true;
+        keyword.push(article);
       }
     }
-    return false;
-  });
+  }
+
+  return [...explicit, ...keyword];
 }
