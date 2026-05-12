@@ -11,7 +11,8 @@ import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
-import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
+import { setupAuth, isAuthenticated } from "./auth0Auth";
+import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
@@ -355,10 +356,10 @@ export async function registerRoutes(
     await handlePayPalWebhook(req, res);
   });
 
-  // Sync Auth0 user to database
-  // Requires a valid Auth0 ID token in the Authorization header.
-  // User identity is extracted from the verified token — request body
-  // fields are never trusted for session binding.
+  // Sync Supabase user to database and establish Express session.
+  // Requires a valid Supabase access token in the Authorization header.
+  // Identity is extracted exclusively from the server-verified token —
+  // request body fields are never trusted for session binding.
   app.post('/api/auth/sync', async (req, res) => {
     try {
       const authHeader = req.headers.authorization;
@@ -369,36 +370,72 @@ export async function registerRoutes(
       const token = authHeader.slice(7);
       let claims;
       try {
-        claims = await verifyAuth0Token(token);
+        claims = await verifySupabaseToken(token);
       } catch (err) {
-        console.warn("[Security] Auth0 token verification failed:", (err as Error).message);
+        console.warn("[Security] Supabase token verification failed:", (err as Error).message);
         return res.status(401).json({ message: "Invalid or expired token" });
       }
 
-      // Identity comes exclusively from the verified token, never from the request body.
-      // Email is only stored when Auth0 has confirmed it is verified.
-      const id = claims.sub;
-      const email = claims.email_verified === true ? (claims.email || null) : null;
-      const firstName = claims.given_name || claims.nickname || null;
-      const lastName = claims.family_name || null;
-      const profileImageUrl = claims.picture || null;
+      const supabaseId = claims.id;
+      const email = claims.email || null;
+      const meta = claims.user_metadata || {};
+      const firstName = meta.given_name || (meta.full_name || meta.name || "").split(" ")[0] || null;
+      const lastName = meta.family_name || (meta.full_name || meta.name || "").split(" ").slice(1).join(" ") || null;
+      const profileImageUrl = meta.avatar_url || meta.picture || null;
 
-      if (!id) {
-        return res.status(400).json({ message: "Token missing subject claim" });
+      if (!supabaseId) {
+        return res.status(400).json({ message: "Token missing user id" });
+      }
+
+      // Lazy ID migration: if a legacy auth0| user exists with the same email,
+      // atomically swap all user_id references to the new Supabase UUID.
+      // This runs exactly once per legacy user on their first post-migration login.
+      if (email) {
+        const legacyUser = await db.execute(
+          sql`SELECT id FROM users WHERE email = ${email} AND id LIKE 'auth0|%' LIMIT 1`
+        );
+        if (legacyUser.rows.length > 0) {
+          const oldId = legacyUser.rows[0].id as string;
+          console.log(`[Auth] Migrating legacy user ${oldId} → ${supabaseId}`);
+          try {
+            await db.execute(sql`BEGIN`);
+            // Update all child tables before updating the primary key
+            await db.execute(sql`UPDATE orders SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE affiliates SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE wishlists SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE subscriptions SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE user_research_profiles SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE academy_progress SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE saved_addresses SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE notification_preferences SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE research_notes SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE login_history SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE batch_verification_history SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE cycle_tags SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE saved_stacks SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await db.execute(sql`UPDATE product_votes SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            // Update primary key last
+            await db.execute(sql`UPDATE users SET id = ${supabaseId} WHERE id = ${oldId}`);
+            await db.execute(sql`COMMIT`);
+            console.log(`[Auth] Migration complete for ${email}`);
+          } catch (migrationErr) {
+            await db.execute(sql`ROLLBACK`);
+            console.error("[Auth] ID migration failed, rolling back:", migrationErr);
+            return res.status(500).json({ message: "Account migration failed" });
+          }
+        }
       }
 
       await storage.upsertUser({
-        id,
+        id: supabaseId,
         email,
         firstName,
         lastName,
         profileImageUrl,
       });
 
-      const user = await storage.getUser(id);
-
-      (req.session as any).userId = id;
-
+      const user = await storage.getUser(supabaseId);
+      (req.session as any).userId = supabaseId;
       res.json(user);
     } catch (error) {
       console.error("Error syncing user:", error);

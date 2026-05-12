@@ -1,6 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
 import { useEffect, useRef, lazy, Suspense } from "react";
-import { Auth0Provider } from "@auth0/auth0-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -62,6 +61,8 @@ import ResearchStackDetail from "@/pages/research-stack-detail";
 import StackShare from "@/pages/stack-share";
 import Academy from "@/pages/academy";
 import DevLogin from "@/pages/dev-login";
+import AuthCallback from "@/pages/auth-callback";
+import LoginPage from "@/pages/login";
 import Unsubscribe from "@/pages/unsubscribe";
 import SubscriptionSuccess from "@/pages/subscription-success";
 import OrderConfirmation from "@/pages/order-confirmation";
@@ -249,6 +250,8 @@ function Router() {
         <Route path="/peptide-shipping-and-handling" component={Shipping} />
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/rx-panel-7v3k" component={DevLogin} />
+        <Route path="/auth/callback" component={AuthCallback} />
+        <Route path="/login" component={LoginPage} />
 
         {/* 301 Redirects for old URLs */}
         <Route path="/coa">{() => { window.location.replace("/coa/verify-certificate-of-analysis"); return null; }}</Route>
@@ -325,51 +328,33 @@ function App() {
     }
   }, []);
 
-  // Auth0 configuration with fallback values for production builds
-  const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || 'dev-5xq04wwsd1n7xn2n.us.auth0.com';
-  const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID || 'yOXwbImbiTsHffDetLDjqo38XhCKXtzU';
-
   return (
-    <Auth0Provider
-      domain={auth0Domain || ''}
-      clientId={auth0ClientId || ''}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        scope: "openid profile email offline_access",
-      }}
-      cacheLocation="localstorage"
-      useRefreshTokens={true}
-      onRedirectCallback={(appState) => {
-        window.location.replace(appState?.returnTo || window.location.pathname);
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <PreventScrollbarHiding />
-              <AgeVerificationModal />
-              <AffiliateTracker />
-              <ScrollManager />
-              <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">
-                <FreeShippingBanner />
-                <Navigation />
-                <div className="flex-1 pb-16 md:pb-0">
-                  <Router />
-                </div>
-                <Footer className="hidden md:block" />
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <PreventScrollbarHiding />
+            <AgeVerificationModal />
+            <AffiliateTracker />
+            <ScrollManager />
+            <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">
+              <FreeShippingBanner />
+              <Navigation />
+              <div className="flex-1 pb-16 md:pb-0">
+                <Router />
               </div>
-              <MobileBottomNav />
-              <Suspense fallback={null}>
-                <ChatBot />
-                <BackToTopButton />
-              </Suspense>
-              <Toaster />
-            </TooltipProvider>
-          </CartProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </Auth0Provider>
+              <Footer className="hidden md:block" />
+            </div>
+            <MobileBottomNav />
+            <Suspense fallback={null}>
+              <ChatBot />
+              <BackToTopButton />
+            </Suspense>
+            <Toaster />
+          </TooltipProvider>
+        </CartProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

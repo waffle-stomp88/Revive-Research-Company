@@ -1,7 +1,7 @@
 import { useLocation, Link } from "wouter";
 import { Home, ShoppingBag, ShoppingCart, GraduationCap, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavItem {
   label: string;
@@ -46,7 +46,7 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
   const [location] = useLocation();
   const { getItemCount } = useCart();
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, login } = useAuth();
   const itemCount = getItemCount();
 
   const isActive = (item: NavItem) => {
@@ -62,7 +62,7 @@ export function MobileBottomNav() {
   const handleAccountClick = (e: React.MouseEvent) => {
     if (!isAuthenticated) {
       e.preventDefault();
-      loginWithRedirect();
+      login();
     }
   };
 

@@ -1,0 +1,329 @@
+# Auth0 → Supabase Migration Brief — Revive Research
+
+**Date:** May 12, 2026
+**Priority:** High
+**Status:** Ready for implementation — Supabase + Google OAuth infrastructure is live
+
+---
+
+## Context
+
+We are replacing Auth0 with Supabase for all authentication on Revive Research. The Supabase project is created, Google OAuth is configured, and URL routing is set up. This brief covers the code changes needed to complete the migration.
+
+**What's already done (do not redo):**
+
+- Supabase project created (region: East US Ohio, ref: `jxlrrmwyzxxpxfrusdjl`)
+- Google OAuth configured in Google Cloud Console (project: "Revive Research")
+- Google provider enabled in Supabase Authentication → Providers
+- Site URL set to `https://reviveresearch.co`
+- Replit dev URL (`https://revive-research--graysonwillard.replit.app`) added to Additional Redirect URLs
+- Authorized JavaScript origins in Google Cloud include both production and Replit URLs
+- Authorized redirect URI in Google Cloud: `https://jxlrrmwyzxxpxfrusdjl.supabase.co/auth/v1/callback`
+
+---
+
+## Architecture Decisions (already confirmed — do not change)
+
+1. **Keep Express sessions.** Do NOT switch to Supabase JWTs or implement RLS. Supabase is only replacing Auth0 as the login front door. The existing Express session pattern stays intact.
+
+2. **Custom login form.** Do NOT use Supabase's generic Auth UI component. Build/adapt a custom login form that matches our brand.
+
+3. **Lazy-on-first-login ID migration.** Do NOT pre-create Supabase accounts or run a bulk migration script. Existing users get migrated when they first log in post-cutover (details below).
+
+4. **Keep `users.id` column as varchar.** Do NOT change to UUID type. This handles both legacy `auth0|xxxxx` IDs and new Supabase UUIDs during the transition period.
+
+5. **Auth methods supported:** Google OAuth and email/password. Both must work.
+
+---
+
+## Step 1: Install Supabase Client
+
+```bash
+npm install @supabase/supabase-js
+```
+
+Create a Supabase client utility:
+
+```javascript
+// src/lib/supabaseClient.js
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL       // https://jxlrrmwyzxxpxfrusdjl.supabase.co
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY // from Supabase → Project Settings → API
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+```
+
+**Environment variables to add:**
+
+```
+VITE_SUPABASE_URL=https://jxlrrmwyzxxpxfrusdjl.supabase.co
+VITE_SUPABASE_ANON_KEY=<get from Supabase → Project Settings → API → anon public key>
+```
+
+---
+
+## Step 2: Replace Auth0 Login Calls
+
+### Google OAuth Login
+
+Replace the Auth0 `loginWithRedirect` call with:
+
+```javascript
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: window.location.origin + '/auth/callback'
+  }
+})
+```
+
+### Email/Password Signup
+
+```javascript
+const { data, error } = await supabase.auth.signUp({
+  email: email,
+  password: password
+})
+// Supabase will send a confirmation email (confirmation is ON for production)
+```
+
+### Email/Password Login
+
+```javascript
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: email,
+  password: password
+})
+```
+
+### Logout
+
+```javascript
+const { error } = await supabase.auth.signOut()
+```
+
+---
+
+## Step 3: Create Auth Callback Page
+
+Create a route at `/auth/callback` that handles the OAuth redirect:
+
+```javascript
+// src/pages/AuthCallback.jsx (or equivalent)
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
+
+export default function AuthCallback() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleCallback = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      if (session) {
+        // Send session info to Express backend for sync
+        const response = await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            supabaseUserId: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.full_name || session.user.email,
+            avatar: session.user.user_metadata?.avatar_url || null
+          })
+        })
+
+        if (response.ok) {
+          navigate('/')  // or wherever logged-in users should land
+        } else {
+          console.error('Auth sync failed')
+          navigate('/login?error=sync_failed')
+        }
+      } else {
+        navigate('/login?error=no_session')
+      }
+    }
+
+    handleCallback()
+  }, [navigate])
+
+  return <div>Completing login...</div>
+}
+```
+
+---
+
+## Step 4: Update Express Backend — `/api/auth/sync`
+
+This is the critical endpoint. It must handle two cases:
+
+### Case A: Existing user (has an `auth0|` prefixed ID in the database)
+
+When an existing user logs in for the first time post-migration:
+
+1. Receive the Supabase user info (UUID, email)
+2. Query: does a user with this email exist with an `auth0|` prefixed ID?
+3. **If yes:** Run the ID swap as an **atomic transaction** across ALL 13 tables that reference the user ID
+4. Set the Express session with the new Supabase UUID
+5. Continue normally
+
+### Case B: New user (no existing record)
+
+Normal new-user creation flow using the Supabase UUID as the user ID.
+
+### The ID Migration Query (atomic transaction)
+
+**All 13 tables that reference user ID must be updated in a single transaction.** Identify every table with a foreign key or column that stores the user ID. From previous audit, these include (verify this list is still current):
+
+- `users` (primary key)
+- `orders`
+- `affiliate_accounts`
+- `research_profiles`
+- And 9 others identified in the original table audit
+
+```javascript
+// Pseudocode for the ID swap — adapt to your ORM/query pattern
+async function migrateAuth0User(supabaseUuid, email) {
+  const existingUser = await db.query(
+    'SELECT id FROM users WHERE email = $1 AND id LIKE $2',
+    [email, 'auth0|%']
+  )
+
+  if (!existingUser) return null  // not a legacy user
+
+  const oldId = existingUser.id
+
+  await db.transaction(async (trx) => {
+    // Update every table that references the user ID
+    // ORDER MATTERS: update foreign key tables BEFORE the primary key table
+    await trx.query('UPDATE orders SET user_id = $1 WHERE user_id = $2', [supabaseUuid, oldId])
+    await trx.query('UPDATE affiliate_accounts SET user_id = $1 WHERE user_id = $2', [supabaseUuid, oldId])
+    await trx.query('UPDATE research_profiles SET user_id = $1 WHERE user_id = $2', [supabaseUuid, oldId])
+    // ... repeat for all other tables ...
+
+    // Update the users table LAST
+    await trx.query('UPDATE users SET id = $1 WHERE id = $2', [supabaseUuid, oldId])
+  })
+
+  return supabaseUuid
+}
+```
+
+**Critical:** This migration runs ONCE per legacy user on their first login. After the ID swap, they're a normal Supabase user going forward. Add a check so it doesn't attempt the swap again on subsequent logins.
+
+---
+
+## Step 5: Auth State Listener (Frontend)
+
+Replace Auth0's session check with Supabase's auth state listener:
+
+```javascript
+import { supabase } from '../lib/supabaseClient'
+
+// Listen for auth state changes (login, logout, token refresh)
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    // User is logged in — sync with backend if needed
+  }
+  if (event === 'SIGNED_OUT') {
+    // User logged out — clear frontend state
+  }
+})
+
+// Check current session on page load
+const { data: { session } } = await supabase.auth.getSession()
+```
+
+---
+
+## Step 6: Remove Auth0
+
+After the migration is verified working:
+
+1. Remove `@auth0/auth0-react` (or whichever Auth0 package is installed)
+2. Remove Auth0 provider wrapper from the app root
+3. Remove Auth0 environment variables
+4. Remove any Auth0-specific callback routes
+
+**Do NOT remove Auth0 immediately.** Keep Auth0 active (but unused) for two weeks post-cutover as a safety net in case rollback is needed.
+
+---
+
+## Supabase Settings to Verify
+
+Before going live, confirm these settings in the Supabase dashboard:
+
+| Setting | Expected Value | Location |
+|---------|---------------|----------|
+| Site URL | `https://reviveresearch.co` | Auth → URL Configuration |
+| Additional Redirect URLs | `https://revive-research--graysonwillard.replit.app` | Auth → URL Configuration |
+| Google provider | Enabled with Client ID + Secret | Auth → Providers |
+| Email confirmation | **ON** | Auth → Email Templates / Settings |
+| Data API enabled | Yes | Project Settings → API |
+| Automatic table exposure | **OFF** | Project Settings → API |
+| RLS enabled by default | Yes | (leave as-is, not actively used yet) |
+
+---
+
+## Testing Checklist
+
+### Mandatory: Dry Run on Database Copy
+
+**Before touching production,** clone the production database and test the full migration flow:
+
+1. Create a test user with a legacy `auth0|` prefixed ID
+2. Run the complete login → sync → ID swap flow
+3. Verify all 13 tables updated correctly
+4. Verify no data is orphaned
+5. Verify the `isAdmin` flag is preserved for any admin users
+
+### Functional Tests
+
+- [ ] Google OAuth login works (new user)
+- [ ] Google OAuth login works (existing user — triggers ID migration)
+- [ ] Email/password signup works
+- [ ] Email/password login works
+- [ ] Email confirmation email sends and confirms
+- [ ] Logout works
+- [ ] Session persists on page refresh
+- [ ] Auth callback handles errors gracefully
+- [ ] Admin user retains `isAdmin = true` after migration
+- [ ] All user data (orders, affiliate accounts, etc.) is accessible after ID swap
+- [ ] Login works on both production URL and Replit dev URL
+
+---
+
+## Cutover Order of Operations
+
+1. Deploy the code with Supabase auth (Auth0 code removed from login flow but package still installed)
+2. Verify Google OAuth login works with a test account on the Replit dev URL
+3. Verify email/password signup + login works on Replit dev URL
+4. Deploy to production
+5. Test login on production with a personal account
+6. Grayson sends email to 7 existing users informing them of the login change
+7. Monitor for two weeks — Auth0 stays active but unused as rollback safety net
+8. After two weeks with no issues: remove Auth0 package and environment variables
+9. **Follow-up task (not a blocker):** Configure Amazon SES as the email sender for Supabase auth emails (replaces default `noreply@mail.app.supabase.io`)
+
+---
+
+## Environment Variables Summary
+
+### Add:
+```
+VITE_SUPABASE_URL=https://jxlrrmwyzxxpxfrusdjl.supabase.co
+VITE_SUPABASE_ANON_KEY=<from Supabase dashboard → Project Settings → API>
+```
+
+### Keep (for 2-week safety net, then remove):
+```
+# Existing Auth0 variables — do not delete yet
+```
+
+### Remove (after 2-week safety period):
+```
+# All Auth0 environment variables
+```
