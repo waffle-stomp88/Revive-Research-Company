@@ -113,7 +113,88 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
     jsonLd: [{
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": []
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What are research peptides?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Research peptides are short chains of amino acids synthesized in a laboratory setting and sold exclusively for scientific study. They are used by researchers to investigate biological processes such as tissue repair, metabolic regulation, and cellular signaling. All products sold by Revive Research are intended strictly for in-vitro and laboratory research purposes, not for human or animal consumption."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are research peptides legal to purchase?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In the United States, research peptides that are not approved pharmaceutical drugs may be legally purchased for laboratory and scientific research purposes. They are not approved by the FDA for human use and must not be used as drugs, dietary supplements, or for any clinical application. It is the buyer's responsibility to understand and comply with the laws in their jurisdiction before ordering."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I verify the purity of research peptides?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every batch produced by Revive Research is sent to an independent, accredited third-party laboratory for purity and identity testing. You can verify any batch by entering the batch number on our Certificate of Analysis verification page. We publish full HPLC and mass spectrometry data for every lot, giving researchers complete transparency into what they are receiving."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a Certificate of Analysis (COA)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A Certificate of Analysis (COA) is an official document issued by an independent laboratory that confirms the identity, purity, and concentration of a compound. Revive Research provides a COA for every batch of every product, verified by third-party labs using HPLC chromatography and mass spectrometry. Researchers can access and verify COAs directly on our website to ensure the compounds meet their study requirements."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How should research peptides be stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lyophilized (freeze-dried) research peptides should be stored in a cool, dry place away from light — typically at -20°C for long-term storage or 2–8°C for short-term use. Once reconstituted with bacteriostatic water, peptide solutions should be refrigerated at 2–8°C and used within 4 weeks for best stability. Always follow the specific storage recommendations provided on the product's COA or label."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does 'research use only' mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "'Research use only' (RUO) means that the compound is intended solely for controlled scientific experimentation and is not approved, intended, or labeled for use in humans or animals. Purchasing an RUO compound implies the buyer is a qualified researcher or institution conducting legitimate laboratory research. These compounds have not undergone the clinical trials required for FDA drug approval."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I reconstitute research peptides?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Reconstitution is the process of dissolving a lyophilized peptide powder in a sterile liquid, most commonly bacteriostatic water. The required volume depends on the vial size and your target concentration. Revive Research offers a free Reconstitution Wizard that walks researchers through the calculation step by step and generates a printable Vial Card with the exact draw-to-mark instructions for a given syringe type."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between research peptides and pharmaceutical peptides?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pharmaceutical peptides are FDA-approved drugs manufactured under strict GMP (Good Manufacturing Practice) guidelines, prescribed by physicians, and dispensed through licensed pharmacies. Research peptides are synthesized for laboratory investigation, are not FDA-approved for any medical use, and are sold without a prescription exclusively for scientific study. While both may share the same amino acid sequences, regulatory status, intended use, and quality controls differ significantly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are Revive Research peptides tested for quality?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Each batch goes through a multi-step quality process: synthesis by a GMP-compliant manufacturer, followed by independent third-party testing using HPLC for purity and mass spectrometry for identity confirmation. Results must meet a minimum purity threshold before the batch is released for sale. The full COA for every batch is published on our website and can be verified using the batch number printed on the product label."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do research peptides expire?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lyophilized peptides are generally stable for 24 months or longer when stored correctly at -20°C and kept away from moisture and light. Once reconstituted into solution, stability decreases and peptides should be used within 4 weeks when refrigerated. Each product label and COA includes a specific expiry date based on the batch's stability testing. Using peptides past their expiry date may compromise research results."
+          }
+        }
+      ]
     }]
   },
   "/peptide-shipping-and-handling": {
@@ -472,6 +553,67 @@ export async function getPreRenderedContent(url: string): Promise<string> {
     } catch (err) {
       console.error(`[SEO] Error pre-rendering article for slug "${articleMatch[1]}":`, err);
     }
+  }
+
+  if (cleanUrl === '/peptide-research-faq') {
+    const faqs = [
+      {
+        q: "What are research peptides?",
+        a: "Research peptides are short chains of amino acids synthesized in a laboratory setting and sold exclusively for scientific study. They are used by researchers to investigate biological processes such as tissue repair, metabolic regulation, and cellular signaling. All products sold by Revive Research are intended strictly for in-vitro and laboratory research purposes, not for human or animal consumption."
+      },
+      {
+        q: "Are research peptides legal to purchase?",
+        a: "In the United States, research peptides that are not approved pharmaceutical drugs may be legally purchased for laboratory and scientific research purposes. They are not approved by the FDA for human use and must not be used as drugs, dietary supplements, or for any clinical application. It is the buyer's responsibility to understand and comply with the laws in their jurisdiction before ordering."
+      },
+      {
+        q: "How do I verify the purity of research peptides?",
+        a: "Every batch produced by Revive Research is sent to an independent, accredited third-party laboratory for purity and identity testing. You can verify any batch by entering the batch number on our Certificate of Analysis verification page. We publish full HPLC and mass spectrometry data for every lot, giving researchers complete transparency into what they are receiving."
+      },
+      {
+        q: "What is a Certificate of Analysis (COA)?",
+        a: "A Certificate of Analysis (COA) is an official document issued by an independent laboratory that confirms the identity, purity, and concentration of a compound. Revive Research provides a COA for every batch of every product, verified by third-party labs using HPLC chromatography and mass spectrometry. Researchers can access and verify COAs directly on our website to ensure the compounds meet their study requirements."
+      },
+      {
+        q: "How should research peptides be stored?",
+        a: "Lyophilized (freeze-dried) research peptides should be stored in a cool, dry place away from light — typically at -20°C for long-term storage or 2–8°C for short-term use. Once reconstituted with bacteriostatic water, peptide solutions should be refrigerated at 2–8°C and used within 4 weeks for best stability. Always follow the specific storage recommendations provided on the product's COA or label."
+      },
+      {
+        q: "What does 'research use only' mean?",
+        a: "'Research use only' (RUO) means that the compound is intended solely for controlled scientific experimentation and is not approved, intended, or labeled for use in humans or animals. Purchasing an RUO compound implies the buyer is a qualified researcher or institution conducting legitimate laboratory research. These compounds have not undergone the clinical trials required for FDA drug approval."
+      },
+      {
+        q: "How do I reconstitute research peptides?",
+        a: "Reconstitution is the process of dissolving a lyophilized peptide powder in a sterile liquid, most commonly bacteriostatic water. The required volume depends on the vial size and your target concentration. Revive Research offers a free Reconstitution Wizard that walks researchers through the calculation step by step and generates a printable Vial Card with the exact draw-to-mark instructions for a given syringe type."
+      },
+      {
+        q: "What is the difference between research peptides and pharmaceutical peptides?",
+        a: "Pharmaceutical peptides are FDA-approved drugs manufactured under strict GMP (Good Manufacturing Practice) guidelines, prescribed by physicians, and dispensed through licensed pharmacies. Research peptides are synthesized for laboratory investigation, are not FDA-approved for any medical use, and are sold without a prescription exclusively for scientific study. While both may share the same amino acid sequences, regulatory status, intended use, and quality controls differ significantly."
+      },
+      {
+        q: "How are Revive Research peptides tested for quality?",
+        a: "Each batch goes through a multi-step quality process: synthesis by a GMP-compliant manufacturer, followed by independent third-party testing using HPLC for purity and mass spectrometry for identity confirmation. Results must meet a minimum purity threshold before the batch is released for sale. The full COA for every batch is published on our website and can be verified using the batch number printed on the product label."
+      },
+      {
+        q: "Do research peptides expire?",
+        a: "Lyophilized peptides are generally stable for 24 months or longer when stored correctly at -20°C and kept away from moisture and light. Once reconstituted into solution, stability decreases and peptides should be used within 4 weeks when refrigerated. Each product label and COA includes a specific expiry date based on the batch's stability testing. Using peptides past their expiry date may compromise research results."
+      }
+    ];
+
+    const faqItems = faqs.map(({ q, a }) =>
+      `  <div>\n    <dt>${escapeHtml(q)}</dt>\n    <dd>${escapeHtml(a)}</dd>\n  </div>`
+    ).join('\n');
+
+    return `<main>
+  <h1>Peptide Research FAQ</h1>
+  <p>Frequently asked questions about research peptides, ordering, shipping, COAs, and more.</p>
+  <dl>
+${faqItems}
+  </dl>
+  <footer>
+    <nav><a href="/peptides">Shop Research Compounds</a> | <a href="/coa/verify-certificate-of-analysis">Verify COA</a> | <a href="/reconstitution-wizard">Reconstitution Wizard</a> | <a href="/contact">Contact Us</a></nav>
+    <p>All compounds are for research use only. Not for human or animal consumption.</p>
+  </footer>
+</main>`;
   }
 
   if (STATIC_ROUTES[cleanUrl]) {
