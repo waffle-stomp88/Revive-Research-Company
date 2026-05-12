@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Boxes, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -11,6 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -42,89 +47,6 @@ const resourceLinks = [
   { href: "/contact", label: "Support & Contact", icon: Mail, description: "Reach out for research support", color: "#9d4edd" },
 ];
 
-// Collapsible mobile menu section component
-function MobileMenuSection({ 
-  title, 
-  color, 
-  items, 
-  location 
-}: { 
-  title: string; 
-  color: string; 
-  items: typeof productLinks; 
-  location: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const hasActiveItem = items.some(item => location === item.href || location.startsWith(item.href + "/"));
-  
-  return (
-    <div className="border-t border-border/50">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-4 flex items-center justify-between"
-        data-testid={`button-mobile-${title.toLowerCase()}-toggle`}
-      >
-        <span 
-          className="text-lg font-display font-semibold"
-          style={{ color: hasActiveItem ? color : undefined }}
-        >
-          {title}
-        </span>
-        <ChevronDown 
-          className={`h-5 w-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-          style={{ color }}
-        />
-      </button>
-      
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-4 space-y-1">
-              {items.map((item) => {
-                const Icon = item.icon;
-                const isActive = location === item.href || location.startsWith(item.href + "/");
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <div
-                      className={`flex items-center gap-4 py-3.5 px-4 rounded-lg transition-colors ${
-                        isActive 
-                          ? "bg-muted/50" 
-                          : "hover:bg-muted/30"
-                      }`}
-                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/ /g, "-")}`}
-                    >
-                      <Icon 
-                        className="h-5 w-5 flex-shrink-0" 
-                        style={{ color: item.color }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span 
-                          className="text-base font-medium block"
-                          style={{ color: isActive ? item.color : undefined }}
-                        >
-                          {item.label}
-                        </span>
-                        <span className="text-sm text-muted-foreground truncate block">
-                          {item.description}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -170,9 +92,9 @@ export function Navigation() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed left-0 right-0 z-50 transition-all duration-300`}
+        className={`fixed left-0 right-0 z-[70] transition-all duration-300`}
         style={{ 
-          top: 'var(--banner-height, 36px)',
+          top: 0,
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)',
         }}
@@ -710,149 +632,268 @@ export function Navigation() {
         </div>
       </motion.header>
 
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg md:hidden"
-            style={{ paddingTop: 'calc(var(--banner-height, 36px) + 64px)' }}
-          >
-            <nav className="flex flex-col h-full overflow-y-auto pb-24">
-              {/* Mobile Search Bar */}
-              <div className="px-5 py-4 border-b border-border/50">
-                <SearchAutocomplete className="w-full" />
-              </div>
-              
-              {/* Streamlined Navigation - only items NOT in bottom bar or avatar dropdown */}
-              <div className="px-5 py-4 space-y-3">
-                <Link href="/coa/verify-certificate-of-analysis">
-                  <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
-                      location.startsWith("/coa") 
-                        ? "bg-[#21d8ff]/15 border-[#21d8ff]/40" 
-                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
-                    }`}
-                    data-testid="link-mobile-coa-verification"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-[#21d8ff]/15 flex items-center justify-center flex-shrink-0">
-                      <FileCheck className="h-5 w-5 text-[#21d8ff]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className={`text-base font-semibold block ${location.startsWith("/coa") ? "text-[#21d8ff]" : "text-white"}`}>
-                        COA Verification
-                      </span>
-                      <span className="text-sm text-gray-400 block">
-                        Verify product certificates
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+      {/* Mobile Side Panel Sheet */}
+      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <SheetContent
+          side="left"
+          className="md:hidden p-0 w-[85vw] max-w-[340px] bg-[#1a1a1f] border-r border-white/10 flex flex-col overflow-hidden [&>button.absolute]:hidden"
+          data-testid="mobile-nav-sheet"
+        >
+          {/* Panel Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 flex-shrink-0">
+            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} data-testid="link-mobile-logo">
+              <img
+                src={logoImage}
+                alt="Revive Research"
+                className="h-8 w-auto"
+              />
+            </Link>
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground"
+                data-testid="button-mobile-menu-close"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </SheetClose>
+          </div>
 
-                <Link href="/contact">
-                  <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
-                      location === "/contact" 
-                        ? "bg-[#9d4edd]/15 border-[#9d4edd]/40" 
-                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
-                    }`}
-                    data-testid="link-mobile-contact"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-[#9d4edd]/15 flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-5 w-5 text-[#9d4edd]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className={`text-base font-semibold block ${location === "/contact" ? "text-[#9d4edd]" : "text-white"}`}>
-                        Contact Us
-                      </span>
-                      <span className="text-sm text-gray-400 block">
-                        Reach out for research support
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto pb-6">
+            {/* Search Bar */}
+            <div className="px-4 pt-4 pb-3">
+              <SearchAutocomplete className="w-full" />
+            </div>
 
-                <Link href="/affiliate">
+            {/* Primary Nav Cards */}
+            <div className="px-4 space-y-2 pb-4">
+              {[
+                {
+                  href: "/research-stacks",
+                  label: "Research Stacks",
+                  subtitle: "Curated multi-compound bundles",
+                  Icon: Layers,
+                  color: "#21d8ff",
+                  isActive: location === "/research-stacks" || location.startsWith("/research-stacks/"),
+                  testId: "link-mobile-panel-stacks",
+                },
+                {
+                  href: "/bulk-packs",
+                  label: "Bulk Packs",
+                  subtitle: "5-packs, 10-packs & more",
+                  Icon: Boxes,
+                  color: "#a855f7",
+                  isActive: location === "/bulk-packs" || location.startsWith("/bulk-packs/"),
+                  testId: "link-mobile-panel-bulk",
+                },
+                {
+                  href: "/coa-library",
+                  label: "COA Library",
+                  subtitle: "Third-party lab results & verification",
+                  Icon: FileCheck,
+                  color: "#E7FB10",
+                  isActive: location.startsWith("/coa"),
+                  testId: "link-mobile-panel-coa",
+                },
+              ].map(({ href, label, subtitle, Icon, color, isActive, testId }) => (
+                <Link key={href} href={href} onClick={() => setIsMobileMenuOpen(false)}>
                   <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
-                      location === "/affiliate" || location.startsWith("/affiliate") 
-                        ? "bg-[#22c55e]/15 border-[#22c55e]/40" 
-                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
-                    }`}
-                    data-testid="link-mobile-affiliates"
+                    className="flex items-center gap-4 px-4 py-4 rounded-lg border transition-colors"
+                    style={{
+                      background: isActive ? `${color}18` : "#22222a",
+                      borderColor: isActive ? `${color}55` : "#333340",
+                    }}
+                    data-testid={testId}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-[#22c55e]/15 flex items-center justify-center flex-shrink-0">
-                      <User className="h-5 w-5 text-[#22c55e]" />
+                    <div
+                      className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ background: `${color}22` }}
+                    >
+                      <Icon className="h-5 w-5" style={{ color }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-base font-semibold block ${location === "/affiliate" || location.startsWith("/affiliate") ? "text-[#22c55e]" : "text-white"}`}>
-                        Affiliates
+                      <span
+                        className="font-display text-lg font-bold tracking-wide block leading-tight"
+                        style={{ color: isActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
+                      >
+                        {label}
                       </span>
-                      <span className="text-sm text-gray-400 block">
-                        Earn commissions on referrals
-                      </span>
+                      <span className="text-xs text-gray-400 block">{subtitle}</span>
                     </div>
                   </div>
                 </Link>
+              ))}
+            </div>
 
-                <Link href="/legal">
+            {/* Section Divider */}
+            <div className="px-4 pb-3">
+              <div className="border-t border-white/8" />
+            </div>
+
+            {/* 2×2 Quick-Link Grid */}
+            <div className="px-4 pb-4">
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Quick Links</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  {
+                    href: "/reconstitution-wizard",
+                    label: "Dosage Wizard",
+                    Icon: Calculator,
+                    color: "#21d8ff",
+                    isActive: location.startsWith("/reconstitution-wizard") || location.startsWith("/tools/peptide-reconstitution"),
+                    testId: "link-mobile-panel-calculator",
+                  },
+                  {
+                    href: "/peptide-research-faq",
+                    label: "FAQ",
+                    Icon: HelpCircle,
+                    color: "#a855f7",
+                    isActive: location === "/peptide-research-faq",
+                    testId: "link-mobile-panel-faq",
+                  },
+                  {
+                    href: "/contact",
+                    label: "Contact",
+                    Icon: Mail,
+                    color: "#22c55e",
+                    isActive: location === "/contact",
+                    testId: "link-mobile-panel-contact",
+                  },
+                  {
+                    href: "/affiliate",
+                    label: "Affiliates",
+                    Icon: Sparkles,
+                    color: "#E7FB10",
+                    isActive: location === "/affiliate" || location.startsWith("/affiliate/"),
+                    testId: "link-mobile-panel-affiliates-grid",
+                  },
+                ].map(({ href, label, Icon, color, isActive, testId }) => (
+                  <Link key={href} href={href} onClick={() => setIsMobileMenuOpen(false)}>
+                    <div
+                      className="flex flex-col items-center justify-center gap-2 py-4 rounded-lg border transition-colors text-center"
+                      style={{
+                        background: isActive ? `${color}18` : "#22222a",
+                        borderColor: isActive ? `${color}55` : "#333340",
+                      }}
+                      data-testid={testId}
+                    >
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ background: `${color}22` }}
+                      >
+                        <Icon className="h-4 w-4" style={{ color }} />
+                      </div>
+                      <span
+                        className="text-xs font-semibold leading-tight"
+                        style={{ color: isActive ? color : "white" }}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Section Divider */}
+            <div className="px-4 pb-3">
+              <div className="border-t border-white/8" />
+            </div>
+
+            {/* Utility Rows */}
+            <div className="px-4 space-y-1">
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">More</p>
+
+              {/* My Account / Sign In */}
+              {isAuthenticated ? (
+                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                   <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
-                      location === "/legal"
-                        ? "bg-[#a855f7]/15 border-[#a855f7]/40" 
-                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
-                    }`}
-                    data-testid="link-mobile-legal-resources"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
+                    style={{
+                      background: location.startsWith("/dashboard") ? "#21d8ff18" : "transparent",
+                    }}
+                    data-testid="link-mobile-panel-account"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-[#a855f7]/15 flex items-center justify-center flex-shrink-0">
-                      <Scale className="h-5 w-5 text-[#a855f7]" />
+                    <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/15 flex items-center justify-center flex-shrink-0">
+                      <User className="h-4 w-4 text-[#21d8ff]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-base font-semibold block ${location === "/legal" ? "text-[#a855f7]" : "text-white"}`}>
-                        Legal Resources
+                      <span
+                        className="text-sm font-medium block"
+                        style={{ color: location.startsWith("/dashboard") ? "#21d8ff" : "white" }}
+                      >
+                        My Account
                       </span>
-                      <span className="text-sm text-gray-400 block">
-                        Terms, privacy & compliance docs
-                      </span>
+                      {user?.firstName && (
+                        <span className="text-xs text-gray-400">{user.firstName}</span>
+                      )}
                     </div>
+                    <ChevronRight className="h-4 w-4 text-gray-500" />
                   </div>
                 </Link>
-              </div>
-              
-              {/* Auth Buttons */}
-              <div className="px-5 py-6 mt-auto space-y-3">
-                {!isLoading && !isAuthenticated && (
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="w-full bg-[#21d8ff] border-[#21d8ff] text-black font-semibold text-base hover:bg-[#21d8ff]/90"
-                    data-testid="button-mobile-sign-in"
-                    onClick={() => login()}
-                  >
-                    <LogIn className="h-5 w-5 mr-2" />
-                    Sign In
-                  </Button>
-                )}
-                
-                {!isLoading && isAuthenticated && (
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    data-testid="button-mobile-logout" 
-                    className="w-full text-base border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
-                    onClick={() => logout()}
-                  >
-                    <LogOut className="h-5 w-5 mr-2" />
-                    Sign Out
-                  </Button>
-                )}
-              </div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ) : (
+                <button
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-left"
+                  onClick={() => { setIsMobileMenuOpen(false); login(); }}
+                  data-testid="button-mobile-panel-sign-in"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/15 flex items-center justify-center flex-shrink-0">
+                    <LogIn className="h-4 w-4 text-[#21d8ff]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-white block">My Account</span>
+                    <span className="text-xs text-[#21d8ff]">Sign In</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
+                </button>
+              )}
+
+              {/* Research Academy */}
+              <Link href="/academy" onClick={() => setIsMobileMenuOpen(false)}>
+                <div
+                  className="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
+                  style={{
+                    background: location === "/academy" || location.startsWith("/academy/") ? "#a855f718" : "transparent",
+                  }}
+                  data-testid="link-mobile-panel-academy"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#a855f7]/15 flex items-center justify-center flex-shrink-0">
+                    <GraduationCap className="h-4 w-4 text-[#a855f7]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span
+                      className="text-sm font-medium block"
+                      style={{ color: location === "/academy" || location.startsWith("/academy/") ? "#a855f7" : "white" }}
+                    >
+                      Research Academy
+                    </span>
+                    <span className="text-xs text-gray-500">Learn &amp; earn XP</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
+                </div>
+              </Link>
+
+              {/* Sign Out — only shown when authenticated */}
+              {isAuthenticated && (
+                <button
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-left"
+                  onClick={() => { setIsMobileMenuOpen(false); logout(); }}
+                  data-testid="button-mobile-panel-sign-out"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                    <LogOut className="h-4 w-4 text-red-400" />
+                  </div>
+                  <span className="flex-1 text-sm font-medium text-red-400">Sign Out</span>
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
