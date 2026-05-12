@@ -1439,6 +1439,7 @@ function ProductsTab() {
                                 placeholder="0.00"
                                 value={ds.price || ""}
                                 onChange={(e) => updateDosageStock(index, 'price', e.target.value || null)}
+                                onFocus={(e) => e.target.select()}
                                 className="w-24 h-9 pl-5 text-sm bg-background/50 border-[#21d8ff]/20 focus:border-[#21d8ff]/50"
                                 data-testid={`input-price-${index}`}
                               />
@@ -1455,6 +1456,7 @@ function ProductsTab() {
                                 placeholder="0.00"
                                 value={ds.originalPrice || ""}
                                 onChange={(e) => updateDosageStock(index, 'originalPrice', e.target.value || null)}
+                                onFocus={(e) => e.target.select()}
                                 className="w-24 h-9 pl-5 text-sm bg-background/50 border-white/10 text-muted-foreground"
                                 data-testid={`input-original-price-${index}`}
                               />
@@ -1470,6 +1472,7 @@ function ProductsTab() {
                               min="0"
                               value={ds.stockAmount}
                               onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
+                              onFocus={(e) => e.target.select()}
                               className="w-20 h-9 text-center text-sm bg-background/50 border-[#E7FB10]/20"
                               data-testid={`input-stock-${index}`}
                             />
