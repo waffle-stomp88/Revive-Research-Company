@@ -451,7 +451,7 @@ export async function getPreRenderedContent(url: string): Promise<string> {
       const article = await storage.getEducationArticleBySlug(articleMatch[1]);
       if (article) {
         const contentPreview = article.content
-          ? article.content.replace(/^#+ .*/gm, '').replace(/[*_`~\[\]]/g, '').trim().slice(0, 1000)
+          ? article.content.replace(/^#+ .*/gm, '').replace(/[*_`~\[\]]/g, '').trim().slice(0, 3000)
           : '';
 
         return `<article itemscope itemtype="https://schema.org/Article">
