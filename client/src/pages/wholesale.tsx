@@ -148,6 +148,7 @@ function SavingsCalculator() {
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                onFocus={(e) => e.target.select()}
                 className="text-center text-2xl font-bold h-14"
                 data-testid="input-calculator-qty"
               />

@@ -211,6 +211,7 @@ export default function DosageCalculator() {
                       type="number"
                       value={doseValue}
                       onChange={(e) => setDoseValue(e.target.value)}
+                      onFocus={(e) => e.target.select()}
                       className="bg-[#0d0d10] border-[#2a2a32] text-white rounded-r-none h-9 text-sm focus:border-[#E7FB10] focus:ring-[#E7FB10]/20"
                       data-testid="input-dose-value"
                     />
@@ -247,6 +248,7 @@ export default function DosageCalculator() {
                         type="number"
                         value={customVialStrength}
                         onChange={(e) => setCustomVialStrength(e.target.value)}
+                        onFocus={(e) => e.target.select()}
                         placeholder="mg"
                         className="bg-[#0d0d10] border-[#2a2a32] text-white h-9 text-sm flex-1"
                         data-testid="input-custom-vial-strength"
@@ -298,6 +300,7 @@ export default function DosageCalculator() {
                       min="0.5"
                       value={waterVolume}
                       onChange={(e) => setWaterVolume(e.target.value)}
+                      onFocus={(e) => e.target.select()}
                       className="bg-[#0d0d10] border-[#2a2a32] text-white h-9 text-sm pr-8 focus:border-[#a855f7] focus:ring-[#a855f7]/20"
                       data-testid="input-water-volume"
                     />

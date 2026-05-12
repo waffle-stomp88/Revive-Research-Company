@@ -666,6 +666,7 @@ function Step2VialAndWater({
               type="number"
               value={state.vialMg || ""}
               onChange={(e) => update({ vialMg: parseFloat(e.target.value) || 0 })}
+              onFocus={(e) => e.target.select()}
               placeholder="Custom mg"
               className="h-9"
               data-testid="input-custom-vial"
@@ -702,6 +703,7 @@ function Step2VialAndWater({
               step="0.5"
               value={state.bacWaterMl || ""}
               onChange={(e) => update({ bacWaterMl: parseFloat(e.target.value) || 0 })}
+              onFocus={(e) => e.target.select()}
               placeholder="Custom mL"
               className="h-9"
               data-testid="input-custom-bac"
@@ -793,6 +795,7 @@ function Step3SyringeAndDose({
               type="number"
               value={state.doseValue || ""}
               onChange={(e) => update({ doseValue: parseFloat(e.target.value) || 0 })}
+              onFocus={(e) => e.target.select()}
               className="h-12 text-lg flex-1"
               data-testid="input-dose"
             />

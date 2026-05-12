@@ -5699,6 +5699,7 @@ function DiscountCodesTab() {
                   max="100"
                   value={newDiscountPercent}
                   onChange={(e) => setNewDiscountPercent(e.target.value)}
+                  onFocus={(e) => e.target.select()}
                   placeholder={newFreeShipping ? "Leave as 0 for free shipping only" : "e.g., 10"}
                   data-testid="input-new-discount-percent"
                 />
@@ -5783,6 +5784,7 @@ function DiscountCodesTab() {
                 max="100"
                 value={editDiscountPercent}
                 onChange={(e) => setEditDiscountPercent(e.target.value)}
+                onFocus={(e) => e.target.select()}
                 placeholder={editFreeShipping ? "Leave as 0 for free shipping only" : "e.g., 10"}
                 data-testid="input-edit-discount-percent"
               />
