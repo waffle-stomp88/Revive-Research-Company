@@ -55,7 +55,7 @@ export function Navigation() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
-  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { items, getItemCount, getSubtotal, removeFromCart, removeBundleFromCart } = useCart();
   const cartItemCount = getItemCount();
   const regularItems = items.filter(item => !item.isBundle);
@@ -513,15 +513,16 @@ export function Navigation() {
                 </DropdownMenu>
                 
                 {!isLoading && !isAuthenticated && (
-                  <Button 
-                    variant="outline" 
-                    className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
-                    data-testid="button-sign-in"
-                    onClick={() => login()}
-                  >
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
-                  </Button>
+                  <Link href="/login">
+                    <Button 
+                      variant="outline" 
+                      className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
+                      data-testid="button-sign-in"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                  </Link>
                 )}
                 
                 {!isLoading && isAuthenticated && (
@@ -835,9 +836,9 @@ export function Navigation() {
                   </div>
                 </Link>
               ) : (
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 <button
                   className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-left"
-                  onClick={() => { setIsMobileMenuOpen(false); login(); }}
                   data-testid="button-mobile-panel-sign-in"
                 >
                   <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/15 flex items-center justify-center flex-shrink-0">
@@ -849,6 +850,7 @@ export function Navigation() {
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-500" />
                 </button>
+                </Link>
               )}
 
               {/* Research Academy */}

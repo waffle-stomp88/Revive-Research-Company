@@ -60,9 +60,9 @@ const GalaxyPage = lazy(() => import("@/pages/galaxy"));
 import ResearchStackDetail from "@/pages/research-stack-detail";
 import StackShare from "@/pages/stack-share";
 import Academy from "@/pages/academy";
+import Login from "@/pages/login";
 import DevLogin from "@/pages/dev-login";
 import AuthCallback from "@/pages/auth-callback";
-import LoginPage from "@/pages/login";
 import Unsubscribe from "@/pages/unsubscribe";
 import SubscriptionSuccess from "@/pages/subscription-success";
 import OrderConfirmation from "@/pages/order-confirmation";
@@ -231,6 +231,7 @@ function Router() {
         {/* Catch-all: compound-name guide URLs intentionally not routed — do not create */}
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
         <Route path="/guides/:slug" component={Education} />
+        <Route path="/login" component={Login} />
         <Route path="/academy">
           <ProtectedRoute title="Peptide Research Academy" description="Access exclusive educational content, courses, and earn achievements as you learn.">
             <Academy />
@@ -251,7 +252,6 @@ function Router() {
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/rx-panel-7v3k" component={DevLogin} />
         <Route path="/auth/callback" component={AuthCallback} />
-        <Route path="/login" component={LoginPage} />
 
         {/* 301 Redirects for old URLs */}
         <Route path="/coa">{() => { window.location.replace("/coa/verify-certificate-of-analysis"); return null; }}</Route>
@@ -319,6 +319,46 @@ function PreventScrollbarHiding() {
   return null;
 }
 
+const STANDALONE_ROUTES = ["/login"];
+
+function AppShell() {
+  const [location] = useLocation();
+  const isStandalone = STANDALONE_ROUTES.some(r => location === r || location.startsWith(r + "?"));
+
+  if (isStandalone) {
+    return (
+      <>
+        <ScrollManager />
+        <Router />
+        <Toaster />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <PreventScrollbarHiding />
+      <AgeVerificationModal />
+      <AffiliateTracker />
+      <ScrollManager />
+      <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">
+        <FreeShippingBanner />
+        <Navigation />
+        <div className="flex-1 pb-16 md:pb-0">
+          <Router />
+        </div>
+        <Footer className="hidden md:block" />
+      </div>
+      <MobileBottomNav />
+      <Suspense fallback={null}>
+        <ChatBot />
+        <BackToTopButton />
+      </Suspense>
+      <Toaster />
+    </>
+  );
+}
+
 function App() {
   useEffect(() => {
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
@@ -333,24 +373,7 @@ function App() {
       <ThemeProvider>
         <CartProvider>
           <TooltipProvider>
-            <PreventScrollbarHiding />
-            <AgeVerificationModal />
-            <AffiliateTracker />
-            <ScrollManager />
-            <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">
-              <FreeShippingBanner />
-              <Navigation />
-              <div className="flex-1 pb-16 md:pb-0">
-                <Router />
-              </div>
-              <Footer className="hidden md:block" />
-            </div>
-            <MobileBottomNav />
-            <Suspense fallback={null}>
-              <ChatBot />
-              <BackToTopButton />
-            </Suspense>
-            <Toaster />
+            <AppShell />
           </TooltipProvider>
         </CartProvider>
       </ThemeProvider>

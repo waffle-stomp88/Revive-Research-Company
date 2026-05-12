@@ -1,11 +1,27 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2, HeartHandshake, Lock, Database, BellOff, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import logoPath from "@assets/Revive_PNG_1766012118069.png";
+
+const TRUST_POINTS = [
+  { icon: FlaskConical, color: "#E7FB10", title: "Every Batch Third-Party Tested", subtitle: "COA-verified purity on every product" },
+  { icon: Shield, color: "#21d8ff", title: "Research-Grade Quality", subtitle: "Manufactured to the highest standards" },
+  { icon: HeartHandshake, color: "#a855f7", title: "Dedicated Research Support", subtitle: "Expert team available 7 days a week" },
+];
+
+const TRUST_BADGES = [
+  { icon: Lock, label: "SSL Encrypted" },
+  { icon: Database, label: "Data Protected" },
+  { icon: BellOff, label: "No Spam" },
+];
+
+const AVATAR_COLORS = ["#E7FB10", "#21d8ff", "#a855f7", "#ec4899", "#22c55e"];
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -32,7 +48,6 @@ export default function LoginPage() {
       setError(error.message);
       setGoogleLoading(false);
     }
-    // On success, Supabase redirects the browser — no further action needed
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -71,89 +86,141 @@ export default function LoginPage() {
       return;
     }
 
-    // Login
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       setError(error.message);
     }
-    // On success, the onAuthStateChange listener in useAuth picks up SIGNED_IN,
-    // syncs to backend, and redirects via the stored return_to path.
   };
 
   const modeLabel = mode === "login" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password";
 
   return (
-    <div className="min-h-screen bg-[#0d0d12] flex">
-      {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[46%] bg-[#0a0a0f] border-r border-white/5 p-12 relative overflow-hidden">
-        {/* Ambient glow */}
-        <div className="absolute top-[-120px] left-[-80px] w-[500px] h-[500px] rounded-full bg-[#E7FB10]/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-80px] right-[-60px] w-[400px] h-[400px] rounded-full bg-[#21d8ff]/5 blur-[120px] pointer-events-none" />
+    <div className="min-h-screen flex bg-[#1a1a1f]">
+      {/* Left Panel — brand hero */}
+      <div className="hidden lg:flex lg:w-[55%] relative flex-col overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 30% 20%, rgba(231,251,16,0.06) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(33,216,255,0.07) 0%, transparent 55%), linear-gradient(135deg, #0d0d10 0%, #1a1a1f 50%, #0f0f14 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-        {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <img src={logoPath} alt="Revive Research" className="h-9 w-auto" />
-          <span
-            className="text-white text-xl tracking-widest uppercase"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.2em" }}
-          >
-            Revive
-          </span>
-        </div>
+        <div className="relative z-10 flex flex-col h-full p-10 xl:p-14">
+          <Link href="/">
+            <img
+              src={logoPath}
+              alt="Revive Research"
+              className="h-10 w-auto opacity-95 hover:opacity-100 transition-opacity"
+              data-testid="img-login-logo"
+            />
+          </Link>
 
-        {/* Center content */}
-        <div className="relative z-10 space-y-8">
-          <div>
+          <div className="flex-1 flex flex-col justify-center mt-12">
             <h1
-              className="text-5xl text-white leading-tight mb-4"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+              className="text-4xl xl:text-5xl font-bold mb-2 leading-tight text-white"
+              style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.02em" }}
+              data-testid="heading-login-hero"
             >
-              Premium Peptide Research
+              Why Researchers Choose
+              <br />
+              <span
+                style={{
+                  background: "linear-gradient(90deg, #E7FB10, #21d8ff)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Revive Research
+              </span>
             </h1>
-            <p className="text-zinc-400 text-lg leading-relaxed">
-              Third-party tested compounds with full Certificates of Analysis. Transparent pricing. Verified purity.
+            <p className="text-sm text-gray-400 mb-10 max-w-sm">
+              Premium peptide compounds with verified purity you can trust.
             </p>
+
+            <div className="space-y-6">
+              {TRUST_POINTS.map((point) => {
+                const Icon = point.icon;
+                return (
+                  <div key={point.title} className="flex items-start gap-4">
+                    <div
+                      className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ background: `${point.color}18`, border: `1px solid ${point.color}30` }}
+                    >
+                      <Icon className="h-5 w-5" style={{ color: point.color }} />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white text-sm">{point.title}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{point.subtitle}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {[
-              { icon: FlaskConical, label: "Third-Party Lab Verified", sub: "Every batch tested by independent labs" },
-              { icon: Shield, label: "Full COA Documentation", sub: "Certificate of Analysis for every product" },
-            ].map(({ icon: Icon, label, sub }) => (
-              <div key={label} className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Icon className="w-5 h-5 text-[#E7FB10]" />
-                </div>
-                <div>
-                  <p className="text-white font-medium text-sm">{label}</p>
-                  <p className="text-zinc-500 text-sm">{sub}</p>
+          <div className="flex items-center justify-between mt-10">
+            <div className="flex items-center gap-3" data-testid="social-proof-row">
+              <div className="flex -space-x-2">
+                {AVATAR_COLORS.map((color, i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full border-2 border-[#1a1a1f] flex items-center justify-center text-[10px] font-bold"
+                    style={{ background: `${color}22`, color, zIndex: 5 - i }}
+                  >
+                    {["R", "K", "M", "J", "S"][i]}
+                  </div>
+                ))}
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white">Trusted by 1,000+ Researchers</p>
+                <div className="flex gap-0.5 mt-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="w-2.5 h-2.5 text-[#E7FB10]">
+                      <svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 0l1.5 4.5H12L8.25 7.5 9.75 12 6 9l-3.75 3 1.5-4.5L0 4.5h4.5z" /></svg>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Bottom disclaimer */}
-        <div className="relative z-10">
-          <p className="text-xs text-zinc-600 leading-relaxed">
-            For research use only. Not for human or animal consumption. Must be 21+ to access. Products are not intended to diagnose, treat, cure, or prevent any disease.
-          </p>
+            <Link href="/peptides" data-testid="link-browse-products">
+              <span className="text-xs text-gray-400 hover:text-[#21d8ff] transition-colors flex items-center gap-1 cursor-pointer">
+                Browse Products
+                <ChevronRight className="h-3 w-3" />
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Right panel — auth form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+      {/* Right Panel — auth forms */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:px-12 bg-[#12121a]">
+        {/* Mobile logo */}
+        <div className="lg:hidden mb-8">
+          <Link href="/">
+            <img src={logoPath} alt="Revive Research" className="h-9 w-auto mx-auto" />
+          </Link>
+        </div>
+
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex lg:hidden items-center gap-3 mb-10 justify-center">
-            <img src={logoPath} alt="Revive Research" className="h-8 w-auto" />
-            <span
-              className="text-white text-xl tracking-widest uppercase"
-              style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.2em" }}
+          {/* Promo badge */}
+          <div className="flex justify-center mb-6">
+            <Badge
+              className="bg-[#E7FB10]/15 text-[#E7FB10] border border-[#E7FB10]/30 text-xs font-semibold px-3 py-1"
+              data-testid="badge-promo"
             >
-              Revive
-            </span>
+              New Accounts Get 10% Off First Order
+            </Badge>
           </div>
 
           <AnimatePresence mode="wait">
@@ -165,15 +232,19 @@ export default function LoginPage() {
               transition={{ duration: 0.2 }}
             >
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-white mb-1">{modeLabel}</h2>
-                <p className="text-zinc-500 text-sm">
+                <h2
+                  className="text-3xl font-bold text-white mb-1"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.02em" }}
+                >
+                  {modeLabel}
+                </h2>
+                <p className="text-sm text-gray-400">
                   {mode === "login" && "Welcome back to Revive Research."}
                   {mode === "signup" && "Create your researcher account."}
                   {mode === "forgot" && "Enter your email to receive a reset link."}
                 </p>
               </div>
 
-              {/* Error / success */}
               {error && (
                 <div className="mb-5 px-4 py-3 rounded-lg bg-red-950/40 border border-red-500/30 text-red-400 text-sm">
                   {error}
@@ -185,7 +256,6 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Google OAuth — only on login/signup */}
               {mode !== "forgot" && (
                 <>
                   <Button
@@ -214,16 +284,15 @@ export default function LoginPage() {
                       <div className="w-full border-t border-white/10" />
                     </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="px-3 bg-[#0d0d12] text-zinc-500">or continue with email</span>
+                      <span className="px-3 bg-[#12121a] text-gray-500">or continue with email</span>
                     </div>
                   </div>
                 </>
               )}
 
-              {/* Email/Password form */}
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-sm text-zinc-400">Email address</Label>
+                  <Label htmlFor="email" className="text-sm text-gray-400">Email address</Label>
                   <Input
                     id="email"
                     type="email"
@@ -239,7 +308,7 @@ export default function LoginPage() {
 
                 {mode !== "forgot" && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="password" className="text-sm text-zinc-400">Password</Label>
+                    <Label htmlFor="password" className="text-sm text-gray-400">Password</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -291,8 +360,7 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              {/* Toggle mode */}
-              <div className="mt-6 text-center text-sm text-zinc-500">
+              <div className="mt-6 text-center text-sm text-gray-500">
                 {mode === "login" && (
                   <>
                     No account?{" "}
@@ -319,14 +387,35 @@ export default function LoginPage() {
                 )}
               </div>
 
-              {/* RUO disclaimer */}
-              <div className="mt-8 px-4 py-3 rounded-lg bg-red-950/20 border border-red-500/15">
+              {/* Trust badges */}
+              <div className="flex items-center justify-center gap-4 mt-6">
+                {TRUST_BADGES.map((badge) => {
+                  const Icon = badge.icon;
+                  return (
+                    <div key={badge.label} className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                      <Icon className="h-3 w-3" />
+                      {badge.label}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 px-4 py-3 rounded-lg bg-red-950/20 border border-red-500/15">
                 <p className="text-xs text-red-400/80 text-center leading-relaxed">
                   <span className="font-semibold text-red-400">Research Use Only.</span> You must be 21+ to create an account. Products are not for human or animal consumption.
                 </p>
               </div>
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        <div className="lg:hidden mt-8">
+          <Link href="/peptides" data-testid="link-browse-products-mobile">
+            <span className="text-xs text-gray-500 hover:text-[#21d8ff] transition-colors flex items-center gap-1 justify-center cursor-pointer">
+              Browse Products without signing in
+              <ChevronRight className="h-3 w-3" />
+            </span>
+          </Link>
         </div>
       </div>
     </div>

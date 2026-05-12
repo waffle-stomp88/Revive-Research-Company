@@ -46,7 +46,7 @@ const navItems: NavItem[] = [
 export function MobileBottomNav() {
   const [location] = useLocation();
   const { getItemCount } = useCart();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
   const itemCount = getItemCount();
 
   const isActive = (item: NavItem) => {
@@ -59,12 +59,7 @@ export function MobileBottomNav() {
     return location === item.href;
   };
 
-  const handleAccountClick = (e: React.MouseEvent) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
-      login();
-    }
-  };
+  const getAccountHref = () => (isAuthenticated ? "/dashboard" : "/login");
 
   return (
     <nav 
@@ -82,12 +77,12 @@ export function MobileBottomNav() {
           const Icon = item.icon;
           const isCart = item.label === "Cart";
           const isAccount = item.label === "Account";
+          const href = isAccount ? getAccountHref() : item.href;
           
           return (
             <Link
               key={item.label}
-              href={item.href}
-              onClick={isAccount ? handleAccountClick : undefined}
+              href={href}
               className={`flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors ${
                 active 
                   ? "text-[#E7FB10]" 
