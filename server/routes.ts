@@ -198,6 +198,7 @@ export async function registerRoutes(
         { loc: '/coa/verify-certificate-of-analysis', priority: '0.7', changefreq: 'weekly' },
         { loc: '/coa/batch-testing-archive', priority: '0.6', changefreq: 'weekly' },
         { loc: '/tools/peptide-reconstitution-calculator', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/reconstitution-wizard', priority: '0.7', changefreq: 'monthly' },
         { loc: '/about/our-transparency-commitment', priority: '0.5', changefreq: 'monthly' },
         { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
         { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
