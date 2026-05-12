@@ -1088,9 +1088,12 @@ function ProductsTab() {
     setDosageStocks(prev => prev.map((ds, i) => {
       if (i !== index) return ds;
       const updated = { ...ds, [field]: value };
-      // Enforce rule: if stockAmount = 0, status must be Out of Stock
+      // Enforce symmetric stock rules: quantity drives inStock automatically
       if (field === 'stockAmount' && value === 0) {
         updated.inStock = false;
+      }
+      if (field === 'stockAmount' && value > 0) {
+        updated.inStock = true;
       }
       return updated;
     }));
