@@ -18,6 +18,19 @@ interface PageMeta {
   jsonLd?: object[];
 }
 
+function makeBreadcrumbList(items: Array<{name: string; url: string}>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map(({name, url}, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": name,
+      "item": url
+    }))
+  };
+}
+
 const STATIC_ROUTES: Record<string, PageMeta> = {
   "/": {
     title: `Home | ${SITE_NAME}`,
@@ -337,21 +350,28 @@ async function getProductMeta(slug: string): Promise<PageMeta | null> {
       description,
       ogType: "product",
       ogImage: product.imageUrl || DEFAULT_IMAGE,
-      jsonLd: [{
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": product.name,
-        "description": description,
-        "image": product.imageUrl || DEFAULT_IMAGE,
-        "brand": { "@type": "Brand", "name": "Revive Research" },
-        "offers": {
-          "@type": "Offer",
-          "price": price.toFixed(2),
-          "priceCurrency": "USD",
-          "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-          "seller": { "@type": "Organization", "name": "Revive Research" }
-        }
-      }]
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": product.name,
+          "description": description,
+          "image": product.imageUrl || DEFAULT_IMAGE,
+          "brand": { "@type": "Brand", "name": "Revive Research" },
+          "offers": {
+            "@type": "Offer",
+            "price": price.toFixed(2),
+            "priceCurrency": "USD",
+            "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "seller": { "@type": "Organization", "name": "Revive Research" }
+          }
+        },
+        makeBreadcrumbList([
+          { name: "Home", url: SITE_URL },
+          { name: "Research Peptides", url: `${SITE_URL}/peptides` },
+          { name: product.name, url: `${SITE_URL}/peptides/${slug}` }
+        ])
+      ]
     };
   } catch (err) {
     console.error(`[SEO] Error getting product meta for slug "${slug}":`, err);
@@ -368,20 +388,27 @@ async function getArticleMeta(slug: string): Promise<PageMeta | null> {
       title: `${article.title} | ${SITE_NAME}`,
       description: article.summary || article.title,
       ogType: "article",
-      jsonLd: [{
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": article.title,
-        "description": article.summary || article.title,
-        "author": { "@type": "Organization", "name": "Revive Research" },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Revive Research",
-          "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE }
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": article.title,
+          "description": article.summary || article.title,
+          "author": { "@type": "Organization", "name": "Revive Research" },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Revive Research",
+            "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE }
+          },
+          "datePublished": article.createdAt ? new Date(article.createdAt).toISOString().split('T')[0] : "2025-12-01",
+          "dateModified": article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : undefined
         },
-        "datePublished": article.createdAt ? new Date(article.createdAt).toISOString().split('T')[0] : "2025-12-01",
-        "dateModified": article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : undefined
-      }]
+        makeBreadcrumbList([
+          { name: "Home", url: SITE_URL },
+          { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+          { name: article.title, url: `${SITE_URL}/guides/${slug}` }
+        ])
+      ]
     };
   } catch (err) {
     console.error(`[SEO] Error getting article meta for slug "${slug}":`, err);
@@ -425,7 +452,18 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
   const cleanUrl = url.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
 
   if (STATIC_ROUTES[cleanUrl]) {
-    return { ...STATIC_ROUTES[cleanUrl], canonicalUrl: `${SITE_URL}${cleanUrl}` };
+    const route = STATIC_ROUTES[cleanUrl];
+    const meta: PageMeta = { ...route, canonicalUrl: `${SITE_URL}${cleanUrl}` };
+    if (cleanUrl.startsWith('/guides/')) {
+      const leafTitle = route.title.replace(` | ${SITE_NAME}`, '');
+      const breadcrumb = makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: leafTitle, url: `${SITE_URL}${cleanUrl}` }
+      ]);
+      meta.jsonLd = [...(route.jsonLd || []), breadcrumb];
+    }
+    return meta;
   }
 
   const productMatch = cleanUrl.match(/^\/(peptides|products)\/(.+)$/);
