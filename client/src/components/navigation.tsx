@@ -689,46 +689,36 @@ export function Navigation() {
                       borderColor: open ? `${color}55` : "#333340",
                     }}
                   >
-                    {/* Header row — left toggles dropdown, arrow navigates */}
-                    <div className="flex items-center">
-                      <button
-                        type="button"
-                        className="flex-1 flex items-center gap-4 px-4 py-4 text-left min-w-0"
-                        onClick={() => setIsPeptidesOpen(o => !o)}
-                        data-testid="link-mobile-panel-peptides"
+                    {/* Toggle row — whole row opens/closes dropdown */}
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-4 px-4 py-4 text-left"
+                      onClick={() => setIsPeptidesOpen(o => !o)}
+                      data-testid="link-mobile-panel-peptides"
+                    >
+                      <div
+                        className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${color}22` }}
                       >
-                        <div
-                          className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ background: `${color}22` }}
+                        <FlaskConical className="h-5 w-5" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className="font-display text-lg font-bold tracking-wide block leading-tight"
+                          style={{ color: anyActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
                         >
-                          <FlaskConical className="h-5 w-5" style={{ color }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span
-                            className="font-display text-lg font-bold tracking-wide block leading-tight"
-                            style={{ color: anyActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
-                          >
-                            Peptides
-                          </span>
-                          <span className="text-xs text-gray-400 block">Individual vials &amp; all compounds</span>
-                        </div>
-                      </button>
-                      {/* Arrow — navigates to /peptides */}
-                      <Link href="/peptides" onClick={() => setIsMobileMenuOpen(false)}>
-                        <div
-                          className="flex items-center justify-center w-12 h-full self-stretch px-3 py-4"
-                          data-testid="link-mobile-panel-peptides-arrow"
-                          style={{ color: anyActive ? color : "#6b7280" }}
-                        >
-                          <motion.div
-                            animate={{ rotate: open ? 90 : 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <ChevronRight className="h-5 w-5" />
-                          </motion.div>
-                        </div>
-                      </Link>
-                    </div>
+                          Peptides
+                        </span>
+                        <span className="text-xs text-gray-400 block">Individual vials &amp; all compounds</span>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: open ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex-shrink-0"
+                      >
+                        <ChevronDown className="h-5 w-5" style={{ color: anyActive ? color : "#6b7280" }} />
+                      </motion.div>
+                    </button>
 
                     {/* Collapsible sub-links */}
                     <AnimatePresence initial={false}>
