@@ -581,6 +581,85 @@ ${getSharedFooterText(order.email, 'order')}
   return { subject, text, html };
 }
 
+export function getAffiliateRejectionTemplate(applicant: {
+  firstName: string;
+  email: string;
+}): { subject: string; text: string; html: string } {
+  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
+  const contactEmail = EMAIL_CONFIG.replyTo;
+
+  const subject = `Your ${brand.name} Affiliate Application`;
+
+  const text = `
+${brand.name.toUpperCase()}
+Affiliate Program Update
+
+Hi ${applicant.firstName},
+
+Thank you for applying to the ${brand.name} affiliate program. After reviewing your application, we're unable to move forward at this time.
+
+We genuinely appreciate your interest in partnering with us. If you feel your situation has changed or you'd like to discuss your application further, you're welcome to reapply in the future or reach out to us directly at ${contactEmail}.
+
+Thank you again for your interest in ${brand.name}.
+
+${brand.name} Team
+${getSharedFooterText(applicant.email, 'order')}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Affiliate Application</title>
+</head>
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <p style="margin: 0 0 16px; font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #999999;">AFFILIATE PROGRAM</p>
+              <h1 style="margin: 0 0 8px; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">Application Update</h1>
+              <p style="margin: 0; font-size: 16px; color: #999999;">Thank you for your interest in ${brand.name}.</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 40px;">
+              <p style="margin: 0 0 16px; font-size: 16px; color: #cccccc; line-height: 1.6;">Hi ${applicant.firstName},</p>
+              <p style="margin: 0 0 16px; font-size: 16px; color: #cccccc; line-height: 1.6;">Thank you for taking the time to apply to the ${brand.name} affiliate program. After carefully reviewing your application, we're unable to move forward at this time.</p>
+              <p style="margin: 0 0 24px; font-size: 16px; color: #cccccc; line-height: 1.6;">We appreciate your interest in partnering with us. If your situation changes or you'd like to discuss your application further, you're welcome to reapply in the future or contact us directly.</p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 24px 28px;">
+                    <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999999;">Questions?</p>
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.6;">Reach out to us at <a href="mailto:${contactEmail}" style="color: #21d8ff; text-decoration: none;">${contactEmail}</a> and we'll be happy to help.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08);">
+              <p style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #ffffff;">${brand.name}</p>
+              <p style="margin: 0; font-size: 12px; color: #666666;">Premium Peptide Research Compounds</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return { subject, text, html };
+}
+
 export async function sendOrderConfirmationEmail(order: {
   email: string;
   firstName: string;

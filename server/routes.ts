@@ -16,7 +16,7 @@ import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -3664,10 +3664,45 @@ export async function registerRoutes(
   // Admin: Reject affiliate application
   app.post("/api/admin/affiliate-applications/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
     try {
+      const application = await storage.getAffiliateApplication(req.params.id);
+      if (!application) {
+        return res.status(404).json({ error: "Application not found" });
+      }
+
       const updated = await storage.updateAffiliateApplicationStatus(req.params.id, "rejected");
       if (!updated) {
         return res.status(404).json({ error: "Application not found" });
       }
+
+      // Send rejection email
+      const nameParts = application.fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || application.fullName;
+      const rejectionTemplate = getAffiliateRejectionTemplate({
+        firstName,
+        email: application.email,
+      });
+      try {
+        const emailResult = await sendEmail({
+          to: application.email,
+          subject: rejectionTemplate.subject,
+          html: rejectionTemplate.html,
+          text: rejectionTemplate.text,
+        });
+        await storage.createEmailEvent({
+          type: "affiliate_rejected",
+          recipientEmail: application.email,
+          subject: rejectionTemplate.subject,
+          status: emailResult.success ? "sent" : "failed",
+          sesMessageId: emailResult.messageId || null,
+          error: emailResult.success ? null : (emailResult.error || null),
+        });
+        if (!emailResult.success) {
+          console.error("[Affiliate Rejection] Rejection email failed:", emailResult.error);
+        }
+      } catch (emailError) {
+        console.error("[Affiliate Rejection] Error sending rejection email:", emailError);
+      }
+
       res.json({ success: true, application: updated });
     } catch (error) {
       console.error("Error rejecting affiliate application:", error);
