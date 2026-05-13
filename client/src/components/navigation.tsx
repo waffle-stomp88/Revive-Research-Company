@@ -52,6 +52,7 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPeptidesOpen, setIsPeptidesOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
@@ -672,86 +673,118 @@ export function Navigation() {
             {/* Primary Nav Cards */}
             <div className="px-4 space-y-2 pb-4">
 
-              {/* Peptides — parent card with sub-links */}
+              {/* Peptides — expandable parent card */}
               {(() => {
                 const peptidesActive = location === "/peptides" || location.startsWith("/peptides/");
                 const stacksActive = location === "/research-stacks" || location.startsWith("/research-stacks/");
                 const bulkActive = location === "/bulk-packs" || location.startsWith("/bulk-packs/");
                 const anyActive = peptidesActive || stacksActive || bulkActive;
                 const color = "#a855f7";
+                const open = isPeptidesOpen || anyActive;
                 return (
                   <div
                     className="rounded-lg border overflow-hidden"
                     style={{
                       background: anyActive ? `${color}10` : "#22222a",
-                      borderColor: anyActive ? `${color}55` : "#333340",
+                      borderColor: open ? `${color}55` : "#333340",
                     }}
                   >
-                    {/* Parent row */}
-                    <Link href="/peptides" onClick={() => setIsMobileMenuOpen(false)}>
+                    {/* Toggle row — no navigation */}
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-4 px-4 py-4 text-left"
+                      onClick={() => setIsPeptidesOpen(o => !o)}
+                      data-testid="link-mobile-panel-peptides"
+                    >
                       <div
-                        className="flex items-center gap-4 px-4 py-4"
-                        data-testid="link-mobile-panel-peptides"
+                        className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${color}22` }}
                       >
-                        <div
-                          className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ background: `${color}22` }}
+                        <FlaskConical className="h-5 w-5" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className="font-display text-lg font-bold tracking-wide block leading-tight"
+                          style={{ color: anyActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
                         >
-                          <FlaskConical className="h-5 w-5" style={{ color }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span
-                            className="font-display text-lg font-bold tracking-wide block leading-tight"
-                            style={{ color: peptidesActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
-                          >
-                            Peptides
-                          </span>
-                          <span className="text-xs text-gray-400 block">Individual vials &amp; all compounds</span>
-                        </div>
+                          Peptides
+                        </span>
+                        <span className="text-xs text-gray-400 block">Individual vials &amp; all compounds</span>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: open ? 90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
                         <ChevronRight className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                      </div>
-                    </Link>
-                    {/* Sub-links */}
-                    <div className="border-t border-white/[0.06] mx-4" />
-                    <Link href="/research-stacks" onClick={() => setIsMobileMenuOpen(false)}>
-                      <div
-                        className="flex items-center gap-3 px-4 py-3"
-                        data-testid="link-mobile-panel-stacks"
-                      >
-                        <div
-                          className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
-                          style={{ background: stacksActive ? "#21d8ff22" : "#ffffff0a" }}
+                      </motion.div>
+                    </button>
+
+                    {/* Collapsible sub-links */}
+                    <AnimatePresence initial={false}>
+                      {open && (
+                        <motion.div
+                          key="peptides-sub"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.22, ease: "easeInOut" }}
+                          style={{ overflow: "hidden" }}
                         >
-                          <Layers className="h-4 w-4" style={{ color: stacksActive ? "#21d8ff" : "#9ca3af" }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-semibold block" style={{ color: stacksActive ? "#21d8ff" : "#d1d5db" }}>
-                            Research Stacks
-                          </span>
-                          <span className="text-xs text-gray-500 block">Curated multi-compound bundles</span>
-                        </div>
-                      </div>
-                    </Link>
-                    <div className="border-t border-white/[0.06] mx-4" />
-                    <Link href="/bulk-packs" onClick={() => setIsMobileMenuOpen(false)}>
-                      <div
-                        className="flex items-center gap-3 px-4 py-3"
-                        data-testid="link-mobile-panel-bulk"
-                      >
-                        <div
-                          className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
-                          style={{ background: bulkActive ? "#a855f722" : "#ffffff0a" }}
-                        >
-                          <Boxes className="h-4 w-4" style={{ color: bulkActive ? "#a855f7" : "#9ca3af" }} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-semibold block" style={{ color: bulkActive ? "#a855f7" : "#d1d5db" }}>
-                            Bulk Packs
-                          </span>
-                          <span className="text-xs text-gray-500 block">5-packs, 10-packs &amp; more</span>
-                        </div>
-                      </div>
-                    </Link>
+                          {/* All Peptides link */}
+                          <div className="border-t border-white/[0.06] mx-4" />
+                          <Link href="/peptides" onClick={() => setIsMobileMenuOpen(false)}>
+                            <div className="flex items-center gap-3 px-4 py-3" data-testid="link-mobile-panel-all-peptides">
+                              <div
+                                className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+                                style={{ background: peptidesActive ? "#a855f722" : "#ffffff0a" }}
+                              >
+                                <FlaskConical className="h-4 w-4" style={{ color: peptidesActive ? "#a855f7" : "#9ca3af" }} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold block" style={{ color: peptidesActive ? "#a855f7" : "#d1d5db" }}>
+                                  All Peptides
+                                </span>
+                                <span className="text-xs text-gray-500 block">Browse individual vials</span>
+                              </div>
+                            </div>
+                          </Link>
+                          <div className="border-t border-white/[0.06] mx-4" />
+                          <Link href="/research-stacks" onClick={() => setIsMobileMenuOpen(false)}>
+                            <div className="flex items-center gap-3 px-4 py-3" data-testid="link-mobile-panel-stacks">
+                              <div
+                                className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+                                style={{ background: stacksActive ? "#21d8ff22" : "#ffffff0a" }}
+                              >
+                                <Layers className="h-4 w-4" style={{ color: stacksActive ? "#21d8ff" : "#9ca3af" }} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold block" style={{ color: stacksActive ? "#21d8ff" : "#d1d5db" }}>
+                                  Research Stacks
+                                </span>
+                                <span className="text-xs text-gray-500 block">Curated multi-compound bundles</span>
+                              </div>
+                            </div>
+                          </Link>
+                          <div className="border-t border-white/[0.06] mx-4" />
+                          <Link href="/bulk-packs" onClick={() => setIsMobileMenuOpen(false)}>
+                            <div className="flex items-center gap-3 px-4 py-3" data-testid="link-mobile-panel-bulk">
+                              <div
+                                className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+                                style={{ background: bulkActive ? "#a855f722" : "#ffffff0a" }}
+                              >
+                                <Boxes className="h-4 w-4" style={{ color: bulkActive ? "#a855f7" : "#9ca3af" }} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold block" style={{ color: bulkActive ? "#a855f7" : "#d1d5db" }}>
+                                  Bulk Packs
+                                </span>
+                                <span className="text-xs text-gray-500 block">5-packs, 10-packs &amp; more</span>
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })()}
