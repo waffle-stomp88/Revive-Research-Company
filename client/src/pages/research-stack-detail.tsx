@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
+import { buildPriceLookup, buildStockLookup, calculateStackPricing, isStackAvailable } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
   ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap, Check, FlaskConical
@@ -100,6 +100,11 @@ export default function ResearchStackDetail() {
     return buildPriceLookup(productsWithStock);
   }, [productsWithStock]);
 
+  const stockLookup = useMemo(() => {
+    if (!productsWithStock) return new Map<string, boolean>();
+    return buildStockLookup(productsWithStock);
+  }, [productsWithStock]);
+
   if (!match || !params?.id) {
     return null;
   }
@@ -112,6 +117,9 @@ export default function ResearchStackDetail() {
 
   const pricing = calculateStackPricing(params.id, priceLookup);
   const pricingReady = pricing !== null;
+  const availability = productsWithStock ? isStackAvailable(params.id, stockLookup) : null;
+  const isOOS = availability !== null && !availability.available;
+  const canAddToCart = pricingReady && !isOOS;
 
   const pathwayOverlaps = detectPathwayOverlaps(
     stack.peptides
@@ -480,6 +488,18 @@ export default function ResearchStackDetail() {
               <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
             </div>
 
+            {isOOS && availability && availability.oosComponents.length > 0 && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-red-950/40 border border-red-500/40 mb-3" data-testid="card-oos-warning">
+                <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs text-red-400 font-semibold">Out of Stock</p>
+                  <p className="text-xs text-red-400/80 mt-0.5">
+                    {availability.oosComponents.join(", ")} {availability.oosComponents.length === 1 ? "is" : "are"} currently out of stock.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2" data-testid="stack-cta">
               <Button
                 size="lg"
@@ -489,7 +509,7 @@ export default function ResearchStackDetail() {
                     : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
                 }`}
                 onClick={handleBuyNow}
-                disabled={!pricingReady}
+                disabled={!canAddToCart}
                 data-testid="button-buy-now"
               >
                 {purchaseType === "subscription" ? (
@@ -509,7 +529,7 @@ export default function ResearchStackDetail() {
                 variant="outline"
                 className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
                 onClick={handleAddToCart}
-                disabled={!pricingReady}
+                disabled={!canAddToCart}
                 data-testid="button-add-to-cart"
               >
                 <ShoppingBag className="h-5 w-5" />
@@ -962,7 +982,7 @@ export default function ResearchStackDetail() {
             size="lg"
             className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
             onClick={handleAddToCart}
-            disabled={!pricingReady}
+            disabled={!canAddToCart}
             data-testid="button-sticky-add-to-cart-stack"
           >
             <ShoppingBag className="h-5 w-5" />

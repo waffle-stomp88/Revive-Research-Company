@@ -636,8 +636,8 @@ export function Navigation() {
       {/* Mobile Side Panel Sheet */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetContent
-          side="left"
-          className="md:hidden p-0 w-[85vw] max-w-[340px] bg-[#1a1a1f] border-r border-white/10 flex flex-col overflow-hidden [&>button.absolute]:hidden"
+          side="right"
+          className="md:hidden p-0 w-[85vw] max-w-[340px] bg-[#1a1a1f] border-l border-white/10 flex flex-col overflow-hidden [&>button.absolute]:hidden"
           data-testid="mobile-nav-sheet"
         >
           {/* Panel Header */}

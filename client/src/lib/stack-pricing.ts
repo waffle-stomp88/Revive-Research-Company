@@ -32,6 +32,22 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "aod-9604", dosage: "5mg", name: "AOD-9604" },
     { slug: "5-amino-1mq", dosage: "50mg", name: "5-Amino-1MQ" },
   ],
+  "melanocortin-arousal-stack": [
+    { slug: "pt-141", dosage: "10mg", name: "PT-141" },
+    { slug: "oxytocin", dosage: "10mg", name: "Oxytocin" },
+  ],
+  "gonadorelin-kisspeptin-hpg-cascade": [
+    { slug: "kisspeptin-10", dosage: "10mg", name: "Kisspeptin-10" },
+    { slug: "gonadorelin", dosage: "5mg", name: "Gonadorelin" },
+  ],
+  "triptorelin-enclomiphene-hpg-axis": [
+    { slug: "triptorelin", dosage: "2mg", name: "Triptorelin" },
+    { slug: "enclomiphene", dosage: "50mg", name: "Enclomiphene" },
+  ],
+  "hpg-axis-restore-stack": [
+    { slug: "kisspeptin-10", dosage: "10mg", name: "Kisspeptin-10" },
+    { slug: "melanotan-ii", dosage: "10mg", name: "MT-2" },
+  ],
 };
 
 export const BUNDLE_COMPONENTS: Record<string, StackComponent[]> = {
@@ -64,9 +80,22 @@ export function buildPriceLookup(productsWithStock: any[]): Map<string, number> 
     if (product.dosageStocks) {
       for (const ds of product.dosageStocks) {
         const parsed = parseFloat(ds.price);
-      if (!isNaN(parsed) && parsed > 0) {
-        lookup.set(`${slug}|${ds.dosage}`, parsed);
+        if (!isNaN(parsed) && parsed > 0) {
+          lookup.set(`${slug}|${ds.dosage}`, parsed);
+        }
       }
+    }
+  }
+  return lookup;
+}
+
+export function buildStockLookup(productsWithStock: any[]): Map<string, boolean> {
+  const lookup = new Map<string, boolean>();
+  for (const product of productsWithStock) {
+    const slug = product.slug;
+    if (product.dosageStocks) {
+      for (const ds of product.dosageStocks) {
+        lookup.set(`${slug}|${ds.dosage}`, ds.inStock === true && ds.stockAmount > 0);
       }
     }
   }
@@ -93,4 +122,22 @@ export function calculateStackPricing(
   const savings = Math.round((retailRounded - stackPrice) * 100) / 100;
 
   return { retailValue: retailRounded, stackPrice, savings };
+}
+
+export function isStackAvailable(
+  stackId: string,
+  stockLookup: Map<string, boolean>,
+  components: Record<string, StackComponent[]> = STACK_COMPONENTS
+): { available: boolean; oosComponents: string[] } {
+  const parts = components[stackId];
+  if (!parts) return { available: false, oosComponents: [] };
+
+  const oosComponents: string[] = [];
+  for (const part of parts) {
+    const inStock = stockLookup.get(`${part.slug}|${part.dosage}`);
+    if (!inStock) {
+      oosComponents.push(part.name);
+    }
+  }
+  return { available: oosComponents.length === 0, oosComponents };
 }

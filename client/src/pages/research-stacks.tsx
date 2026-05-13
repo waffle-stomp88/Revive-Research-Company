@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
-import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
+import { STACK_COMPONENTS, buildPriceLookup, buildStockLookup, calculateStackPricing, isStackAvailable } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
 import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -3516,8 +3516,18 @@ function ResearchStacks() {
     return buildPriceLookup(productsWithStock);
   }, [productsWithStock]);
 
+  const stockLookup = useMemo(() => {
+    if (!productsWithStock) return new Map<string, boolean>();
+    return buildStockLookup(productsWithStock);
+  }, [productsWithStock]);
+
   const getStackPricing = (stackId: string) => {
     return calculateStackPricing(stackId, priceLookup);
+  };
+
+  const getStackAvailability = (stackId: string) => {
+    if (!productsWithStock) return null;
+    return isStackAvailable(stackId, stockLookup);
   };
 
   // Show toast if redirected from a retired stack URL
@@ -3880,19 +3890,30 @@ function ResearchStacks() {
                       <div className="space-y-1">
                         {(() => {
                           const pricing = getStackPricing(stack.id);
-                          if (!pricing) return <Skeleton className="h-12 w-32" />;
+                          const avail = getStackAvailability(stack.id);
+                          const stackIsOOS = avail !== null && !avail.available;
+                          if (!pricing && !productsWithStock) return <Skeleton className="h-12 w-32" />;
+                          if (!pricing) return (
+                            <div className="space-y-1">
+                              <div className="text-sm text-muted-foreground">Price unavailable</div>
+                            </div>
+                          );
                           return (
                             <>
                               <div className="text-xs text-muted-foreground">
                                 If bought separately: <span className="line-through">${pricing.retailValue.toFixed(2)}</span>
                               </div>
-                              <div className="flex items-baseline gap-2">
-                                <span className="text-xl font-bold" style={{ color: stack.color }}>
+                              <div className="flex items-baseline gap-2 flex-wrap">
+                                <span className="text-xl font-bold" style={{ color: stackIsOOS ? undefined : stack.color, opacity: stackIsOOS ? 0.5 : 1 }}>
                                   ${pricing.stackPrice.toFixed(2)}
                                 </span>
-                                <span className="text-xs text-green-500 font-medium">
-                                  Save ${pricing.savings.toFixed(2)}
-                                </span>
+                                {stackIsOOS ? (
+                                  <span className="text-xs text-red-400 font-medium">Out of Stock</span>
+                                ) : (
+                                  <span className="text-xs text-green-500 font-medium">
+                                    Save ${pricing.savings.toFixed(2)}
+                                  </span>
+                                )}
                               </div>
                             </>
                           );
