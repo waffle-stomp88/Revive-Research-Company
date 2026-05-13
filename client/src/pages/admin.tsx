@@ -118,6 +118,7 @@ import {
   ChevronUp,
   RotateCcw,
   FlaskConical,
+  Send,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -7364,12 +7365,91 @@ function ProductsCombinedTab({ activeSubTab, onSubTabChange }: { activeSubTab: s
   );
 }
 
+function TestEmailTab() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [recipient, setRecipient] = useState(user?.email ?? "");
+
+  useEffect(() => {
+    if (user?.email && !recipient) {
+      setRecipient(user.email);
+    }
+  }, [user?.email]);
+
+  const [includeBacWater, setIncludeBacWater] = useState(false);
+
+  const sendMutation = useMutation({
+    mutationFn: async () =>
+      apiRequest("POST", "/api/admin/test-email/order-confirmation", {
+        to: recipient,
+        includeBacWater,
+      }),
+    onSuccess: () => {
+      toast({ title: "Test email sent", description: `Order confirmation email delivered to ${recipient}.` });
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to send test email",
+        description: extractApiError(err, "An unexpected error occurred."),
+        variant: "destructive",
+      });
+    },
+  });
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-base font-semibold mb-1">Send Test Email</h3>
+        <p className="text-sm text-muted-foreground">
+          Trigger a sample order-confirmation email to verify your email delivery setup.
+        </p>
+      </div>
+
+      <div className="space-y-4 max-w-md">
+        <div className="space-y-1.5">
+          <Label htmlFor="test-email-recipient">Recipient address</Label>
+          <Input
+            id="test-email-recipient"
+            data-testid="input-test-email-recipient"
+            type="email"
+            placeholder="admin@example.com"
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Checkbox
+            id="test-email-bac-water"
+            data-testid="checkbox-test-email-bac-water"
+            checked={includeBacWater}
+            onCheckedChange={(checked) => setIncludeBacWater(!!checked)}
+          />
+          <Label htmlFor="test-email-bac-water" className="cursor-pointer">
+            Include BAC water gift item
+          </Label>
+        </div>
+
+        <Button
+          data-testid="button-send-test-email"
+          onClick={() => sendMutation.mutate()}
+          disabled={!recipient || sendMutation.isPending}
+          className="gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          {sendMutation.isPending ? "Sending…" : "Send Test Email"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function CommunicationsTab() {
   const [commsSubTab, setCommsSubTab] = useState("notifications");
   
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 flex-wrap">
         <Button 
           variant={commsSubTab === "notifications" ? "default" : "outline"}
           onClick={() => setCommsSubTab("notifications")}
@@ -7388,15 +7468,28 @@ function CommunicationsTab() {
           <Mail className="h-4 w-4" />
           Email Logs
         </Button>
+        <Button
+          variant={commsSubTab === "test-email" ? "default" : "outline"}
+          onClick={() => setCommsSubTab("test-email")}
+          className="gap-2"
+          data-testid="subtab-test-email"
+        >
+          <Send className="h-4 w-4" />
+          Test Email
+        </Button>
       </div>
       
       {commsSubTab === "notifications" ? (
         <Card className="p-6">
           <StockNotificationsTab />
         </Card>
-      ) : (
+      ) : commsSubTab === "emails" ? (
         <Card className="p-6">
           <EmailLogsTab />
+        </Card>
+      ) : (
+        <Card className="p-6">
+          <TestEmailTab />
         </Card>
       )}
     </div>
