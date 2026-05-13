@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@shared/schema";
 import { supabase } from "@/lib/supabase";
+import { stripFreeItemsFromStorage } from "@/contexts/CartContext";
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -58,6 +59,7 @@ export function useAuth() {
           await syncToBackend(session.access_token);
         }
         if (event === "SIGNED_OUT") {
+          stripFreeItemsFromStorage();
           queryClient.setQueryData(["/api/auth/user"], null);
           queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
         }
@@ -82,6 +84,7 @@ export function useAuth() {
   };
 
   const logout = async () => {
+    stripFreeItemsFromStorage();
     try {
       await fetch("/api/auth/logout", {
         method: "POST",

@@ -23,6 +23,7 @@ interface CartContextType {
   removeBundleFromCart: (bundleId: string) => void;
   updateQuantity: (productId: string, dosage: string, quantity: number, packSize?: number) => void;
   clearCart: () => void;
+  removeFreeItems: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
 }
@@ -30,6 +31,19 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "revive-research-cart";
+
+export function stripFreeItemsFromStorage(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    if (!saved) return;
+    const items: CartItem[] = JSON.parse(saved);
+    const filtered = items.filter((i) => !i.isFree);
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(filtered));
+  } catch {
+    // Ignore parse errors
+  }
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -148,6 +162,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   };
 
+  const removeFreeItems = useCallback(() => {
+    setItems((prev) => prev.filter((i) => !i.isFree));
+  }, []);
+
   const getItemCount = () => {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   };
@@ -168,6 +186,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeBundleFromCart,
         updateQuantity,
         clearCart,
+        removeFreeItems,
         getItemCount,
         getSubtotal,
       }}
