@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, buildStockLookup, calculateStackPricing, isStackAvailable } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink, Info } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink, Info, Lock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +36,8 @@ import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
 import type { PeptidePathway } from "@/data/peptide-pathways";
 import { PATHWAY_DESCRIPTIONS } from "@/data/pathway-descriptions";
 import { BODY_SYSTEMS, getSystemColor } from "@/data/body-systems";
+
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 interface ResearchStack {
   id: string;
@@ -3506,6 +3508,8 @@ function ResearchStacks() {
   const [activeCategory, setActiveCategory] = useState<StackCategory | "All">("All");
   const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   const { data: productsWithStock } = useQuery<any[]>({
     queryKey: ["/api/products-with-stock"],
@@ -3658,12 +3662,66 @@ function ResearchStacks() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
+              className="relative"
             >
               <CustomStackBuilder 
                 onSwitchToPreBuilt={() => setActiveTab("pre-built")}
                 templatePeptideNames={templatePeptideNames}
                 onTemplateApplied={() => setTemplatePeptideNames([])}
               />
+              {SOFT_GATE_ENABLED && !isAuthenticated && (
+                <div
+                  className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
+                  style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", background: "rgba(26,26,31,0.55)" }}
+                  data-testid="synergy-engine-auth-gate"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="relative w-full max-w-sm mx-4"
+                  >
+                    <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/40 via-[#21d8ff]/20 to-[#E7FB10]/10 blur-sm" />
+                    <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-8 overflow-hidden text-center">
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E7FB10]/50 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#21d8ff]/30 to-transparent" />
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
+                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#E7FB10]/20 to-[#E7FB10]/5 border border-[#E7FB10]/30 flex items-center justify-center mx-auto mb-4"
+                      >
+                        <Lock className="w-7 h-7 text-[#E7FB10]" />
+                      </motion.div>
+                      <h2
+                        className="text-2xl font-bold text-white tracking-wide mb-2"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                        data-testid="text-synergy-gate-title"
+                      >
+                        Synergy Engine
+                      </h2>
+                      <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
+                        Create a free account to build custom peptide stacks, visualize synergies, and save your research.
+                      </p>
+                      <Button
+                        onClick={() => setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks?tab=custom")}&mode=signup`)}
+                        className="w-full h-11 text-sm font-semibold bg-[#E7FB10] text-black rounded-xl mb-3"
+                        data-testid="button-synergy-gate-create"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Create Free Account
+                      </Button>
+                      <button
+                        onClick={() => setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks?tab=custom")}`)}
+                        className="text-sm text-[#21d8ff] hover:text-[#21d8ff]/80 font-medium transition-colors"
+                        data-testid="button-synergy-gate-signin"
+                      >
+                        Already a researcher? Sign in
+                      </button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.div
