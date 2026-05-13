@@ -94,7 +94,7 @@ export function Navigation() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed left-0 right-0 z-[70] transition-all duration-300`}
         style={{ 
-          top: 0,
+          top: 'var(--banner-height, 36px)',
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)',
         }}

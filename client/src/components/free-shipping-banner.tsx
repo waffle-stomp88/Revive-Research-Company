@@ -26,7 +26,7 @@ export function FreeShippingBanner() {
   return (
     <div
       ref={bannerRef}
-      className="fixed top-14 md:top-16 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden"
+      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden"
       style={{
         paddingTop: 'max(env(safe-area-inset-top, 0px), 0.5rem)',
         WebkitTransform: 'translateZ(0)',
