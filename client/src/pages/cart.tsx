@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
@@ -33,6 +33,7 @@ import {
   RefreshCw,
   Layers,
   Zap,
+  Gift,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
@@ -191,15 +192,62 @@ function CrossSellCard({
   );
 }
 
+interface FirstOrderStatus {
+  isFirstOrder: boolean;
+  bacWaterId: string | null;
+  bacWaterName: string | null;
+  bacWaterImageUrl: string | null;
+  bacWaterDosage: string | null;
+}
+
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [discountCode, setDiscountCode] = useState("");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const { data: allProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const { data: currentUser } = useQuery<{ id: string } | null>({
+    queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+  });
+
+  const { data: firstOrderStatus } = useQuery<FirstOrderStatus>({
+    queryKey: ["/api/my-first-order-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/my-first-order-status", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    enabled: !!currentUser,
+    staleTime: 60_000,
+  });
+
+  // Auto-inject free 3ml BAC water for first-time buyers
+  useEffect(() => {
+    if (!firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterId) return;
+    const alreadyInCart = items.some(
+      (i) => i.isFree && i.productId === firstOrderStatus.bacWaterId
+    );
+    if (alreadyInCart) return;
+    addToCart({
+      productId: firstOrderStatus.bacWaterId,
+      name: firstOrderStatus.bacWaterName || "Bacteriostatic Water",
+      price: 0,
+      quantity: 1,
+      dosage: firstOrderStatus.bacWaterDosage || "3ml",
+      image: firstOrderStatus.bacWaterImageUrl || undefined,
+      isFree: true,
+    });
+  }, [firstOrderStatus, items, addToCart]);
 
   const crossSellSuggestions = getCrossSellSuggestions(items.map(i => i.name));
   const crossSellProducts = crossSellSuggestions.map(s => {
@@ -335,6 +383,30 @@ export default function CartPage() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
+            {/* First-order free BAC water banner */}
+            {firstOrderStatus?.isFirstOrder && !bannerDismissed && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 p-3 rounded-lg border border-[#22c55e]/40 bg-[#22c55e]/10"
+                data-testid="banner-first-order-bac"
+              >
+                <Gift className="h-5 w-5 text-[#22c55e] flex-shrink-0" />
+                <p className="text-sm text-[#22c55e] flex-1 font-medium">
+                  First order? BAC Water's on us — 3ml Bacteriostatic Water added free.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-[#22c55e]/60 hover:text-[#22c55e]"
+                  onClick={() => setBannerDismissed(true)}
+                  data-testid="button-dismiss-first-order-banner"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </motion.div>
+            )}
+
             {items.map((item, index) => (
               <motion.div
                 key={`${item.productId}-${item.dosage}`}
@@ -416,62 +488,75 @@ export default function CartPage() {
                         
                         {/* Right column: Price+Trash centered top, Quantity at bottom */}
                         <div className="flex flex-col items-end justify-center gap-3 h-20 md:h-24 flex-shrink-0">
-                          {/* Price + Trash */}
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-baseline gap-2">
-                              <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                                ${(item.price * item.quantity).toFixed(2)}
-                              </span>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-400 h-8 w-8"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                removeFromCart(item.productId, item.dosage, item.packSize);
-                              }}
-                              data-testid={`button-remove-${item.productId}`}
+                          {item.isFree ? (
+                            /* Free item: show FREE badge only — no remove or qty controls */
+                            <Badge
+                              className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5"
+                              data-testid={`badge-free-${item.productId}`}
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          
-                          {/* Quantity controls */}
-                          <div 
-                            className="flex items-center border border-border rounded-md"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
-                              }}
-                              data-testid={`button-decrease-${item.productId}`}
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-7 text-center font-medium text-sm">
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
-                              }}
-                              disabled={item.quantity >= 10}
-                              data-testid={`button-increase-${item.productId}`}
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          </div>
+                              <Gift className="h-3 w-3" />
+                              FREE
+                            </Badge>
+                          ) : (
+                            <>
+                              {/* Price + Trash */}
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                                    ${(item.price * item.quantity).toFixed(2)}
+                                  </span>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-red-400 h-8 w-8"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    removeFromCart(item.productId, item.dosage, item.packSize);
+                                  }}
+                                  data-testid={`button-remove-${item.productId}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+
+                              {/* Quantity controls */}
+                              <div
+                                className="flex items-center border border-border rounded-md"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
+                                  }}
+                                  data-testid={`button-decrease-${item.productId}`}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-7 text-center font-medium text-sm">
+                                  {item.quantity}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
+                                  }}
+                                  disabled={item.quantity >= 10}
+                                  data-testid={`button-increase-${item.productId}`}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     </Card>

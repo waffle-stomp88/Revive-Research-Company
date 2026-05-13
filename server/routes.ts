@@ -466,6 +466,43 @@ export async function registerRoutes(
     }
   });
 
+  // First-order status — used to inject free 3ml BAC water for first-time buyers
+  app.get('/api/my-first-order-status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const existingOrders = await storage.getOrdersByUserId(userId);
+      const isFirstOrder = existingOrders.length === 0;
+
+      const allProducts = await storage.getAllProducts();
+      const bacWater = allProducts.find((p) =>
+        p.slug === 'bacteriostatic-water' || p.name.toLowerCase().includes('bacteriostatic')
+      );
+
+      if (!bacWater) {
+        return res.json({ isFirstOrder, bacWaterId: null, bacWaterDosage: null, bacWaterName: null, bacWaterImageUrl: null });
+      }
+
+      const bacWaterStocks = await storage.getProductDosageStocks(bacWater.id);
+      const preferred = bacWaterStocks.find((s) => s.dosage === '3ml' && s.inStock);
+      const fallback = bacWaterStocks.find((s) => s.inStock);
+      const stock = preferred || fallback;
+
+      res.json({
+        isFirstOrder,
+        bacWaterId: bacWater.id,
+        bacWaterName: bacWater.name,
+        bacWaterImageUrl: bacWater.imageUrl || null,
+        bacWaterDosage: stock?.dosage || '3ml',
+      });
+    } catch (error) {
+      console.error("Error checking first order status:", error);
+      res.status(500).json({ message: "Failed to check order status" });
+    }
+  });
+
   // Logout - clear server session
   app.post('/api/auth/logout', (req: any, res) => {
     try {
@@ -992,9 +1029,34 @@ export async function registerRoutes(
       // --- Recompute expected total from authoritative server-side pricing ---
       // This prevents underpayment attacks where a low-value PayPal order is
       // presented alongside a high-value cart.
+
+      // Determine if this session belongs to a first-time buyer (0 prior orders).
+      // First-time buyers get a free 3ml BAC water — its price is $0 on the server side.
+      const sessionUserId = (req.session as any)?.userId;
+      let isUserFirstOrder = false;
+      let freeBacWaterProductId: string | null = null;
+      if (sessionUserId) {
+        const priorOrders = await storage.getOrdersByUserId(sessionUserId);
+        isUserFirstOrder = priorOrders.length === 0;
+        if (isUserFirstOrder) {
+          const allProds = await storage.getAllProducts();
+          const bacWaterProd = allProds.find((p) =>
+            p.slug === 'bacteriostatic-water' || p.name.toLowerCase().includes('bacteriostatic')
+          );
+          freeBacWaterProductId = bacWaterProd?.id ?? null;
+        }
+      }
+
       let serverSubtotal = 0;
       for (const item of items) {
         const qty = Number(item.quantity);
+
+        // Free BAC water on first order — contribute $0 to server subtotal
+        if (isUserFirstOrder && freeBacWaterProductId && item.productId === freeBacWaterProductId) {
+          console.log(`[PayPal Order] Free BAC water for first-order user ${sessionUserId}: ${item.productId}`);
+          continue;
+        }
+
         const productData = await storage.getProductWithDosageStock(item.productId);
         if (!productData) {
           console.warn(`[PayPal Order] Unknown productId ${item.productId} in order ${paypalOrderId}`);

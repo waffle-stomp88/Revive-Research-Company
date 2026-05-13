@@ -406,6 +406,41 @@ export default function Checkout() {
 
   const isAuthenticated = !!user;
 
+  // First-order status — injects free 3ml BAC water for first-time buyers at checkout too
+  const { data: checkoutFirstOrderStatus } = useQuery<{
+    isFirstOrder: boolean;
+    bacWaterId: string | null;
+    bacWaterName: string | null;
+    bacWaterImageUrl: string | null;
+    bacWaterDosage: string | null;
+  }>({
+    queryKey: ["/api/my-first-order-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/my-first-order-status", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    enabled: !!user,
+    staleTime: 60_000,
+  });
+
+  useEffect(() => {
+    if (!checkoutFirstOrderStatus?.isFirstOrder || !checkoutFirstOrderStatus.bacWaterId) return;
+    const alreadyFree = cartItems.some(
+      (i) => i.isFree && i.productId === checkoutFirstOrderStatus.bacWaterId
+    );
+    if (alreadyFree) return;
+    addToCart({
+      productId: checkoutFirstOrderStatus.bacWaterId,
+      name: checkoutFirstOrderStatus.bacWaterName || "Bacteriostatic Water",
+      price: 0,
+      quantity: 1,
+      dosage: checkoutFirstOrderStatus.bacWaterDosage || "3ml",
+      image: checkoutFirstOrderStatus.bacWaterImageUrl || undefined,
+      isFree: true,
+    });
+  }, [checkoutFirstOrderStatus, cartItems, addToCart]);
+
   // Fetch saved addresses for logged-in users (for checkout pre-fill)
   const { data: savedAddresses, isFetched: savedAddressesFetched } = useQuery<SavedAddress[]>({
     queryKey: ["/api/addresses"],

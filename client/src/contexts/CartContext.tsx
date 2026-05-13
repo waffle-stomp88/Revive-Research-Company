@@ -13,6 +13,7 @@ export interface CartItem {
   isSubscription?: boolean;
   subscriptionInterval?: "weekly" | "biweekly" | "monthly";
   packSize?: number;
+  isFree?: boolean;
 }
 
 interface CartContextType {
@@ -44,6 +45,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addToCart = useCallback(async (item: CartItem): Promise<boolean> => {
+    // Free items skip stock validation and are stored as singletons (no qty merging)
+    if (item.isFree) {
+      setItems((prev) => {
+        const alreadyFree = prev.some((i) => i.isFree && i.productId === item.productId);
+        if (alreadyFree) return prev;
+        return [...prev, item];
+      });
+      return true;
+    }
+
     if (item.isBundle || item.bundleId) {
       setItems((prev) => {
         const existingIndex = prev.findIndex(
@@ -102,7 +113,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = (productId: string, dosage: string, packSize?: number) => {
     setItems((prev) =>
-      prev.filter((i) => !(i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)))
+      prev.filter((i) => {
+        // Protect free items from the normal remove path
+        if (i.isFree && i.productId === productId) return true;
+        return !(i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined));
+      })
     );
   };
 
@@ -117,11 +132,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setItems((prev) =>
-      prev.map((i) =>
-        i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)
+      prev.map((i) => {
+        // Free items are always quantity 1 and cannot be adjusted
+        if (i.isFree && i.productId === productId) return i;
+        return i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)
           ? { ...i, quantity }
-          : i
-      )
+          : i;
+      })
     );
   };
 
@@ -134,7 +151,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const getSubtotal = () => {
-    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Free items are excluded from the subtotal and free-shipping threshold
+    return items
+      .filter((item) => !item.isFree)
+      .reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
   return (
