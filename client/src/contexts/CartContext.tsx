@@ -93,6 +93,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existingIndex = prev.findIndex(
         (i) => {
+          // Never merge a paid add into a free item — free items are immutable singletons
+          if (i.isFree) return false;
           const sameSubscriptionType = i.isSubscription === item.isSubscription && 
             i.subscriptionInterval === item.subscriptionInterval;
           const samePackSize = (i.packSize || undefined) === (item.packSize || undefined);

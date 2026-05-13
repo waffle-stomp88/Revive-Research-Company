@@ -1062,9 +1062,15 @@ export async function registerRoutes(
       for (const rawItem of items) {
         if (bacWaterProductId && rawItem.productId === bacWaterProductId) {
           if (isUserFirstOrder && rawItem.dosage === '3ml') {
-            // Force 3ml BAC water price to $0 server-side — authoritative record
-            console.log(`[PayPal Order] Free 3ml BAC water (first order) for user ${sessionUserId}`);
-            sanitizedItems.push({ ...rawItem, price: "0.00" });
+            const qty = Math.max(1, Number(rawItem.quantity) || 1);
+            // Exactly ONE unit is free — force qty=1 at $0 (server-authoritative)
+            console.log(`[PayPal Order] Free 3ml BAC water x1 (first order) for user ${sessionUserId}`);
+            sanitizedItems.push({ ...rawItem, quantity: 1, price: "0.00" });
+            if (qty > 1) {
+              // Any additional units are priced normally — prevents quantity-gaming
+              console.warn(`[PayPal Order] BAC water qty ${qty} on first order; 1 free, ${qty - 1} at normal price`);
+              sanitizedItems.push({ ...rawItem, quantity: qty - 1 });
+            }
           } else if (!isUserFirstOrder && parseFloat(rawItem.price || '0') <= 0) {
             // Non-first-order user attempting free BAC water — strip entirely
             console.warn(`[PayPal Order] Stripped $0 BAC water promo attempt from non-first-order user ${sessionUserId}`);
