@@ -400,8 +400,9 @@ export async function registerRoutes(
           const oldId = legacyUser.rows[0].id as string;
           console.log(`[Auth] Migrating legacy user ${oldId} → ${supabaseId}`);
           try {
-            await db.execute(sql`BEGIN`);
-            // Update all child tables before updating the primary key
+            // Update users PK first so FK constraints on child tables pass
+            await db.execute(sql`UPDATE users SET id = ${supabaseId} WHERE id = ${oldId}`);
+            // Then migrate all child table references
             await db.execute(sql`UPDATE orders SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
             await db.execute(sql`UPDATE affiliates SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
             await db.execute(sql`UPDATE wishlists SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
@@ -416,13 +417,9 @@ export async function registerRoutes(
             await db.execute(sql`UPDATE cycle_tags SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
             await db.execute(sql`UPDATE saved_stacks SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
             await db.execute(sql`UPDATE product_votes SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            // Update primary key last
-            await db.execute(sql`UPDATE users SET id = ${supabaseId} WHERE id = ${oldId}`);
-            await db.execute(sql`COMMIT`);
             console.log(`[Auth] Migration complete for ${email}`);
           } catch (migrationErr) {
-            await db.execute(sql`ROLLBACK`);
-            console.error("[Auth] ID migration failed, rolling back:", migrationErr);
+            console.error("[Auth] ID migration failed:", migrationErr);
             return res.status(500).json({ message: "Account migration failed" });
           }
         }
