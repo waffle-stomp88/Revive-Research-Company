@@ -6,3 +6,15 @@ id = "1tkDinXVhzwJyRulXSf2h"
 uri = "file://attached_assets/invite-email-template.txt"
 type = "text"
 title = "invite-email-template.html"
+
+[[outputs]]
+id = "OM0XDGej4su7RwlJ8vmjf"
+uri = "file://attached_assets/confirm-signup-template.txt"
+type = "text"
+title = "confirm-signup-template.html"
+
+[[outputs]]
+id = "jW_1Wqt86Tj9bzn2uULTi"
+uri = "file://attached_assets/reset-password-template.txt"
+type = "text"
+title = "reset-password-template.html"
