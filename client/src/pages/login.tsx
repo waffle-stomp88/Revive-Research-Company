@@ -39,18 +39,10 @@ export default function LoginPage() {
     setError("");
     setGoogleLoading(true);
     const redirectTo = window.location.origin + "/auth/callback";
-    console.log("[Google OAuth] window.location.origin:", window.location.origin);
-    console.log("[Google OAuth] redirectTo:", redirectTo);
-    console.log("[Google OAuth] Supabase URL in use:", import.meta.env.VITE_SUPABASE_URL);
-    // Use skipBrowserRedirect to capture the URL before navigating
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo,
-        skipBrowserRedirect: true,
-      },
+      options: { redirectTo },
     });
-    console.log("[Google OAuth] generated URL:", data?.url);
     if (error) {
       setError(error.message);
       setGoogleLoading(false);

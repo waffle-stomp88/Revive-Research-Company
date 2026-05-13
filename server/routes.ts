@@ -387,12 +387,13 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Token missing user id" });
       }
 
-      // Lazy ID migration: if a legacy auth0| user exists with the same email,
-      // atomically swap all user_id references to the new Supabase UUID.
+      // Lazy ID migration: if a legacy user (auth0|, google-oauth2|, or any
+      // non-UUID format) exists with the same email, atomically swap all
+      // user_id references to the new Supabase UUID.
       // This runs exactly once per legacy user on their first post-migration login.
       if (email) {
         const legacyUser = await db.execute(
-          sql`SELECT id FROM users WHERE email = ${email} AND id LIKE 'auth0|%' LIMIT 1`
+          sql`SELECT id FROM users WHERE email = ${email} AND id != ${supabaseId} LIMIT 1`
         );
         if (legacyUser.rows.length > 0) {
           const oldId = legacyUser.rows[0].id as string;
