@@ -16,7 +16,7 @@ import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -2555,6 +2555,52 @@ export async function registerRoutes(
       res.send(html);
     } catch (error: any) {
       console.error("Error rendering order confirmation email preview:", error);
+      res.status(500).json({ error: "Failed to render email preview", details: error.message });
+    }
+  });
+
+  // Admin: Preview shipping notification email template
+  app.get("/api/admin/test-email/shipping-notification", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const mockOrder = {
+        id: "preview-" + Date.now(),
+        email: "preview@example.com",
+        firstName: "Test",
+        lastName: "Researcher",
+        address: "123 Research Lane",
+        city: "Science City",
+        state: "CA",
+        zipCode: "90210",
+        country: "United States",
+      };
+      const { html } = getShippedNotificationTemplate(
+        mockOrder,
+        "9400111899223463030478",
+        "USPS",
+        "May 16, 2026",
+      );
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error: any) {
+      console.error("Error rendering shipping notification email preview:", error);
+      res.status(500).json({ error: "Failed to render email preview", details: error.message });
+    }
+  });
+
+  // Admin: Preview affiliate welcome email template
+  app.get("/api/admin/test-email/affiliate-welcome", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const mockAffiliate = {
+        firstName: "Jordan",
+        lastName: "Researcher",
+        email: "preview@example.com",
+        referralCode: "JORDAN2026",
+      };
+      const { html } = getAffiliateWelcomeTemplate(mockAffiliate);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error: any) {
+      console.error("Error rendering affiliate welcome email preview:", error);
       res.status(500).json({ error: "Failed to render email preview", details: error.message });
     }
   });

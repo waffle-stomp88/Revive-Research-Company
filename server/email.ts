@@ -644,7 +644,7 @@ function getCarrierTrackingUrl(carrier: string, trackingNumber: string): string 
 }
 
 // Email template: Shipped Notification
-function getShippedNotificationTemplate(order: {
+export function getShippedNotificationTemplate(order: {
   email: string;
   firstName: string;
   lastName: string;
@@ -1791,4 +1791,140 @@ export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailRe
   }
 
   return result;
+}
+
+export function getAffiliateWelcomeTemplate(affiliate: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  referralCode: string;
+}): { subject: string; text: string; html: string } {
+  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
+  const dashboardUrl = `${process.env.SITE_URL || 'https://reviveresearch.co'}/affiliate-dashboard`;
+  const referralUrl = `${process.env.SITE_URL || 'https://reviveresearch.co'}?ref=${affiliate.referralCode}`;
+
+  const subject = `Welcome to the ${brand.name} Affiliate Program`;
+
+  const text = `
+${brand.name.toUpperCase()}
+Welcome to the Affiliate Program!
+
+Hi ${affiliate.firstName},
+
+Your affiliate account has been approved. You're now part of the ${brand.name} affiliate program.
+
+YOUR REFERRAL CODE
+------------------
+${affiliate.referralCode}
+
+Your referral link: ${referralUrl}
+
+HOW IT WORKS
+------------
+- Share your referral link with researchers and professionals
+- Earn 10% commission on every qualifying purchase
+- Your referred customers receive a 10% discount automatically
+- Monthly payouts once you reach the $100 minimum threshold
+
+GETTING STARTED
+---------------
+Log in to your affiliate dashboard to track clicks, conversions, and earnings:
+${dashboardUrl}
+
+Questions? Reply to this email or contact us at ${EMAIL_CONFIG.replyTo}
+${getSharedFooterText(affiliate.email, 'order')}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to the Affiliate Program</title>
+</head>
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <p style="margin: 0 0 16px; font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #E7FB10;">AFFILIATE PROGRAM</p>
+              <h1 style="margin: 0 0 8px; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">You're Approved.</h1>
+              <p style="margin: 0; font-size: 16px; color: #999999;">Welcome to the ${brand.name} affiliate team.</p>
+            </td>
+          </tr>
+          <!-- Greeting -->
+          <tr>
+            <td style="padding: 32px 40px 0;">
+              <p style="margin: 0 0 16px; font-size: 16px; color: #cccccc; line-height: 1.6;">Hi ${affiliate.firstName},</p>
+              <p style="margin: 0 0 24px; font-size: 16px; color: #cccccc; line-height: 1.6;">Your affiliate application has been reviewed and approved. You can now start sharing your unique referral link and earning commissions on qualifying purchases.</p>
+            </td>
+          </tr>
+          <!-- Referral Code -->
+          <tr>
+            <td style="padding: 0 40px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.08) 0%, rgba(33,216,255,0.06) 100%); border: 1px solid rgba(231,251,16,0.2); border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 24px 28px;">
+                    <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #E7FB10;">Your Referral Code</p>
+                    <p style="margin: 0 0 16px; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 2px;">${affiliate.referralCode}</p>
+                    <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999999;">Your Referral Link</p>
+                    <p style="margin: 0; font-size: 13px; color: #21d8ff; word-break: break-all;">${referralUrl}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- How it works -->
+          <tr>
+            <td style="padding: 0 40px 32px;">
+              <p style="margin: 0 0 16px; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #ffffff;">How It Works</p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">10%</span> commission on every qualifying purchase you refer</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">10%</span> discount automatically applied for your referred customers</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #21d8ff; font-weight: 700;">30-day</span> cookie window on every referral click</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0;">
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;">Monthly payouts once you reach the <span style="color: #21d8ff; font-weight: 700;">$100</span> minimum threshold</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- CTA -->
+          <tr>
+            <td style="padding: 0 40px 40px; text-align: center;">
+              <a href="${dashboardUrl}" style="display: inline-block; padding: 14px 32px; background-color: #E7FB10; color: #0a0a0c; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">View Affiliate Dashboard</a>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 13px; color: #666666;">Questions? Reply to this email or contact <a href="mailto:${EMAIL_CONFIG.replyTo}" style="color: #21d8ff; text-decoration: none;">${EMAIL_CONFIG.replyTo}</a></p>
+              <p style="margin: 0; font-size: 12px; color: #444444;">${getSharedFooterHtml(affiliate.email, 'order')}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return { subject, text, html };
 }

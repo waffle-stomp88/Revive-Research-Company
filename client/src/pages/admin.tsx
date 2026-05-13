@@ -5357,6 +5357,24 @@ function EmailLogsTab() {
             <Eye className="h-4 w-4 mr-2" />
             Order Confirmation + BAC Water
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="button-preview-shipping-notification-email"
+            onClick={() => window.open("/api/admin/test-email/shipping-notification", "_blank")}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Shipping Notification
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="button-preview-affiliate-welcome-email"
+            onClick={() => window.open("/api/admin/test-email/affiliate-welcome", "_blank")}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Affiliate Welcome
+          </Button>
         </div>
       </div>
 
