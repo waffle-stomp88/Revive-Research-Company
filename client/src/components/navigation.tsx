@@ -671,62 +671,159 @@ export function Navigation() {
 
             {/* Primary Nav Cards */}
             <div className="px-4 space-y-2 pb-4">
-              {[
-                {
-                  href: "/research-stacks",
-                  label: "Research Stacks",
-                  subtitle: "Curated multi-compound bundles",
-                  Icon: Layers,
-                  color: "#21d8ff",
-                  isActive: location === "/research-stacks" || location.startsWith("/research-stacks/"),
-                  testId: "link-mobile-panel-stacks",
-                },
-                {
-                  href: "/bulk-packs",
-                  label: "Bulk Packs",
-                  subtitle: "5-packs, 10-packs & more",
-                  Icon: Boxes,
-                  color: "#a855f7",
-                  isActive: location === "/bulk-packs" || location.startsWith("/bulk-packs/"),
-                  testId: "link-mobile-panel-bulk",
-                },
-                {
-                  href: "/coa-library",
-                  label: "COA Library",
-                  subtitle: "Third-party lab results & verification",
-                  Icon: FileCheck,
-                  color: "#E7FB10",
-                  isActive: location.startsWith("/coa"),
-                  testId: "link-mobile-panel-coa",
-                },
-              ].map(({ href, label, subtitle, Icon, color, isActive, testId }) => (
-                <Link key={href} href={href} onClick={() => setIsMobileMenuOpen(false)}>
+
+              {/* Peptides — parent card with sub-links */}
+              {(() => {
+                const peptidesActive = location === "/peptides" || location.startsWith("/peptides/");
+                const stacksActive = location === "/research-stacks" || location.startsWith("/research-stacks/");
+                const bulkActive = location === "/bulk-packs" || location.startsWith("/bulk-packs/");
+                const anyActive = peptidesActive || stacksActive || bulkActive;
+                const color = "#a855f7";
+                return (
                   <div
-                    className="flex items-center gap-4 px-4 py-4 rounded-lg border transition-colors"
+                    className="rounded-lg border overflow-hidden"
                     style={{
-                      background: isActive ? `${color}18` : "#22222a",
-                      borderColor: isActive ? `${color}55` : "#333340",
+                      background: anyActive ? `${color}10` : "#22222a",
+                      borderColor: anyActive ? `${color}55` : "#333340",
                     }}
-                    data-testid={testId}
                   >
-                    <div
-                      className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${color}22` }}
-                    >
-                      <Icon className="h-5 w-5" style={{ color }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span
-                        className="font-display text-lg font-bold tracking-wide block leading-tight"
-                        style={{ color: isActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
+                    {/* Parent row */}
+                    <Link href="/peptides" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div
+                        className="flex items-center gap-4 px-4 py-4"
+                        data-testid="link-mobile-panel-peptides"
                       >
-                        {label}
-                      </span>
-                      <span className="text-xs text-gray-400 block">{subtitle}</span>
-                    </div>
+                        <div
+                          className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ background: `${color}22` }}
+                        >
+                          <FlaskConical className="h-5 w-5" style={{ color }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span
+                            className="font-display text-lg font-bold tracking-wide block leading-tight"
+                            style={{ color: peptidesActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
+                          >
+                            Peptides
+                          </span>
+                          <span className="text-xs text-gray-400 block">Individual vials &amp; all compounds</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                      </div>
+                    </Link>
+                    {/* Sub-links */}
+                    <div className="border-t border-white/[0.06] mx-4" />
+                    <Link href="/research-stacks" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div
+                        className="flex items-center gap-3 px-4 py-3"
+                        data-testid="link-mobile-panel-stacks"
+                      >
+                        <div
+                          className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+                          style={{ background: stacksActive ? "#21d8ff22" : "#ffffff0a" }}
+                        >
+                          <Layers className="h-4 w-4" style={{ color: stacksActive ? "#21d8ff" : "#9ca3af" }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold block" style={{ color: stacksActive ? "#21d8ff" : "#d1d5db" }}>
+                            Research Stacks
+                          </span>
+                          <span className="text-xs text-gray-500 block">Curated multi-compound bundles</span>
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="border-t border-white/[0.06] mx-4" />
+                    <Link href="/bulk-packs" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div
+                        className="flex items-center gap-3 px-4 py-3"
+                        data-testid="link-mobile-panel-bulk"
+                      >
+                        <div
+                          className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+                          style={{ background: bulkActive ? "#a855f722" : "#ffffff0a" }}
+                        >
+                          <Boxes className="h-4 w-4" style={{ color: bulkActive ? "#a855f7" : "#9ca3af" }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold block" style={{ color: bulkActive ? "#a855f7" : "#d1d5db" }}>
+                            Bulk Packs
+                          </span>
+                          <span className="text-xs text-gray-500 block">5-packs, 10-packs &amp; more</span>
+                        </div>
+                      </div>
+                    </Link>
                   </div>
-                </Link>
-              ))}
+                );
+              })()}
+
+              {/* Education */}
+              {(() => {
+                const color = "#ec4899";
+                const isActive = location.startsWith("/guides") || location.startsWith("/education") || location.startsWith("/academy");
+                return (
+                  <Link href="/guides/peptide-education-center" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div
+                      className="flex items-center gap-4 px-4 py-4 rounded-lg border transition-colors"
+                      style={{
+                        background: isActive ? `${color}18` : "#22222a",
+                        borderColor: isActive ? `${color}55` : "#333340",
+                      }}
+                      data-testid="link-mobile-panel-education"
+                    >
+                      <div
+                        className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${color}22` }}
+                      >
+                        <BookOpen className="h-5 w-5" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className="font-display text-lg font-bold tracking-wide block leading-tight"
+                          style={{ color: isActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
+                        >
+                          Education
+                        </span>
+                        <span className="text-xs text-gray-400 block">Guides, articles &amp; learning hub</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })()}
+
+              {/* COA Library */}
+              {(() => {
+                const color = "#E7FB10";
+                const isActive = location.startsWith("/coa");
+                return (
+                  <Link href="/coa-library" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div
+                      className="flex items-center gap-4 px-4 py-4 rounded-lg border transition-colors"
+                      style={{
+                        background: isActive ? `${color}18` : "#22222a",
+                        borderColor: isActive ? `${color}55` : "#333340",
+                      }}
+                      data-testid="link-mobile-panel-coa"
+                    >
+                      <div
+                        className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${color}22` }}
+                      >
+                        <FileCheck className="h-5 w-5" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className="font-display text-lg font-bold tracking-wide block leading-tight"
+                          style={{ color: isActive ? color : "white", fontFamily: "'Bebas Neue', sans-serif" }}
+                        >
+                          COA Library
+                        </span>
+                        <span className="text-xs text-gray-400 block">Third-party lab results &amp; verification</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })()}
+
             </div>
 
             {/* Section Divider */}
