@@ -78,15 +78,17 @@ export function Navigation() {
   }, [location]);
 
   useEffect(() => {
-    const onPeptidePage =
-      location === "/peptides" ||
-      location.startsWith("/peptides/") ||
-      location === "/research-stacks" ||
-      location.startsWith("/research-stacks/") ||
-      location === "/bulk-packs" ||
-      location.startsWith("/bulk-packs/");
-    if (onPeptidePage) setIsPeptidesOpen(true);
-  }, [location]);
+    if (isMobileMenuOpen) {
+      const onPeptidePage =
+        location === "/peptides" ||
+        location.startsWith("/peptides/") ||
+        location === "/research-stacks" ||
+        location.startsWith("/research-stacks/") ||
+        location === "/bulk-packs" ||
+        location.startsWith("/bulk-packs/");
+      setIsPeptidesOpen(onPeptidePage);
+    }
+  }, [isMobileMenuOpen]);
 
   const getInitials = () => {
     if (user?.firstName && user?.lastName) {
