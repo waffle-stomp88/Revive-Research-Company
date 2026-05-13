@@ -77,6 +77,17 @@ export function Navigation() {
     setIsCartOpen(false);
   }, [location]);
 
+  useEffect(() => {
+    const onPeptidePage =
+      location === "/peptides" ||
+      location.startsWith("/peptides/") ||
+      location === "/research-stacks" ||
+      location.startsWith("/research-stacks/") ||
+      location === "/bulk-packs" ||
+      location.startsWith("/bulk-packs/");
+    if (onPeptidePage) setIsPeptidesOpen(true);
+  }, [location]);
+
   const getInitials = () => {
     if (user?.firstName && user?.lastName) {
       return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
@@ -680,7 +691,7 @@ export function Navigation() {
                 const bulkActive = location === "/bulk-packs" || location.startsWith("/bulk-packs/");
                 const anyActive = peptidesActive || stacksActive || bulkActive;
                 const color = "#a855f7";
-                const open = isPeptidesOpen || anyActive;
+                const open = isPeptidesOpen;
                 return (
                   <div
                     className="rounded-lg border overflow-hidden"
