@@ -16,7 +16,7 @@ import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -2602,6 +2602,56 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Error rendering affiliate welcome email preview:", error);
       res.status(500).json({ error: "Failed to render email preview", details: error.message });
+    }
+  });
+
+  // Admin: Preview user invite email (no email sent)
+  app.get("/api/admin/test-email/user-invite", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { html } = getInviteEmailTemplate({
+        firstName: "Alex",
+        email: "preview@example.com",
+        inviteUrl: "https://reviveresearch.co/auth",
+      });
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error: any) {
+      console.error("Error rendering user invite email preview:", error);
+      res.status(500).json({ error: "Failed to render email preview", details: error.message });
+    }
+  });
+
+  // Admin: Send user invite email
+  app.post("/api/admin/invite-user", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { to, firstName, inviteUrl } = req.body;
+      if (!to || typeof to !== "string") {
+        return res.status(400).json({ error: "Recipient email is required" });
+      }
+      const siteUrl = process.env.SITE_URL || "https://reviveresearch.co";
+      const resolvedUrl = inviteUrl || `${siteUrl}/auth`;
+      const result = await sendInviteEmail({
+        email: to,
+        firstName: firstName || undefined,
+        inviteUrl: resolvedUrl,
+      });
+      if (!result.success) {
+        return res.status(500).json({ error: result.error || "Failed to send invite email" });
+      }
+      // Log to email_events
+      try {
+        await storage.createEmailEvent({
+          type: "user_invite",
+          recipient: to,
+          subject: "You're Invited to Revive Research",
+          status: "sent",
+          metadata: { firstName: firstName || null, inviteUrl: resolvedUrl },
+        });
+      } catch (_) {}
+      res.json({ success: true, message: `Invite sent to ${to}` });
+    } catch (error: any) {
+      console.error("Error sending user invite email:", error);
+      res.status(500).json({ error: "Failed to send invite email", details: error.message });
     }
   });
 

@@ -5268,6 +5268,66 @@ function LaunchSubscribersTab() {
   );
 }
 
+function InviteUserForm() {
+  const { toast } = useToast();
+  const [inviteTo, setInviteTo] = useState("");
+  const [inviteFirstName, setInviteFirstName] = useState("");
+
+  const inviteMutation = useMutation({
+    mutationFn: (data: { to: string; firstName?: string }) =>
+      apiRequest("POST", "/api/admin/invite-user", data),
+    onSuccess: () => {
+      toast({ title: "Invite sent", description: `Invitation emailed to ${inviteTo}.` });
+      setInviteTo("");
+      setInviteFirstName("");
+    },
+    onError: (err: any) => {
+      toast({ title: "Failed to send invite", description: err.message || "Unknown error", variant: "destructive" });
+    },
+  });
+
+  return (
+    <div>
+      <h3 className="text-base font-semibold mb-1">Invite a User</h3>
+      <p className="text-sm text-muted-foreground mb-3">
+        Send a branded invitation email to a prospective researcher.
+      </p>
+      <div className="flex flex-wrap gap-2 items-end">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground">First Name (optional)</label>
+          <Input
+            data-testid="input-invite-first-name"
+            placeholder="Alex"
+            value={inviteFirstName}
+            onChange={(e) => setInviteFirstName(e.target.value)}
+            className="w-40"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-muted-foreground">Recipient Email</label>
+          <Input
+            data-testid="input-invite-email"
+            type="email"
+            placeholder="researcher@example.com"
+            value={inviteTo}
+            onChange={(e) => setInviteTo(e.target.value)}
+            className="w-64"
+          />
+        </div>
+        <Button
+          data-testid="button-send-user-invite"
+          disabled={!inviteTo || inviteMutation.isPending}
+          onClick={() =>
+            inviteMutation.mutate({ to: inviteTo, firstName: inviteFirstName || undefined })
+          }
+        >
+          {inviteMutation.isPending ? "Sending…" : "Send Invite"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function EmailLogsTab() {
   const [emailTab, setEmailTab] = useState("orders");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -5375,8 +5435,19 @@ function EmailLogsTab() {
             <Eye className="h-4 w-4 mr-2" />
             Affiliate Welcome
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="button-preview-user-invite-email"
+            onClick={() => window.open("/api/admin/test-email/user-invite", "_blank")}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            User Invite
+          </Button>
         </div>
       </div>
+
+      <InviteUserForm />
 
       <Tabs value={emailTab} onValueChange={setEmailTab} className="space-y-4">
         <TabsList className="grid w-full max-w-xs grid-cols-2">

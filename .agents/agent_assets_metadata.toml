@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "1tkDinXVhzwJyRulXSf2h"
+uri = "file://attached_assets/invite-email-template.txt"
+type = "text"
+title = "invite-email-template.html"
