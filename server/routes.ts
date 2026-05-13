@@ -7,7 +7,7 @@ import { createServer, type Server } from "http";
 import path from "path";
 import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
@@ -390,37 +390,39 @@ export async function registerRoutes(
       // Lazy ID migration: if a legacy user (auth0|, google-oauth2|, or any
       // non-UUID format) exists with the same email, atomically swap all
       // user_id references to the new Supabase UUID.
+      // Uses a dedicated pool connection with session_replication_role=replica
+      // to disable FK trigger enforcement for the duration of the transaction,
+      // allowing users.id to be updated before child tables are migrated.
       // This runs exactly once per legacy user on their first post-migration login.
       if (email) {
-        const legacyUser = await db.execute(
+        const legacyCheck = await db.execute(
           sql`SELECT id FROM users WHERE email = ${email} AND id != ${supabaseId} LIMIT 1`
         );
-        console.log(`[Auth] Migration check for ${email}: found ${legacyUser.rows.length} rows, supabaseId=${supabaseId}`, legacyUser.rows.map((r: any) => r.id));
-        if (legacyUser.rows.length > 0) {
-          const oldId = legacyUser.rows[0].id as string;
+        if (legacyCheck.rows.length > 0) {
+          const oldId = legacyCheck.rows[0].id as string;
           console.log(`[Auth] Migrating legacy user ${oldId} → ${supabaseId}`);
+          const client = await pool.connect();
           try {
-            // Update users PK first so FK constraints on child tables pass
-            await db.execute(sql`UPDATE users SET id = ${supabaseId} WHERE id = ${oldId}`);
-            // Then migrate all child table references
-            await db.execute(sql`UPDATE orders SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE affiliates SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE wishlists SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE subscriptions SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE user_research_profiles SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE academy_progress SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE saved_addresses SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE notification_preferences SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE research_notes SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE login_history SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE batch_verification_history SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE cycle_tags SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE saved_stacks SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
-            await db.execute(sql`UPDATE product_votes SET user_id = ${supabaseId} WHERE user_id = ${oldId}`);
+            await client.query('BEGIN');
+            await client.query("SET session_replication_role = 'replica'");
+            await client.query('UPDATE users SET id = $1 WHERE id = $2', [supabaseId, oldId]);
+            for (const table of [
+              'academy_progress', 'affiliates', 'batch_verification_history',
+              'cycle_tags', 'login_history', 'notification_preferences',
+              'research_notes', 'saved_addresses', 'saved_stacks',
+              'user_research_profiles', 'orders', 'product_votes', 'wishlists',
+            ]) {
+              await client.query(`UPDATE ${table} SET user_id = $1 WHERE user_id = $2`, [supabaseId, oldId]);
+            }
+            await client.query("SET session_replication_role = 'origin'");
+            await client.query('COMMIT');
             console.log(`[Auth] Migration complete for ${email}`);
           } catch (migrationErr) {
-            console.error("[Auth] ID migration failed:", migrationErr);
+            await client.query('ROLLBACK');
+            console.error("[Auth] ID migration failed, rolling back:", migrationErr);
             return res.status(500).json({ message: "Account migration failed" });
+          } finally {
+            client.release();
           }
         }
       }
