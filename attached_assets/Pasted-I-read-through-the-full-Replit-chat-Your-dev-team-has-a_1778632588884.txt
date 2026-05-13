@@ -1,0 +1,32 @@
+I read through the full Replit chat. Your dev team has actually made a lot of progress — the Sleevd redirect is fixed, Google OAuth is hitting the right project, and the consent screen is working. The problem they're stuck on now is the **post-login database migration** — not a 403 anymore.
+
+Here's where things actually stand based on their logs:
+
+**What's working:** Google OAuth → Google consent screen → Supabase callback → all correct. Your Google account authenticates successfully.
+
+**What's failing:** The `/api/auth/sync` endpoint crashes when it tries to migrate your existing user record from the old `google-oauth2|101068675403979584783` ID to your new Supabase UUID. The issue is the FK constraint — child tables (like affiliates) reference `users.id`, so the order of updates matters.
+
+**Their latest fix** was to update `users.id` first, then child tables, and strip the fake BEGIN/COMMIT/ROLLBACK (which don't work with Neon's serverless HTTP driver since each query runs on a separate connection).
+
+The core problem is that **they can't do a real atomic transaction with Neon's HTTP driver.** Each `db.execute()` is its own connection, so if the `users.id` update succeeds but a child table update fails, you end up with orphaned data.
+
+Send this:
+
+> The transaction approach won't work with Neon's serverless HTTP driver — each db.execute() is a separate connection, so BEGIN/COMMIT/ROLLBACK are no-ops. Two options:
+> 
+> **Option 1 (recommended for 7 users):** Write the entire migration as a single raw SQL statement using a CTE or just a single query with multiple statements separated by semicolons, passed as one db.execute() call. Neon will execute a single string as one transaction. Something like:
+> 
+> ```sql
+> UPDATE users SET id = $1 WHERE id = $2;
+> UPDATE orders SET user_id = $1 WHERE user_id = $2;
+> UPDATE affiliate_accounts SET user_id = $1 WHERE user_id = $2;
+> -- repeat for all child tables
+> ```
+> 
+> Pass that as a single string to one db.execute() call.
+> 
+> **Option 2:** Temporarily drop the FK constraints, run the updates, re-add the constraints. Overkill for 7 users but it works.
+> 
+> **Option 3:** Use Neon's `transaction()` method if available in your driver — check if the Neon client exposes a `.transaction()` function that handles connection pooling correctly.
+> 
+> Also — before trying any of these, what error are you actually getting now after the last fix? Is it still a FK constraint violation, or something new? Screenshot the latest server logs.
