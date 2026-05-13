@@ -395,6 +395,7 @@ export async function registerRoutes(
         const legacyUser = await db.execute(
           sql`SELECT id FROM users WHERE email = ${email} AND id != ${supabaseId} LIMIT 1`
         );
+        console.log(`[Auth] Migration check for ${email}: found ${legacyUser.rows.length} rows, supabaseId=${supabaseId}`, legacyUser.rows.map((r: any) => r.id));
         if (legacyUser.rows.length > 0) {
           const oldId = legacyUser.rows[0].id as string;
           console.log(`[Auth] Migrating legacy user ${oldId} → ${supabaseId}`);
