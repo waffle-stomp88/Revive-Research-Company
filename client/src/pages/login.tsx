@@ -216,16 +216,6 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full max-w-md">
-          {/* Promo badge */}
-          <div className="flex justify-center mb-6">
-            <Badge
-              className="bg-[#E7FB10]/15 text-[#E7FB10] border border-[#E7FB10]/30 text-xs font-semibold px-3 py-1"
-              data-testid="badge-promo"
-            >
-              New Accounts Get 10% Off First Order
-            </Badge>
-          </div>
-
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
