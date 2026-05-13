@@ -20,7 +20,8 @@ import {
   Smartphone,
   Copy,
   DollarSign,
-  ExternalLink
+  ExternalLink,
+  Gift
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -612,6 +613,36 @@ export default function OrderConfirmation() {
               </div>
             </Card>
           </motion.div>
+
+          {/* BAC Water Gift Callout */}
+          {orderSummary?.items.some(
+            (item) => item.price === 0 && item.name.toLowerCase().includes("bacteriostatic")
+          ) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+            >
+              <Card
+                className="p-5 mb-6 border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/10 to-transparent"
+                data-testid="callout-bac-water-gift"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#21d8ff]/15 flex-shrink-0">
+                    <Gift className="w-5 h-5 text-[#21d8ff]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-semibold mb-1 text-[#21d8ff]">
+                      Free Gift Included
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your free 3ml Bacteriostatic Water is included — a gift on your first order.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
 
           {/* RUO Disclaimer */}
           <motion.div
