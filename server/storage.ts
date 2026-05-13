@@ -93,6 +93,7 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<boolean>;
   setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined>;
+  updateUserAttestation(id: string, attestedAt: Date): Promise<User | undefined>;
   getAllCustomersWithStats(): Promise<CustomerWithStats[]>;
   
   getAllProducts(): Promise<Product[]>;
@@ -481,6 +482,11 @@ export class DatabaseStorage implements IStorage {
 
   async setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined> {
     const [user] = await db.update(users).set({ isAdmin, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+    return user || undefined;
+  }
+
+  async updateUserAttestation(id: string, attestedAt: Date): Promise<User | undefined> {
+    const [user] = await db.update(users).set({ ruoAttestationAt: attestedAt, updatedAt: new Date() }).where(eq(users.id, id)).returning();
     return user || undefined;
   }
 

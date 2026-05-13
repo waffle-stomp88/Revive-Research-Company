@@ -466,6 +466,24 @@ export async function registerRoutes(
     }
   });
 
+  // Record RUO attestation timestamp for the authenticated user
+  app.post('/api/auth/attest-ruo', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const user = await storage.updateUserAttestation(userId, new Date());
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json({ ruoAttestationAt: user.ruoAttestationAt });
+    } catch (error) {
+      console.error("Error recording RUO attestation:", error);
+      res.status(500).json({ message: "Failed to record attestation" });
+    }
+  });
+
   // First-order status — used to inject free 3ml BAC water for first-time buyers
   app.get('/api/my-first-order-status', isAuthenticated, async (req: any, res) => {
     try {

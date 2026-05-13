@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2, HeartHandshake, Lock, Database, BellOff, ChevronRight } from "lucide-react";
+import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2, HeartHandshake, Lock, Database, BellOff, ChevronRight, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -23,10 +23,20 @@ const TRUST_BADGES = [
 
 const AVATAR_COLORS = ["#E7FB10", "#21d8ff", "#a855f7", "#ec4899", "#22c55e"];
 
+const ATTESTATION_TEXT =
+  "I confirm I am 21+ years of age and that all products purchased are for laboratory research purposes only. Not for human or animal consumption.";
+
 type Mode = "login" | "signup" | "forgot";
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<Mode>("login");
+  const [, navigate] = useLocation();
+
+  // Read returnTo and mode from URL query params
+  const searchParams = new URLSearchParams(window.location.search);
+  const returnTo = searchParams.get("returnTo") || "/dashboard";
+  const initialMode = searchParams.get("mode") === "signup" ? "signup" : "login";
+
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,10 +44,26 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [attestationChecked, setAttestationChecked] = useState(false);
+
+  // Navigate to returnTo after successful email/password sign-in
+  const handlePostSignIn = () => {
+    navigate(returnTo);
+  };
 
   const handleGoogleLogin = async () => {
     setError("");
+    // When in signup mode, attestation must be checked before proceeding
+    if (mode === "signup" && !attestationChecked) {
+      setError("You must confirm the research use attestation to create an account.");
+      return;
+    }
     setGoogleLoading(true);
+    // Persist returnTo so auth-callback can redirect back after OAuth
+    try {
+      sessionStorage.setItem("auth_return_to", returnTo);
+      if (mode === "signup") sessionStorage.setItem("ruo_attest_pending", "1");
+    } catch {}
     const redirectTo = window.location.origin + "/auth/callback";
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -73,6 +99,16 @@ export default function LoginPage() {
     }
 
     if (mode === "signup") {
+      if (!attestationChecked) {
+        setError("You must confirm the research use attestation to create an account.");
+        setLoading(false);
+        return;
+      }
+      // Persist the returnTo and attestation flag so auth-callback can use them
+      try {
+        sessionStorage.setItem("auth_return_to", returnTo);
+        sessionStorage.setItem("ruo_attest_pending", "1");
+      } catch {}
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -82,6 +118,7 @@ export default function LoginPage() {
       });
       setLoading(false);
       if (error) {
+        try { sessionStorage.removeItem("ruo_attest_pending"); } catch {}
         setError(error.message);
       } else {
         setSuccessMsg("Check your email to confirm your account.");
@@ -93,6 +130,8 @@ export default function LoginPage() {
     setLoading(false);
     if (error) {
       setError(error.message);
+    } else {
+      handlePostSignIn();
     }
   };
 
@@ -346,9 +385,41 @@ export default function LoginPage() {
                   </div>
                 )}
 
+                {/* Attestation checkbox — signup only */}
+                {mode === "signup" && (
+                  <label
+                    className="flex items-start gap-3 cursor-pointer group"
+                    htmlFor="signup-attestation"
+                    data-testid="label-attestation"
+                  >
+                    <div className="relative flex-shrink-0 mt-0.5">
+                      <input
+                        id="signup-attestation"
+                        type="checkbox"
+                        checked={attestationChecked}
+                        onChange={(e) => setAttestationChecked(e.target.checked)}
+                        className="sr-only"
+                        data-testid="checkbox-signup-attestation"
+                      />
+                      <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                          attestationChecked
+                            ? "bg-[#E7FB10] border-[#E7FB10]"
+                            : "border-zinc-600 bg-transparent group-hover:border-zinc-400"
+                        }`}
+                      >
+                        {attestationChecked && <CheckSquare className="w-3 h-3 text-black" />}
+                      </div>
+                    </div>
+                    <span className="text-xs text-zinc-400 leading-relaxed">
+                      {ATTESTATION_TEXT}
+                    </span>
+                  </label>
+                )}
+
                 <Button
                   type="submit"
-                  disabled={loading || googleLoading}
+                  disabled={loading || googleLoading || (mode === "signup" && !attestationChecked)}
                   className="w-full h-11 bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black font-semibold gap-2 mt-2"
                   data-testid="button-submit-auth"
                 >

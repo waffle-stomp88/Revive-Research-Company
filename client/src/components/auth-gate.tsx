@@ -1,15 +1,16 @@
 import { motion } from "framer-motion";
-import { Lock, FlaskConical, Shield, GraduationCap, Sparkles, ArrowRight } from "lucide-react";
+import { Lock, FlaskConical, Shield, GraduationCap, Sparkles, ArrowRight, Droplets } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 interface AuthGateProps {
   title?: string;
   description?: string;
+  inline?: boolean;
 }
 
-export function AuthGate({ title, description }: AuthGateProps) {
-  const { login } = useAuth();
+export function AuthGate({ title, description, inline }: AuthGateProps) {
+  const [location, setLocation] = useLocation();
 
   const defaultTitle = "Researcher Access";
   const defaultDescription = "Create a free account to unlock our verified peptide catalog.";
@@ -19,6 +20,54 @@ export function AuthGate({ title, description }: AuthGateProps) {
     { icon: Shield, label: "COA Access" },
     { icon: GraduationCap, label: "Academy" },
   ];
+
+  const returnTo = encodeURIComponent(location);
+  const handleLogin = () => setLocation(`/login?returnTo=${returnTo}`);
+  const handleCreateAccount = () => setLocation(`/login?returnTo=${returnTo}&mode=signup`);
+
+  if (inline) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="rounded-xl border border-[#E7FB10]/25 bg-[#E7FB10]/5 p-4"
+        data-testid="auth-gate-inline"
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-[#E7FB10]/15 border border-[#E7FB10]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Lock className="w-4 h-4 text-[#E7FB10]" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white leading-snug">Sign in to see pricing</p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <Droplets className="w-3 h-3 text-[#21d8ff] flex-shrink-0" />
+              <p className="text-xs text-[#21d8ff]">Free BAC water included with your first order</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            className="flex-1 bg-[#E7FB10] text-black font-semibold text-xs"
+            onClick={handleCreateAccount}
+            data-testid="button-inline-gate-create"
+          >
+            Create Account to Order
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 border-white/20 text-white text-xs"
+            onClick={handleLogin}
+            data-testid="button-inline-gate-signin"
+          >
+            Sign In
+          </Button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-120px)] flex items-center justify-center px-4 pt-16 pb-8">
@@ -86,7 +135,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
               transition={{ delay: 0.5 }}
             >
               <Button
-                onClick={() => login()}
+                onClick={handleCreateAccount}
                 className="w-full h-12 text-base font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
                 data-testid="button-auth-gate-login"
               >
@@ -99,7 +148,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
             <p className="text-center text-sm text-zinc-500 mt-4">
               Already a researcher?{" "}
               <button
-                onClick={() => login()}
+                onClick={handleLogin}
                 className="text-[#21d8ff] hover:text-[#21d8ff]/80 font-medium transition-colors"
                 data-testid="button-auth-gate-signin"
               >

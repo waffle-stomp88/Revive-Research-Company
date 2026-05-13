@@ -10,6 +10,7 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
+import { RuoAttestationModal } from "@/components/ruo-attestation-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ProtectedRoute } from "@/components/protected-route";
 import { initGA } from "@/lib/analytics";
@@ -337,6 +338,7 @@ function AppShell() {
     <>
       <PreventScrollbarHiding />
       <AgeVerificationModal />
+      <RuoAttestationModal />
       <AffiliateTracker />
       <ScrollManager />
       <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">

@@ -77,6 +77,7 @@ import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
+import { AuthGate } from "@/components/auth-gate";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCompoundProfile } from "@/data/compound-profiles";
 import { getStripeConfig } from "@/data/category-stripe-config";
@@ -163,12 +164,15 @@ const dosageMultipliers: Record<string, number> = {
   "20mg": 1.50,
 };
 
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
+
 export default function ProductDetail() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { addToCart } = useCart();
   const { isAuthenticated, login } = useAuth();
+  const softGateEnabled = SOFT_GATE_ENABLED;
   const [quantity, setQuantity] = useState(1);
   const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
@@ -933,12 +937,18 @@ export default function ProductDetail() {
             })()}
 
             <div className="mb-2 md:mb-3">
-              <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
-                <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
-                  ${getBasePrice().toFixed(2)}
-                </span>
-                <PriceTrendBadge productId={product.id} />
-              </div>
+              {softGateEnabled && !isAuthenticated ? (
+                <div data-testid="text-product-price">
+                  <AuthGate inline />
+                </div>
+              ) : (
+                <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
+                  <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
+                    ${getBasePrice().toFixed(2)}
+                  </span>
+                  <PriceTrendBadge productId={product.id} />
+                </div>
+              )}
             </div>
 
 
@@ -967,11 +977,13 @@ export default function ProductDetail() {
                         const isDosageOutOfStock = hasDosageStockData && dosageStock 
                           ? (!dosageStock.inStock || dosageStock.stockAmount <= 0) 
                           : false;
-                        // Show dosage-specific price if available
-                        const dosagePrice = dosageStock?.price ? `$${Number(dosageStock.price).toFixed(2)}` : null;
-                        const priceLabel = dosagePrice 
-                          ? ` (${dosagePrice})` 
-                          : (dosage !== "10mg" ? ` (+${((dosageMultipliers[dosage] || 1) - 1) * 100}%)` : "");
+                        // Show dosage-specific price if available (hidden when soft gate is active)
+                        const dosagePrice = !softGateEnabled || isAuthenticated
+                          ? (dosageStock?.price ? `$${Number(dosageStock.price).toFixed(2)}` : null)
+                          : null;
+                        const priceLabel = (softGateEnabled && !isAuthenticated) || !dosagePrice
+                          ? ""
+                          : ` (${dosagePrice})`;
                         return (
                           <SelectItem 
                             key={dosage} 
@@ -1053,9 +1065,11 @@ export default function ProductDetail() {
                         <ShoppingCart className="h-3.5 w-3.5" />
                         <span className="font-medium text-sm">One-time</span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        ${getBasePrice().toFixed(2)}
-                      </p>
+                      {(!softGateEnabled || isAuthenticated) && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          ${getBasePrice().toFixed(2)}
+                        </p>
+                      )}
                     </div>
                     {purchaseType === "one-time" && (
                       <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
@@ -1127,6 +1141,11 @@ export default function ProductDetail() {
 
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
+              softGateEnabled && !isAuthenticated ? (
+                <div data-testid="stack-cta">
+                  <AuthGate inline />
+                </div>
+              ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
                 <Button
                   size="lg"
@@ -1168,6 +1187,7 @@ export default function ProductDetail() {
                   {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
                 </Button>
               </div>
+              )
             ) : (
               /* Out of Stock - Show prominent notification signup */
               <motion.div
@@ -1961,7 +1981,7 @@ export default function ProductDetail() {
 
       {/* Feature 1: Sticky Desktop Purchase Bar */}
       <AnimatePresence>
-        {showStickyPurchase && !isOutOfStock && (
+        {showStickyPurchase && !isOutOfStock && !(softGateEnabled && !isAuthenticated) && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1991,7 +2011,7 @@ export default function ProductDetail() {
       </AnimatePresence>
 
       {/* Sticky Mobile Add-to-Cart Bar */}
-      {product && !isOutOfStock && (
+      {product && !isOutOfStock && !(softGateEnabled && !isAuthenticated) && (
         <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">

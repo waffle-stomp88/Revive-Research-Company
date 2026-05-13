@@ -46,6 +46,22 @@ export default function AuthCallback() {
 
         const returnTo = sessionStorage.getItem("auth_return_to") || "/dashboard";
         sessionStorage.removeItem("auth_return_to");
+
+        // If user attested RUO during signup, record it now that we have a session
+        const attestPending = sessionStorage.getItem("ruo_attest_pending");
+        if (attestPending) {
+          sessionStorage.removeItem("ruo_attest_pending");
+          try {
+            await fetch("/api/auth/attest-ruo", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+            });
+          } catch {
+            // Non-fatal — attestation modal will catch it on next visit
+          }
+        }
+
         navigate(returnTo);
       } catch (err) {
         console.error("[AuthCallback] Unexpected error:", err);

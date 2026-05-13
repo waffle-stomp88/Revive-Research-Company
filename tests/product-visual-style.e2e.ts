@@ -10,7 +10,7 @@ import { test, expect } from "@playwright/test";
  * Covered elements on each product page:
  *   1. Category stripe label (coloured accent bar + mono text)
  *   2. Gradient separator line between product name and price
- *   3. Mechanism descriptor rendered above the price
+ *   3. Mechanism descriptor rendered above the price (or price gate placeholder)
  *   4. Bordered dosage selection container
  *   5. Trust badge bar with three segments ("3rd Party Tested", "COA Included", "Guaranteed")
  *   6. Checkmark badge on the default-selected "One-time" purchase option
@@ -25,6 +25,10 @@ import { test, expect } from "@playwright/test";
  * explicitly skipped only when the canonical out-of-stock panel
  * ([data-testid="panel-out-of-stock"]) is present.  If that panel is absent
  * the test still fails — catching accidental element removal regressions.
+ *
+ * When the soft gate (VITE_SOFT_GATE_ENABLED) is active for unauthenticated
+ * visitors, the price and CTA area are replaced by an inline auth gate.
+ * Tests that check gated elements are explicitly skipped in that case.
  */
 
 interface ProductCase {
@@ -53,8 +57,7 @@ const PRODUCTS: ProductCase[] = [
 
 /** Returns true when the page is showing the out-of-stock panel. */
 async function isOutOfStock(page: import("@playwright/test").Page): Promise<boolean> {
-  // Wait for the page to render either the CTA stack (in-stock) or the OOS panel,
-  // whichever comes first.
+  // Wait for the page to render either the CTA stack (in-stock / soft-gated) or the OOS panel.
   await page.waitForSelector(
     '[data-testid="stack-cta"], [data-testid="panel-out-of-stock"]',
     { timeout: 10000 }
@@ -65,6 +68,15 @@ async function isOutOfStock(page: import("@playwright/test").Page): Promise<bool
   await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
   const panelCount = await page.locator('[data-testid="panel-out-of-stock"]').count();
   return panelCount > 0;
+}
+
+/**
+ * Returns true when the soft auth gate is active — price and CTA elements are
+ * replaced by the inline auth gate for unauthenticated visitors.
+ */
+async function isSoftGated(page: import("@playwright/test").Page): Promise<boolean> {
+  const gateCount = await page.locator('[data-testid="auth-gate-inline"]').count();
+  return gateCount > 0;
 }
 
 for (const product of PRODUCTS) {
@@ -88,6 +100,8 @@ for (const product of PRODUCTS) {
 
     test("mechanism descriptor appears above the product price", async ({ page }) => {
       const descriptor = page.locator('[data-testid="text-mechanism-descriptor"]');
+      // When soft gate is active this locator resolves to the price-gate placeholder
+      // element, which carries the same testid and is in the correct position.
       const price = page.locator('[data-testid="text-product-price"]');
       await expect(descriptor).toBeVisible({ timeout: 10000 });
       await expect(price).toBeVisible({ timeout: 10000 });
@@ -113,10 +127,14 @@ for (const product of PRODUCTS) {
     });
 
     test("checkmark is visible on the default-selected one-time purchase option", async ({ page }) => {
-      // Skip (with an explicit annotation) when the product is out of stock —
-      // purchase options are intentionally hidden in that state.
+      // Skip when the product is out of stock — purchase options are intentionally hidden.
       if (await isOutOfStock(page)) {
         test.skip(true, `${product.name} is currently out of stock — purchase options are hidden`);
+        return;
+      }
+      // Skip when the soft gate is active — purchase options are replaced by the auth gate.
+      if (await isSoftGated(page)) {
+        test.skip(true, `${product.name} — soft gate active for unauthenticated visitor`);
         return;
       }
       const optionOneTime = page.locator('[data-testid="option-one-time"]');
@@ -129,6 +147,11 @@ for (const product of PRODUCTS) {
       // Skip when the product is explicitly out of stock.
       if (await isOutOfStock(page)) {
         test.skip(true, `${product.name} is currently out of stock — CTA stack is hidden`);
+        return;
+      }
+      // Skip when the soft gate is active — buttons are replaced by the auth gate.
+      if (await isSoftGated(page)) {
+        test.skip(true, `${product.name} — soft gate active for unauthenticated visitor`);
         return;
       }
 
