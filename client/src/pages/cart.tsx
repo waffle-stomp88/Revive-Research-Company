@@ -384,7 +384,7 @@ export default function CartPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {/* First-order free BAC water banner */}
-            {firstOrderStatus?.isFirstOrder && !bannerDismissed && (
+            {firstOrderStatus?.isFirstOrder && !!firstOrderStatus.bacWaterProductId && !bannerDismissed && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
