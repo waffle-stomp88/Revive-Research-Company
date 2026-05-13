@@ -1,0 +1,186 @@
+# Soft Gate Implementation Brief — Revive Research
+
+**Priority:** High — should be implemented before launch  
+**Reason:** Payment processor compliance, regulatory defensibility, and account creation incentive  
+**Approach:** Partial gate — public discovery, gated commerce and tools
+
+---
+
+## Overview
+
+Implement a soft login gate that keeps discovery content public for SEO while requiring an authenticated account (with recorded research-use attestation) to access pricing, purchasing, and platform tools. This gives us a documented paper trail showing every buyer acknowledged RUO terms before transacting — which is the single biggest legal lever if a regulator ever asks "what steps did you take?"
+
+---
+
+## What Stays Public (No Login Required)
+
+These pages must remain fully accessible to unauthenticated users AND crawlable by Googlebot. This preserves all existing SEO equity.
+
+| Page/Feature | Route Example | Why Public |
+|---|---|---|
+| Homepage | `/` | Discovery, first impression |
+| Product listing pages | `/peptides` | SEO — category rankings |
+| Individual product pages | `/peptides/bpc-157` | SEO — compound-specific rankings |
+| Education Center landing | `/education` | SEO, trust signal |
+| Guide/article pages | `/guides/*` | SEO — strongest organic traffic source |
+| Body System hub pages | `/systems/*` | SEO — when implemented |
+| About / Company pages | `/about`, `/transparency` | Trust, brand |
+| Pricing Transparency page | `/pricing-transparency` | Brand differentiator |
+| COA Verification page (QR scan) | `/verify/*` | Trust signal — must work for anyone scanning a QR code on a vial, even without an account |
+| FAQ / Support | `/faq`, `/support` | Reduces support burden |
+| Login / Create Account | `/login`, `/register` | Obviously |
+
+**Important for product pages:** The product name, description, compound overview, and category information remain visible. What gets hidden is specified below.
+
+---
+
+## What Gets Gated (Login Required)
+
+When an unauthenticated user tries to access these, show a clean prompt directing them to create an account or log in. Do NOT redirect to the login page — show an inline gate component on the page itself so the user doesn't lose context.
+
+| Feature | Where It Appears | Gate Behavior |
+|---|---|---|
+| **Pricing (all prices)** | Product pages, shop, cart | Replace price with "Log in to see pricing" or "Create account to unlock pricing" |
+| **Add to Cart button** | Product pages | Replace with "Create Account to Order" CTA that links to `/register` |
+| **Dosage / Protocol cards** | Product detail sections | Blur or collapse with "Log in to view research protocols" |
+| **COA document downloads** | Product pages, COA section | Show COA exists + batch number, but gate the actual PDF download behind login |
+| **Synergy Engine (full use)** | `/synergy` or stack builder | Allow browsing/seeing it exists, but require login to build and save stacks |
+| **Research Academy (full content)** | `/academy/*` | Already gated — keep as-is |
+| **Reconstitution calculator results** | Calculator tool | Allow input, gate the output behind login |
+| **Order history / Account pages** | `/account/*` | Already requires login — keep as-is |
+| **Wishlist / Saved stacks** | Various | Requires login by nature |
+
+---
+
+## Gate Component Design
+
+Create a reusable `<AuthGate>` component that wraps any gated content. When the user is not authenticated:
+
+### For inline content (pricing, dosage cards):
+```
+┌─────────────────────────────────────────┐
+│  🔒  Create a free account to unlock    │
+│      pricing and research tools.        │
+│                                         │
+│  [Create Account]    [Log In]           │
+│                                         │
+│  ✓ Batch-verified COAs                  │
+│  ✓ Synergy Engine access                │
+│  ✓ Free BAC water with first order      │
+└─────────────────────────────────────────┘
+```
+
+### For full-page gates (Synergy Engine, Academy):
+Show a preview/teaser of the tool with a frosted overlay and centered CTA:
+```
+┌─────────────────────────────────────────┐
+│  [Blurred/dimmed preview of the tool]   │
+│                                         │
+│      ┌──────────────────────────┐       │
+│      │  Unlock the Synergy      │       │
+│      │  Engine                  │       │
+│      │                          │       │
+│      │  Build research stacks   │       │
+│      │  with real-time synergy  │       │
+│      │  scoring.                │       │
+│      │                          │       │
+│      │  [Create Free Account]   │       │
+│      └──────────────────────────┘       │
+└─────────────────────────────────────────┘
+```
+
+### Design requirements:
+- Match existing site dark theme and neon accent colors
+- Gate component should feel like a value proposition, not a wall
+- Include "Free BAC water with first order" as an incentive line
+- Never use the word "discount" anywhere in the gate messaging
+
+---
+
+## Account Creation Flow Updates
+
+When a user creates an account (whether from a gate prompt or the registration page), the signup flow must include:
+
+### Required attestation checkbox (before account creation completes):
+```
+☐ I confirm I am 21+ years of age and that all products 
+  purchased are for laboratory research purposes only. 
+  Not for human or animal consumption.
+```
+
+This checkbox must be:
+- Required (cannot create account without checking)
+- Logged with timestamp in the user record (`ruo_attestation_at` field)
+- Not pre-checked — user must actively check it
+
+This is the legal paper trail. Every account has a recorded timestamp of when the user acknowledged research-use terms.
+
+---
+
+## Googlebot / SEO Handling
+
+**Critical:** The gate must NOT interfere with Googlebot's ability to crawl and index public content.
+
+- Googlebot should see the full product page content (name, description, category, compound overview) with a `200` status code
+- The gated sections (pricing, dosage cards) can be absent from the server-rendered HTML — Googlebot doesn't need to see prices
+- Do NOT return a `403` or redirect to `/login` for Googlebot on product pages
+- The existing age-verification modal fix for Googlebot (from previous sessions) must remain intact
+- Test: After implementation, verify in Google Search Console that product pages still return `200` and are indexable
+
+### How to detect Googlebot:
+Use the existing user-agent detection in `server/seo.ts`. Googlebot gets the full public page content. Regular users get the page with gated sections showing the `<AuthGate>` component.
+
+---
+
+## Implementation Order
+
+### Phase 1 (Pre-launch — do this first):
+1. Create the `<AuthGate>` component
+2. Gate pricing on all product pages
+3. Gate "Add to Cart" button
+4. Add RUO attestation checkbox to account creation flow
+5. Add `ruo_attestation_at` timestamp field to users table
+6. Verify Googlebot still sees 200 on product pages
+
+### Phase 2 (Can ship shortly after launch):
+7. Gate dosage/protocol cards on product pages
+8. Gate COA PDF downloads (keep COA verification page public)
+9. Gate Synergy Engine behind login (show preview)
+10. Gate reconstitution calculator results
+
+### Phase 3 (Post-launch polish):
+11. Blurred preview overlay for Synergy Engine
+12. Gate prompt A/B testing (different value prop messaging)
+13. Analytics on gate-to-signup conversion rate
+
+---
+
+## What NOT To Do
+
+- **Do NOT gate the entire site** behind login (kills SEO, kills discovery)
+- **Do NOT gate educational content** (guides, articles, system hubs — these are your top organic traffic drivers)
+- **Do NOT gate the COA verification page** (people scanning QR codes on vials need this to work without an account)
+- **Do NOT use a discount or promotional offer** in the gate messaging — use value props (free BAC water, platform access)
+- **Do NOT redirect to `/login`** when hitting a gate — show the gate inline so users don't lose page context
+- **Do NOT break existing age-verification modal** — the gate is separate from and in addition to age verification
+
+---
+
+## Environment Variables / Config
+
+Add a feature flag so the gate can be toggled during development:
+
+```
+VITE_SOFT_GATE_ENABLED=true
+```
+
+This allows testing the gate on the dev environment before enabling in production.
+
+---
+
+## Success Metrics
+
+- Account creation rate increases (gate drives signups)
+- Product pages remain indexed in Google Search Console (no SEO regression)
+- Every purchasing user has a recorded `ruo_attestation_at` timestamp
+- Payment processor compliance review passes (documented age verification + RUO attestation)
