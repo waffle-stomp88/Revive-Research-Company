@@ -409,7 +409,7 @@ export default function Checkout() {
   // First-order status — injects free 3ml BAC water for first-time buyers at checkout too
   const { data: checkoutFirstOrderStatus } = useQuery<{
     isFirstOrder: boolean;
-    bacWaterId: string | null;
+    bacWaterProductId: string | null;
     bacWaterName: string | null;
     bacWaterImageUrl: string | null;
     bacWaterDosage: string | null;
@@ -425,13 +425,13 @@ export default function Checkout() {
   });
 
   useEffect(() => {
-    if (!checkoutFirstOrderStatus?.isFirstOrder || !checkoutFirstOrderStatus.bacWaterId) return;
+    if (!checkoutFirstOrderStatus?.isFirstOrder || !checkoutFirstOrderStatus.bacWaterProductId) return;
     const alreadyFree = cartItems.some(
-      (i) => i.isFree && i.productId === checkoutFirstOrderStatus.bacWaterId
+      (i) => i.isFree && i.productId === checkoutFirstOrderStatus.bacWaterProductId
     );
     if (alreadyFree) return;
     addToCart({
-      productId: checkoutFirstOrderStatus.bacWaterId,
+      productId: checkoutFirstOrderStatus.bacWaterProductId,
       name: checkoutFirstOrderStatus.bacWaterName || "Bacteriostatic Water",
       price: 0,
       quantity: 1,

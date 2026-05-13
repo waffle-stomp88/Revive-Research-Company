@@ -194,7 +194,7 @@ function CrossSellCard({
 
 interface FirstOrderStatus {
   isFirstOrder: boolean;
-  bacWaterId: string | null;
+  bacWaterProductId: string | null;
   bacWaterName: string | null;
   bacWaterImageUrl: string | null;
   bacWaterDosage: string | null;
@@ -233,13 +233,13 @@ export default function CartPage() {
 
   // Auto-inject free 3ml BAC water for first-time buyers
   useEffect(() => {
-    if (!firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterId) return;
+    if (!firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterProductId) return;
     const alreadyInCart = items.some(
-      (i) => i.isFree && i.productId === firstOrderStatus.bacWaterId
+      (i) => i.isFree && i.productId === firstOrderStatus.bacWaterProductId
     );
     if (alreadyInCart) return;
     addToCart({
-      productId: firstOrderStatus.bacWaterId,
+      productId: firstOrderStatus.bacWaterProductId,
       name: firstOrderStatus.bacWaterName || "Bacteriostatic Water",
       price: 0,
       quantity: 1,

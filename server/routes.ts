@@ -482,20 +482,24 @@ export async function registerRoutes(
       );
 
       if (!bacWater) {
-        return res.json({ isFirstOrder, bacWaterId: null, bacWaterDosage: null, bacWaterName: null, bacWaterImageUrl: null });
+        return res.json({ isFirstOrder, bacWaterProductId: null, bacWaterDosage: null, bacWaterName: null, bacWaterImageUrl: null });
       }
 
+      // Promo is only valid for the 3ml dosage — disable if 3ml is not in stock
       const bacWaterStocks = await storage.getProductDosageStocks(bacWater.id);
-      const preferred = bacWaterStocks.find((s) => s.dosage === '3ml' && s.inStock);
-      const fallback = bacWaterStocks.find((s) => s.inStock);
-      const stock = preferred || fallback;
+      const threeMlStock = bacWaterStocks.find((s) => s.dosage === '3ml' && s.inStock);
+
+      if (!threeMlStock) {
+        // 3ml is out of stock — promo unavailable
+        return res.json({ isFirstOrder, bacWaterProductId: null, bacWaterDosage: null, bacWaterName: null, bacWaterImageUrl: null });
+      }
 
       res.json({
         isFirstOrder,
-        bacWaterId: bacWater.id,
+        bacWaterProductId: bacWater.id,
         bacWaterName: bacWater.name,
         bacWaterImageUrl: bacWater.imageUrl || null,
-        bacWaterDosage: stock?.dosage || '3ml',
+        bacWaterDosage: '3ml',
       });
     } catch (error) {
       console.error("Error checking first order status:", error);
@@ -1047,27 +1051,26 @@ export async function registerRoutes(
       );
       const bacWaterProductId = bacWaterProduct?.id ?? null;
 
-      // Build a server-authoritative sanitized items list:
-      //   - First-order user + BAC water item  → include with price forced to $0
-      //   - Non-first-order user + $0-price BAC water item → strip (promo abuse)
-      //   - Non-first-order user + full-price BAC water item → keep (legitimate purchase)
-      //   - All other items → keep as-is
+      // Build a server-authoritative sanitized items list.
+      // The free promo is ONLY valid for the 3ml BAC water dosage on a user's first order.
+      //   - First-order user + BAC water item @ dosage '3ml' → price forced to $0
+      //   - First-order user + BAC water item @ other dosage → full price (no promo)
+      //   - Non-first-order user + $0-price BAC water item → stripped (promo abuse blocked)
+      //   - Non-first-order user + full-price BAC water item → kept (legitimate purchase)
+      //   - All other items → kept as-is
       const sanitizedItems: any[] = [];
       for (const rawItem of items) {
         if (bacWaterProductId && rawItem.productId === bacWaterProductId) {
-          if (isUserFirstOrder) {
-            // Force price to $0 server-side — this is the authoritative record
-            console.log(`[PayPal Order] Free BAC water (first order) for user ${sessionUserId}`);
+          if (isUserFirstOrder && rawItem.dosage === '3ml') {
+            // Force 3ml BAC water price to $0 server-side — authoritative record
+            console.log(`[PayPal Order] Free 3ml BAC water (first order) for user ${sessionUserId}`);
             sanitizedItems.push({ ...rawItem, price: "0.00" });
+          } else if (!isUserFirstOrder && parseFloat(rawItem.price || '0') <= 0) {
+            // Non-first-order user attempting free BAC water — strip entirely
+            console.warn(`[PayPal Order] Stripped $0 BAC water promo attempt from non-first-order user ${sessionUserId}`);
           } else {
-            const clientPrice = parseFloat(rawItem.price || '0');
-            if (clientPrice <= 0) {
-              // Non-first-order user trying to claim the promo — strip the item
-              console.warn(`[PayPal Order] Stripped $0 BAC water promo attempt from non-first-order user ${sessionUserId}`);
-            } else {
-              // Legitimate full-price BAC water purchase — keep as-is
-              sanitizedItems.push(rawItem);
-            }
+            // Any other BAC water scenario (non-3ml on first order, or full-price on repeat order) → full price
+            sanitizedItems.push(rawItem);
           }
         } else {
           sanitizedItems.push(rawItem);
@@ -1078,8 +1081,8 @@ export async function registerRoutes(
       for (const item of sanitizedItems) {
         const qty = Number(item.quantity);
 
-        // Free BAC water — contributes $0 to server subtotal
-        if (bacWaterProductId && item.productId === bacWaterProductId && parseFloat(item.price || '0') === 0) {
+        // Free 3ml BAC water (first order) — contributes $0 to server subtotal
+        if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage === '3ml' && parseFloat(item.price || '0') === 0) {
           continue;
         }
 
