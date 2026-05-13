@@ -16,7 +16,7 @@ import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -2504,6 +2504,58 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Error sending test order confirmation email:", error);
       res.status(500).json({ error: "Failed to send test email", details: error.message });
+    }
+  });
+
+  // Admin: Preview order confirmation email template in the browser (no email sent)
+  app.get("/api/admin/test-email/order-confirmation", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const includeBacWater = req.query.includeBacWater === "true";
+
+      const baseItems: { name: string; quantity: number; price: number; dosage?: string }[] = [
+        { name: "BPC-157", dosage: "5mg", quantity: 2, price: 59.99 },
+        { name: "TB-500", dosage: "5mg", quantity: 1, price: 49.99 },
+      ];
+
+      if (includeBacWater) {
+        baseItems.push({ name: "Bacteriostatic Water 30ml", quantity: 1, price: 0 });
+      }
+
+      const subtotal = baseItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const shipping = subtotal >= 250 ? 0 : 15;
+      const tax = 0;
+      const total = (subtotal + shipping + tax).toFixed(2);
+
+      const mockOrder = {
+        id: "preview-" + Date.now(),
+        email: "preview@example.com",
+        firstName: "Test",
+        lastName: "Researcher",
+        productId: "test-product",
+        quantity: baseItems[0].quantity,
+        totalAmount: total,
+        address: "123 Research Lane",
+        city: "Science City",
+        state: "CA",
+        zipCode: "90210",
+        country: "United States",
+      };
+
+      const { html } = getOrderConfirmationTemplate(
+        mockOrder,
+        baseItems[0].name,
+        baseItems,
+        subtotal,
+        shipping,
+        tax,
+        mockOrder.state,
+      );
+
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.send(html);
+    } catch (error: any) {
+      console.error("Error rendering order confirmation email preview:", error);
+      res.status(500).json({ error: "Failed to render email preview", details: error.message });
     }
   });
 

@@ -217,7 +217,7 @@ interface OrderItem {
 }
 
 // Email template: Order Confirmation
-function getOrderConfirmationTemplate(order: {
+export function getOrderConfirmationTemplate(order: {
   email: string;
   firstName: string;
   lastName: string;

@@ -5332,6 +5332,33 @@ function EmailLogsTab() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h3 className="text-base font-semibold mb-1">Template Preview</h3>
+        <p className="text-sm text-muted-foreground mb-3">
+          Inspect rendered email templates in the browser without sending anything.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="button-preview-order-confirmation-email"
+            onClick={() => window.open("/api/admin/test-email/order-confirmation", "_blank")}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Order Confirmation
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="button-preview-order-confirmation-bac-water-email"
+            onClick={() => window.open("/api/admin/test-email/order-confirmation?includeBacWater=true", "_blank")}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Order Confirmation + BAC Water
+          </Button>
+        </div>
+      </div>
+
       <Tabs value={emailTab} onValueChange={setEmailTab} className="space-y-4">
         <TabsList className="grid w-full max-w-xs grid-cols-2">
           <TabsTrigger value="orders">Orders</TabsTrigger>
