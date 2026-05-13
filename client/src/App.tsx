@@ -61,7 +61,6 @@ import ResearchStackDetail from "@/pages/research-stack-detail";
 import StackShare from "@/pages/stack-share";
 import Academy from "@/pages/academy";
 import Login from "@/pages/login";
-import DevLogin from "@/pages/dev-login";
 import AuthCallback from "@/pages/auth-callback";
 import Unsubscribe from "@/pages/unsubscribe";
 import SubscriptionSuccess from "@/pages/subscription-success";
@@ -250,7 +249,6 @@ function Router() {
         <Route path="/peptide-research-faq" component={FAQ} />
         <Route path="/peptide-shipping-and-handling" component={Shipping} />
         <Route path="/unsubscribe" component={Unsubscribe} />
-        <Route path="/rx-panel-7v3k" component={DevLogin} />
         <Route path="/auth/callback" component={AuthCallback} />
 
         {/* 301 Redirects for old URLs */}

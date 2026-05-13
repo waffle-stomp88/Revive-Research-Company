@@ -11,7 +11,7 @@ import { db, pool } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
-import { setupAuth, isAuthenticated } from "./auth0Auth";
+import { setupAuth, isAuthenticated } from "./sessionAuth";
 import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -178,7 +178,7 @@ export async function registerRoutes(
 
   app.get('/robots.txt', (_req, res) => {
     res.type('text/plain').send(
-      `User-agent: *\nAllow: /\n\n# Allow public API routes needed for page rendering\nAllow: /api/education\nAllow: /api/peptides\nAllow: /api/products\nAllow: /api/coas\nAllow: /api/waitlist/count\n\n# Disallow all other API and system routes\nDisallow: /api/\n\n# Disallow private pages\nDisallow: /admin\nDisallow: /dashboard\nDisallow: /account\nDisallow: /account-settings\nDisallow: /affiliate-dashboard\nDisallow: /login\nDisallow: /signup\nDisallow: /register\nDisallow: /rx-panel-7v3k\n\n# Disallow transactional pages\nDisallow: /cart\nDisallow: /checkout\nDisallow: /order-confirmation\n\nSitemap: ${SITE_URL}/sitemap.xml`
+      `User-agent: *\nAllow: /\n\n# Allow public API routes needed for page rendering\nAllow: /api/education\nAllow: /api/peptides\nAllow: /api/products\nAllow: /api/coas\nAllow: /api/waitlist/count\n\n# Disallow all other API and system routes\nDisallow: /api/\n\n# Disallow private pages\nDisallow: /admin\nDisallow: /dashboard\nDisallow: /account\nDisallow: /account-settings\nDisallow: /affiliate-dashboard\nDisallow: /login\nDisallow: /signup\nDisallow: /register\n\n# Disallow transactional pages\nDisallow: /cart\nDisallow: /checkout\nDisallow: /order-confirmation\n\nSitemap: ${SITE_URL}/sitemap.xml`
     );
   });
 
@@ -441,55 +441,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error syncing user:", error);
       res.status(500).json({ message: "Failed to sync user" });
-    }
-  });
-
-  // Dev bypass login - for admin access during development when Auth0 is unavailable
-  // Works in Replit development environment (when REPL_ID is set) or when NODE_ENV !== 'production'
-  app.post('/api/auth/dev-bypass', async (req, res) => {
-    // Allow bypass in Replit development environment (identified by REPL_ID)
-    // or when not in production mode
-    const isReplitDev = !!process.env.REPL_ID;
-    const isDevMode = process.env.NODE_ENV !== 'production';
-    
-    if (!isReplitDev && !isDevMode) {
-      console.warn('[Security] Dev bypass attempted in production - blocked');
-      return res.status(403).json({ message: "Dev bypass disabled in production" });
-    }
-    
-    const bypassKey = req.body.key;
-    const expectedKey = process.env.DEV_BYPASS_KEY || 'revive-dev-2024';
-    
-    if (bypassKey !== expectedKey) {
-      console.warn('[Security] Invalid dev bypass key attempt');
-      return res.status(401).json({ message: "Invalid bypass key" });
-    }
-    
-    console.log('[Dev] Dev bypass login used');
-    
-    try {
-      // Create or get the dev admin user
-      const devUserId = 'dev-admin-bypass';
-      const devEmail = 'admin@reviveresearch.co';
-      
-      await storage.upsertUser({
-        id: devUserId,
-        email: devEmail,
-        firstName: 'Dev',
-        lastName: 'Admin',
-        profileImageUrl: null,
-      });
-      
-      // Automatically grant admin access to dev bypass user
-      await storage.setUserAdmin(devUserId, true);
-      
-      (req.session as any).userId = devUserId;
-      
-      const user = await storage.getUser(devUserId);
-      res.json({ success: true, user, message: "Dev bypass login successful with admin access." });
-    } catch (error) {
-      console.error("Error in dev bypass login:", error);
-      res.status(500).json({ message: "Failed to create dev session" });
     }
   });
 
