@@ -250,7 +250,12 @@ function getOrderConfirmationTemplate(order: {
   const taxAmount = tax ?? 0;
   const taxDisplay = taxAmount === 0 ? 'No tax' : `$${taxAmount.toFixed(2)}`;
   const taxLabel = taxState ? `Tax (${taxState})` : 'Tax';
-  
+
+  // Detect free BAC water gift
+  const hasBacWaterGift = orderItems.some(
+    item => item.price === 0 && item.name.toLowerCase().includes('bacteriostatic')
+  );
+
   const subject = `Order Confirmed #${shortRef}`;
   
   // Build items text
@@ -285,7 +290,11 @@ ${order.country || ''}
 WHAT'S NEXT
 -----------
 Your order will ship within 24 hours. You'll receive tracking information once shipped.
-
+${hasBacWaterGift ? `
+GIFT INCLUDED
+-------------
+Your free 3ml Bacteriostatic Water is included — a gift on your first order.
+` : ''}
 Questions? Contact us at ${EMAIL_CONFIG.replyTo}
 ${getSharedFooterText(order.email, 'order')}
 `;
@@ -448,6 +457,21 @@ ${getSharedFooterText(order.email, 'order')}
                 </table>
               </div>
               
+              <!-- Free BAC Water Gift Callout (shown only when applicable) -->
+              ${hasBacWaterGift ? `
+              <div style="background: linear-gradient(135deg, rgba(33, 216, 255, 0.12) 0%, rgba(33, 216, 255, 0.05) 100%); border: 1px solid rgba(33, 216, 255, 0.35); border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; text-align: center;">
+                <p style="color: #21d8ff; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px 0;">
+                  Gift Included
+                </p>
+                <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 4px 0;">
+                  Your free 3ml Bacteriostatic Water is included
+                </p>
+                <p style="color: #cccccc; font-size: 13px; line-height: 1.5; margin: 0;">
+                  A complimentary gift on your first order — already packed with your shipment.
+                </p>
+              </div>
+              ` : ''}
+
               <!-- Two Column: Shipping & Status -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
                 <tr>
