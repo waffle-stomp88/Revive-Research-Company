@@ -216,6 +216,16 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full max-w-md">
+          {/* Free BAC water first-order promo badge */}
+          <div className="flex justify-center mb-6">
+            <Badge
+              className="bg-[#21d8ff]/10 text-[#21d8ff] border border-[#21d8ff]/30 text-xs font-semibold px-3 py-1"
+              data-testid="badge-promo"
+            >
+              First Order? Free 3ml Bacteriostatic Water Included
+            </Badge>
+          </div>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
