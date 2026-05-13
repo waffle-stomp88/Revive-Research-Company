@@ -2642,10 +2642,9 @@ export async function registerRoutes(
       try {
         await storage.createEmailEvent({
           type: "user_invite",
-          recipient: to,
+          recipientEmail: to,
           subject: "You're Invited to Revive Research",
           status: "sent",
-          metadata: { firstName: firstName || null, inviteUrl: resolvedUrl },
         });
       } catch (_) {}
       res.json({ success: true, message: `Invite sent to ${to}` });

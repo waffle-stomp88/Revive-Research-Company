@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Invited — Revive Research</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0d0d0f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);">
+
+          <!-- ═══════════════════════════════════════ HEADER ═══ -->
+          <tr>
+            <td style="padding: 40px 40px 32px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%);">
+              <!-- Logo -->
+              <img src="https://reviveresearch.co/assets/email-logo.png"
+                   alt="Revive Research"
+                   width="220"
+                   style="display: block; margin: 0 auto 24px auto; max-width: 220px; height: auto;" />
+              <!-- Eyebrow label -->
+              <p style="margin: 0 0 12px; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #E7FB10;">
+                INVITATION
+              </p>
+              <!-- Headline -->
+              <h1 style="margin: 0 0 10px; font-size: 34px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; line-height: 1.15;">
+                You're Invited.
+              </h1>
+              <!-- Sub-headline -->
+              <p style="margin: 0; font-size: 16px; color: #999999; line-height: 1.5;">
+                Join the Revive Research platform for premium peptide research compounds.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ═══════════════════════════════════════ GREETING ═══ -->
+          <tr>
+            <td style="padding: 36px 40px 0;">
+              <p style="margin: 0 0 16px; font-size: 16px; color: #cccccc; line-height: 1.65;">
+                Hi {{FIRST_NAME}},
+              </p>
+              <p style="margin: 0 0 16px; font-size: 16px; color: #cccccc; line-height: 1.65;">
+                You've been invited to create an account on <strong style="color: #ffffff;">Revive Research</strong> — a platform built for researchers who demand transparency, verified quality, and precision.
+              </p>
+              <p style="margin: 0 0 32px; font-size: 16px; color: #cccccc; line-height: 1.65;">
+                Every product comes with third-party Certificates of Analysis, and our team is here to support your research from day one.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ═══════════════════════════════════════ HIGHLIGHTS ═══ -->
+          <tr>
+            <td style="padding: 0 40px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.06) 0%, rgba(33,216,255,0.04) 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 24px 28px;">
+                    <p style="margin: 0 0 20px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #E7FB10;">
+                      What You Get
+                    </p>
+                    <!-- Row 1 -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                          <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;">
+                            <span style="color: #E7FB10; font-weight: 700;">COA-verified</span> peptide research compounds with full lab documentation
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                          <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;">
+                            <span style="color: #21d8ff; font-weight: 700;">Research Stacks</span> — curated compound bundles with synergy insights
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                          <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;">
+                            <span style="color: #E7FB10; font-weight: 700;">Free shipping</span> on orders over $250
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0;">
+                          <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;">
+                            <span style="color: #21d8ff; font-weight: 700;">AI-powered</span> reconstitution calculator and research tools
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ═══════════════════════════════════════ CTA ═══ -->
+          <tr>
+            <td style="padding: 0 40px 16px; text-align: center;">
+              <a href="{{INVITE_URL}}"
+                 style="display: inline-block; padding: 15px 40px; background-color: #E7FB10; color: #0a0a0c; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">
+                Create Your Account
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 40px 40px; text-align: center;">
+              <p style="margin: 0; font-size: 13px; color: #555555;">
+                Or copy this link into your browser:<br>
+                <a href="{{INVITE_URL}}" style="color: #21d8ff; text-decoration: none; word-break: break-all; font-size: 12px;">{{INVITE_URL}}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- ═══════════════════════════════════════ DISCLAIMER ═══ -->
+          <tr>
+            <td style="padding: 0 40px 32px;">
+              <div style="border: 1px solid rgba(239,68,68,0.35); background: rgba(239,68,68,0.07); border-radius: 8px; padding: 14px 18px; text-align: center;">
+                <p style="margin: 0 0 4px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #ef4444;">
+                  Research Use Only
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #cccccc; line-height: 1.5;">
+                  All products are intended for laboratory research purposes only. Not for human or animal consumption. Must be 21+ to access.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ═══════════════════════════════════════ FOOTER ═══ -->
+          <tr>
+            <td style="padding: 24px 40px 32px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+              <p style="margin: 0 0 6px; font-size: 13px; color: #666666;">
+                Questions? Contact us at
+                <a href="mailto:support@reviveresearch.co" style="color: #21d8ff; text-decoration: none;">support@reviveresearch.co</a>
+              </p>
+              <p style="margin: 0 0 16px; font-size: 12px; color: #444444;">
+                Revive Research Company, LLC &nbsp;&bull;&nbsp; Frisco, TX 75033
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #3a3a3a; line-height: 1.6;">
+                You received this invitation because someone at Revive Research shared it with you.<br>
+                &copy; {{YEAR}} Revive Research. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
