@@ -1034,26 +1034,52 @@ export async function registerRoutes(
       // First-time buyers get a free 3ml BAC water — its price is $0 on the server side.
       const sessionUserId = (req.session as any)?.userId;
       let isUserFirstOrder = false;
-      let freeBacWaterProductId: string | null = null;
       if (sessionUserId) {
         const priorOrders = await storage.getOrdersByUserId(sessionUserId);
         isUserFirstOrder = priorOrders.length === 0;
-        if (isUserFirstOrder) {
-          const allProds = await storage.getAllProducts();
-          const bacWaterProd = allProds.find((p) =>
-            p.slug === 'bacteriostatic-water' || p.name.toLowerCase().includes('bacteriostatic')
-          );
-          freeBacWaterProductId = bacWaterProd?.id ?? null;
+      }
+
+      // Always identify the BAC water product so we can enforce promo rules
+      // regardless of first-order status.
+      const allProds = await storage.getAllProducts();
+      const bacWaterProduct = allProds.find((p) =>
+        p.slug === 'bacteriostatic-water' || p.name.toLowerCase().includes('bacteriostatic')
+      );
+      const bacWaterProductId = bacWaterProduct?.id ?? null;
+
+      // Build a server-authoritative sanitized items list:
+      //   - First-order user + BAC water item  → include with price forced to $0
+      //   - Non-first-order user + $0-price BAC water item → strip (promo abuse)
+      //   - Non-first-order user + full-price BAC water item → keep (legitimate purchase)
+      //   - All other items → keep as-is
+      const sanitizedItems: any[] = [];
+      for (const rawItem of items) {
+        if (bacWaterProductId && rawItem.productId === bacWaterProductId) {
+          if (isUserFirstOrder) {
+            // Force price to $0 server-side — this is the authoritative record
+            console.log(`[PayPal Order] Free BAC water (first order) for user ${sessionUserId}`);
+            sanitizedItems.push({ ...rawItem, price: "0.00" });
+          } else {
+            const clientPrice = parseFloat(rawItem.price || '0');
+            if (clientPrice <= 0) {
+              // Non-first-order user trying to claim the promo — strip the item
+              console.warn(`[PayPal Order] Stripped $0 BAC water promo attempt from non-first-order user ${sessionUserId}`);
+            } else {
+              // Legitimate full-price BAC water purchase — keep as-is
+              sanitizedItems.push(rawItem);
+            }
+          }
+        } else {
+          sanitizedItems.push(rawItem);
         }
       }
 
       let serverSubtotal = 0;
-      for (const item of items) {
+      for (const item of sanitizedItems) {
         const qty = Number(item.quantity);
 
-        // Free BAC water on first order — contribute $0 to server subtotal
-        if (isUserFirstOrder && freeBacWaterProductId && item.productId === freeBacWaterProductId) {
-          console.log(`[PayPal Order] Free BAC water for first-order user ${sessionUserId}: ${item.productId}`);
+        // Free BAC water — contributes $0 to server subtotal
+        if (bacWaterProductId && item.productId === bacWaterProductId && parseFloat(item.price || '0') === 0) {
           continue;
         }
 
@@ -1065,7 +1091,7 @@ export async function registerRoutes(
         let unitPrice: number | null = null;
         if (item.dosage && productData.dosageStocks.length > 0) {
           const dosageStock = productData.dosageStocks.find(
-            (ds) => ds.dosage === item.dosage && ds.price && parseFloat(ds.price) > 0
+            (ds: any) => ds.dosage === item.dosage && ds.price && parseFloat(ds.price) > 0
           );
           if (dosageStock?.price) {
             unitPrice = parseFloat(dosageStock.price);
@@ -1109,12 +1135,12 @@ export async function registerRoutes(
       const [firstName, ...lastNameParts] = customerName.split(' ');
       const lastName = lastNameParts.join(' ') || '';
 
-      // For multi-item orders, use the first product as primary
-      const primaryItem = items[0];
+      // For multi-item orders, use the first product as primary (from sanitized list)
+      const primaryItem = sanitizedItems[0];
       
       const orderData: any = {
         productId: primaryItem?.productId || 'multi-item',
-        quantity: items.reduce((sum: number, item: any) => sum + item.quantity, 0),
+        quantity: sanitizedItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
         totalAmount: total.toString(),
         email: customerEmail,
         firstName,
@@ -1130,7 +1156,7 @@ export async function registerRoutes(
         paymentConfirmed: true,
         paypalOrderId,
         isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
-        fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
+        fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}`,
       };
 
       // If user is authenticated, link order to their account
@@ -1138,8 +1164,8 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
 
-      // Validate stock before creating the order
-      const stockItems = items.map((item: any) => ({
+      // Validate stock before creating the order (use sanitizedItems — authoritative list)
+      const stockItems = sanitizedItems.map((item: any) => ({
         productId: item.productId,
         dosage: item.dosage || undefined,
         quantity: item.quantity || 1,
@@ -1165,8 +1191,8 @@ export async function registerRoutes(
         console.error(`[PayPal Order ${order.id}] Stock decrement failed:`, stockError.message);
       }
       
-      // Build order items array for email (includes all cart items)
-      const orderItems = items.map((item: any) => ({
+      // Build order items array for email — use sanitizedItems so prices are authoritative
+      const orderItems = sanitizedItems.map((item: any) => ({
         name: item.name || 'Product',
         dosage: item.dosage || '',
         quantity: item.quantity || 1,
