@@ -1646,14 +1646,111 @@ export default function ProductDetail() {
 
               {/* Section: Certification */}
               {activeResearchTab === "cert" && <section data-testid="section-cert-panel">
-                {/* Auth gate for unauthenticated users */}
+                {/* Auth gate for unauthenticated users — blurred teaser + overlaid CTA */}
                 {softGateEnabled && !isAuthenticated ? (
-                  <div className="py-4" data-testid="auth-gate-cert">
-                    <AuthGate
-                      inline
-                      inlineTitle="Sign in to view protocol & COA data"
-                      inlineDescription="Create a free account to access storage protocols and certificates of analysis"
-                    />
+                  <div className="relative py-4 overflow-hidden" data-testid="auth-gate-cert">
+                    {/* Blurred preview of cert data to show value */}
+                    <div className="blur-sm pointer-events-none select-none opacity-75" aria-hidden="true">
+                      {/* Storage & Stability preview */}
+                      <div className="mb-8">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <Thermometer className="h-4 w-4 text-[#9d4edd]" />
+                            <h2 className="font-display text-base font-semibold tracking-wide uppercase text-muted-foreground">Storage & Stability</h2>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border border border-border rounded-lg overflow-hidden">
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <Snowflake className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-muted-foreground">Temperature</p>
+                              <p className="text-sm font-semibold">{storageProfile?.storageTempDry || "-20°C to -80°C"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <Clock className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-muted-foreground">Stability</p>
+                              <p className="text-sm font-semibold">{storageProfile?.stabilityWindowDry || "24 months"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <Eye className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-muted-foreground">Light</p>
+                              <p className="text-sm font-semibold">{storageProfile?.lightSensitivity || "Protect from light"}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 px-4 py-3">
+                            <Beaker className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-muted-foreground">Form</p>
+                              <p className="text-sm font-semibold">{storageProfile?.powderAppearance || "Lyophilized"}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* COA cards preview */}
+                      <div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <FileCheck className="h-6 w-6 text-[#9d4edd]" />
+                          <h2 className="font-display text-2xl font-bold">Certificates of Analysis</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {(productCoas.length > 0 ? productCoas.slice(0, 2) as Array<{ id: string | number; batchNumber: string; purity: string | null; labName: string; testDate: string; verified: boolean | null }> : [
+                            { id: "preview-1", batchNumber: "BN-2024-001", purity: "99.4%", labName: "Janoshik Lab", testDate: "Jan 2024", verified: true },
+                            { id: "preview-2", batchNumber: "BN-2024-002", purity: "99.1%", labName: "Janoshik Lab", testDate: "Mar 2024", verified: true },
+                          ]).map((coa) => (
+                            <Card
+                              key={coa.id}
+                              className="p-4 border-[#9d4edd]/20"
+                            >
+                              <div className="flex items-start justify-between mb-3">
+                                <div>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-mono font-bold text-sm">{coa.batchNumber}</span>
+                                    {coa.verified && (
+                                      <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Tested: {coa.testDate}
+                                  </p>
+                                </div>
+                                <Button variant="outline" size="sm" className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold h-9 gap-2 px-3">
+                                  <Eye className="h-4 w-4" />
+                                  Verify
+                                </Button>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                                    Purity: {coa.purity}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                                    Lab: {coa.labName}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Gradient fade-out overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1a1f]/60 to-[#1a1a1f]" />
+                    {/* Auth gate CTA floating over the blurred content */}
+                    <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4 pt-24">
+                      <div className="w-full max-w-sm">
+                        <AuthGate
+                          inline
+                          inlineTitle="Sign in to view protocol & COA data"
+                          inlineDescription="Create a free account to access storage protocols and certificates of analysis"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : (
                 <>
