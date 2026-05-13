@@ -201,7 +201,7 @@ interface FirstOrderStatus {
 }
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart, removeFreeItems } = useCart();
+  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [discountCode, setDiscountCode] = useState("");
@@ -230,13 +230,6 @@ export default function CartPage() {
     enabled: !!currentUser,
     staleTime: 60_000,
   });
-
-  // Strip any isFree items if the user is not authenticated (e.g. logged out mid-session)
-  useEffect(() => {
-    if (currentUser === null) {
-      removeFreeItems();
-    }
-  }, [currentUser, removeFreeItems]);
 
   // Auto-inject free 3ml BAC water for first-time buyers
   useEffect(() => {

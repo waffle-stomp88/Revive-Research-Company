@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface CartItem {
   productId: string;
@@ -165,6 +166,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeFreeItems = useCallback(() => {
     setItems((prev) => prev.filter((i) => !i.isFree));
   }, []);
+
+  // Watch auth state globally — strip free items whenever the session resolves to null
+  // (covers explicit logout, session expiry, and any other sign-out path)
+  const { data: authUser } = useQuery<{ id: string } | null>({
+    queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    if (authUser === null) {
+      removeFreeItems();
+    }
+  }, [authUser, removeFreeItems]);
 
   const getItemCount = () => {
     return items.reduce((sum, item) => sum + item.quantity, 0);
