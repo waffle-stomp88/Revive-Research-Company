@@ -1646,6 +1646,17 @@ export default function ProductDetail() {
 
               {/* Section: Certification */}
               {activeResearchTab === "cert" && <section data-testid="section-cert-panel">
+                {/* Auth gate for unauthenticated users */}
+                {softGateEnabled && !isAuthenticated ? (
+                  <div className="py-4" data-testid="auth-gate-cert">
+                    <AuthGate
+                      inline
+                      inlineTitle="Sign in to view protocol & COA data"
+                      inlineDescription="Create a free account to access storage protocols and certificates of analysis"
+                    />
+                  </div>
+                ) : (
+                <>
                 {/* Storage & Stability */}
                 {storageProfile && (
                   <motion.div
@@ -1820,6 +1831,8 @@ export default function ProductDetail() {
                       ))}
                     </div>
                   </motion.div>
+                )}
+                </>
                 )}
               </section>}
 

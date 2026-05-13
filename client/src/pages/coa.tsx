@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthGate } from "@/components/auth-gate";
 import {
   Form,
   FormControl,
@@ -51,6 +53,8 @@ import {
 } from "lucide-react";
 import type { Coa } from "@shared/schema";
 
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
+
 const searchSchema = z.object({
   batchNumber: z.string().min(1, "Please enter a batch number"),
 });
@@ -66,6 +70,8 @@ interface TestResult {
 
 export default function CoaVerification() {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const softGateEnabled = SOFT_GATE_ENABLED;
   const [searchedCoa, setSearchedCoa] = useState<Coa | null>(null);
   const [notFound, setNotFound] = useState(false);
 
@@ -425,10 +431,20 @@ export default function CoaVerification() {
                         </Button>
                       </a>
                     )}
-                    <Button variant="outline" className="gap-2" data-testid="button-download-coa">
-                      <Download className="h-4 w-4" />
-                      Download PDF
-                    </Button>
+                    {softGateEnabled && !isAuthenticated ? (
+                      <div className="flex-1" data-testid="auth-gate-coa-download">
+                        <AuthGate
+                          inline
+                          inlineTitle="Sign in to download COA PDF"
+                          inlineDescription="Create a free account to download certificates of analysis"
+                        />
+                      </div>
+                    ) : (
+                      <Button variant="outline" className="gap-2" data-testid="button-download-coa">
+                        <Download className="h-4 w-4" />
+                        Download PDF
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card>

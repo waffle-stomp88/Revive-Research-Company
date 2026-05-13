@@ -7,9 +7,11 @@ interface AuthGateProps {
   title?: string;
   description?: string;
   inline?: boolean;
+  inlineTitle?: string;
+  inlineDescription?: string;
 }
 
-export function AuthGate({ title, description, inline }: AuthGateProps) {
+export function AuthGate({ title, description, inline, inlineTitle, inlineDescription }: AuthGateProps) {
   const [location, setLocation] = useLocation();
 
   const defaultTitle = "Researcher Access";
@@ -39,11 +41,15 @@ export function AuthGate({ title, description, inline }: AuthGateProps) {
             <Lock className="w-4 h-4 text-[#E7FB10]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white leading-snug">Sign in to see pricing</p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <Droplets className="w-3 h-3 text-[#21d8ff] flex-shrink-0" />
-              <p className="text-xs text-[#21d8ff]">Free BAC water included with your first order</p>
-            </div>
+            <p className="text-sm font-semibold text-white leading-snug">{inlineTitle || "Sign in to see pricing"}</p>
+            {!inlineDescription ? (
+              <div className="flex items-center gap-1.5 mt-1">
+                <Droplets className="w-3 h-3 text-[#21d8ff] flex-shrink-0" />
+                <p className="text-xs text-[#21d8ff]">Free BAC water included with your first order</p>
+              </div>
+            ) : (
+              <p className="text-xs text-[#21d8ff] mt-1">{inlineDescription}</p>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
