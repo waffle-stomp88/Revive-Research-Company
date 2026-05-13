@@ -2431,6 +2431,82 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Send a test order-confirmation email with a configurable mock payload
+  app.post("/api/admin/test-email/order-confirmation", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const {
+        to,
+        firstName = "Test",
+        lastName = "Researcher",
+        address = "123 Research Lane",
+        city = "Science City",
+        state = "CA",
+        zipCode = "90210",
+        country = "United States",
+        includeBacWater = false,
+      } = req.body;
+
+      const testEmail = to || process.env.ADMIN_EMAIL;
+      if (!testEmail) {
+        return res.status(400).json({ error: "No recipient address provided and ADMIN_EMAIL is not configured" });
+      }
+
+      const baseItems: { name: string; quantity: number; price: number; dosage?: string }[] = [
+        { name: "BPC-157", dosage: "5mg", quantity: 2, price: 59.99 },
+        { name: "TB-500", dosage: "5mg", quantity: 1, price: 49.99 },
+      ];
+
+      if (includeBacWater) {
+        baseItems.push({ name: "Bacteriostatic Water 30ml", quantity: 1, price: 0 });
+      }
+
+      const subtotal = baseItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const shipping = subtotal >= 250 ? 0 : 15;
+      const tax = 0;
+      const total = (subtotal + shipping + tax).toFixed(2);
+
+      const mockOrder = {
+        id: "test-" + Date.now(),
+        email: testEmail,
+        firstName,
+        lastName,
+        productId: "test-product",
+        quantity: baseItems[0].quantity,
+        totalAmount: total,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+      };
+
+      const result = await sendOrderConfirmationEmail(
+        mockOrder,
+        baseItems[0].name,
+        baseItems,
+        subtotal,
+        shipping,
+        tax,
+        state,
+      );
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: `Test order confirmation email sent to ${testEmail}`,
+          sentTo: testEmail,
+          includedBacWater: includeBacWater,
+          mockTotal: total,
+        });
+      } else {
+        res.status(500).json({ success: false, error: result.error || "Failed to send email" });
+      }
+    } catch (error: any) {
+      console.error("Error sending test order confirmation email:", error);
+      res.status(500).json({ error: "Failed to send test email", details: error.message });
+    }
+  });
+
   // Admin: Get dashboard metrics
   app.get("/api/admin/dashboard", isAuthenticated, isAdmin, async (req, res) => {
     try {
