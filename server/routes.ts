@@ -3622,6 +3622,38 @@ export async function registerRoutes(
 
       await storage.updateAffiliateApplicationStatus(req.params.id, "approved");
 
+      // Send affiliate welcome email
+      const nameParts = affiliate.fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || affiliate.fullName;
+      const lastName = nameParts.slice(1).join(" ") || "";
+      const welcomeTemplate = getAffiliateWelcomeTemplate({
+        firstName,
+        lastName,
+        email: affiliate.email,
+        referralCode: affiliate.referralCode,
+      });
+      try {
+        const emailResult = await sendEmail({
+          to: affiliate.email,
+          subject: welcomeTemplate.subject,
+          html: welcomeTemplate.html,
+          text: welcomeTemplate.text,
+        });
+        await storage.createEmailEvent({
+          type: "affiliate_welcome",
+          recipientEmail: affiliate.email,
+          subject: welcomeTemplate.subject,
+          status: emailResult.success ? "sent" : "failed",
+          sesMessageId: emailResult.messageId || null,
+          error: emailResult.success ? null : (emailResult.error || null),
+        });
+        if (!emailResult.success) {
+          console.error("[Affiliate Approval] Welcome email failed:", emailResult.error);
+        }
+      } catch (emailError) {
+        console.error("[Affiliate Approval] Error sending welcome email:", emailError);
+      }
+
       res.status(201).json({ success: true, affiliate });
     } catch (error) {
       console.error("Error approving affiliate application:", error);
