@@ -94,6 +94,7 @@ export default function Checkout() {
 
   // 2-step checkout state
   const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
+  const [shippingMethod, setShippingMethod] = useState<'standard' | 'express'>('standard');
   const [payAnotherWayExpanded, setPayAnotherWayExpanded] = useState(false);
   const [saveToProfile, setSaveToProfile] = useState(false);
 
@@ -658,7 +659,8 @@ export default function Checkout() {
   const cartSubtotal = getSubtotal();
   const hasSubscriptionItemsForShipping = hasSubscriptionItems;
   const baseShipping = hasSubscriptionItemsForShipping ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
-  const cartShipping = baseShipping;
+  const EXPRESS_SHIPPING_COST = 15;
+  const cartShipping = shippingMethod === 'express' ? EXPRESS_SHIPPING_COST : baseShipping;
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
   const taxState = taxInfo.state;
@@ -1275,24 +1277,66 @@ export default function Checkout() {
                 <div className="bg-[#141414] rounded-xl p-4 mb-3">
                   <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-3">Shipping Method</p>
                   <div className="space-y-2">
-                    <div className={`flex items-center gap-3 px-3 py-3 rounded-lg border-2 transition-all cursor-pointer ${
-                      baseShipping === 0 ? 'border-green-500/60 bg-green-500/10' : 'border-border'
-                    }`}>
+                    {/* Standard */}
+                    <button
+                      type="button"
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border-2 transition-all text-left ${
+                        shippingMethod === 'standard'
+                          ? 'border-[#d4ed1f]/60 bg-[#d4ed1f]/8'
+                          : 'border-border hover:border-border/80'
+                      }`}
+                      onClick={() => setShippingMethod('standard')}
+                      data-testid="shipping-method-standard"
+                    >
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                        shippingMethod === 'standard' ? 'border-[#d4ed1f]' : 'border-muted-foreground/40'
+                      }`}>
+                        {shippingMethod === 'standard' && (
+                          <div className="w-2 h-2 rounded-full bg-[#d4ed1f]" />
+                        )}
+                      </div>
                       <Truck className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium">Standard Shipping</p>
                         <p className="text-[10px] text-muted-foreground">3–5 business days · Discreet packaging</p>
                       </div>
-                      <span className={`text-sm font-semibold ${baseShipping === 0 ? 'text-green-400' : 'text-foreground'}`}>
+                      <span className={`text-sm font-semibold flex-shrink-0 ${baseShipping === 0 ? 'text-green-400' : 'text-foreground'}`}>
                         {baseShipping === 0 ? 'FREE' : `$${Math.round(baseShipping)}`}
                       </span>
-                    </div>
+                    </button>
+
+                    {/* Express */}
+                    <button
+                      type="button"
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border-2 transition-all text-left ${
+                        shippingMethod === 'express'
+                          ? 'border-[#21d8ff]/60 bg-[#21d8ff]/8'
+                          : 'border-border hover:border-border/80'
+                      }`}
+                      onClick={() => setShippingMethod('express')}
+                      data-testid="shipping-method-express"
+                    >
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                        shippingMethod === 'express' ? 'border-[#21d8ff]' : 'border-muted-foreground/40'
+                      }`}>
+                        {shippingMethod === 'express' && (
+                          <div className="w-2 h-2 rounded-full bg-[#21d8ff]" />
+                        )}
+                      </div>
+                      <Package className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">Express Shipping</p>
+                        <p className="text-[10px] text-muted-foreground">1–2 business days · Priority handling</p>
+                      </div>
+                      <span className="text-sm font-semibold text-foreground flex-shrink-0">
+                        ${EXPRESS_SHIPPING_COST}
+                      </span>
+                    </button>
                   </div>
-                  {baseShipping === 0 && cartSubtotal < FREE_SHIPPING_THRESHOLD && !hasSubscriptionItems && (
-                    <p className="text-[10px] text-green-400/70 mt-2">Free shipping on orders over ${FREE_SHIPPING_THRESHOLD}</p>
-                  )}
-                  {cartSubtotal >= FREE_SHIPPING_THRESHOLD && (
-                    <p className="text-[10px] text-green-400/70 mt-2">Free shipping unlocked on your order</p>
+                  {shippingMethod === 'standard' && baseShipping === 0 && (
+                    <p className="text-[10px] text-green-400/70 mt-2">
+                      {cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 'Free shipping unlocked on your order' : 'Free shipping on orders over $' + FREE_SHIPPING_THRESHOLD}
+                    </p>
                   )}
                 </div>
 
@@ -1363,11 +1407,11 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                  {/* Top tier: Card + PayPal */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                  {/* Top tier: Card + PayPal + ACH */}
+                  <div className="grid grid-cols-1 gap-2 mb-2">
                     {/* Credit / Debit Card */}
                     <button
-                      className={`relative flex items-center gap-3 px-4 py-5 rounded-lg border-2 transition-all text-left ${
+                      className={`relative flex items-center gap-3 px-4 py-4 rounded-lg border-2 transition-all text-left ${
                         selectedPaymentMethod === "card"
                           ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
                           : "border-[#d4ed1f] bg-transparent text-white"
@@ -1388,7 +1432,7 @@ export default function Checkout() {
                       <div className="min-w-0 flex-1 flex flex-col justify-center">
                         <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
                         <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
-                          Pay directly on this page
+                          Pay directly on this page — Visa, Mastercard, Amex
                         </p>
                       </div>
                       {selectedPaymentMethod === "card" && (
@@ -1398,7 +1442,7 @@ export default function Checkout() {
 
                     {/* PayPal */}
                     <button
-                      className={`flex items-center gap-3 px-4 py-5 rounded-lg border-2 transition-all text-left ${
+                      className={`flex items-center gap-3 px-4 py-4 rounded-lg border-2 transition-all text-left ${
                         selectedPaymentMethod === "paypal"
                           ? "border-[#0070ba] bg-[#0070ba] text-white"
                           : "border-[#0070ba] bg-transparent text-white"
@@ -1414,12 +1458,30 @@ export default function Checkout() {
                       <div className="min-w-0 flex-1 flex flex-col justify-center">
                         <p className="text-sm font-semibold leading-tight">PayPal</p>
                         <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
-                          Sign in to your PayPal
+                          Sign in to your PayPal account
                         </p>
                       </div>
                       {selectedPaymentMethod === "paypal" && (
                         <CheckCircle className="h-3.5 w-3.5 text-white flex-shrink-0" />
                       )}
+                    </button>
+
+                    {/* ACH / Bank Transfer */}
+                    <button
+                      className="flex items-center gap-3 px-4 py-4 rounded-lg border-2 border-border bg-transparent text-white opacity-50 cursor-not-allowed"
+                      disabled
+                      data-testid="payment-method-ach"
+                    >
+                      <div className="w-9 h-9 rounded-md bg-[#d4ed1f]/10 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="h-4 w-4 text-[#d4ed1f]" />
+                      </div>
+                      <div className="min-w-0 flex-1 flex flex-col justify-center">
+                        <p className="text-sm font-semibold leading-tight">ACH / Bank Transfer</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          Coming soon · Link your bank account
+                        </p>
+                      </div>
+                      <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-medium flex-shrink-0">SOON</span>
                     </button>
                   </div>
 
@@ -1814,7 +1876,27 @@ export default function Checkout() {
                   </div>
                 )}
 
-                {/* ── PAY BUTTON — always the last element ── */}
+                {/* ── Trust badges + RUO disclaimer ── */}
+                <div className="flex items-center justify-center gap-4 py-3 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">SSL Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">Secure Payment</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Truck className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">Same-Day Shipping</span>
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground/40 text-center leading-relaxed mb-4">
+                  By purchasing, you confirm these products are for <span className="text-red-400/70">research use only</span> and that you are 21+. No refunds policy applies.
+                </p>
+
+                {/* ── PAY BUTTON — the absolute last interactive element ── */}
                 <div className="space-y-3 mb-3">
                   {stockErrors.length > 0 ? (
                     <Button
@@ -2016,26 +2098,6 @@ export default function Checkout() {
                     </>
                   ) : null}
                 </div>
-
-                {/* ── Trust badges + RUO disclaimer ── */}
-                <div className="flex items-center justify-center gap-4 py-3 mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">SSL Encrypted</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">Secure Payment</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Truck className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">Same-Day Shipping</span>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-muted-foreground/40 text-center leading-relaxed">
-                  By purchasing, you confirm these products are for <span className="text-red-400/70">research use only</span> and that you are 21+. No refunds policy applies.
-                </p>
 
                 {/* Spacer for mobile sticky bar */}
                 {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') && (
