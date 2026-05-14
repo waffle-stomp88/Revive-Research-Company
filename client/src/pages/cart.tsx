@@ -386,7 +386,7 @@ export default function CartPage() {
   ) : null;
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-24 lg:pb-12 px-3 sm:px-4 md:px-8">
+    <main className="min-h-screen pt-32 md:pt-40 pb-36 md:pb-12 px-3 sm:px-4 md:px-8">
       <SEOHead
         title="Cart"
         description={`Review your research compound order. Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}. Secure checkout with fast processing.`}
@@ -853,15 +853,15 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Sticky bottom CTA — mobile only, hides when inline CTA is visible */}
+      {/* Sticky bottom CTA — mobile only, sits above the mobile bottom nav, hides when inline CTA is visible */}
       <motion.div
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
+        className="md:hidden fixed bottom-16 left-0 right-0 z-50"
         initial={false}
         animate={{ y: inlineCTAVisible ? 80 : 0, opacity: inlineCTAVisible ? 0 : 1 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
         aria-hidden={inlineCTAVisible}
       >
-        <div className="bg-background/95 backdrop-blur-md border-t border-border/60 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+        <div className="bg-background/95 backdrop-blur-sm border-t border-border px-4 py-3 safe-area-pb">
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-shrink-0">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Total</p>
