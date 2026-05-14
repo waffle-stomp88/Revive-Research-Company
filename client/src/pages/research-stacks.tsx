@@ -3946,36 +3946,63 @@ function ResearchStacks() {
 
                     <div className="flex items-end justify-between pt-2 border-t border-[#2a2a32]">
                       <div className="space-y-1">
-                        {(() => {
-                          const pricing = getStackPricing(stack.id);
-                          const avail = getStackAvailability(stack.id);
-                          const stackIsOOS = avail !== null && !avail.available;
-                          if (!pricing && !productsWithStock) return <Skeleton className="h-12 w-32" />;
-                          if (!pricing) return (
-                            <div className="space-y-1">
-                              <div className="text-sm text-muted-foreground">Price unavailable</div>
+                        {SOFT_GATE_ENABLED && !isAuthenticated ? (
+                          <div
+                            className="relative space-y-1 overflow-hidden rounded-md"
+                            data-testid={`price-gate-${stack.id}`}
+                          >
+                            <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.5 }} aria-hidden="true">
+                              <div className="text-xs text-muted-foreground">If bought separately: <span className="line-through">$•••.••</span></div>
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-xl font-bold" style={{ color: stack.color }}>$•••.••</span>
+                                <span className="text-xs text-green-500 font-medium">Save $••.••</span>
+                              </div>
                             </div>
-                          );
-                          return (
-                            <>
-                              <div className="text-xs text-muted-foreground">
-                                If bought separately: <span className="line-through">${pricing.retailValue.toFixed(2)}</span>
+                            <button
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks")}&mode=signup`); }}
+                              className="absolute inset-0 flex items-center justify-center w-full"
+                              data-testid={`button-price-gate-signin-${stack.id}`}
+                            >
+                              <span
+                                className="text-xs font-semibold px-2 py-1 rounded-md border"
+                                style={{ color: "#E7FB10", borderColor: "rgba(231,251,16,0.4)", background: "rgba(26,26,31,0.85)" }}
+                              >
+                                Sign in to see pricing
+                              </span>
+                            </button>
+                          </div>
+                        ) : (
+                          (() => {
+                            const pricing = getStackPricing(stack.id);
+                            const avail = getStackAvailability(stack.id);
+                            const stackIsOOS = avail !== null && !avail.available;
+                            if (!pricing && !productsWithStock) return <Skeleton className="h-12 w-32" />;
+                            if (!pricing) return (
+                              <div className="space-y-1">
+                                <div className="text-sm text-muted-foreground">Price unavailable</div>
                               </div>
-                              <div className="flex items-baseline gap-2 flex-wrap">
-                                <span className="text-xl font-bold" style={{ color: stackIsOOS ? undefined : stack.color, opacity: stackIsOOS ? 0.5 : 1 }}>
-                                  ${pricing.stackPrice.toFixed(2)}
-                                </span>
-                                {stackIsOOS ? (
-                                  <span className="text-xs text-red-400 font-medium">Out of Stock</span>
-                                ) : (
-                                  <span className="text-xs text-green-500 font-medium">
-                                    Save ${pricing.savings.toFixed(2)}
+                            );
+                            return (
+                              <>
+                                <div className="text-xs text-muted-foreground">
+                                  If bought separately: <span className="line-through">${pricing.retailValue.toFixed(2)}</span>
+                                </div>
+                                <div className="flex items-baseline gap-2 flex-wrap">
+                                  <span className="text-xl font-bold" style={{ color: stackIsOOS ? undefined : stack.color, opacity: stackIsOOS ? 0.5 : 1 }}>
+                                    ${pricing.stackPrice.toFixed(2)}
                                   </span>
-                                )}
-                              </div>
-                            </>
-                          );
-                        })()}
+                                  {stackIsOOS ? (
+                                    <span className="text-xs text-red-400 font-medium">Out of Stock</span>
+                                  ) : (
+                                    <span className="text-xs text-green-500 font-medium">
+                                      Save ${pricing.savings.toFixed(2)}
+                                    </span>
+                                  )}
+                                </div>
+                              </>
+                            );
+                          })()
+                        )}
                         <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff] text-xs">
                           Curated Stack
                         </Badge>
