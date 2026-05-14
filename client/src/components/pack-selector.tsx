@@ -38,17 +38,6 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               }}
               aria-pressed={isSelected}
             >
-              {/* Popular badge — inside the card, top-right */}
-              {tier.popular && (
-                <span
-                  className="absolute top-2 right-2 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm"
-                  style={{ background: "#E7FB10", color: "#000" }}
-                  data-testid="badge-popular"
-                >
-                  POPULAR
-                </span>
-              )}
-
               {/* Radio indicator */}
               <span
                 className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200"
@@ -72,6 +61,17 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               >
                 {tier.label}
               </span>
+
+              {/* Popular badge — inline, left of price */}
+              {tier.popular && (
+                <span
+                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm flex-shrink-0"
+                  style={{ background: "#E7FB10", color: "#000" }}
+                  data-testid="badge-popular"
+                >
+                  POPULAR
+                </span>
+              )}
 
               {/* Price or lock */}
               {softGated ? (
