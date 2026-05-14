@@ -91,6 +91,9 @@ export default function Checkout() {
     zip: "",
   });
   const [copied, setCopied] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const touch = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
   // 2-step checkout state
   const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
@@ -1047,12 +1050,13 @@ export default function Checkout() {
                                 id="ship-name"
                                 value={customerName}
                                 onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
+                                onBlur={() => touch('name')}
                                 placeholder="John Doe"
                                 autoComplete="name"
-                                className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                className={`mt-1 ${(submitAttempted || touched.name) && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                                 data-testid="input-customer-name"
                               />
-                              {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              {(submitAttempted || touched.name) && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
                             <div>
                               <Label htmlFor="ship-email" className="text-xs">Email *</Label>
@@ -1061,12 +1065,13 @@ export default function Checkout() {
                                 type="email"
                                 value={customerEmail}
                                 onChange={(e) => setCustomerEmail(e.target.value)}
+                                onBlur={() => touch('email')}
                                 placeholder="john@example.com"
                                 autoComplete="email"
-                                className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                className={`mt-1 ${(submitAttempted || touched.email) && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                                 data-testid="input-customer-email"
                               />
-                              {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              {(submitAttempted || touched.email) && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
                           </div>
                           <div>
@@ -1135,12 +1140,13 @@ export default function Checkout() {
                               id="ship-street"
                               value={shippingAddress.street}
                               onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                              onBlur={() => touch('street')}
                               placeholder="123 Research Lane"
                               autoComplete="street-address"
-                              className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                              className={`mt-1 ${(submitAttempted || touched.street) && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                               data-testid="input-street"
                             />
-                            {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            {(submitAttempted || touched.street) && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
                           </div>
                           <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
                             <div>
@@ -1149,12 +1155,13 @@ export default function Checkout() {
                                 id="ship-city"
                                 value={shippingAddress.city}
                                 onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                                onBlur={() => touch('city')}
                                 placeholder="Austin"
                                 autoComplete="address-level2"
-                                className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                className={`mt-1 ${(submitAttempted || touched.city) && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                                 data-testid="input-city"
                               />
-                              {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              {(submitAttempted || touched.city) && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
                             <div>
                               <Label htmlFor="ship-state" className="text-xs">State *</Label>
@@ -1468,20 +1475,28 @@ export default function Checkout() {
 
                     {/* ACH / Bank Transfer */}
                     <button
-                      className="flex items-center gap-3 px-4 py-4 rounded-lg border-2 border-border bg-transparent text-white opacity-50 cursor-not-allowed"
-                      disabled
+                      className={`flex items-center gap-3 px-4 py-4 rounded-lg border-2 transition-all text-left ${
+                        selectedPaymentMethod === "bank"
+                          ? "border-[#d4ed1f]/60 bg-[#d4ed1f]/8 text-white"
+                          : "border-border bg-transparent text-white"
+                      }`}
+                      onClick={() => { setSelectedPaymentMethod("bank"); setManualPaymentStep("instructions"); }}
                       data-testid="payment-method-ach"
                     >
-                      <div className="w-9 h-9 rounded-md bg-[#d4ed1f]/10 flex items-center justify-center flex-shrink-0">
+                      <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
+                        selectedPaymentMethod === "bank" ? "bg-[#d4ed1f]/20" : "bg-[#d4ed1f]/10"
+                      }`}>
                         <Building2 className="h-4 w-4 text-[#d4ed1f]" />
                       </div>
                       <div className="min-w-0 flex-1 flex flex-col justify-center">
                         <p className="text-sm font-semibold leading-tight">ACH / Bank Transfer</p>
                         <p className="text-[10px] text-muted-foreground">
-                          Coming soon · Link your bank account
+                          Wire · Zelle · Link Money
                         </p>
                       </div>
-                      <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-medium flex-shrink-0">SOON</span>
+                      {selectedPaymentMethod === "bank" && (
+                        <CheckCircle className="h-3.5 w-3.5 text-[#d4ed1f] flex-shrink-0" />
+                      )}
                     </button>
                   </div>
 
@@ -1626,7 +1641,7 @@ export default function Checkout() {
                     )}
 
                     {/* Manual payment instructions */}
-                    {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (
+                    {(['cashapp', 'venmo', 'zelle', 'bank'] as PaymentMethod[]).includes(selectedPaymentMethod) && (
                       <motion.div
                         key="manual-instructions"
                         initial={{ opacity: 0, y: 6 }}
@@ -1637,30 +1652,37 @@ export default function Checkout() {
                       >
                         <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">What happens next</p>
                         {(() => {
-                          const methodColor = selectedPaymentMethod === "cashapp" ? "#00D632" : selectedPaymentMethod === "venmo" ? "#00AFF1" : "#6D1ED4";
+                          const isBankTransfer = selectedPaymentMethod === "bank";
+                          const methodColor = selectedPaymentMethod === "cashapp" ? "#00D632" : selectedPaymentMethod === "venmo" ? "#00AFF1" : selectedPaymentMethod === "bank" ? "#d4ed1f" : "#6D1ED4";
                           const methodHandle = selectedPaymentMethod === "cashapp" ? CASHAPP_TAG : selectedPaymentMethod === "venmo" ? VENMO_HANDLE : ZELLE_INFO;
                           return (
                             <ol className="space-y-3">
                               <li className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>1</div>
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-[#0a0a0a] flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>1</div>
                                 <p className="text-sm text-muted-foreground leading-snug">Confirm your order — you'll get a unique order number</p>
                               </li>
                               <li className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>2</div>
-                                <p className="text-sm text-muted-foreground leading-snug">
-                                  Send <span className="font-semibold text-foreground">${Math.round(cartTotal)}</span> to{" "}
-                                  <button
-                                    className="font-mono font-semibold underline underline-offset-2 cursor-pointer"
-                                    style={{ color: methodColor }}
-                                    onClick={() => copyToClipboard(methodHandle)}
-                                  >
-                                    {methodHandle}
-                                  </button>{" "}
-                                  with <span className="font-semibold text-foreground underline underline-offset-2">your order number in the note</span>
-                                </p>
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-[#0a0a0a] flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>2</div>
+                                {isBankTransfer ? (
+                                  <p className="text-sm text-muted-foreground leading-snug">
+                                    Send <span className="font-semibold text-foreground">${Math.round(cartTotal)}</span> via bank wire or Zelle — you'll receive wire instructions by email with <span className="font-semibold text-foreground underline underline-offset-2">your order number as reference</span>
+                                  </p>
+                                ) : (
+                                  <p className="text-sm text-muted-foreground leading-snug">
+                                    Send <span className="font-semibold text-foreground">${Math.round(cartTotal)}</span> to{" "}
+                                    <button
+                                      className="font-mono font-semibold underline underline-offset-2 cursor-pointer"
+                                      style={{ color: methodColor }}
+                                      onClick={() => copyToClipboard(methodHandle)}
+                                    >
+                                      {methodHandle}
+                                    </button>{" "}
+                                    with <span className="font-semibold text-foreground underline underline-offset-2">your order number in the note</span>
+                                  </p>
+                                )}
                               </li>
                               <li className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>3</div>
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-[#0a0a0a] flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>3</div>
                                 <p className="text-sm text-muted-foreground leading-snug">We verify payment and ship — you'll receive a shipping notification</p>
                               </li>
                             </ol>
@@ -1767,9 +1789,12 @@ export default function Checkout() {
                       <span>${Math.round(cartSubtotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Shipping</span>
-                      <span className={baseShipping === 0 ? "text-green-400" : ""}>
-                        {baseShipping === 0 ? "FREE" : `$${Math.round(baseShipping)}`}
+                      <span className="text-muted-foreground">
+                        Shipping
+                        {shippingMethod === 'express' && <span className="ml-1 text-[10px] text-[#21d8ff]">(Express)</span>}
+                      </span>
+                      <span className={cartShipping === 0 ? "text-green-400" : ""}>
+                        {cartShipping === 0 ? "FREE" : `$${Math.round(cartShipping)}`}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -2031,7 +2056,7 @@ export default function Checkout() {
                         />
                       )}
                     </>
-                  ) : ['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') ? (
+                  ) : ['cashapp', 'venmo', 'zelle', 'bank'].includes(selectedPaymentMethod || '') ? (
                     <>
                       {!hasValidZip ? (
                         <Button
@@ -2072,7 +2097,9 @@ export default function Checkout() {
                                 ? "bg-[#00D632] text-white"
                                 : selectedPaymentMethod === "venmo"
                                   ? "bg-[#00AFF1] text-white"
-                                  : "bg-[#6D1ED4] text-white"
+                                  : selectedPaymentMethod === "bank"
+                                    ? "bg-[#d4ed1f] text-[#0a0a0a]"
+                                    : "bg-[#6D1ED4] text-white"
                             }`}
                             onClick={handleManualPaymentSubmit}
                             disabled={createManualOrderMutation.isPending}
@@ -2086,7 +2113,9 @@ export default function Checkout() {
                             ) : (
                               <>
                                 <CheckCircle className="h-5 w-5" />
-                                Confirm Order — Pay via {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"} After
+                                {selectedPaymentMethod === "bank"
+                                  ? "Confirm Order — Receive Bank Instructions"
+                                  : `Confirm Order — Pay via ${selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"} After`}
                               </>
                             )}
                           </Button>
@@ -2100,7 +2129,7 @@ export default function Checkout() {
                 </div>
 
                 {/* Spacer for mobile sticky bar */}
-                {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') && (
+                {['cashapp', 'venmo', 'zelle', 'bank'].includes(selectedPaymentMethod || '') && (
                   <div className="md:hidden h-24" />
                 )}
               </motion.div>
@@ -2110,7 +2139,7 @@ export default function Checkout() {
         </main>
 
         {/* ── Mobile sticky bottom bar — manual payments on step 2 ── */}
-        {checkoutStep === 2 && ['cashapp', 'zelle', 'venmo'].includes(selectedPaymentMethod || '') && (
+        {checkoutStep === 2 && ['cashapp', 'zelle', 'venmo', 'bank'].includes(selectedPaymentMethod || '') && (
           <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
@@ -2126,7 +2155,9 @@ export default function Checkout() {
                       ? "bg-[#00D632] text-white"
                       : selectedPaymentMethod === "venmo"
                         ? "bg-[#00AFF1] text-white"
-                        : "bg-[#6D1ED4] text-white"
+                        : selectedPaymentMethod === "bank"
+                          ? "bg-[#d4ed1f] text-[#0a0a0a]"
+                          : "bg-[#6D1ED4] text-white"
                 }`}
                 onClick={handleManualPaymentSubmit}
                 disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
