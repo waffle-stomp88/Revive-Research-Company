@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { Clock, X, ChevronRight, ArrowRight } from "lucide-react";
+import { Clock, X, ChevronRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import { useAuth } from "@/hooks/useAuth";
+
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 const STORAGE_KEY = "revive_recently_viewed";
 const MAX_ITEMS = 6;
@@ -44,6 +46,8 @@ interface RecentlyViewedProps {
 export function RecentlyViewed({ currentProductId, variant = "sidebar" }: RecentlyViewedProps) {
   const [viewedIds, setViewedIds] = useState<string[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const hidePrice = SOFT_GATE_ENABLED && !isAuthenticated;
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -83,13 +87,13 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {recentProducts.map((product) => (
             <Link key={product.id} href={`/peptides/${product.slug || product.id}`}>
-              <Card 
+              <Card
                 className="group p-4 cursor-pointer border-[#2a2a32] md:hover:border-[#21d8ff]/50 transition-all duration-300 md:hover:shadow-[0_0_25px_rgba(33,216,255,0.25)] flex items-center gap-5 bg-[#1a1a24]/50"
                 data-testid={`card-recent-${product.id}`}
               >
                 <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex-shrink-0 overflow-hidden">
-                  <img 
-                    src={product.imageUrl || productImage} 
+                  <img
+                    src={product.imageUrl || productImage}
                     alt={`${product.name} research peptide`}
                     className="w-full h-full object-contain p-2 md:group-hover:scale-110 md:group-active:scale-110 transition-transform duration-500"
                   />
@@ -98,9 +102,16 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                   <p className="font-display text-xl font-bold truncate group-hover:text-[#E7FB10] transition-colors leading-tight">
                     {product.name}
                   </p>
-                  <p className="text-base text-[#E7FB10] font-black mt-1">
-                    ${Number(product.price).toFixed(2)}
-                  </p>
+                  {hidePrice ? (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Lock className="w-3 h-3" style={{ color: "#E7FB1060" }} />
+                      <span className="text-xs text-gray-500">Sign in for pricing</span>
+                    </div>
+                  ) : (
+                    <p className="text-base text-[#E7FB10] font-black mt-1">
+                      ${Number(product.price).toFixed(2)}
+                    </p>
+                  )}
                 </div>
               </Card>
             </Link>
@@ -163,17 +174,17 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                   <X className="h-3 w-3" />
                 </Button>
               </div>
-              
+
               <div className="p-2 space-y-1">
                 {recentProducts.map((product) => (
                   <Link key={product.id} href={`/peptides/${product.slug || product.id}`}>
-                    <div 
+                    <div
                       className="flex items-center gap-2 p-1.5 rounded-md hover:bg-[#2a2a32] cursor-pointer transition-colors group"
                       data-testid={`sidebar-recent-${product.id}`}
                     >
                       <div className="w-8 h-8 rounded bg-gradient-to-br from-muted to-muted/50 overflow-hidden flex-shrink-0">
-                        <img 
-                          src={product.imageUrl || productImage} 
+                        <img
+                          src={product.imageUrl || productImage}
                           alt={`${product.name} research peptide`}
                           className="w-full h-full object-contain"
                         />
@@ -182,9 +193,16 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                         <p className="text-xs font-medium truncate group-hover:text-[#E7FB10] transition-colors">
                           {product.name}
                         </p>
-                        <p className="text-[10px] text-[#E7FB10]">
-                          ${Number(product.price).toFixed(2)}
-                        </p>
+                        {hidePrice ? (
+                          <div className="flex items-center gap-1">
+                            <Lock className="w-2.5 h-2.5 flex-shrink-0" style={{ color: "#E7FB1055" }} />
+                            <span className="text-[9px] text-gray-600">Sign in</span>
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-[#E7FB10]">
+                            ${Number(product.price).toFixed(2)}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Link>

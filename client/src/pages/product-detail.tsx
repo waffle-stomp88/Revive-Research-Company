@@ -969,9 +969,12 @@ export default function ProductDetail() {
 
             <div className="mb-2 md:mb-3">
               {softGateEnabled && !isAuthenticated ? (
-                <div data-testid="text-product-price" className="flex items-center gap-2 py-1 mb-1">
-                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1065" }} />
-                  <span className="text-sm" style={{ color: "#6b7280" }}>Sign in to see pricing</span>
+                <div data-testid="text-product-price" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-1" style={{
+                  background: "#E7FB100d",
+                  border: "1px solid #E7FB1025",
+                }}>
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
+                  <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
