@@ -80,7 +80,7 @@ import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
 import { SoftGateBanner } from "@/components/soft-gate-banner";
 import { PackSelector, OrderSummary } from "@/components/pack-selector";
-import { PACK_TIERS, getPackTotalPrice } from "@/lib/pack-tiers";
+import { PACK_TIERS, getPackTotalPrice, getPackPerVialPrice } from "@/lib/pack-tiers";
 import type { PackQty } from "@/lib/pack-tiers";
 import { AuthGate } from "@/components/auth-gate";
 import { BlurredGate } from "@/components/blurred-gate";
@@ -745,10 +745,9 @@ export default function ProductDetail() {
   const selectedDosageStock = getDosageStockInfo(selectedDosage);
 
   // Effective quantity and total — placed here so getBasePrice() (which uses hasDosageStockData) is safe
-  const effectiveQty = packQty === 1 ? singleVialQty : packQty;
-  const effectiveTotal = packQty === 1
-    ? Math.round(getBasePrice()) * singleVialQty
-    : Math.round(getPackTotalPrice(getBasePrice(), packQty));
+  const effectiveQty = singleVialQty;
+  const selectedTierDiscount = PACK_TIERS.find(t => t.qty === packQty)?.discount ?? 0;
+  const effectiveTotal = Math.round(getPackPerVialPrice(getBasePrice(), selectedTierDiscount) * singleVialQty);
 
   // Out-of-stock check: trust the product-level inStock flag first.
   // If the product itself is OOS, show full OOS treatment immediately (no loading needed).
@@ -1064,8 +1063,8 @@ export default function ProductDetail() {
                   <div className="flex items-center h-9">
                     <button
                       type="button"
-                      onClick={() => packQty === 1 && setSingleVialQty(q => Math.max(1, q - 1))}
-                      disabled={packQty !== 1 || singleVialQty <= 1}
+                      onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
+                      disabled={singleVialQty <= 1}
                       data-testid="button-qty-minus"
                       className="w-9 h-9 rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
                     >
@@ -1075,14 +1074,13 @@ export default function ProductDetail() {
                       data-testid="text-qty-value"
                       className="w-10 h-9 border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
                     >
-                      {packQty === 1 ? singleVialQty : packQty}
+                      {singleVialQty}
                     </span>
                     <button
                       type="button"
-                      onClick={() => packQty === 1 && setSingleVialQty(q => q + 1)}
-                      disabled={packQty !== 1}
+                      onClick={() => setSingleVialQty(q => q + 1)}
                       data-testid="button-qty-plus"
-                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
+                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
                     >
                       <span className="text-sm leading-none select-none">+</span>
                     </button>
@@ -1097,7 +1095,7 @@ export default function ProductDetail() {
                 <PackSelector
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
-                  onSelect={(qty) => { setPackQty(qty); if (qty !== 1) setSingleVialQty(1); }}
+                  onSelect={(qty) => setPackQty(qty)}
                   softGated={softGateEnabled && !isAuthenticated}
                   disabled={isOutOfStock}
                 />
@@ -2239,7 +2237,7 @@ export default function ProductDetail() {
               <p className="font-display font-bold truncate max-w-xs">{product.name}</p>
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-sm text-muted-foreground">{selectedDosage}</span>
-                <span className="text-sm text-muted-foreground">{packQty === 1 ? `${effectiveQty} vial${effectiveQty > 1 ? "s" : ""}` : PACK_TIERS.find(t => t.qty === packQty)?.label}</span>
+                <span className="text-sm text-muted-foreground">{`${effectiveQty} vial${effectiveQty > 1 ? "s" : ""}`}</span>
                 <span className="font-bold text-[#E7FB10]">${effectiveTotal}</span>
                 <Button
                   onClick={handleAddToCart}
