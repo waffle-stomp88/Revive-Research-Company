@@ -409,12 +409,18 @@ export async function registerRoutes(
           const client = await pool.connect();
           try {
             await client.query('BEGIN');
-            // Step 1a: clear email on old row to release the unique constraint
-            // so the new row can take it.
-            await client.query('UPDATE users SET email = NULL WHERE id = $1', [oldId]);
-            // Step 1b: insert the new user row with the real email.
+            // Step 1: prefix the email on the old row with 'migrating_' to release
+            // the unique constraint so the new row can claim the real email.
+            // Using a deterministic prefix (not NULL) keeps the row identifiable
+            // if the transaction is inspected mid-flight.
+            await client.query(
+              `UPDATE users SET email = 'migrating_' || id WHERE id = $1`,
+              [oldId]
+            );
+            // Step 2: insert the new row with the Supabase UUID, copying all
+            // columns from the old row and using the real email.
             // ON CONFLICT (id) DO NOTHING handles a concurrent request that
-            // already inserted the new row.
+            // already created the new row.
             await client.query(
               `INSERT INTO users (id, email, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, updated_at)
                SELECT $1, $2, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, NOW()
@@ -422,17 +428,22 @@ export async function registerRoutes(
                ON CONFLICT (id) DO NOTHING`,
               [supabaseId, email, oldId]
             );
-            // Step 2: point all child rows to the new ID (FK is satisfied because
-            // the new user row now exists).
+            // Step 3: point all child rows to the new UUID. Child tables still
+            // reference the original oldId (the id column was never changed,
+            // only the email was prefixed in step 1).
             for (const table of [
               'academy_progress', 'affiliates', 'batch_verification_history',
               'cycle_tags', 'login_history', 'notification_preferences',
               'research_notes', 'saved_addresses', 'saved_stacks',
               'user_research_profiles', 'orders', 'product_votes', 'wishlists',
             ]) {
-              await client.query(`UPDATE ${table} SET user_id = $1 WHERE user_id = $2`, [supabaseId, oldId]);
+              await client.query(
+                `UPDATE ${table} SET user_id = $1 WHERE user_id = $2`,
+                [supabaseId, oldId]
+              );
             }
-            // Step 3: delete the old row now that no child rows reference it.
+            // Step 4: delete the old row. Its id is still oldId (unchanged) but
+            // its email is now prefixed — match on id for safety.
             await client.query('DELETE FROM users WHERE id = $1', [oldId]);
             await client.query('COMMIT');
             console.log(`[Auth] Migration complete for ${email}`);
