@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
@@ -185,6 +185,19 @@ export default function CartPage() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [discountCode, setDiscountCode] = useState("");
   const [showDiscountInput, setShowDiscountInput] = useState(false);
+  const [inlineCTAVisible, setInlineCTAVisible] = useState(false);
+  const [inlineCTAEl, setInlineCTAEl] = useState<HTMLButtonElement | null>(null);
+  const inlineCTARef = useCallback((node: HTMLButtonElement | null) => setInlineCTAEl(node), []);
+
+  useEffect(() => {
+    if (!inlineCTAEl) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInlineCTAVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(inlineCTAEl);
+    return () => observer.disconnect();
+  }, [inlineCTAEl]);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -714,7 +727,7 @@ export default function CartPage() {
 
               {/* Checkout CTA */}
               <Button
-
+                ref={inlineCTARef}
                 size="lg"
                 className="w-full bg-[#E7FB10] text-black font-display font-bold text-base gap-2 shadow-glow-sm"
                 onClick={handleCheckout}
@@ -840,24 +853,32 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Sticky bottom CTA — mobile only, always visible, sits above the mobile bottom nav */}
-      <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile-cart">
-        <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <div className="flex-shrink-0">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Total</p>
-            <p className="font-display font-bold text-xl text-[#E7FB10]" data-testid="text-total-sticky">${Math.round(total)}</p>
+      {/* Sticky bottom CTA — mobile only, fades out when inline CTA is visible */}
+      <motion.div
+        className="md:hidden fixed bottom-16 left-0 right-0 z-50"
+        animate={{ y: inlineCTAVisible ? 80 : 0, opacity: inlineCTAVisible ? 0 : 1 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        style={{ pointerEvents: inlineCTAVisible ? "none" : "auto" }}
+        data-testid="sticky-cart-bar-mobile-cart"
+      >
+        <div className="bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb">
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <div className="flex-shrink-0">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Total</p>
+              <p className="font-display font-bold text-xl text-[#E7FB10]" data-testid="text-total-sticky">${Math.round(total)}</p>
+            </div>
+            <Button
+              size="lg"
+              className="flex-1 bg-[#E7FB10] text-black font-display font-bold gap-2 shadow-glow-sm"
+              onClick={handleCheckout}
+              data-testid="button-checkout-sticky"
+            >
+              Proceed to Checkout
+              <ArrowRight className="h-5 w-5" />
+            </Button>
           </div>
-          <Button
-            size="lg"
-            className="flex-1 bg-[#E7FB10] text-black font-display font-bold gap-2 shadow-glow-sm"
-            onClick={handleCheckout}
-            data-testid="button-checkout-sticky"
-          >
-            Proceed to Checkout
-            <ArrowRight className="h-5 w-5" />
-          </Button>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
