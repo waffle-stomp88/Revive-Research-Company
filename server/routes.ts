@@ -395,9 +395,9 @@ export async function registerRoutes(
       // Lazy ID migration: if a legacy user (auth0|, google-oauth2|, or any
       // non-UUID format) exists with the same email, atomically swap all
       // user_id references to the new Supabase UUID.
-      // Uses a dedicated pool connection with session_replication_role=replica
-      // to disable FK trigger enforcement for the duration of the transaction,
-      // allowing users.id to be updated before child tables are migrated.
+      // Uses insert-new-row → update-children → delete-old-row so FK integrity
+      // is maintained throughout without needing superuser privileges
+      // (session_replication_role is not available on Neon managed Postgres).
       // This runs exactly once per legacy user on their first post-migration login.
       if (email) {
         const legacyCheck = await db.execute(
@@ -409,8 +409,18 @@ export async function registerRoutes(
           const client = await pool.connect();
           try {
             await client.query('BEGIN');
-            await client.query("SET session_replication_role = 'replica'");
-            await client.query('UPDATE users SET id = $1 WHERE id = $2', [supabaseId, oldId]);
+            // Step 1: insert the new user row by copying the old one.
+            // ON CONFLICT DO NOTHING handles the rare case where the Supabase
+            // UUID row was already created by a concurrent request.
+            await client.query(
+              `INSERT INTO users (id, email, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, updated_at)
+               SELECT $1, email, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, NOW()
+               FROM users WHERE id = $2
+               ON CONFLICT (id) DO NOTHING`,
+              [supabaseId, oldId]
+            );
+            // Step 2: point all child rows to the new ID (FK is satisfied because
+            // the new user row now exists).
             for (const table of [
               'academy_progress', 'affiliates', 'batch_verification_history',
               'cycle_tags', 'login_history', 'notification_preferences',
@@ -419,7 +429,8 @@ export async function registerRoutes(
             ]) {
               await client.query(`UPDATE ${table} SET user_id = $1 WHERE user_id = $2`, [supabaseId, oldId]);
             }
-            await client.query("SET session_replication_role = 'origin'");
+            // Step 3: delete the old row now that no child rows reference it.
+            await client.query('DELETE FROM users WHERE id = $1', [oldId]);
             await client.query('COMMIT');
             console.log(`[Auth] Migration complete for ${email}`);
           } catch (migrationErr) {
