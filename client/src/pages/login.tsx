@@ -28,44 +28,44 @@ function PKChartVisual() {
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className="absolute inset-0 p-4 flex flex-col"
+      className="absolute inset-0 p-5 flex flex-col"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "#E7FB1015", border: "1px solid #E7FB1030" }}>
-          <FlaskConical className="w-3 h-3" style={{ color: "#E7FB10" }} />
+      <div className="flex items-center gap-2.5 mb-3">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#E7FB1015", border: "1px solid #E7FB1030" }}>
+          <FlaskConical className="w-4 h-4" style={{ color: "#E7FB10" }} />
         </div>
-        <span className="text-[11px] font-semibold text-white/70 tracking-wide">Pharmacokinetics</span>
-        <span className="ml-auto text-[9px] font-mono text-gray-600">BPC-157</span>
+        <span className="text-sm font-semibold text-white/80 tracking-wide">Pharmacokinetics</span>
+        <span className="ml-auto text-[10px] font-mono text-gray-500">BPC-157</span>
       </div>
       <div className="flex-1 relative">
-        <svg viewBox="0 0 220 70" className="w-full h-full" preserveAspectRatio="none">
-          <line x1="0" y1="55" x2="220" y2="55" stroke="#ffffff06" strokeWidth="1"/>
-          <line x1="0" y1="28" x2="220" y2="28" stroke="#ffffff06" strokeWidth="1"/>
-          <line x1="0" y1="5" x2="220" y2="5" stroke="#ffffff06" strokeWidth="1"/>
+        <svg viewBox="0 0 220 80" className="w-full h-full" preserveAspectRatio="none">
+          <line x1="0" y1="65" x2="220" y2="65" stroke="#ffffff06" strokeWidth="1"/>
+          <line x1="0" y1="38" x2="220" y2="38" stroke="#ffffff06" strokeWidth="1"/>
+          <line x1="0" y1="10" x2="220" y2="10" stroke="#ffffff06" strokeWidth="1"/>
           <motion.path
-            d="M 0 65 C 8 65 12 5 28 4 C 40 3 52 18 75 33 C 105 52 145 60 220 64"
-            fill="none" stroke="#E7FB10" strokeWidth="2" strokeLinecap="round"
+            d="M 0 75 C 8 75 12 8 28 6 C 40 4 52 22 75 40 C 105 60 145 70 220 74"
+            fill="none" stroke="#E7FB10" strokeWidth="2.5" strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 1.3, ease: "easeInOut" }}
           />
           <motion.path
-            d="M 0 65 C 8 65 12 5 28 4 C 40 3 52 18 75 33 C 105 52 145 60 220 64 L 220 65 Z"
-            fill="#E7FB10" fillOpacity="0.07"
+            d="M 0 75 C 8 75 12 8 28 6 C 40 4 52 22 75 40 C 105 60 145 70 220 74 L 220 75 Z"
+            fill="#E7FB10" fillOpacity="0.08"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.5 }}
           />
-          <motion.circle cx="28" cy="4" r="3" fill="#E7FB10"
+          <motion.circle cx="28" cy="6" r="4" fill="#E7FB10"
             initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 400 }}
           />
         </svg>
       </div>
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 mt-3">
         {[["T½", "4.2h"], ["Tmax", "1.8h"], ["Bio", "85%"]].map(([label, val]) => (
-          <div key={label} className="flex-1 rounded-lg px-2 py-1.5 text-center" style={{ background: "#E7FB1010", border: "1px solid #E7FB1018" }}>
-            <p className="text-[8px] text-gray-600 uppercase tracking-wide">{label}</p>
-            <p className="text-[11px] font-bold" style={{ color: "#E7FB10" }}>{val}</p>
+          <div key={label} className="flex-1 rounded-xl px-3 py-2.5 text-center" style={{ background: "#E7FB1010", border: "1px solid #E7FB1020" }}>
+            <p className="text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">{label}</p>
+            <p className="text-sm font-bold" style={{ color: "#E7FB10" }}>{val}</p>
           </div>
         ))}
       </div>
@@ -78,31 +78,31 @@ function COAVisual() {
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className="absolute inset-0 p-4 flex flex-col justify-between"
+      className="absolute inset-0 p-5 flex flex-col justify-between"
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[8px] text-gray-600 uppercase tracking-widest font-mono">Certificate of Analysis</p>
-          <p className="text-xs font-mono font-bold text-white mt-0.5">#2025-BPC-047</p>
-          <p className="text-[9px] text-gray-500 mt-0.5">Janoshik Analytical</p>
+          <p className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Certificate of Analysis</p>
+          <p className="text-base font-mono font-bold text-white mt-1">#2025-BPC-047</p>
+          <p className="text-xs text-gray-400 mt-0.5">Janoshik Analytical</p>
         </div>
         <motion.div
           initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: "#21d8ff18", border: "1px solid #21d8ff40" }}
         >
-          <CheckCircle2 className="w-4 h-4" style={{ color: "#21d8ff" }} />
+          <CheckCircle2 className="w-6 h-6" style={{ color: "#21d8ff" }} />
         </motion.div>
       </div>
-      <div className="space-y-2.5">
+      <div className="space-y-3.5">
         {[["Purity", 99.2, "#21d8ff"], ["Identity", 100, "#E7FB10"], ["Endotoxin", 97, "#a855f7"]].map(([label, val, color]) => (
           <div key={String(label)}>
-            <div className="flex justify-between mb-1">
-              <span className="text-[10px] text-gray-400">{String(label)}</span>
-              <span className="text-[10px] font-bold font-mono" style={{ color: String(color) }}>{Number(val).toFixed(1)}%</span>
+            <div className="flex justify-between mb-1.5">
+              <span className="text-sm text-gray-300">{String(label)}</span>
+              <span className="text-sm font-bold font-mono" style={{ color: String(color) }}>{Number(val).toFixed(1)}%</span>
             </div>
-            <div className="h-1 rounded-full" style={{ background: "#ffffff08" }}>
+            <div className="h-1.5 rounded-full" style={{ background: "#ffffff08" }}>
               <motion.div className="h-full rounded-full" style={{ background: String(color) }}
                 initial={{ width: "0%" }} animate={{ width: `${val}%` }}
                 transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
@@ -111,11 +111,11 @@ function COAVisual() {
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-1.5">
-        <motion.div className="w-1.5 h-1.5 rounded-full" style={{ background: "#21d8ff" }}
+      <div className="flex items-center gap-2">
+        <motion.div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#21d8ff" }}
           animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
         />
-        <span className="text-[9px] text-gray-500">Independent · Third-party verified</span>
+        <span className="text-xs text-gray-400">Independent · Third-party verified</span>
       </div>
     </motion.div>
   );
@@ -126,30 +126,30 @@ function StackVisual() {
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.35 }}
-      className="absolute inset-0 p-4 flex flex-col justify-between"
+      className="absolute inset-0 p-5 flex flex-col justify-between"
     >
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex items-center justify-center gap-4">
         {(["BPC-157", "TB-500"] as const).map((name, i) => (
           <motion.div key={name}
-            initial={{ opacity: 0, x: i === 0 ? -16 : 16 }}
+            initial={{ opacity: 0, x: i === 0 ? -20 : 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 + i * 0.1, duration: 0.4 }}
-            className="px-3 py-2 rounded-xl text-center"
+            className="px-5 py-3 rounded-xl text-center"
             style={{ background: "#a855f718", border: "1px solid #a855f740" }}
           >
-            <p className="text-xs font-bold text-white">{name}</p>
-            <p className="text-[8px] text-gray-500 mt-0.5">Peptide</p>
+            <p className="text-sm font-bold text-white">{name}</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">Peptide</p>
           </motion.div>
         ))}
       </div>
       <div className="flex items-center justify-center gap-4">
-        <div className="flex-1 flex flex-col items-end">
+        <div className="flex-1">
           <motion.div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #a855f7)" }}
             initial={{ scaleX: 0, originX: 0 }} animate={{ scaleX: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           />
         </div>
-        <div className="relative w-16 h-16 flex-shrink-0">
+        <div className="relative w-20 h-20 flex-shrink-0">
           <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
             <circle cx="32" cy="32" r="24" fill="none" stroke="#ffffff08" strokeWidth="5" />
             <motion.circle cx="32" cy="32" r="24" fill="none" stroke="#a855f7" strokeWidth="5"
@@ -161,9 +161,9 @@ function StackVisual() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <motion.span className="text-lg font-black text-white leading-none"
+            <motion.span className="text-2xl font-black text-white leading-none"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>94</motion.span>
-            <span className="text-[8px] text-gray-500">synergy</span>
+            <span className="text-[9px] text-gray-500 mt-0.5">synergy</span>
           </div>
         </div>
         <div className="flex-1">
@@ -178,7 +178,7 @@ function StackVisual() {
           <motion.span key={tag}
             initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 + i * 0.08 }}
-            className="px-2 py-0.5 rounded-full text-[9px] font-medium"
+            className="px-3 py-1 rounded-full text-xs font-medium"
             style={{ background: "#a855f712", color: "#a855f7", border: "1px solid #a855f730" }}
           >{tag}</motion.span>
         ))}
@@ -363,7 +363,7 @@ export default function LoginPage() {
               {/* Animated visual panel */}
               <div
                 className="relative rounded-2xl overflow-hidden mb-4"
-                style={{ background: "#0b0b10", border: "1px solid #ffffff0d", height: "210px" }}
+                style={{ background: "#0b0b10", border: "1px solid #ffffff0d", height: "280px" }}
               >
                 {/* Subtle scanline overlay */}
                 <div className="absolute inset-0 pointer-events-none" style={{
