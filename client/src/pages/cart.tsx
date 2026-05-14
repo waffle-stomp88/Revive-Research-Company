@@ -195,14 +195,19 @@ export default function CartPage() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Delay hiding so the bar is always visible for a beat on page load
-          hideTimer = setTimeout(() => setInlineCTAVisible(true), 700);
+          // Short delay so bar lingers briefly before fading
+          hideTimer = setTimeout(() => setInlineCTAVisible(true), 400);
         } else {
           if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
           setInlineCTAVisible(false);
         }
       },
-      { threshold: 0.3 }
+      {
+        threshold: 0.5,
+        // Exclude the bottom 130px of viewport (64px nav + 60px sticky bar + buffer)
+        // so the CTA only registers as "in view" when it's genuinely clear of both bars
+        rootMargin: "0px 0px -130px 0px",
+      }
     );
     observer.observe(inlineCTAEl);
     return () => {
