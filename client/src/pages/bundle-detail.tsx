@@ -25,11 +25,16 @@ import {
   FileCheck,
   RefreshCw,
   AlertTriangle,
+  Lock,
 } from "lucide-react";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
 import { BUNDLE_COMPONENTS, STACK_DISCOUNT, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { flagRetiredContent, RETIRED_BUNDLE_SLUGS } from "@/lib/retired-redirects";
+import { useAuth } from "@/hooks/useAuth";
+import { SoftGateBanner } from "@/components/soft-gate-banner";
+
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -45,6 +50,8 @@ export default function BundleDetail() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const softGated = SOFT_GATE_ENABLED && !isAuthenticated;
   const [quantity, setQuantity] = useState(1);
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
@@ -175,6 +182,8 @@ export default function BundleDetail() {
           </Link>
         </motion.div>
 
+        {softGated && <SoftGateBanner />}
+
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -216,17 +225,26 @@ export default function BundleDetail() {
               {bundle.tagline}
             </p>
 
-            <div className="flex items-baseline gap-3 mb-3">
-              <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
-                ${getDiscountedPrice().toFixed(2)}
-              </span>
-              <span className="text-lg text-muted-foreground line-through">
-                ${bundlePricing?.retailValue.toFixed(2) ?? "—"}
-              </span>
-              {getSelectedDiscount() > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {getSelectedDiscount()}% off
-                </Badge>
+            <div className="mb-3">
+              {softGated ? (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "#E7FB100d", border: "1px solid #E7FB1025" }} data-testid="text-bundle-price">
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
+                  <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
+                </div>
+              ) : (
+                <div className="flex items-baseline gap-3">
+                  <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
+                    ${getDiscountedPrice().toFixed(2)}
+                  </span>
+                  <span className="text-lg text-muted-foreground line-through">
+                    ${bundlePricing?.retailValue.toFixed(2) ?? "—"}
+                  </span>
+                  {getSelectedDiscount() > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {getSelectedDiscount()}% off
+                    </Badge>
+                  )}
+                </div>
               )}
             </div>
 
@@ -280,9 +298,11 @@ export default function BundleDetail() {
                       <ShoppingCart className="h-3.5 w-3.5" />
                       <span className="font-medium text-sm">One-time</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      ${getBasePrice().toFixed(2)}
-                    </p>
+                    {!softGated && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        ${getBasePrice().toFixed(2)}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -351,47 +371,55 @@ export default function BundleDetail() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                size="lg"
-                variant="outline"
-                className="flex-1 font-display gap-2 border-2"
-                onClick={handleAddToCart}
-                disabled={!pricingReady}
-                data-testid="button-add-to-cart"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                Add to Cart
-              </Button>
-              <Button
-                size="lg"
-                className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
-                  purchaseType === "subscription" 
-                    ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
-                    : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
-                }`}
-                onClick={handleBuyNow}
-                disabled={!pricingReady}
-                data-testid="button-buy-now"
-              >
-                {purchaseType === "subscription" ? (
-                  <>
-                    <Repeat className="h-5 w-5" />
-                    Subscribe
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-5 w-5" />
-                    Buy Now
-                  </>
+            {softGated ? (
+              <div className="blur-sm pointer-events-none select-none opacity-40 flex gap-3" aria-hidden="true" data-testid="auth-gate-inline">
+                <div className="flex-1 h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
+                  <ShoppingBag className="h-5 w-5 text-foreground" />
+                  <span className="font-display text-foreground">Add to Cart</span>
+                </div>
+                <div className="flex-1 h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                  <ShoppingCart className="h-5 w-5 text-black" />
+                  <span className="font-display font-bold text-black">Buy Now</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex gap-3">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 font-display gap-2 border-2"
+                    onClick={handleAddToCart}
+                    disabled={!pricingReady}
+                    data-testid="button-add-to-cart"
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    Add to Cart
+                  </Button>
+                  <Button
+                    size="lg"
+                    className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
+                      purchaseType === "subscription"
+                        ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
+                        : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                    }`}
+                    onClick={handleBuyNow}
+                    disabled={!pricingReady}
+                    data-testid="button-buy-now"
+                  >
+                    {purchaseType === "subscription" ? (
+                      <><Repeat className="h-5 w-5" />Subscribe</>
+                    ) : (
+                      <><ShoppingCart className="h-5 w-5" />Buy Now</>
+                    )}
+                  </Button>
+                </div>
+                {purchaseType === "subscription" && (
+                  <p className="text-[10px] text-center text-muted-foreground mt-2">
+                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+                  </p>
                 )}
-              </Button>
-            </div>
-
-            {purchaseType === "subscription" && (
-              <p className="text-[10px] text-center text-muted-foreground mt-2">
-                Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
-              </p>
+              </>
             )}
 
             <Separator className="my-6" />
@@ -452,24 +480,26 @@ export default function BundleDetail() {
       </div>
 
       {/* Sticky Mobile Add-to-Cart Bar */}
-      <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile-bundle">
-        <div className="flex items-center gap-3 max-w-lg mx-auto">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">{bundle.name}</p>
-            <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getDiscountedPrice().toFixed(2)}` : "—"}</p>
+      {!softGated && (
+        <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile-bundle">
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">{bundle.name}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getDiscountedPrice().toFixed(2)}` : "—"}</p>
+            </div>
+            <Button
+              size="lg"
+              className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              onClick={handleAddToCart}
+              disabled={!pricingReady}
+              data-testid="button-sticky-add-to-cart-bundle"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              Add to Cart
+            </Button>
           </div>
-          <Button
-            size="lg"
-            className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
-            onClick={handleAddToCart}
-            disabled={!pricingReady}
-            data-testid="button-sticky-add-to-cart-bundle"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            Add to Cart
-          </Button>
         </div>
-      </div>
+      )}
     </main>
   );
 }
