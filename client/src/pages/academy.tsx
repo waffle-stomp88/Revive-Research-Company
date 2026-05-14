@@ -1130,6 +1130,74 @@ export default function Academy() {
                     );
                   }
 
+                  // Signed-in users who haven't finished the preceding module see a progress-gate teaser.
+                  if (user && !isModuleUnlocked) {
+                    const prevModule = CURRICULUM[moduleIndex - 1];
+                    return (
+                      <motion.div
+                        key={module.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: moduleIndex * 0.1 }}
+                      >
+                        <BlurredGate
+                          previewContent={
+                            <Card className="bg-white/5 border-white/10 overflow-hidden">
+                              <div className="p-6">
+                                <div className="flex items-center gap-4 mb-4">
+                                  <div
+                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                    style={{ backgroundColor: `${module.color}20` }}
+                                  >
+                                    <Icon className="w-6 h-6" style={{ color: module.color }} />
+                                  </div>
+                                  <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white">{module.title}</h3>
+                                    <p className="text-sm text-white/60">{module.description}</p>
+                                  </div>
+                                  <ProgressRing progress={0} size={50} color={module.color} />
+                                </div>
+                                <div className="space-y-2">
+                                  {module.lessons.map((lesson) => (
+                                    <div
+                                      key={lesson.id}
+                                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5 opacity-50"
+                                    >
+                                      <Lock className="w-5 h-5 text-white/20 flex-shrink-0" />
+                                      <span className="flex-1 text-white/80">{lesson.title}</span>
+                                      <Badge variant="secondary" className="text-xs bg-white/10 text-white/60">
+                                        +{lesson.xp} XP
+                                      </Badge>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </Card>
+                          }
+                          title=""
+                          description=""
+                          testId={`blurred-gate-module-${module.id}`}
+                          customOverlay={
+                            <div
+                              className="rounded-xl border border-white/10 bg-[#1a1a1f]/80 backdrop-blur-sm px-5 py-4 text-center"
+                              data-testid={`progress-gate-module-${module.id}`}
+                            >
+                              <Lock className="w-5 h-5 text-[#E7FB10]/70 mx-auto mb-2" />
+                              <p className="text-sm font-semibold text-white leading-snug mb-1">
+                                Complete the previous module to unlock this one
+                              </p>
+                              {prevModule && (
+                                <p className="text-xs text-white/50">
+                                  Finish <span className="text-white/80">{prevModule.title}</span> first to continue
+                                </p>
+                              )}
+                            </div>
+                          }
+                        />
+                      </motion.div>
+                    );
+                  }
+
                   return (
                     <motion.div
                       key={module.id}

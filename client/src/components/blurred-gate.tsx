@@ -5,9 +5,10 @@ interface BlurredGateProps {
   title: string;
   description: string;
   testId?: string;
+  customOverlay?: React.ReactNode;
 }
 
-export function BlurredGate({ previewContent, title, description, testId }: BlurredGateProps) {
+export function BlurredGate({ previewContent, title, description, testId, customOverlay }: BlurredGateProps) {
   return (
     <div className="relative py-4 overflow-hidden" data-testid={testId}>
       <div className="blur-sm pointer-events-none select-none opacity-75" aria-hidden="true">
@@ -16,7 +17,7 @@ export function BlurredGate({ previewContent, title, description, testId }: Blur
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1a1f]/60 to-[#1a1a1f]" />
       <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4 pt-24">
         <div className="w-full max-w-sm">
-          <AuthGate inline inlineTitle={title} inlineDescription={description} />
+          {customOverlay ?? <AuthGate inline inlineTitle={title} inlineDescription={description} />}
         </div>
       </div>
     </div>
