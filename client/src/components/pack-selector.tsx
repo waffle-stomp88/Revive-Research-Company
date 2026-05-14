@@ -1,23 +1,8 @@
 import { Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
-
-export const PACK_TIERS = [
-  { qty: 1, label: "1 vial", discount: 0, popular: false },
-  { qty: 3, label: "3-pack", discount: 0.10, popular: false },
-  { qty: 5, label: "5-pack", discount: 0.15, popular: true },
-  { qty: 10, label: "10-pack", discount: 0.20, popular: false },
-] as const;
-
-export type PackQty = 1 | 3 | 5 | 10;
-
-export function getPackPerVialPrice(basePrice: number, discount: number): number {
-  return basePrice * (1 - discount);
-}
-
-export function getPackTotalPrice(basePrice: number, qty: PackQty): number {
-  const tier = PACK_TIERS.find(t => t.qty === qty)!;
-  return getPackPerVialPrice(basePrice, tier.discount) * qty;
-}
+import { PACK_TIERS, getPackPerVialPrice } from "@/lib/pack-tiers";
+export type { PackQty } from "@/lib/pack-tiers";
+export { getPackTotalPrice } from "@/lib/pack-tiers";
 
 interface PackSelectorProps {
   basePrice: number;
@@ -31,7 +16,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
   return (
     <div data-testid="pack-selector">
       <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-2">Pack Size</p>
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-1">
         {PACK_TIERS.map((tier) => {
           const isSelected = selectedQty === tier.qty;
           const perVialActual = getPackPerVialPrice(basePrice, tier.discount);
@@ -44,7 +29,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               disabled={disabled}
               onClick={() => onSelect(tier.qty as PackQty)}
               data-testid={`pack-option-${tier.qty}`}
-              className="relative w-full flex items-center gap-3 px-3 py-3 rounded-md transition-all duration-200 text-left overflow-hidden"
+              className="relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 text-left overflow-hidden"
               style={{
                 background: isSelected ? "#1a1a22" : "#111118",
                 border: isSelected ? "1.5px solid #E7FB10" : "1.5px solid #1e1e2a",

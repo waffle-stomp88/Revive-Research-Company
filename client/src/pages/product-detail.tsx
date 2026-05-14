@@ -79,8 +79,9 @@ import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
 import { SoftGateBanner } from "@/components/soft-gate-banner";
-import { PackSelector, OrderSummary, getPackTotalPrice } from "@/components/pack-selector";
-import type { PackQty } from "@/components/pack-selector";
+import { PackSelector, OrderSummary } from "@/components/pack-selector";
+import { PACK_TIERS, getPackTotalPrice } from "@/lib/pack-tiers";
+import type { PackQty } from "@/lib/pack-tiers";
 import { AuthGate } from "@/components/auth-gate";
 import { BlurredGate } from "@/components/blurred-gate";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -979,7 +980,7 @@ export default function ProductDetail() {
               );
             })()}
 
-            <div className="mb-2 md:mb-3" data-testid="text-product-price">
+            <div className="mb-2" data-testid="text-product-price">
               {(!softGateEnabled || isAuthenticated) && (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">
@@ -1002,7 +1003,7 @@ export default function ProductDetail() {
 
 
 
-            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]" data-testid="box-dosage">
+            <div className="border border-border/50 rounded-lg p-3 mb-2 bg-white/[0.06]" data-testid="box-dosage">
               <div className="grid grid-cols-2 gap-3">
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div>
@@ -1093,7 +1094,7 @@ export default function ProductDetail() {
 
             {/* Pack Size Selector */}
             {!isOutOfStock && (
-              <div className="mb-3 md:mb-4">
+              <div className="mb-2">
                 <PackSelector
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
@@ -1106,7 +1107,7 @@ export default function ProductDetail() {
 
             {/* Order Summary */}
             {!isOutOfStock && (
-              <div className="mb-3 md:mb-4">
+              <div className="mb-2">
                 <OrderSummary
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
@@ -1121,7 +1122,7 @@ export default function ProductDetail() {
 
 
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
               {!isOutOfStock && (
                 <span className="flex items-center gap-1">
                   {displayStockAmount > 0 && displayStockAmount <= 10 ? (
@@ -1139,7 +1140,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
@@ -2239,7 +2240,8 @@ export default function ProductDetail() {
               <p className="font-display font-bold truncate max-w-xs">{product.name}</p>
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-sm text-muted-foreground">{selectedDosage}</span>
-                <span className="font-bold text-[#E7FB10]">${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</span>
+                <span className="text-sm text-muted-foreground">{packQty === 1 ? `${effectiveQty} vial${effectiveQty > 1 ? "s" : ""}` : PACK_TIERS.find(t => t.qty === packQty)?.label}</span>
+                <span className="font-bold text-[#E7FB10]">${effectiveTotal}</span>
                 <Button
                   onClick={handleAddToCart}
                   className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
@@ -2260,7 +2262,7 @@ export default function ProductDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{product.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">${effectiveTotal}</p>
             </div>
             <Button
               size="lg"
@@ -2269,7 +2271,7 @@ export default function ProductDetail() {
               data-testid="button-sticky-add-to-cart"
             >
               <ShoppingBag className="h-5 w-5" />
-              Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
+              Add to Cart — ${effectiveTotal}
             </Button>
           </div>
         </div>
