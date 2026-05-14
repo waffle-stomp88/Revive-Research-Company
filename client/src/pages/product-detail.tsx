@@ -59,7 +59,8 @@ import {
   Heart,
   ArrowUp,
   Check,
-  Sparkles
+  Sparkles,
+  Lock
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -77,6 +78,7 @@ import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
+import { SoftGateBanner } from "@/components/soft-gate-banner";
 import { AuthGate } from "@/components/auth-gate";
 import { BlurredGate } from "@/components/blurred-gate";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -810,6 +812,8 @@ export default function ProductDetail() {
           )}
         </motion.div>
 
+        {softGateEnabled && !isAuthenticated && <SoftGateBanner />}
+
         <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
           <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
             {product.name}
@@ -965,34 +969,9 @@ export default function ProductDetail() {
 
             <div className="mb-2 md:mb-3">
               {softGateEnabled && !isAuthenticated ? (
-                <div data-testid="text-product-price">
-                  <BlurredGate
-                    previewContent={(() => {
-                      const blurBase = getBasePrice();
-                      const blurOriginal = getOriginalPrice();
-                      const blurSavePct = blurOriginal && blurOriginal > blurBase
-                        ? Math.round((1 - blurBase / blurOriginal) * 100)
-                        : 0;
-                      return (
-                        <div className="flex items-baseline gap-2 flex-wrap">
-                          <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">${blurBase.toFixed(2)}</span>
-                          {blurOriginal && (
-                            <>
-                              <span className="text-sm text-muted-foreground line-through">${blurOriginal.toFixed(2)}</span>
-                              {blurSavePct > 0 && (
-                                <span className="text-xs font-medium text-[#E7FB10]/80 px-1.5 py-0.5 rounded bg-[#E7FB10]/10">
-                                  Save {blurSavePct}%
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      );
-                    })()}
-                    title="Sign in to see pricing"
-                    description="Create a free account to unlock verified pricing and place orders."
-                    testId="blurred-gate-price"
-                  />
+                <div data-testid="text-product-price" className="flex items-center gap-2 py-1 mb-1">
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1065" }} />
+                  <span className="text-sm" style={{ color: "#6b7280" }}>Sign in to see pricing</span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
@@ -1195,24 +1174,19 @@ export default function ProductDetail() {
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
               softGateEnabled && !isAuthenticated ? (
-                <div data-testid="stack-cta">
-                  <BlurredGate
-                    previewContent={
-                      <div className="flex flex-col gap-2">
-                        <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
-                          <ShoppingCart className="h-5 w-5 text-black" />
-                          <span className="font-display font-bold text-black">Buy Now</span>
-                        </div>
-                        <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
-                          <ShoppingBag className="h-5 w-5 text-foreground" />
-                          <span className="font-display text-foreground">Add to Cart</span>
-                        </div>
-                      </div>
-                    }
-                    title="Create an account to order"
-                    description="Sign up free to unlock pricing, place orders, and access your research dashboard."
-                    testId="blurred-gate-purchase"
-                  />
+                <div
+                  className="blur-sm pointer-events-none select-none opacity-40 flex flex-col gap-2"
+                  aria-hidden="true"
+                  data-testid="stack-cta"
+                >
+                  <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                    <ShoppingCart className="h-5 w-5 text-black" />
+                    <span className="font-display font-bold text-black">Buy Now</span>
+                  </div>
+                  <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
+                    <ShoppingBag className="h-5 w-5 text-foreground" />
+                    <span className="font-display text-foreground">Add to Cart</span>
+                  </div>
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">

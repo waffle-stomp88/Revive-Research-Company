@@ -1,31 +1,22 @@
-import { AuthGate } from "@/components/auth-gate";
-
 interface BlurredGateProps {
   previewContent: React.ReactNode;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   testId?: string;
-  customOverlay?: React.ReactNode;
 }
 
-export function BlurredGate({ previewContent, title, description, testId, customOverlay }: BlurredGateProps) {
+export function BlurredGate({ previewContent, testId }: BlurredGateProps) {
   return (
-    <div className="relative" data-testid={testId}>
-      {/* Blurred preview — fades out at the bottom */}
-      <div className="relative overflow-hidden">
-        <div className="blur-sm pointer-events-none select-none opacity-50" aria-hidden="true">
-          {previewContent}
-        </div>
-        {/* Gradient wipe over the blurred content */}
-        <div className="absolute inset-0" style={{
-          background: "linear-gradient(to bottom, transparent 10%, #1a1a1f90 60%, #1a1a1f 100%)"
-        }} />
+    <div className="relative rounded-xl overflow-hidden" data-testid={testId}>
+      <div className="blur-sm pointer-events-none select-none opacity-40" aria-hidden="true">
+        {previewContent}
       </div>
-
-      {/* Gate card — always fully visible, in flow below blur */}
-      <div className="relative -mt-2 px-1 pb-2">
-        {customOverlay ?? <AuthGate inline inlineTitle={title} inlineDescription={description} />}
-      </div>
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "linear-gradient(to bottom, transparent 0%, #1a1a1f80 55%, #1a1a1f 100%)",
+        }}
+      />
     </div>
   );
 }
