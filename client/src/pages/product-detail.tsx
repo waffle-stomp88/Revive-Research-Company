@@ -180,6 +180,7 @@ export default function ProductDetail() {
   const softGateEnabled = SOFT_GATE_ENABLED;
   const [quantity, setQuantity] = useState(1);
   const [packQty, setPackQty] = useState<PackQty>(1);
+  const [singleVialQty, setSingleVialQty] = useState(1);
   // Capture the dosage query param once at mount so URL mutations (e.g. UUID→slug
   // replaceState) cannot invalidate it on a subsequent render.
   const urlDosageParamRef = useRef(new URLSearchParams(window.location.search).get("dosage") || "");
@@ -598,7 +599,7 @@ export default function ProductDetail() {
         name: product.name,
         price: packPerVialPrice,
         originalPrice: getOriginalPrice() || undefined,
-        quantity: packQty,
+        quantity: effectiveQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
         isSubscription: isSubPurchase,
@@ -621,7 +622,7 @@ export default function ProductDetail() {
         name: product.name,
         price: packPerVialPrice,
         originalPrice: getOriginalPrice() || undefined,
-        quantity: packQty,
+        quantity: effectiveQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
         isSubscription: isSubPurchase,
@@ -634,8 +635,8 @@ export default function ProductDetail() {
       toast({
         title: isSubPurchase ? "Subscription added to cart" : "Added to cart",
         description: isSubPurchase 
-          ? `${packQty}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
-          : `${packQty}x ${product.name} (${selectedDosage}) added to your cart.`,
+          ? `${effectiveQty}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
+          : `${effectiveQty}x ${product.name} (${selectedDosage}) added to your cart.`,
         action: (
           <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
             View Cart
@@ -741,7 +742,13 @@ export default function ProductDetail() {
 
   // Get current selected dosage stock info
   const selectedDosageStock = getDosageStockInfo(selectedDosage);
-  
+
+  // Effective quantity and total — placed here so getBasePrice() (which uses hasDosageStockData) is safe
+  const effectiveQty = packQty === 1 ? singleVialQty : packQty;
+  const effectiveTotal = packQty === 1
+    ? Math.round(getBasePrice()) * singleVialQty
+    : Math.round(getPackTotalPrice(getBasePrice(), packQty));
+
   // Out-of-stock check: trust the product-level inStock flag first.
   // If the product itself is OOS, show full OOS treatment immediately (no loading needed).
   // If the product is in-stock, only mark OOS when dosage stock data has loaded AND
@@ -984,10 +991,10 @@ export default function ProductDetail() {
               )}
               {softGateEnabled && !isAuthenticated && (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{
-                  background: "#E7FB100d",
-                  border: "1px solid #E7FB1025",
+                  background: "#21d8ff0d",
+                  border: "1px solid #21d8ff25",
                 }}>
-                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
                   <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
                 </div>
               )}
@@ -1059,10 +1066,45 @@ export default function ProductDetail() {
                 <PackSelector
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
-                  onSelect={setPackQty}
+                  onSelect={(qty) => { setPackQty(qty); if (qty !== 1) setSingleVialQty(1); }}
                   softGated={softGateEnabled && !isAuthenticated}
                   disabled={isOutOfStock}
                 />
+              </div>
+            )}
+
+            {/* Single-vial quantity stepper — only when 1 vial is selected */}
+            {!isOutOfStock && packQty === 1 && (
+              <div className="mb-3 md:mb-4 flex items-center justify-between">
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">Quantity</span>
+                <div className="flex items-center gap-0">
+                  <button
+                    type="button"
+                    onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
+                    disabled={singleVialQty <= 1}
+                    data-testid="button-qty-minus"
+                    className="w-8 h-8 rounded-l-md border border-[#2a2a36] flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-[#3a3a4a] disabled:opacity-40 transition-colors"
+                    style={{ background: "#111118" }}
+                  >
+                    <span className="text-sm leading-none select-none">−</span>
+                  </button>
+                  <span
+                    data-testid="text-qty-value"
+                    className="w-10 h-8 border-y border-[#2a2a36] flex items-center justify-center text-sm font-medium text-foreground"
+                    style={{ background: "#111118" }}
+                  >
+                    {singleVialQty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSingleVialQty(q => q + 1)}
+                    data-testid="button-qty-plus"
+                    className="w-8 h-8 rounded-r-md border border-[#2a2a36] flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-[#3a3a4a] transition-colors"
+                    style={{ background: "#111118" }}
+                  >
+                    <span className="text-sm leading-none select-none">+</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1072,6 +1114,7 @@ export default function ProductDetail() {
                 <OrderSummary
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
+                  singleVialQty={singleVialQty}
                   productName={product?.name ?? ""}
                   dosage={selectedDosage}
                   stockAmount={displayStockAmount}
@@ -1088,7 +1131,7 @@ export default function ProductDetail() {
                   <div 
                     className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
                       purchaseType === "one-time" 
-                        ? "border-[#E7FB10] bg-[#E7FB10]/5" 
+                        ? "border-white/25 bg-white/5" 
                         : "border-border hover:border-border/80"
                     }`}
                     onClick={() => setPurchaseType("one-time")}
@@ -1101,8 +1144,8 @@ export default function ProductDetail() {
                       </div>
                     </div>
                     {purchaseType === "one-time" && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
-                        <Check className="h-3 w-3 text-black" />
+                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
+                        <Check className="h-3 w-3 text-white" />
                       </div>
                     )}
                   </div>
@@ -1200,9 +1243,9 @@ export default function ProductDetail() {
                   data-testid="button-buy-now"
                 >
                   {purchaseType === "subscription" ? (
-                    <><Repeat className="h-5 w-5" />Subscribe Now — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</>
+                    <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
                   ) : (
-                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</>
+                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
                   )}
                 </Button>
                 <Button
@@ -1213,7 +1256,7 @@ export default function ProductDetail() {
                   data-testid="button-add-to-cart"
                 >
                   <ShoppingBag className="h-5 w-5" />
-                  Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
+                  Add to Cart — ${effectiveTotal}
                 </Button>
                 <Button
                   size="sm"
@@ -2252,7 +2295,7 @@ export default function ProductDetail() {
                   data-testid="button-sticky-purchase-add-to-cart"
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
+                  Add to Cart — ${effectiveTotal}
                 </Button>
               </div>
             </div>
