@@ -11,7 +11,7 @@ export function SoftGateBanner() {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="mb-6 rounded-lg px-4 py-3 flex items-center gap-3 flex-wrap"
+      className="mb-6 rounded-lg px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center"
       style={{
         background: "linear-gradient(135deg, #1c1c26, #141419)",
         border: "1px solid #E7FB1038",
@@ -19,9 +19,9 @@ export function SoftGateBanner() {
       }}
       data-testid="banner-soft-gate"
     >
-      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+      <div className="flex items-start gap-2.5 flex-1 min-w-0">
         <div
-          className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+          className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
           style={{ background: "#E7FB1015", border: "1px solid #E7FB1040" }}
         >
           <Lock className="w-3.5 h-3.5" style={{ color: "#E7FB10" }} />
@@ -35,7 +35,7 @@ export function SoftGateBanner() {
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => setLocation(`/login?returnTo=${returnTo}`)}
-          className="h-8 px-3 rounded-md text-xs font-medium text-gray-300 hover:text-white border border-white/10 hover:border-white/20 transition-colors"
+          className="flex-1 md:flex-none h-8 px-3 rounded-md text-xs font-medium text-gray-300 hover:text-white border border-white/10 hover:border-white/20 transition-colors text-center"
           style={{ background: "#ffffff08" }}
           data-testid="button-gate-banner-signin"
         >
@@ -43,12 +43,12 @@ export function SoftGateBanner() {
         </button>
         <button
           onClick={() => setLocation(`/login?returnTo=${returnTo}&mode=signup`)}
-          className="h-8 px-3 rounded-md text-xs font-bold text-black flex items-center gap-1.5 hover:opacity-90 transition-opacity"
+          className="flex-1 md:flex-none h-8 px-3 rounded-md text-xs font-bold text-black flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity"
           style={{ background: "#E7FB10" }}
           data-testid="button-gate-banner-create"
         >
           Create Free Account
-          <ArrowRight className="w-3 h-3" />
+          <ArrowRight className="w-3 h-3 flex-shrink-0" />
         </button>
       </div>
     </motion.div>
