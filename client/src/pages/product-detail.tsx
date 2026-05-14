@@ -1174,18 +1174,20 @@ export default function ProductDetail() {
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
               softGateEnabled && !isAuthenticated ? (
-                <div
-                  className="blur-sm pointer-events-none select-none opacity-40 flex flex-col gap-2"
-                  aria-hidden="true"
-                  data-testid="stack-cta"
-                >
-                  <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-black" />
-                    <span className="font-display font-bold text-black">Buy Now</span>
-                  </div>
-                  <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
-                    <ShoppingBag className="h-5 w-5 text-foreground" />
-                    <span className="font-display text-foreground">Add to Cart</span>
+                <div data-testid="auth-gate-inline">
+                  <div
+                    className="blur-sm pointer-events-none select-none opacity-40 flex flex-col gap-2"
+                    aria-hidden="true"
+                    data-testid="stack-cta"
+                  >
+                    <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                      <ShoppingCart className="h-5 w-5 text-black" />
+                      <span className="font-display font-bold text-black">Buy Now</span>
+                    </div>
+                    <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
+                      <ShoppingBag className="h-5 w-5 text-foreground" />
+                      <span className="font-display text-foreground">Add to Cart</span>
+                    </div>
                   </div>
                 </div>
               ) : (
