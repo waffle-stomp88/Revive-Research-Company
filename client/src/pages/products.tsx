@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearch, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -50,7 +51,8 @@ import {
   MessageCircle,
   ArrowUp,
   Check,
-  BookOpen
+  BookOpen,
+  Lock
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -175,9 +177,11 @@ const getPeptideGroup = (productName: string): { id: string; label: string; colo
 type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
 const PRODUCTS_SCROLL_KEY = 'products_page_scroll';
+const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 function ProductsComponent() {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   // URL-driven filter state
   const rawSearch = useSearch();
@@ -1057,12 +1061,19 @@ function ProductsComponent() {
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
-                                  <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#E7FB10]">
-                                    {product.minPrice && product.maxPrice
-                                      ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
-                                      : `$${Number(product.price).toFixed(2)}`
-                                    }
-                                  </span>
+                                  {SOFT_GATE_ENABLED && !isAuthenticated ? (
+                                    <span className="flex items-center gap-1.5 text-[13px] text-muted-foreground font-medium">
+                                      <Lock className="w-3 h-3 shrink-0" />
+                                      Sign in to see pricing
+                                    </span>
+                                  ) : (
+                                    <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#E7FB10]">
+                                      {product.minPrice && product.maxPrice
+                                        ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
+                                        : `$${Number(product.price).toFixed(2)}`
+                                      }
+                                    </span>
+                                  )}
                                 </div>
                                 {isOutOfStock && (
                                   <div className="flex items-center justify-center gap-1 mt-1" data-testid={`stock-indicator-${product.id}`}>
