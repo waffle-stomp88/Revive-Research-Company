@@ -2126,15 +2126,15 @@ export default function ProductDetail() {
                           return (
                             <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                               <Card
-                                className="p-4 cursor-pointer hover-elevate h-full transition-shadow duration-300"
+                                className="p-3 sm:p-4 cursor-pointer hover-elevate h-full transition-shadow duration-300"
                                 style={{
                                   borderColor: tier.border,
                                   ...(isLegendary ? { boxShadow: `0 0 12px ${tier.bg}, 0 0 4px ${tier.bg}` } : {}),
                                 }}
                                 data-testid={`card-synergy-${partnerProduct.id}`}
                               >
-                                <div className="flex flex-wrap items-start gap-4 h-full">
-                                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
+                                <div className="flex items-start gap-3 h-full">
+                                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
                                     <img
                                       src={partnerProduct.imageUrl || productImage}
                                       alt={partnerProduct.name}
@@ -2147,28 +2147,30 @@ export default function ProductDetail() {
                                       {partnerProduct.name}
                                     </p>
                                     {partnerSynergy && (
-                                      <Badge
-                                        className="mt-2 text-xs no-default-hover-elevate no-default-active-elevate"
-                                        style={{ backgroundColor: tier.bg, color: tier.color, borderColor: tier.border }}
-                                        data-testid={`badge-synergy-stack-${partnerProduct.id}`}
-                                      >
-                                        <Zap className="h-3 w-3 mr-1" />
-                                        {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}% {tier.label}
-                                      </Badge>
+                                      <div className="mt-1.5 self-start max-w-full">
+                                        <Badge
+                                          className="text-[10px] no-default-hover-elevate no-default-active-elevate truncate max-w-full"
+                                          style={{ backgroundColor: tier.bg, color: tier.color, borderColor: tier.border }}
+                                          data-testid={`badge-synergy-stack-${partnerProduct.id}`}
+                                        >
+                                          <Zap className="h-2.5 w-2.5 mr-1 flex-shrink-0" />
+                                          <span className="truncate">{partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}% {tier.label}</span>
+                                        </Badge>
+                                      </div>
                                     )}
                                     {pairingReason && (
-                                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
+                                      <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 flex-1" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
                                         {pairingReason.mechanism}
                                       </p>
                                     )}
                                     {!pairingReason && <div className="flex-1" />}
-                                    <div className="flex items-center justify-between mt-2 mt-auto gap-2">
+                                    <div className="flex items-center justify-between mt-2 gap-2">
                                       <p className="text-sm font-bold text-[#E7FB10]" data-testid={`text-synergy-price-${partnerProduct.id}`}>
                                         {(() => {
                                           const displayPrice = Number(partnerProduct.price) > 0
                                             ? Number(partnerProduct.price)
                                             : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
-                                          return displayPrice > 0 ? <>From ${displayPrice.toFixed(2)}</> : null;
+                                          return displayPrice > 0 ? <>From ${Math.round(displayPrice)}</> : null;
                                         })()}
                                       </p>
                                       {partnerProduct.inStock !== false && (partnerProduct.stockAmount === null || partnerProduct.stockAmount === undefined || partnerProduct.stockAmount > 0) && (
