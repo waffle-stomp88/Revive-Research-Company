@@ -1022,7 +1022,6 @@ export default function ProductDetail() {
                         })
                         .map((dosage) => {
                         const dosageStock = getDosageStockInfo(dosage);
-                        // Only apply dosage-level stock restrictions if we have dosage stock data
                         const isDosageOutOfStock = hasDosageStockData && dosageStock 
                           ? (!dosageStock.inStock || dosageStock.stockAmount <= 0) 
                           : false;
@@ -1057,6 +1056,38 @@ export default function ProductDetail() {
                 </div>
               )}
 
+              {/* Quantity stepper — right column, only for single-vial */}
+              {packQty === 1 && !isOutOfStock && (
+                <div>
+                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
+                  <div className="flex items-center h-9">
+                    <button
+                      type="button"
+                      onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
+                      disabled={singleVialQty <= 1}
+                      data-testid="button-qty-minus"
+                      className="w-9 h-9 rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
+                    >
+                      <span className="text-sm leading-none select-none">−</span>
+                    </button>
+                    <span
+                      data-testid="text-qty-value"
+                      className="w-10 h-9 border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
+                    >
+                      {singleVialQty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSingleVialQty(q => q + 1)}
+                      data-testid="button-qty-plus"
+                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
+                    >
+                      <span className="text-sm leading-none select-none">+</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               </div>
             </div>
 
@@ -1070,41 +1101,6 @@ export default function ProductDetail() {
                   softGated={softGateEnabled && !isAuthenticated}
                   disabled={isOutOfStock}
                 />
-              </div>
-            )}
-
-            {/* Single-vial quantity stepper — only when 1 vial is selected */}
-            {!isOutOfStock && packQty === 1 && (
-              <div className="mb-3 md:mb-4 flex items-center justify-between">
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">Quantity</span>
-                <div className="flex items-center gap-0">
-                  <button
-                    type="button"
-                    onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
-                    disabled={singleVialQty <= 1}
-                    data-testid="button-qty-minus"
-                    className="w-8 h-8 rounded-l-md border border-[#2a2a36] flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-[#3a3a4a] disabled:opacity-40 transition-colors"
-                    style={{ background: "#111118" }}
-                  >
-                    <span className="text-sm leading-none select-none">−</span>
-                  </button>
-                  <span
-                    data-testid="text-qty-value"
-                    className="w-10 h-8 border-y border-[#2a2a36] flex items-center justify-center text-sm font-medium text-foreground"
-                    style={{ background: "#111118" }}
-                  >
-                    {singleVialQty}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSingleVialQty(q => q + 1)}
-                    data-testid="button-qty-plus"
-                    className="w-8 h-8 rounded-r-md border border-[#2a2a36] flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-[#3a3a4a] transition-colors"
-                    style={{ background: "#111118" }}
-                  >
-                    <span className="text-sm leading-none select-none">+</span>
-                  </button>
-                </div>
               </div>
             )}
 
@@ -1123,51 +1119,6 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Purchase Options - Hidden when out of stock */}
-            {!isOutOfStock && (
-              <div className="mb-3 md:mb-4">
-                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Purchase Option</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <div 
-                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      purchaseType === "one-time" 
-                        ? "border-white/25 bg-white/5" 
-                        : "border-border hover:border-border/80"
-                    }`}
-                    onClick={() => setPurchaseType("one-time")}
-                    data-testid="option-one-time"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <ShoppingCart className="h-3.5 w-3.5" />
-                        <span className="font-medium text-sm">One-time</span>
-                      </div>
-                    </div>
-                    {purchaseType === "one-time" && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
-                        <Check className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div 
-                    className="relative flex items-center p-3 rounded-lg border-2 border-border/40 opacity-50 cursor-not-allowed select-none"
-                    data-testid="option-subscription"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <Repeat className="h-3.5 w-3.5" />
-                        <span className="font-medium text-sm">Subscribe</span>
-                        <Badge variant="secondary" className="text-[10px] px-1 py-0">Coming Soon</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Auto-delivery
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
