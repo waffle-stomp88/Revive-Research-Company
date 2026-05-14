@@ -1,0 +1,203 @@
+# Premium Volume Pricing — Implementation Brief
+
+**Priority:** High — ship with soft gate implementation  
+**Scope:** Consolidate separate Bulk Packs page into product page pack selector; redesign pricing display to match premium brand positioning  
+**Research basis:** Consumer psychology pricing studies (sources cited inline)
+
+---
+
+## Executive Summary
+
+We are eliminating the separate Bulk Packs page and integrating pack selection directly into each product page. Simultaneously, we are redesigning how pricing is displayed to align with premium brand psychology — removing all discount/sale language and replacing it with clean volume pricing that lets the math speak for itself.
+
+The current Bulk Packs page uses flat percentage discount language ("Save 10%", "Save 15%", "15% off") with green badges and strikethrough prices. This is the visual language of clearance sales and coupon culture. It directly contradicts our premium positioning and trains customers to expect discounts — the same psychology as coupon codes, which we have explicitly committed to never offering.
+
+---
+
+## Why This Change Matters
+
+### The research on premium vs. value pricing display
+
+Consumer psychology research draws a clear line between how premium and value brands should display pricing:
+
+**Premium brands use rounded, clean numbers.** Luxury brands like Chanel, Rolex, and Apple avoid charm pricing ($X.99) and use rounded numbers ($500, $1,000) because even-numbered pricing "is processed more fluently and feels more appropriate for high-end offerings" (Prisync, 2026). Charm pricing ($67.99) signals "deal" and "bargain hunting." Rounded pricing ($68) signals confidence and quality.
+
+**Price anchoring works without sale language.** Showing a higher reference price next to lower-tier prices "doesn't require aggressive discounting — it simply frames value clearly" (Vivid Candi, 2026). The single-vial price serves as the natural anchor. Every pack tier below it looks better by comparison without saying "Save X%."
+
+**The compromise effect drives selection to the middle option.** "The middle option often gets selected most frequently when you present three choices" (Prisync, 2026). With four pack options (1, 3, 5, 10), the 5-pack becomes the natural compromise between 3 and 10. A "Popular" badge reinforces this without using sale language.
+
+**Volume pricing delivers 10-25% conversion lifts for consumable goods** (MBC Builder, 2025). Peptides are consumable and replenishable, so volume pricing is proven effective in this category. The question is not whether to offer it — it's how to present it without cheapening the brand.
+
+**The JCPenney cautionary tale works both ways.** JCPenney eliminated sales in favor of "fair pricing" and lost 25% of revenue because customers "often need to feel like they're getting a deal" (Price2Spy, 2025). However, JCPenney was a value brand whose customers expected sales. Revive Research is positioning as premium. The lesson: match your pricing display to your brand positioning, not to generic retail advice.
+
+### What competitors do (and why we should differ)
+
+Every peptide vendor's bulk page uses the same pattern: green percentage badges, strikethrough prices, "Save $X.XX" callouts. This is commodity retail language. When a researcher sees "Save 15% — 15% off" on our site, they subconsciously categorize us with every other vendor running the same playbook. The platform differentiation we've built (Synergy Engine, Research Academy, COA verification) gets undermined by pricing that screams "we're just another vendor competing on price."
+
+---
+
+## What Changes
+
+### 1. Eliminate the separate Bulk Packs page
+
+**Remove:** The `/bulk` or `/bulk-packs` page and its navigation tab.
+
+**Replace with:** Pack size selection integrated directly into each product page's purchase section. The "Bulk Packs" tab in the shop navigation can either be removed entirely or redirected to the main products page.
+
+**Why:** A separate bulk page fragments the buying experience. The customer has to discover it exists, navigate there, and find the same product they were already looking at. Most won't bother. Putting the pack selector on the product page means the customer sees the volume value proposition at the exact moment they're ready to buy.
+
+### 2. Redesign pricing display
+
+**Remove all of the following from the entire site:**
+- "Save $X.XX" callouts
+- "X% off" badges or text
+- Strikethrough prices (~~$339.95~~)
+- Green "savings" text
+- "Best Value" labels (replace with "Popular")
+- "Save 10% / Save 15% / Save 20%" on pack selectors
+- "Volume Pricing" badge/header
+
+**Replace with:**
+- Clean per-vial prices at each tier
+- Rounded dollar amounts (no cents)
+- A single factual comparison line in the order summary only
+
+### 3. Round all prices to whole dollars
+
+**Current:** $67.99, $61.19, $57.79, $54.39  
+**New:** $68, $61, $58, $54
+
+This applies to the display price on pack selectors and order summaries. The actual transaction amount can remain precise ($67.99) — the display rounds for premium presentation. If the actual transaction price must match the display, round the actual prices.
+
+---
+
+## Design Specification
+
+### Pack Selector Component
+
+**Layout:** Vertical radio-button list (not horizontal buttons). Each row shows pack name on the left, per-vial price on the right.
+
+```
+PACK SIZE
+
+○  1 vial                    $68 / vial
+○  3-pack                    $61 / vial
+●  5-pack          POPULAR   $58 / vial    ← selected, neon border
+○  10-pack                   $54 / vial
+```
+
+**Visual details:**
+- Each row is a card with dark background (#111118), border (#1e1e2a), rounded corners (8px)
+- Selected row has neon green border (#c8ff00) and filled radio indicator
+- Unselected rows have subtle border, empty radio circle
+- "Popular" badge on 5-pack: neon green background, black text, positioned top-right of the row
+- Per-vial price is white, 14px, font-weight 500
+- "/ vial" suffix is gray (#555), 10px, font-weight 400
+- No percentages, no strikethroughs, no savings callouts anywhere in the selector
+
+### Order Summary Component
+
+Appears below the pack selector. Updates dynamically when pack selection changes.
+
+```
+┌─────────────────────────────────────────┐
+│  5 × BPC-157 10mg            $58 / vial │
+│  ─────────────────────────────────────  │
+│  $290                  ✓ 18 in stock    │
+│                  $10 less per vial       │
+│                  than single             │
+└─────────────────────────────────────────┘
+```
+
+**Visual details:**
+- Dark card background (#111118), subtle border
+- Top line: item description (gray, 10px) and per-vial price (gray, 10px)
+- Divider: 0.5px border
+- Total price: white, 22px, font-weight 500
+- Stock indicator: green checkmark + "18 in stock" in green, 9px
+- Comparison line: "$10 less per vial than single" — gray (#555), 9px, right-aligned
+  - This line ONLY appears when a multi-pack is selected (not on single vial)
+  - It shows the dollar difference per vial, not a percentage
+  - It is factual ("$10 less per vial than single") not promotional ("Save $10!")
+
+### Add to Cart Button
+
+```
+[ 🛒 Add to Cart — $290 ]
+```
+
+- Neon green background (#c8ff00), black text, rounded corners (6px)
+- Always includes the total price on the button
+- Text: "Add to Cart — $[total]"
+
+### What the customer does NOT see
+
+- No strikethrough prices
+- No "Save $X" callouts
+- No "X% off" badges
+- No green savings text
+- No "was/now" comparisons
+- No "Volume Pricing" or "Bulk Discount" headers
+
+---
+
+## Price Rounding Rules
+
+All displayed prices use whole dollars. Apply these rules:
+
+- $67.99 → $68
+- $61.19 → $61
+- $57.79 → $58
+- $54.39 → $54
+
+For the order summary total, multiply the rounded per-vial price by the pack count:
+- 5-pack: 5 × $58 = $290
+
+**Decision needed:** Should the actual transaction price match the display (charge exactly $290), or should we display $290 but charge $288.96? Recommendation: charge the displayed amount ($290) for simplicity and premium feel. Charging a different amount than what's displayed creates confusion and feels deceptive.
+
+---
+
+## Implementation Notes
+
+### Data model
+
+No schema changes needed. The pack pricing already exists in the product data. This is purely a UI change in how it's displayed.
+
+### Pages affected
+
+- **Product detail pages** (`/peptides/:slug`): Add pack selector component
+- **Bulk Packs page** (`/bulk` or similar): Remove or redirect to `/peptides`
+- **Shop navigation**: Remove "Bulk Packs" tab or change to redirect
+- **Cart/checkout**: Ensure cart displays rounded prices consistently
+
+### Mobile behavior
+
+The vertical radio-button list works identically on mobile and desktop. No responsive changes needed beyond standard padding adjustments.
+
+### Interaction with soft gate
+
+For unauthenticated users (soft gate active):
+- Pack selector is visible but the prices are hidden behind the auth gate
+- The per-vial prices show "Sign in" or a lock icon
+- Pack names and structure remain visible (1 vial, 3-pack, 5-pack, 10-pack)
+- "Popular" badge on 5-pack remains visible
+
+---
+
+## What NOT To Do
+
+- Do NOT add "savings" language back in any form — no percentages, no dollar-off callouts, no green text
+- Do NOT use charm pricing ($XX.99) — use rounded numbers
+- Do NOT show a "before" price alongside the current price
+- Do NOT label this section "Volume Pricing" or "Bulk Discounts" — the section label is simply "PACK SIZE"
+- Do NOT make the 10-pack look like the obvious best deal with aggressive visual emphasis — the "Popular" badge stays on the 5-pack per the compromise effect research
+- Do NOT add a separate "bulk" or "wholesale" page — all pack options live on the product page
+
+---
+
+## Success Metrics
+
+- Average order value increases (more customers selecting multi-packs when it's right in front of them)
+- Bulk Packs page traffic drops to zero (page removed)
+- No decrease in multi-pack purchase rate compared to the old Bulk Packs page (if multi-pack rate drops, consider A/B testing the comparison line visibility)
+- Brand perception survey (future): customers should associate Revive with "premium" not "discounts"
