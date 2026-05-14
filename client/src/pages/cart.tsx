@@ -106,57 +106,59 @@ function CrossSellCard({
 
   return (
     <div
-      className="flex items-center gap-3 py-2.5 px-3 rounded-lg border border-border/50 bg-background/50"
+      className="flex gap-3 p-3 rounded-lg border border-[#22c55e]/20 bg-[#22c55e]/5 items-center"
       data-testid={`card-cross-sell-${suggestedProduct.id}`}
     >
-      <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+      <div className="w-12 h-12 rounded-lg bg-muted flex-shrink-0 overflow-hidden border border-border/30">
         <img
           src={suggestedProduct.imageUrl || productImage}
           alt={suggestedProduct.name}
-          className="w-full h-full object-contain p-0.5"
+          className="w-full h-full object-contain p-1"
         />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-xs">{suggestedProduct.name}</span>
-          <span className="text-xs font-bold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <span className="font-semibold text-sm">{suggestedProduct.name}</span>
+          <span className="text-sm font-bold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
             ${Math.round(displayPrice)}
           </span>
         </div>
-        <p className="text-[10px] text-muted-foreground truncate">{reason}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{reason}</p>
       </div>
-      {hasMultipleOptions ? (
-        <Select value={currentDosage} onValueChange={setSelectedDosage}>
-          <SelectTrigger className="h-7 w-[70px] text-xs flex-shrink-0" data-testid={`select-cross-sell-dosage-${suggestedProduct.id}`}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {inStockDosages.map((d: string) => (
-              <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct.id}-${d}`}>{d}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : currentDosage ? (
-        <Badge variant="outline" className="text-[10px] px-1.5 flex-shrink-0">{currentDosage}</Badge>
-      ) : null}
-      <Button
-        variant="outline"
-        size="sm"
-        className="text-xs h-7 px-2.5 border-[#22c55e]/30 text-[#22c55e] flex-shrink-0"
-        disabled={!currentDosage}
-        onClick={() => addToCart({
-          productId,
-          name: suggestedProduct.name,
-          price: displayPrice,
-          quantity: 1,
-          dosage: currentDosage,
-          image: suggestedProduct.imageUrl || undefined,
-        })}
-        data-testid={`button-cross-sell-add-${suggestedProduct.id}`}
-      >
-        <Plus className="h-3 w-3 mr-1" />
-        Add
-      </Button>
+      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+        {hasMultipleOptions ? (
+          <Select value={currentDosage} onValueChange={setSelectedDosage}>
+            <SelectTrigger className="h-7 w-[72px] text-xs" data-testid={`select-cross-sell-dosage-${suggestedProduct.id}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {inStockDosages.map((d: string) => (
+                <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct.id}-${d}`}>{d}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : currentDosage ? (
+          <Badge variant="outline" className="text-xs px-2">{currentDosage}</Badge>
+        ) : null}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs px-3 border-[#22c55e]/40 text-[#22c55e]"
+          disabled={!currentDosage}
+          onClick={() => addToCart({
+            productId,
+            name: suggestedProduct.name,
+            price: displayPrice,
+            quantity: 1,
+            dosage: currentDosage,
+            image: suggestedProduct.imageUrl || undefined,
+          })}
+          data-testid={`button-cross-sell-add-${suggestedProduct.id}`}
+        >
+          <Plus className="h-3 w-3 mr-1" />
+          Add
+        </Button>
+      </div>
     </div>
   );
 }
@@ -182,6 +184,7 @@ export default function CartPage() {
   const { toast } = useToast();
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [discountCode, setDiscountCode] = useState("");
+  const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -615,9 +618,11 @@ export default function CartPage() {
             <div className="lg:sticky lg:top-24 space-y-3">
 
               {/* Order Summary */}
-              <Card className="p-4 md:p-5" data-testid="card-order-summary">
-                <h2 className="font-display font-semibold text-base mb-3">Order Summary</h2>
-                <div className="space-y-2 text-sm">
+              <Card className="p-3 md:p-4" data-testid="card-order-summary">
+                <h2 className="font-display font-semibold text-xs uppercase tracking-widest text-muted-foreground mb-2.5">Order Summary</h2>
+
+                {/* Line items — compact */}
+                <div className="space-y-1.5 text-sm mb-2.5">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span data-testid="text-subtotal">${Math.round(subtotal)}</span>
@@ -626,7 +631,7 @@ export default function CartPage() {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-1.5">
                         <Tag className="h-3 w-3 text-green-500" />
-                        <span className="text-green-500">Discount ({appliedDiscount.percentage}%)</span>
+                        <span className="text-green-500 text-xs">Discount ({appliedDiscount.percentage}%)</span>
                       </div>
                       <span className="text-green-500" data-testid="text-discount">-${Math.round(discountAmount)}</span>
                     </div>
@@ -638,66 +643,73 @@ export default function CartPage() {
                     </span>
                   </div>
                   {shipping > 0 && amountToFreeShipping > 0 && (
-                    <p className="text-[10px] text-[#21d8ff]">
-                      Add ${Math.round(amountToFreeShipping)} more for free shipping
-                    </p>
+                    <p className="text-[10px] text-[#21d8ff]">Add ${Math.round(amountToFreeShipping)} more for free shipping</p>
                   )}
                 </div>
 
-                <Separator className="my-3" />
-
-                {/* Discount code */}
+                {/* Discount code — collapsed by default, expands on tap */}
                 {!appliedDiscount ? (
-                  <div className="mb-3">
-                    <label className="text-xs text-muted-foreground mb-1.5 block">Discount Code</label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Enter code"
-                        value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                        onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
-                        className="flex-1 uppercase text-sm h-9"
-                        data-testid="input-discount-code"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleApplyDiscount}
-                        disabled={!discountCode.trim() || applyDiscountMutation.isPending}
-                        data-testid="button-apply-discount"
+                  <div className="mb-2.5">
+                    {!showDiscountInput ? (
+                      <button
+                        onClick={() => setShowDiscountInput(true)}
+                        className="text-xs text-muted-foreground/60 hover:text-[#21d8ff] transition-colors flex items-center gap-1"
+                        data-testid="button-show-discount-input"
                       >
-                        {applyDiscountMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
-                      </Button>
-                    </div>
+                        <Tag className="h-3 w-3" />
+                        Have a discount code?
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Enter code"
+                          value={discountCode}
+                          onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                          onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
+                          className="flex-1 uppercase text-sm h-8"
+                          autoFocus
+                          data-testid="input-discount-code"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-3 text-xs"
+                          onClick={handleApplyDiscount}
+                          disabled={!discountCode.trim() || applyDiscountMutation.isPending}
+                          data-testid="button-apply-discount"
+                        >
+                          {applyDiscountMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Apply"}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="mb-3 px-3 py-2 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
+                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Tag className="h-3.5 w-3.5 text-green-500" />
-                      <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">{appliedDiscount.code}</span>
-                      <span className="text-xs text-muted-foreground">applied</span>
+                      <Tag className="h-3 w-3 text-green-500" />
+                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-code">{appliedDiscount.code}</span>
+                      <span className="text-[10px] text-muted-foreground">applied</span>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 text-muted-foreground hover:text-red-400"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
                       onClick={removeDiscount}
                       data-testid="button-remove-discount"
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X className="h-3 w-3" />
                     </Button>
                   </div>
                 )}
 
-                <Separator className="my-3" />
-
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="font-display font-bold text-lg">Total</span>
-                  <span className="font-display font-bold text-2xl text-[#E7FB10]" data-testid="text-total">
-                    ${Math.round(total)}
-                  </span>
+                {/* Total row */}
+                <div className="flex justify-between items-center pt-2 border-t border-border/40">
+                  <span className="font-display font-bold text-base">Total</span>
+                  <div className="text-right">
+                    <div className="font-display font-bold text-2xl text-[#E7FB10]" data-testid="text-total">${Math.round(total)}</div>
+                    <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Tax calculated at checkout</p>
+                  </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground text-right">Tax calculated at checkout</p>
               </Card>
 
               {/* Checkout CTA */}
@@ -763,23 +775,36 @@ export default function CartPage() {
               )}
 
               {/* What to Expect — mobile only (desktop in left col) */}
-              <div className="lg:hidden pt-1">
-                <Separator className="opacity-30 mb-3" />
-                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1.5 text-muted-foreground">
-                  <Thermometer className="h-3.5 w-3.5 text-[#21d8ff]" />
-                  What to Expect
+              <div className="lg:hidden rounded-lg border border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent p-3">
+                <h4 className="text-xs font-semibold mb-2.5 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-md bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
+                    <Thermometer className="h-3.5 w-3.5 text-[#21d8ff]" />
+                  </span>
+                  <span className="text-[#21d8ff] uppercase tracking-wider text-[10px] font-bold">What to Expect</span>
                 </h4>
-                <div className="space-y-1.5 text-xs">
+                <div className="space-y-2">
                   <Link href="/guides/ordering-expectations">
-                    <div className="flex items-center gap-1 text-[#21d8ff] hover:underline" data-testid="link-ordering-expectations-mobile">
-                      <span>Full ordering & delivery guide</span>
-                      <ExternalLink className="h-2.5 w-2.5" />
+                    <div
+                      className="flex items-center justify-between py-2 px-2.5 rounded-md bg-[#21d8ff]/5 border border-[#21d8ff]/10 hover:border-[#21d8ff]/30 transition-colors cursor-pointer"
+                      data-testid="link-ordering-expectations-mobile"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Package className="h-3.5 w-3.5 text-[#21d8ff] flex-shrink-0" />
+                        <span className="text-xs font-medium">Full ordering & delivery guide</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-[#21d8ff]/50 flex-shrink-0" />
                     </div>
                   </Link>
                   <Link href="/guides/peptide-package-arrived-warm">
-                    <div className="flex items-center gap-1 text-[#21d8ff] hover:underline" data-testid="link-package-warm-mobile">
-                      <span>Package arrived warm? Don't worry</span>
-                      <ExternalLink className="h-2.5 w-2.5" />
+                    <div
+                      className="flex items-center justify-between py-2 px-2.5 rounded-md bg-[#21d8ff]/5 border border-[#21d8ff]/10 hover:border-[#21d8ff]/30 transition-colors cursor-pointer"
+                      data-testid="link-package-warm-mobile"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Thermometer className="h-3.5 w-3.5 text-[#21d8ff] flex-shrink-0" />
+                        <span className="text-xs font-medium">Package arrived warm? Don't worry</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-[#21d8ff]/50 flex-shrink-0" />
                     </div>
                   </Link>
                 </div>
