@@ -780,7 +780,7 @@ export default function ProductDetail() {
     : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-40 pb-36 md:pb-12 [overflow-x:clip]">
+    <main className="min-h-screen pt-20 md:pt-28 pb-36 md:pb-12 [overflow-x:clip]">
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
@@ -1003,10 +1003,10 @@ export default function ProductDetail() {
 
 
 
-            <div className="border border-border/50 rounded-lg p-3 mb-2 bg-white/[0.06]" data-testid="box-dosage">
-              <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 mb-2" data-testid="box-dosage">
+              {/* Dosage box */}
               {product.dosageOptions && product.dosageOptions.length > 0 && (
-                <div>
+                <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
                   <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Dosage</Label>
                   <Select value={selectedDosage} onValueChange={setSelectedDosage}>
                     <SelectTrigger data-testid="select-dosage" className="h-9">
@@ -1057,15 +1057,15 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Quantity stepper — right column, only for single-vial */}
-              {packQty === 1 && !isOutOfStock && (
-                <div>
+              {/* Quantity box — stepper for single-vial, read-only count for packs */}
+              {!isOutOfStock && (
+                <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
                   <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
                   <div className="flex items-center h-9">
                     <button
                       type="button"
-                      onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
-                      disabled={singleVialQty <= 1}
+                      onClick={() => packQty === 1 && setSingleVialQty(q => Math.max(1, q - 1))}
+                      disabled={packQty !== 1 || singleVialQty <= 1}
                       data-testid="button-qty-minus"
                       className="w-9 h-9 rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
                     >
@@ -1075,21 +1075,20 @@ export default function ProductDetail() {
                       data-testid="text-qty-value"
                       className="w-10 h-9 border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
                     >
-                      {singleVialQty}
+                      {packQty === 1 ? singleVialQty : packQty}
                     </span>
                     <button
                       type="button"
-                      onClick={() => setSingleVialQty(q => q + 1)}
+                      onClick={() => packQty === 1 && setSingleVialQty(q => q + 1)}
+                      disabled={packQty !== 1}
                       data-testid="button-qty-plus"
-                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
+                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
                     >
                       <span className="text-sm leading-none select-none">+</span>
                     </button>
                   </div>
                 </div>
               )}
-
-              </div>
             </div>
 
             {/* Pack Size Selector */}
