@@ -6,10 +6,12 @@ import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import {
   ShoppingCart,
   Trash2,
@@ -30,6 +32,8 @@ import {
   Zap,
   Gift,
   Beaker,
+  Tag,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
@@ -165,11 +169,65 @@ interface FirstOrderStatus {
   bacWaterDosage: string | null;
 }
 
+interface AppliedDiscount {
+  code: string;
+  percentage: number;
+  type: "basic" | "personal";
+  freeShipping?: boolean;
+}
+
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
+    const saved = localStorage.getItem("appliedDiscount");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const applyDiscountMutation = useMutation({
+    mutationFn: async (code: string) => {
+      const response = await apiRequest("POST", "/api/discount/validate", { code });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      const discount: AppliedDiscount = {
+        code: data.code,
+        percentage: data.percentage,
+        type: data.type,
+        freeShipping: data.freeShipping || false,
+      };
+      setAppliedDiscount(discount);
+      localStorage.setItem("appliedDiscount", JSON.stringify(discount));
+      setDiscountCode("");
+      toast({
+        title: "Discount Applied!",
+        description: data.freeShipping
+          ? `${data.percentage}% discount + Free Shipping applied!`
+          : `${data.percentage}% discount has been applied to your order.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Invalid Code",
+        description: error.message || "This discount code is not valid.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) return;
+    applyDiscountMutation.mutate(discountCode.trim().toUpperCase());
+  };
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null);
+    localStorage.removeItem("appliedDiscount");
+    toast({ title: "Discount Removed", description: "The discount code has been removed from your order." });
+  };
 
   const { data: allProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -258,8 +316,10 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
-  const total = subtotal + shipping;
+  const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
+  const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
+  const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
+  const total = subtotal - discountAmount + shipping;
   const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
 
   if (items.length === 0) {
@@ -562,6 +622,15 @@ export default function CartPage() {
                     <span className="text-muted-foreground">Subtotal</span>
                     <span data-testid="text-subtotal">${Math.round(subtotal)}</span>
                   </div>
+                  {appliedDiscount && (
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-1.5">
+                        <Tag className="h-3 w-3 text-green-500" />
+                        <span className="text-green-500">Discount ({appliedDiscount.percentage}%)</span>
+                      </div>
+                      <span className="text-green-500" data-testid="text-discount">-${Math.round(discountAmount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className={shipping === 0 ? "text-green-500 font-medium" : ""}>
@@ -574,6 +643,51 @@ export default function CartPage() {
                     </p>
                   )}
                 </div>
+
+                <Separator className="my-3" />
+
+                {/* Discount code */}
+                {!appliedDiscount ? (
+                  <div className="mb-3">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Discount Code</label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter code"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
+                        className="flex-1 uppercase text-sm h-9"
+                        data-testid="input-discount-code"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleApplyDiscount}
+                        disabled={!discountCode.trim() || applyDiscountMutation.isPending}
+                        data-testid="button-apply-discount"
+                      >
+                        {applyDiscountMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-3 px-3 py-2 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-3.5 w-3.5 text-green-500" />
+                      <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">{appliedDiscount.code}</span>
+                      <span className="text-xs text-muted-foreground">applied</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-muted-foreground hover:text-red-400"
+                      onClick={removeDiscount}
+                      data-testid="button-remove-discount"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
 
                 <Separator className="my-3" />
 
