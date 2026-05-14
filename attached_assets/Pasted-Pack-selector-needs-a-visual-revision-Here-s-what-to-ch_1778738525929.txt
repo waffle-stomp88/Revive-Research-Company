@@ -1,0 +1,24 @@
+Pack selector needs a visual revision. Here's what to change:
+
+Remove the "Sign in" text from every pack row. Just show a lock icon where the price would go — no text. Having "Sign in" repeated four times is noise. The "Sign in to see pricing" button above the pack selector already handles that CTA.
+Give the selected row a slightly lighter background (try #1a1a22 or similar) in addition to the neon border. Right now the only difference between selected and unselected is the border color, which is too subtle. The selected row should feel elevated.
+Add a radio indicator on the left side of each row — empty circle for unselected, filled neon circle for selected. This gives a clear visual cue of which pack is active. See the mockup image for reference.
+The "Popular" badge on the 5-pack needs to sit inside the row's border, not floating outside it. Anchor it top-right inside the card padding.
+In the order summary, replace "Sign in to see total" with just the lock icon and "Sign in" as a clickable link — keep it minimal, same pattern as the price area above.
+Bring back a quantity stepper for the single vial option only. If someone selects "1 vial" they should be able to adjust quantity (1, 2, 3, etc.). Multi-packs (3, 5, 10) are fixed quantities — no stepper needed for those. When "1 vial" is selected, show the +/- stepper. When a multi-pack is selected, hide it.
+The overall section needs more vertical spacing between rows — add 6-8px gap between pack options. Right now they're stacked too tight and read like a form, not a selection.
+
+You said: also, i feel like havig the yellow everywhere sucks because it dsoesnt distiguish the sections of the page?also, i feel like havig the yellow everywhere sucks because it dsoesnt distiguish the sections of the page?1:01 AMClaude responded: You're right — when everything is neon yellow (the "Sign in to see pricing" button, the pack selector border, the "Popular" badge, the "One-time" purchase opti…You're right — when everything is neon yellow (the "Sign in to see pricing" button, the pack selector border, the "Popular" badge, the "One-time" purchase option border, the Add to Cart button), nothing stands out. It all blends into one yellow page.
+Your order confirmation email actually solved this well — it used multiple accent colors for different purposes: neon yellow for primary actions, cyan/teal for labels and secondary info, green for confirmations.
+Add this to the dev brief:
+
+
+The neon yellow/green accent is overused — it's on the sign-in button, pack selector, Popular badge, purchase option border, and the CTA button. When everything is the same color, nothing has hierarchy. Introduce a second accent color to differentiate sections. Use the existing cyan/teal (#0ea5e9 or #21d8ff) from our email design system as the secondary accent. Apply it like this:
+
+
+Neon green (#c8ff00 or #E7FB10) stays on: Add to Cart / Buy Now button, "Popular" badge, selected pack row border. These are primary purchase actions.
+Cyan/teal (#0ea5e9) goes on: "Sign in to see pricing" button/link, lock icons, "Sign in" links, order summary labels, the "Sign in to see total" link. These are authentication prompts — a different action category than purchasing.
+Green (#4ade80) stays on: stock indicators, trust badges (3rd Party Tested, COA Included, Guaranteed). These are confirmation/trust signals.
+Purchase option selector ("One-time"): Use a more subtle border — white or light gray instead of neon. It's already selected by default and doesn't need to scream for attention.
+
+This creates three visual layers: purchase actions (neon), auth prompts (cyan), and trust signals (green). Each section of the page reads differently instead of everything being one flat yellow.

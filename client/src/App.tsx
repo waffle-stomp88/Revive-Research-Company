@@ -18,7 +18,7 @@ import { useAnalytics } from "@/hooks/use-analytics";
 
 import Home from "@/pages/home";
 import Products from "@/pages/products";
-import BulkPacks from "@/pages/bulk-packs";
+
 import Wholesale from "@/pages/wholesale";
 import ProductDetail from "@/pages/product-detail";
 import BundleDetail from "@/pages/bundle-detail";
@@ -170,7 +170,7 @@ function Router() {
         <Route path="/peptides/:id" component={ProductDetail} />
         <Route path="/products">{() => { window.location.replace("/peptides" + window.location.search); return null; }}</Route>
         <Route path="/products/:id">{({ id }) => { window.location.replace(`/peptides/${id}`); return null; }}</Route>
-        <Route path="/bulk-packs" component={BulkPacks} />
+        <Route path="/bulk-packs">{() => { window.location.replace("/peptides"); return null; }}</Route>
         <Route path="/wholesale" component={Wholesale} />
         <Route path="/research-stacks" component={ResearchStacks} />
         <Route path="/research-stacks/:id" component={ResearchStackDetail} />

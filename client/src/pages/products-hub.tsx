@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   FlaskConical,
-  Boxes,
+
   Building2,
   ArrowRight,
   Sparkles,
@@ -33,15 +33,6 @@ const productCategories = [
     description: "Individual research vials",
     details: "Our flagship catalog of premium research peptides. Each vial comes with batch-specific COA and 98%+ verified purity.",
     features: ["Individual vials", "Full COA access", "Multiple dosage options"],
-  },
-  {
-    href: "/bulk-packs",
-    label: "Bulk Packs",
-    icon: Boxes,
-    color: "#21d8ff",
-    description: "Volume discounts for researchers",
-    details: "Save 10-15% when purchasing 5-packs or 10-packs. Perfect for ongoing research protocols requiring consistent supply.",
-    features: ["5-pack: 10% off", "10-pack: 15% off", "Mix any peptides"],
   },
   {
     href: "/wholesale",

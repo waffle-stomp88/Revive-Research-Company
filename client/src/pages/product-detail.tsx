@@ -79,6 +79,8 @@ import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
 import { SoftGateBanner } from "@/components/soft-gate-banner";
+import { PackSelector, OrderSummary, getPackTotalPrice } from "@/components/pack-selector";
+import type { PackQty } from "@/components/pack-selector";
 import { AuthGate } from "@/components/auth-gate";
 import { BlurredGate } from "@/components/blurred-gate";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -177,6 +179,7 @@ export default function ProductDetail() {
   const { isAuthenticated, login } = useAuth();
   const softGateEnabled = SOFT_GATE_ENABLED;
   const [quantity, setQuantity] = useState(1);
+  const [packQty, setPackQty] = useState<PackQty>(1);
   // Capture the dosage query param once at mount so URL mutations (e.g. UUID→slug
   // replaceState) cannot invalidate it on a subsequent render.
   const urlDosageParamRef = useRef(new URLSearchParams(window.location.search).get("dosage") || "");
@@ -589,12 +592,13 @@ export default function ProductDetail() {
   const handleBuyNow = async () => {
     if (product) {
       const isSubPurchase = purchaseType === "subscription";
+      const packPerVialPrice = getPackTotalPrice(getBasePrice(), packQty) / packQty;
       const added = await addToCart({
         productId: product.id,
         name: product.name,
-        price: getBasePrice(),
+        price: packPerVialPrice,
         originalPrice: getOriginalPrice() || undefined,
-        quantity,
+        quantity: packQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
         isSubscription: isSubPurchase,
@@ -611,12 +615,13 @@ export default function ProductDetail() {
   const handleAddToCart = async () => {
     if (product) {
       const isSubPurchase = purchaseType === "subscription";
+      const packPerVialPrice = getPackTotalPrice(getBasePrice(), packQty) / packQty;
       const added = await addToCart({
         productId: product.id,
         name: product.name,
-        price: getBasePrice(),
+        price: packPerVialPrice,
         originalPrice: getOriginalPrice() || undefined,
-        quantity,
+        quantity: packQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
         isSubscription: isSubPurchase,
@@ -629,8 +634,8 @@ export default function ProductDetail() {
       toast({
         title: isSubPurchase ? "Subscription added to cart" : "Added to cart",
         description: isSubPurchase 
-          ? `${quantity}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
-          : `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
+          ? `${packQty}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
+          : `${packQty}x ${product.name} (${selectedDosage}) added to your cart.`,
         action: (
           <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
             View Cart
@@ -967,21 +972,23 @@ export default function ProductDetail() {
               );
             })()}
 
-            <div className="mb-2 md:mb-3">
-              {softGateEnabled && !isAuthenticated ? (
-                <div data-testid="text-product-price" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-1" style={{
+            <div className="mb-2 md:mb-3" data-testid="text-product-price">
+              {(!softGateEnabled || isAuthenticated) && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">
+                    ${Math.round(getBasePrice())}
+                  </span>
+                  <span className="text-xs text-muted-foreground">/ vial</span>
+                  <PriceTrendBadge productId={product.id} />
+                </div>
+              )}
+              {softGateEnabled && !isAuthenticated && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{
                   background: "#E7FB100d",
                   border: "1px solid #E7FB1025",
                 }}>
                   <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
                   <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
-                </div>
-              ) : (
-                <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
-                  <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
-                    ${getBasePrice().toFixed(2)}
-                  </span>
-                  <PriceTrendBadge productId={product.id} />
                 </div>
               )}
             </div>
@@ -1012,13 +1019,6 @@ export default function ProductDetail() {
                         const isDosageOutOfStock = hasDosageStockData && dosageStock 
                           ? (!dosageStock.inStock || dosageStock.stockAmount <= 0) 
                           : false;
-                        // Show dosage-specific price if available (hidden when soft gate is active)
-                        const dosagePrice = !softGateEnabled || isAuthenticated
-                          ? (dosageStock?.price ? `$${Number(dosageStock.price).toFixed(2)}` : null)
-                          : null;
-                        const priceLabel = (softGateEnabled && !isAuthenticated) || !dosagePrice
-                          ? ""
-                          : ` (${dosagePrice})`;
                         return (
                           <SelectItem 
                             key={dosage} 
@@ -1026,7 +1026,7 @@ export default function ProductDetail() {
                             disabled={isDosageOutOfStock}
                             className={isDosageOutOfStock ? "opacity-50" : ""}
                           >
-                            {dosage}{priceLabel}
+                            {dosage}
                             {isDosageOutOfStock && " (Out of Stock)"}
                           </SelectItem>
                         );
@@ -1050,36 +1050,35 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              <div>
-                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
-                <div className={`flex items-center border rounded-md h-9 bg-background ${isOutOfStock ? 'border-red-500/50 opacity-50' : 'border-border'}`}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1 || isOutOfStock}
-                    data-testid="button-quantity-minus"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
-                    {isOutOfStock ? 0 : quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= 10 || isOutOfStock}
-                    data-testid="button-quantity-plus"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
               </div>
             </div>
+
+            {/* Pack Size Selector */}
+            {!isOutOfStock && (
+              <div className="mb-3 md:mb-4">
+                <PackSelector
+                  basePrice={getBasePrice()}
+                  selectedQty={packQty}
+                  onSelect={setPackQty}
+                  softGated={softGateEnabled && !isAuthenticated}
+                  disabled={isOutOfStock}
+                />
+              </div>
+            )}
+
+            {/* Order Summary */}
+            {!isOutOfStock && (
+              <div className="mb-3 md:mb-4">
+                <OrderSummary
+                  basePrice={getBasePrice()}
+                  selectedQty={packQty}
+                  productName={product?.name ?? ""}
+                  dosage={selectedDosage}
+                  stockAmount={displayStockAmount}
+                  softGated={softGateEnabled && !isAuthenticated}
+                />
+              </div>
+            )}
 
             {/* Purchase Options - Hidden when out of stock */}
             {!isOutOfStock && (
@@ -1100,11 +1099,6 @@ export default function ProductDetail() {
                         <ShoppingCart className="h-3.5 w-3.5" />
                         <span className="font-medium text-sm">One-time</span>
                       </div>
-                      {(!softGateEnabled || isAuthenticated) && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          ${getBasePrice().toFixed(2)}
-                        </p>
-                      )}
                     </div>
                     {purchaseType === "one-time" && (
                       <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
@@ -1206,9 +1200,9 @@ export default function ProductDetail() {
                   data-testid="button-buy-now"
                 >
                   {purchaseType === "subscription" ? (
-                    <><Repeat className="h-5 w-5" />Subscribe Now</>
+                    <><Repeat className="h-5 w-5" />Subscribe Now — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</>
                   ) : (
-                    <><ShoppingCart className="h-5 w-5" />Buy Now</>
+                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</>
                   )}
                 </Button>
                 <Button
@@ -1219,7 +1213,7 @@ export default function ProductDetail() {
                   data-testid="button-add-to-cart"
                 >
                   <ShoppingBag className="h-5 w-5" />
-                  Add to Cart
+                  Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
                 </Button>
                 <Button
                   size="sm"
@@ -2251,14 +2245,14 @@ export default function ProductDetail() {
               <p className="font-display font-bold truncate max-w-xs">{product.name}</p>
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-sm text-muted-foreground">{selectedDosage}</span>
-                <span className="font-bold text-[#E7FB10]">${getBasePrice().toFixed(2)}</span>
+                <span className="font-bold text-[#E7FB10]">${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</span>
                 <Button
                   onClick={handleAddToCart}
                   className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
                   data-testid="button-sticky-purchase-add-to-cart"
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  Add to Cart
+                  Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
                 </Button>
               </div>
             </div>
@@ -2272,7 +2266,7 @@ export default function ProductDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{product.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">${getBasePrice().toFixed(2)}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">${Math.round(getPackTotalPrice(getBasePrice(), packQty))}</p>
             </div>
             <Button
               size="lg"
@@ -2281,7 +2275,7 @@ export default function ProductDetail() {
               data-testid="button-sticky-add-to-cart"
             >
               <ShoppingBag className="h-5 w-5" />
-              Add to Cart
+              Add to Cart — ${Math.round(getPackTotalPrice(getBasePrice(), packQty))}
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { Link } from "wouter";
-import { FlaskConical, Boxes, Layers, Building2 } from "lucide-react";
+import { FlaskConical, Layers, Building2 } from "lucide-react";
 
 interface CategoryTab {
   label: string;
@@ -19,14 +19,6 @@ const categories: CategoryTab[] = [
     matchPaths: ["/peptides", "/products"],
     color: "#E7FB10",
     glowColor: "rgba(231,251,16,0.3)"
-  },
-  {
-    label: "Bulk Packs",
-    href: "/bulk-packs",
-    icon: Boxes,
-    matchPaths: ["/bulk-packs"],
-    color: "#21d8ff",
-    glowColor: "rgba(33,216,255,0.3)"
   },
   {
     label: "Stacks",

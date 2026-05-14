@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Boxes, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -30,7 +30,6 @@ const navLinks = [
 const productLinks = [
   { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#a855f7" },
   { href: "/research-stacks", label: "Research Stacks", icon: Layers, description: "Multi-compound combos", color: "#ec4899" },
-  { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs", color: "#21d8ff" },
   { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers", color: "#22c55e" },
 ];
 
@@ -83,12 +82,10 @@ export function Navigation() {
         location === "/peptides" ||
         location.startsWith("/peptides/") ||
         location === "/research-stacks" ||
-        location.startsWith("/research-stacks/") ||
-        location === "/bulk-packs" ||
-        location.startsWith("/bulk-packs/");
+        location.startsWith("/research-stacks/");
       setIsPeptidesOpen(onPeptidePage);
     }
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, location]);
 
   const getInitials = () => {
     if (user?.firstName && user?.lastName) {
@@ -690,8 +687,7 @@ export function Navigation() {
               {(() => {
                 const peptidesActive = location === "/peptides" || location.startsWith("/peptides/");
                 const stacksActive = location === "/research-stacks" || location.startsWith("/research-stacks/");
-                const bulkActive = location === "/bulk-packs" || location.startsWith("/bulk-packs/");
-                const anyActive = peptidesActive || stacksActive || bulkActive;
+                const anyActive = peptidesActive || stacksActive;
                 const color = "#a855f7";
                 const open = isPeptidesOpen;
                 return (
@@ -776,23 +772,6 @@ export function Navigation() {
                                   Research Stacks
                                 </span>
                                 <span className="text-xs text-gray-500 block">Curated multi-compound bundles</span>
-                              </div>
-                            </div>
-                          </Link>
-                          <div className="border-t border-white/[0.06] mx-4" />
-                          <Link href="/bulk-packs" onClick={() => setIsMobileMenuOpen(false)}>
-                            <div className="flex items-center gap-3 px-4 py-3" data-testid="link-mobile-panel-bulk">
-                              <div
-                                className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
-                                style={{ background: bulkActive ? "#a855f722" : "#ffffff0a" }}
-                              >
-                                <Boxes className="h-4 w-4" style={{ color: bulkActive ? "#a855f7" : "#9ca3af" }} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <span className="text-sm font-semibold block" style={{ color: bulkActive ? "#a855f7" : "#d1d5db" }}>
-                                  Bulk Packs
-                                </span>
-                                <span className="text-xs text-gray-500 block">5-packs, 10-packs &amp; more</span>
                               </div>
                             </div>
                           </Link>

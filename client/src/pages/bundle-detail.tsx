@@ -212,9 +212,6 @@ export default function BundleDetail() {
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 Bundle
               </Badge>
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 glow-pulse">
-                Save {Math.round(STACK_DISCOUNT * 100)}%
-              </Badge>
             </div>
 
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-bundle-name">
@@ -236,14 +233,6 @@ export default function BundleDetail() {
                   <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
                     ${getDiscountedPrice().toFixed(2)}
                   </span>
-                  <span className="text-lg text-muted-foreground line-through">
-                    ${bundlePricing?.retailValue.toFixed(2) ?? "—"}
-                  </span>
-                  {getSelectedDiscount() > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {getSelectedDiscount()}% off
-                    </Badge>
-                  )}
                 </div>
               )}
             </div>
@@ -319,7 +308,6 @@ export default function BundleDetail() {
                     <div className="flex items-center gap-1.5">
                       <Repeat className="h-3.5 w-3.5" />
                       <span className="font-medium text-sm">Subscribe</span>
-                      <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Auto-delivery
@@ -352,7 +340,6 @@ export default function BundleDetail() {
                         data-testid={`option-interval-${option.value}`}
                       >
                         <span className="font-medium text-xs">{option.label}</span>
-                        <span className="text-[10px] text-[#21d8ff]">{option.discount}% off</span>
                       </div>
                     );
                   })}
@@ -416,7 +403,7 @@ export default function BundleDetail() {
                 </div>
                 {purchaseType === "subscription" && (
                   <p className="text-[10px] text-center text-muted-foreground mt-2">
-                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+                    Cancel anytime
                   </p>
                 )}
               </>

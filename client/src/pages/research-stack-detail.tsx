@@ -364,9 +364,6 @@ export default function ResearchStackDetail() {
                   <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
                     ${getBasePrice().toFixed(2)}
                   </span>
-                  <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-retail-value">
-                    ${pricing?.retailValue.toFixed(2) ?? "—"}
-                  </span>
                 </div>
               )}
             </div>
@@ -439,7 +436,6 @@ export default function ResearchStackDetail() {
                     <div className="flex items-center gap-1.5">
                       <Repeat className="h-3.5 w-3.5" />
                       <span className="font-medium text-sm">Subscribe</span>
-                      <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">Auto-delivery</p>
                   </div>
@@ -473,7 +469,6 @@ export default function ResearchStackDetail() {
                         data-testid={`option-interval-${option.value}`}
                       >
                         <span className="font-medium text-xs">{option.label}</span>
-                        <span className="text-[10px] text-[#21d8ff]">{option.discount}% off</span>
                       </div>
                     );
                   })}
@@ -560,7 +555,7 @@ export default function ResearchStackDetail() {
                 </div>
                 {purchaseType === "subscription" && (
                   <p className="text-[10px] text-center text-muted-foreground mt-1">
-                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+                    Cancel anytime
                   </p>
                 )}
               </>

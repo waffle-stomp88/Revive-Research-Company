@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
     label: "Shop", 
     href: "/peptides", 
     icon: ShoppingBag,
-    matchPaths: ["/shop", "/peptides", "/products", "/research-stacks", "/bulk-packs"]
+    matchPaths: ["/shop", "/peptides", "/products", "/research-stacks"]
   },
   { 
     label: "Cart", 
