@@ -162,7 +162,7 @@ export default function LoginPage() {
             <img
               src={logoPath}
               alt="Revive Research"
-              className="h-10 w-auto opacity-95 hover:opacity-100 transition-opacity"
+              className="h-16 w-auto opacity-95 hover:opacity-100 transition-opacity"
               data-testid="img-login-logo"
             />
           </Link>
