@@ -1079,9 +1079,56 @@ export default function Academy() {
                     );
                   const Icon = module.icon;
 
-                  // For unauthenticated users, only show the first module (Orientation) fully.
-                  // Modules 1-3 are teased via a BlurredGate below.
-                  if (!user && moduleIndex > 0) return null;
+                  // Logged-out users always see all modules except Orientation as a blurred teaser.
+                  if (!user && moduleIndex > 0) {
+                    return (
+                      <motion.div
+                        key={module.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: moduleIndex * 0.1 }}
+                      >
+                        <BlurredGate
+                          previewContent={
+                            <Card className="bg-white/5 border-white/10 overflow-hidden">
+                              <div className="p-6">
+                                <div className="flex items-center gap-4 mb-4">
+                                  <div
+                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                    style={{ backgroundColor: `${module.color}20` }}
+                                  >
+                                    <Icon className="w-6 h-6" style={{ color: module.color }} />
+                                  </div>
+                                  <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white">{module.title}</h3>
+                                    <p className="text-sm text-white/60">{module.description}</p>
+                                  </div>
+                                  <ProgressRing progress={0} size={50} color={module.color} />
+                                </div>
+                                <div className="space-y-2">
+                                  {module.lessons.map((lesson) => (
+                                    <div
+                                      key={lesson.id}
+                                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5 opacity-50"
+                                    >
+                                      <Lock className="w-5 h-5 text-white/20 flex-shrink-0" />
+                                      <span className="flex-1 text-white/80">{lesson.title}</span>
+                                      <Badge variant="secondary" className="text-xs bg-white/10 text-white/60">
+                                        +{lesson.xp} XP
+                                      </Badge>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </Card>
+                          }
+                          title="Sign in to unlock advanced modules"
+                          description="Create a free account to access Research Skills, Lab Confidence, and all future modules — plus track your progress and earn XP."
+                          testId={`blurred-gate-module-${module.id}`}
+                        />
+                      </motion.div>
+                    );
+                  }
 
                   return (
                     <motion.div
@@ -1175,54 +1222,6 @@ export default function Academy() {
                   );
                 })}
 
-                {/* For unauthenticated users, show a blurred preview of the remaining modules */}
-                {!user && (
-                  <BlurredGate
-                    previewContent={
-                      <div className="space-y-4">
-                        {CURRICULUM.slice(1).map((module) => {
-                          const Icon = module.icon;
-                          return (
-                            <Card key={module.id} className="bg-white/5 border-white/10 overflow-hidden">
-                              <div className="p-6">
-                                <div className="flex items-center gap-4 mb-4">
-                                  <div
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                    style={{ backgroundColor: `${module.color}20` }}
-                                  >
-                                    <Icon className="w-6 h-6" style={{ color: module.color }} />
-                                  </div>
-                                  <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-white">{module.title}</h3>
-                                    <p className="text-sm text-white/60">{module.description}</p>
-                                  </div>
-                                  <ProgressRing progress={0} size={50} color={module.color} />
-                                </div>
-                                <div className="space-y-2">
-                                  {module.lessons.slice(0, 3).map((lesson) => (
-                                    <div
-                                      key={lesson.id}
-                                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5 opacity-50"
-                                    >
-                                      <Lock className="w-5 h-5 text-white/20 flex-shrink-0" />
-                                      <span className="flex-1 text-white/80">{lesson.title}</span>
-                                      <Badge variant="secondary" className="text-xs bg-white/10 text-white/60">
-                                        +{lesson.xp} XP
-                                      </Badge>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    }
-                    title="Sign in to unlock the full Academy"
-                    description="Create a free account to access all modules, track your progress, and earn XP rewards."
-                    testId="blurred-gate-curriculum"
-                  />
-                )}
               </div>
 
               <div className="space-y-6">
