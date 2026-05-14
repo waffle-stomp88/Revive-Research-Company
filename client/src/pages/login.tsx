@@ -167,7 +167,7 @@ export default function LoginPage() {
             />
           </Link>
 
-          <div className="flex-1 flex flex-col justify-center mt-12">
+          <div className="flex-1 flex flex-col justify-center items-center text-center mt-12">
             <h1
               className="text-4xl xl:text-5xl font-bold mb-2 leading-tight text-white"
               style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.02em" }}
@@ -185,7 +185,7 @@ export default function LoginPage() {
                 Revive Research
               </span>
             </h1>
-            <p className="text-sm text-gray-400 mb-10 max-w-sm">
+            <p className="text-sm text-gray-400 mb-10">
               Premium peptide compounds with verified purity you can trust.
             </p>
 
