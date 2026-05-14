@@ -169,7 +169,7 @@ export default function LoginPage() {
 
           <div className="flex-1 flex flex-col justify-center items-center text-center mt-12">
             <h1
-              className="text-4xl xl:text-5xl font-bold mb-2 leading-tight text-white"
+              className="text-5xl xl:text-6xl font-bold mb-2 leading-tight text-white"
               style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.02em" }}
               data-testid="heading-login-hero"
             >
@@ -185,7 +185,7 @@ export default function LoginPage() {
                 Revive Research
               </span>
             </h1>
-            <p className="text-sm text-gray-400 mb-10">
+            <p className="text-base text-gray-400 mb-10">
               Premium peptide compounds with verified purity you can trust.
             </p>
 
