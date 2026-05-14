@@ -1131,6 +1131,10 @@ export async function registerRoutes(
         }
       }
 
+      // Pack-tier discount table — must mirror client/src/lib/pack-tiers.ts.
+      // Quantity IS the pack size: buying 5 vials always gets the 5-pack rate.
+      const PACK_DISCOUNTS: Record<number, number> = { 1: 0, 3: 0.10, 5: 0.15, 10: 0.20 };
+
       let serverSubtotal = 0;
       for (const item of sanitizedItems) {
         const qty = Number(item.quantity);
@@ -1145,22 +1149,26 @@ export async function registerRoutes(
           console.warn(`[PayPal Order] Unknown productId ${item.productId} in order ${paypalOrderId}`);
           return res.status(400).json({ error: `Unknown product: ${item.productId}` });
         }
-        let unitPrice: number | null = null;
+        let baseUnitPrice: number | null = null;
         if (item.dosage && productData.dosageStocks.length > 0) {
           const dosageStock = productData.dosageStocks.find(
             (ds: any) => ds.dosage === item.dosage && ds.price && parseFloat(ds.price) > 0
           );
           if (dosageStock?.price) {
-            unitPrice = parseFloat(dosageStock.price);
+            baseUnitPrice = parseFloat(dosageStock.price);
           }
         }
-        if (unitPrice === null) {
-          unitPrice = parseFloat(productData.price);
+        if (baseUnitPrice === null) {
+          baseUnitPrice = parseFloat(productData.price);
         }
-        if (isNaN(unitPrice) || unitPrice <= 0) {
+        if (isNaN(baseUnitPrice) || baseUnitPrice <= 0) {
           console.warn(`[PayPal Order] Could not resolve price for product ${item.productId} dosage ${item.dosage}`);
           return res.status(400).json({ error: `Could not resolve price for product ${item.productId}` });
         }
+        // Apply pack discount using the same whole-dollar rounding as the client.
+        // Math.round mirrors getPackPerVialPrice() in client/src/lib/pack-tiers.ts.
+        const discount = PACK_DISCOUNTS[qty] ?? 0;
+        const unitPrice = Math.round(baseUnitPrice * (1 - discount));
         serverSubtotal += unitPrice * qty;
       }
 

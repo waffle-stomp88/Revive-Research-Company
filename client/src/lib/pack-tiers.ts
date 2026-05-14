@@ -7,10 +7,12 @@ export const PACK_TIERS = [
 
 export type PackQty = 1 | 3 | 5 | 10;
 
+/** Whole-dollar per-vial price after applying the pack tier discount. */
 export function getPackPerVialPrice(basePrice: number, discount: number): number {
-  return basePrice * (1 - discount);
+  return Math.round(basePrice * (1 - discount));
 }
 
+/** Whole-dollar total for a pack (rounded per-vial × qty). */
 export function getPackTotalPrice(basePrice: number, qty: PackQty): number {
   const tier = PACK_TIERS.find(t => t.qty === qty)!;
   return getPackPerVialPrice(basePrice, tier.discount) * qty;
