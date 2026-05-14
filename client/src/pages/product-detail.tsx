@@ -941,13 +941,28 @@ export default function ProductDetail() {
               {softGateEnabled && !isAuthenticated ? (
                 <div data-testid="text-product-price">
                   <BlurredGate
-                    previewContent={
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">$59.99</span>
-                        <span className="text-sm text-muted-foreground line-through">$74.99</span>
-                        <span className="text-xs font-medium text-[#E7FB10]/80 px-1.5 py-0.5 rounded bg-[#E7FB10]/10">Save 20%</span>
-                      </div>
-                    }
+                    previewContent={(() => {
+                      const blurBase = getBasePrice();
+                      const blurOriginal = getOriginalPrice();
+                      const blurSavePct = blurOriginal && blurOriginal > blurBase
+                        ? Math.round((1 - blurBase / blurOriginal) * 100)
+                        : 0;
+                      return (
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">${blurBase.toFixed(2)}</span>
+                          {blurOriginal && (
+                            <>
+                              <span className="text-sm text-muted-foreground line-through">${blurOriginal.toFixed(2)}</span>
+                              {blurSavePct > 0 && (
+                                <span className="text-xs font-medium text-[#E7FB10]/80 px-1.5 py-0.5 rounded bg-[#E7FB10]/10">
+                                  Save {blurSavePct}%
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                     title="Sign in to see pricing"
                     description="Create a free account to unlock verified pricing and place orders."
                     testId="blurred-gate-price"
