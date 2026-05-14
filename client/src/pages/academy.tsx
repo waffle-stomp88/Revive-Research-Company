@@ -48,6 +48,7 @@ import { academyPersonas, academyAchievements } from "@shared/schema";
 import { getLessonSlides } from "@/components/academy/lesson-slides";
 import { HorizontalLearningPath } from "@/components/academy/horizontal-learning-path";
 import { EmailCapture } from "@/components/email-capture";
+import { BlurredGate } from "@/components/blurred-gate";
 
 const CURRICULUM = [
   {
@@ -839,6 +840,12 @@ export default function Academy() {
     return currentModuleLessons.every(id => localProgress.completedLessons.includes(id));
   };
 
+  // Guest access policy: unauthenticated users may only open lessons in Module 0 (Orientation).
+  const canGuestAccessLesson = (lessonId: string): boolean => {
+    const info = findLessonById(lessonId);
+    return info ? info.module.id === 0 : false;
+  };
+
   const getRecommendedLesson = () => {
     const personaConfig = getPersonaConfig();
     
@@ -1034,7 +1041,14 @@ export default function Academy() {
                     </div>
                     <Button
                       className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                      onClick={() => setSelectedLesson(getRecommendedLesson()!.lesson.id)}
+                      onClick={() => {
+                        const lessonId = getRecommendedLesson()!.lesson.id;
+                        if (!user && !canGuestAccessLesson(lessonId)) {
+                          login();
+                          return;
+                        }
+                        setSelectedLesson(lessonId);
+                      }}
                       data-testid="button-start-recommended"
                     >
                       <Play className="w-4 h-4 mr-2" />
@@ -1064,6 +1078,10 @@ export default function Academy() {
                       m.lessons.every(l => localProgress.completedLessons.includes(l.id))
                     );
                   const Icon = module.icon;
+
+                  // For unauthenticated users, only show the first module (Orientation) fully.
+                  // Modules 1-3 are teased via a BlurredGate below.
+                  if (!user && moduleIndex > 0) return null;
 
                   return (
                     <motion.div
@@ -1115,6 +1133,10 @@ export default function Academy() {
                                   }`}
                                   onClick={() => {
                                     if (isUnlocked || isCompleted) {
+                                      if (!user && !canGuestAccessLesson(lesson.id)) {
+                                        login();
+                                        return;
+                                      }
                                       setSelectedLesson(lesson.id);
                                     }
                                   }}
@@ -1152,80 +1174,195 @@ export default function Academy() {
                     </motion.div>
                   );
                 })}
+
+                {/* For unauthenticated users, show a blurred preview of the remaining modules */}
+                {!user && (
+                  <BlurredGate
+                    previewContent={
+                      <div className="space-y-4">
+                        {CURRICULUM.slice(1).map((module) => {
+                          const Icon = module.icon;
+                          return (
+                            <Card key={module.id} className="bg-white/5 border-white/10 overflow-hidden">
+                              <div className="p-6">
+                                <div className="flex items-center gap-4 mb-4">
+                                  <div
+                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                    style={{ backgroundColor: `${module.color}20` }}
+                                  >
+                                    <Icon className="w-6 h-6" style={{ color: module.color }} />
+                                  </div>
+                                  <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white">{module.title}</h3>
+                                    <p className="text-sm text-white/60">{module.description}</p>
+                                  </div>
+                                  <ProgressRing progress={0} size={50} color={module.color} />
+                                </div>
+                                <div className="space-y-2">
+                                  {module.lessons.slice(0, 3).map((lesson) => (
+                                    <div
+                                      key={lesson.id}
+                                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5 opacity-50"
+                                    >
+                                      <Lock className="w-5 h-5 text-white/20 flex-shrink-0" />
+                                      <span className="flex-1 text-white/80">{lesson.title}</span>
+                                      <Badge variant="secondary" className="text-xs bg-white/10 text-white/60">
+                                        +{lesson.xp} XP
+                                      </Badge>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    }
+                    title="Sign in to unlock the full Academy"
+                    description="Create a free account to access all modules, track your progress, and earn XP rewards."
+                    testId="blurred-gate-curriculum"
+                  />
+                )}
               </div>
 
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white mb-6">Achievements</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.values(academyAchievements).map((achievement) => (
-                    <AchievementBadge
-                      key={achievement.id}
-                      achievement={achievement}
-                      unlocked={localProgress.achievements.includes(achievement.id.toUpperCase())}
-                    />
-                  ))}
-                </div>
+
+                {user ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.values(academyAchievements).map((achievement) => (
+                      <AchievementBadge
+                        key={achievement.id}
+                        achievement={achievement}
+                        unlocked={localProgress.achievements.includes(achievement.id.toUpperCase())}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <BlurredGate
+                    previewContent={
+                      <div className="grid grid-cols-2 gap-3">
+                        {Object.values(academyAchievements).slice(0, 6).map((achievement) => (
+                          <AchievementBadge
+                            key={achievement.id}
+                            achievement={achievement}
+                            unlocked={false}
+                          />
+                        ))}
+                      </div>
+                    }
+                    title="Sign in to earn achievements"
+                    description="Track XP, unlock badges, and save your progress across devices."
+                    testId="blurred-gate-achievements"
+                  />
+                )}
 
                 {/* Reward Milestones */}
-                <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6 mt-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <Gift className="w-5 h-5 text-[#E7FB10]" />
-                    Reward Milestones
-                  </h3>
-                  <div className="space-y-3">
-                    {REWARD_MILESTONES.map((milestone, index) => {
-                      const isUnlocked = localProgress.totalXp >= milestone.xpRequired;
-                      const progress = Math.min((localProgress.totalXp / milestone.xpRequired) * 100, 100);
-                      const Icon = milestone.icon;
-                      
-                      return (
-                        <div 
-                          key={index}
-                          data-testid={`milestone-${milestone.xpRequired}`}
-                          className={`p-3 rounded-lg border transition-all ${
-                            isUnlocked 
-                              ? "bg-[#E7FB10]/10 border-[#E7FB10]/30" 
-                              : "bg-white/5 border-white/10"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              isUnlocked ? "bg-[#E7FB10]/20" : "bg-white/10"
-                            }`}>
-                              {isUnlocked ? (
-                                <CheckCircle2 className="w-4 h-4 text-[#E7FB10]" />
-                              ) : (
-                                <Icon className="w-4 h-4 text-white/40" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-2">
-                                <span className={`text-sm font-medium truncate ${isUnlocked ? "text-[#E7FB10]" : "text-white/80"}`}>
-                                  {milestone.reward}
-                                </span>
-                                <Badge 
-                                  variant="secondary" 
-                                  className={`text-[10px] flex-shrink-0 ${
-                                    isUnlocked 
-                                      ? "bg-[#E7FB10]/20 text-[#E7FB10]" 
-                                      : "bg-white/10 text-white/50"
-                                  }`}
-                                >
-                                  {milestone.xpRequired} XP
-                                </Badge>
+                {user ? (
+                  <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6 mt-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <Gift className="w-5 h-5 text-[#E7FB10]" />
+                      Reward Milestones
+                    </h3>
+                    <div className="space-y-3">
+                      {REWARD_MILESTONES.map((milestone, index) => {
+                        const isUnlocked = localProgress.totalXp >= milestone.xpRequired;
+                        const progress = Math.min((localProgress.totalXp / milestone.xpRequired) * 100, 100);
+                        const Icon = milestone.icon;
+
+                        return (
+                          <div
+                            key={index}
+                            data-testid={`milestone-${milestone.xpRequired}`}
+                            className={`p-3 rounded-lg border transition-all ${
+                              isUnlocked
+                                ? "bg-[#E7FB10]/10 border-[#E7FB10]/30"
+                                : "bg-white/5 border-white/10"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                isUnlocked ? "bg-[#E7FB10]/20" : "bg-white/10"
+                              }`}>
+                                {isUnlocked ? (
+                                  <CheckCircle2 className="w-4 h-4 text-[#E7FB10]" />
+                                ) : (
+                                  <Icon className="w-4 h-4 text-white/40" />
+                                )}
                               </div>
-                              {!isUnlocked && (
-                                <div className="mt-1">
-                                  <Progress value={progress} className="h-1" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className={`text-sm font-medium truncate ${isUnlocked ? "text-[#E7FB10]" : "text-white/80"}`}>
+                                    {milestone.reward}
+                                  </span>
+                                  <Badge
+                                    variant="secondary"
+                                    className={`text-[10px] flex-shrink-0 ${
+                                      isUnlocked
+                                        ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                                        : "bg-white/10 text-white/50"
+                                    }`}
+                                  >
+                                    {milestone.xpRequired} XP
+                                  </Badge>
                                 </div>
-                              )}
+                                {!isUnlocked && (
+                                  <div className="mt-1">
+                                    <Progress value={progress} className="h-1" />
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                ) : (
+                  <BlurredGate
+                    previewContent={
+                      <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                          <Gift className="w-5 h-5 text-[#E7FB10]" />
+                          Reward Milestones
+                        </h3>
+                        <div className="space-y-3">
+                          {REWARD_MILESTONES.map((milestone, index) => {
+                            const Icon = milestone.icon;
+                            return (
+                              <div
+                                key={index}
+                                className="p-3 rounded-lg border bg-white/5 border-white/10"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
+                                    <Icon className="w-4 h-4 text-white/40" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <span className="text-sm font-medium truncate text-white/80">
+                                        {milestone.reward}
+                                      </span>
+                                      <Badge variant="secondary" className="text-[10px] flex-shrink-0 bg-white/10 text-white/50">
+                                        {milestone.xpRequired} XP
+                                      </Badge>
+                                    </div>
+                                    <div className="mt-1">
+                                      <Progress value={0} className="h-1" />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
-                  </div>
-                </Card>
+                      </Card>
+                    }
+                    title="Unlock real rewards"
+                    description="Sign in to track XP and earn discount codes, badges, and your Certified Researcher credential."
+                    testId="blurred-gate-milestones"
+                  />
+                )}
 
                 <Card className="bg-white/5 border-white/10 p-6 mt-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -1251,21 +1388,6 @@ export default function Academy() {
                   </div>
                 </Card>
 
-                {!user && (
-                  <Card className="bg-gradient-to-br from-[#E7FB10]/10 to-[#21d8ff]/10 border-[#E7FB10]/20 p-6">
-                    <h3 className="text-lg font-semibold text-white mb-2">Save Your Progress</h3>
-                    <p className="text-sm text-white/60 mb-4">
-                      Log in to sync your progress across devices and never lose your achievements.
-                    </p>
-                    <Button
-                      className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                      onClick={() => login()}
-                      data-testid="button-login-save"
-                    >
-                      Log In to Save
-                    </Button>
-                  </Card>
-                )}
               </div>
             </div>
           </div>
@@ -1380,7 +1502,14 @@ export default function Academy() {
               lessonId={selectedLesson}
               onClose={() => setSelectedLesson(null)}
               onComplete={completeLesson}
-              onNavigate={(lessonId) => setSelectedLesson(lessonId)}
+              onNavigate={(lessonId) => {
+                if (!user && !canGuestAccessLesson(lessonId)) {
+                  setSelectedLesson(null);
+                  login();
+                  return;
+                }
+                setSelectedLesson(lessonId);
+              }}
               completedLessons={localProgress.completedLessons}
               totalXp={localProgress.totalXp}
               persona={localProgress.persona}

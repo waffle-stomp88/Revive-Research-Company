@@ -232,11 +232,7 @@ function Router() {
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
         <Route path="/guides/:slug" component={Education} />
         <Route path="/login" component={Login} />
-        <Route path="/academy">
-          <ProtectedRoute title="Peptide Research Academy" description="Access exclusive educational content, courses, and earn achievements as you learn.">
-            <Academy />
-          </ProtectedRoute>
-        </Route>
+        <Route path="/academy" component={Academy} />
         <Route path="/about/our-transparency-commitment" component={Transparency} />
         <Route path="/coa/batch-testing-archive" component={BatchArchive} />
         <Route path="/tools/peptide-reconstitution-calculator" component={DosageCalculator} />
