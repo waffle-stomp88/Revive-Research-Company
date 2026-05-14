@@ -193,11 +193,11 @@ export default function CartPage() {
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => setInlineCTAVisible(entry.isIntersecting),
-      { threshold: 0.5 }
+      { threshold: 0.1 }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [items.length]);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
