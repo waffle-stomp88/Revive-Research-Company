@@ -744,6 +744,20 @@ export default function ProductDetail() {
   // Get current selected dosage stock info
   const selectedDosageStock = getDosageStockInfo(selectedDosage);
 
+  // Bidirectional sync: qty → tier mapping
+  const getTierForQty = (qty: number): PackQty => {
+    if (qty >= 10) return 10;
+    if (qty >= 5) return 5;
+    if (qty >= 3) return 3;
+    return 1;
+  };
+
+  const handleQtyChange = (newQty: number) => {
+    const clamped = Math.max(1, newQty);
+    setSingleVialQty(clamped);
+    setPackQty(getTierForQty(clamped));
+  };
+
   // Effective quantity and total — placed here so getBasePrice() (which uses hasDosageStockData) is safe
   const effectiveQty = singleVialQty;
   const selectedTierDiscount = PACK_TIERS.find(t => t.qty === packQty)?.discount ?? 0;
@@ -1063,7 +1077,7 @@ export default function ProductDetail() {
                   <div className="flex items-center h-9">
                     <button
                       type="button"
-                      onClick={() => setSingleVialQty(q => Math.max(1, q - 1))}
+                      onClick={() => handleQtyChange(singleVialQty - 1)}
                       disabled={singleVialQty <= 1}
                       data-testid="button-qty-minus"
                       className="w-9 h-9 rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
@@ -1078,7 +1092,7 @@ export default function ProductDetail() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setSingleVialQty(q => q + 1)}
+                      onClick={() => handleQtyChange(singleVialQty + 1)}
                       data-testid="button-qty-plus"
                       className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
                     >
@@ -1095,7 +1109,7 @@ export default function ProductDetail() {
                 <PackSelector
                   basePrice={getBasePrice()}
                   selectedQty={packQty}
-                  onSelect={(qty) => setPackQty(qty)}
+                  onSelect={(qty) => { setPackQty(qty); setSingleVialQty(qty); }}
                   softGated={softGateEnabled && !isAuthenticated}
                   disabled={isOutOfStock}
                 />
