@@ -32,8 +32,16 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               data-testid={`pack-option-${tier.qty}`}
               className="relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 text-left overflow-hidden"
               style={{
-                background: isSelected ? "#1a1a22" : "#111118",
-                border: isSelected ? "1.5px solid #E7FB10" : "1.5px solid #1e1e2a",
+                background: isSelected
+                  ? "#1a1a22"
+                  : tier.popular
+                    ? "rgba(200,255,0,0.04)"
+                    : "#111118",
+                border: isSelected
+                  ? "1.5px solid #E7FB10"
+                  : tier.popular
+                    ? "1.5px solid #2a3a1a"
+                    : "1.5px solid #1e1e2a",
                 boxShadow: isSelected ? "0 0 14px rgba(231,251,16,0.12)" : "none",
               }}
               aria-pressed={isSelected}
