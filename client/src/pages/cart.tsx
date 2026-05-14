@@ -191,12 +191,24 @@ export default function CartPage() {
 
   useEffect(() => {
     if (!inlineCTAEl) return;
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
     const observer = new IntersectionObserver(
-      ([entry]) => setInlineCTAVisible(entry.isIntersecting),
-      { threshold: 0.1 }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Delay hiding so the bar is always visible for a beat on page load
+          hideTimer = setTimeout(() => setInlineCTAVisible(true), 700);
+        } else {
+          if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+          setInlineCTAVisible(false);
+        }
+      },
+      { threshold: 0.3 }
     );
     observer.observe(inlineCTAEl);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (hideTimer) clearTimeout(hideTimer);
+    };
   }, [inlineCTAEl]);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
