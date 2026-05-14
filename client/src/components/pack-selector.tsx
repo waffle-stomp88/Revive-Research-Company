@@ -1,6 +1,7 @@
 import { Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import { PACK_TIERS, getPackPerVialPrice } from "@/lib/pack-tiers";
+import type { PackQty } from "@/lib/pack-tiers";
 export type { PackQty } from "@/lib/pack-tiers";
 export { getPackTotalPrice } from "@/lib/pack-tiers";
 
