@@ -1,0 +1,98 @@
+# Cart Page Redesign — Implementation Brief
+
+**Priority:** High — ship before launch
+**Goal:** Reduce friction between cart and checkout by reordering content so the checkout CTA is visible without scrolling past upsells
+
+---
+
+## The Problem
+
+The current cart page on mobile requires scrolling past Research Pairings (product recommendations) and the BAC water upsell to reach the Order Summary and "Proceed to Checkout" button. The primary action (checkout) is buried below secondary content (upsells). This is backwards — upsells should never block the path to purchase.
+
+Research context: 70% of shopping carts are abandoned. The #1 priority of the cart page is to move the customer to checkout. Every element between the cart items and the checkout button is a potential exit point.
+
+---
+
+## New Content Order (Top to Bottom)
+
+The cart page content must follow this exact order on mobile:
+
+### 1. Cart Items (top)
+- Product card with image, name, dosage, pack size, quantity stepper, price, and delete button
+- Compact layout — one row per item, not a full product card
+- If multiple items, stack them vertically
+
+### 2. Order Summary (immediately after cart items)
+- Subtotal
+- Shipping (show "FREE" in green if over $250, otherwise show cost)
+- Total
+- No tax shown here — tax calculates at checkout based on shipping address
+
+### 3. "Proceed to Checkout" Button (immediately after summary)
+- Full-width neon green button
+- Text: "Proceed to Checkout →"
+- This must be visible on mobile within one scroll of the cart items — ideally without scrolling at all for single-item carts
+
+### 4. Trust Badges (below CTA)
+- "Secure checkout · Same-day shipping · COA included"
+- Small, subtle, one line
+
+### 5. BAC Water Upsell (below trust badges)
+- "Missing something? Add bacteriostatic water to reconstitute your peptides"
+- Compact card with an "Add $10" button
+- This is a helpful prompt, not a sales barrier — it lives below the checkout CTA so it never blocks the path
+
+### 6. Research Pairings (bottom of page)
+- "Based on what's in your cart, these compounds share complementary mechanisms"
+- Product suggestion cards with "+ Add" buttons
+- This is the lowest priority content — nice to have but never in the way
+
+### 7. RUO Disclaimer (very bottom)
+- "Research Use Only — Not for human consumption"
+- Red-tinted card, same style used elsewhere
+
+---
+
+## What to Remove
+
+1. **"Discount Code" field and "Apply" button** — Remove entirely. We do not offer discount codes. This field sets the wrong expectation and invites customers to leave the site to search for coupon codes (a documented conversion killer — 27% of shoppers abandon to search for coupons).
+
+2. **"Preview pricing — subject to change at launch"** — Remove before go-live.
+
+3. **"Clear Cart" button** — Move to a less prominent position or replace with individual item delete buttons (trash icon per item). A prominent "Clear Cart" button is a one-click path to an empty cart, which is never what you want to encourage.
+
+---
+
+## Design Notes
+
+- The cart item card should be compact: product thumbnail (small, ~48px), product name, dosage, pack info, quantity, price, and delete icon — all in one or two rows. Not a full product detail card.
+
+- The Order Summary card should be visually distinct from the cart items — slightly different background shade or a clear "ORDER SUMMARY" header label.
+
+- The checkout CTA button should be the most prominent element on the page. Nothing else should compete with it visually.
+
+- BAC water upsell should feel like a helpful suggestion, not a promotional banner. Use a subtle teal/cyan accent color (#0ea5e9) to differentiate it from the primary purchase flow (which uses neon green).
+
+- Research Pairings cards should be more compact than the current implementation — one row per pairing with product name, price, short description, and "+ Add" button. No product images needed here.
+
+---
+
+## Mobile vs Desktop
+
+**Mobile:** Single column, content stacks in the order listed above. Checkout CTA should be visible within one scroll of the page loading.
+
+**Desktop:** Two-column layout is fine (cart items on left, order summary on right) as long as the summary and CTA are sticky or above the fold. Upsells and pairings go below the fold on both sides.
+
+---
+
+## Reference Mockup
+
+See the cart mockup in attached_assets (left phone in the side-by-side mockup). The exact content order and visual style should match.
+
+---
+
+## Files Affected
+
+- Cart page component (likely `client/src/pages/cart.tsx` or similar)
+- Remove discount code component/logic from cart
+- Reorder child components within the cart page

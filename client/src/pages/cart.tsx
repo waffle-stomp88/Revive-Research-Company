@@ -6,12 +6,10 @@ import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 import {
   ShoppingCart,
   Trash2,
@@ -23,29 +21,20 @@ import {
   Shield,
   Truck,
   AlertTriangle,
-  Tag,
   X,
-  Loader2,
   Thermometer,
-  Clock,
   FileCheck,
   ExternalLink,
   RefreshCw,
   Layers,
   Zap,
   Gift,
+  Beaker,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
 import type { Product, ProductDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
-
-interface AppliedDiscount {
-  code: string;
-  percentage: number;
-  type: "basic" | "personal";
-  freeShipping?: boolean;
-}
 
 function getSubscriptionLabel(interval: "weekly" | "biweekly" | "monthly" | undefined): string {
   switch (interval) {
@@ -65,15 +54,15 @@ function getSubscriptionDiscount(interval: "weekly" | "biweekly" | "monthly" | u
   }
 }
 
-function CrossSellCard({ 
-  suggestedProduct, 
-  reason, 
-  forProduct, 
-  addToCart 
-}: { 
-  suggestedProduct: Product; 
-  reason: string; 
-  forProduct: string; 
+function CrossSellCard({
+  suggestedProduct,
+  reason,
+  forProduct,
+  addToCart,
+}: {
+  suggestedProduct: Product;
+  reason: string;
+  forProduct: string;
   addToCart: (item: any) => void;
 }) {
   const [selectedDosage, setSelectedDosage] = useState("");
@@ -85,11 +74,10 @@ function CrossSellCard({
     enabled: dosageOpts.length > 0,
   });
   const dosageStocks = dosageStockQuery.data ?? [];
-
   const hasDosageStockData = dosageStocks.length > 0;
 
   const inStockDosages = hasDosageStockData
-    ? dosageOpts.filter(d => {
+    ? dosageOpts.filter((d: string) => {
         const stock = dosageStocks.find(ds => ds.dosage === d);
         return stock && stock.inStock && (stock.stockAmount ?? 0) > 0;
       })
@@ -99,17 +87,7 @@ function CrossSellCard({
     ? selectedDosage
     : inStockDosages[0] || "";
 
-  if (dosageOpts.length === 0) {
-    return null;
-  }
-
-  if (!dosageStockQuery.isSuccess) {
-    return null;
-  }
-
-  if (inStockDosages.length === 0) {
-    return null;
-  }
+  if (dosageOpts.length === 0 || !dosageStockQuery.isSuccess || inStockDosages.length === 0) return null;
 
   const getDosagePrice = (dosage: string): number => {
     if (hasDosageStockData) {
@@ -123,72 +101,59 @@ function CrossSellCard({
   const hasMultipleOptions = inStockDosages.length > 1;
 
   return (
-    <Card className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct.id}`}>
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
-          <img
-            src={suggestedProduct.imageUrl || productImage}
-            alt={suggestedProduct.name}
-            className="w-full h-full object-contain p-1"
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-semibold text-sm">{suggestedProduct.name}</p>
-            <span className="text-xs font-semibold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
-              ${Math.round(displayPrice)}
-            </span>
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
-            Pairs with {forProduct}: {reason}
-          </p>
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {hasMultipleOptions ? (
-              <Select
-                value={currentDosage}
-                onValueChange={setSelectedDosage}
-              >
-                <SelectTrigger className="h-7 w-[80px] text-xs" data-testid={`select-cross-sell-dosage-${suggestedProduct.id}`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {inStockDosages.map((d: string) => (
-                    <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct.id}-${d}`}>
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : currentDosage ? (
-              <Badge variant="outline" className="text-xs h-7 px-2">{currentDosage}</Badge>
-            ) : null}
-            <Link href={`/peptides/${suggestedProduct.slug || suggestedProduct.id}`}>
-              <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct.id}`}>
-                Details
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
-              disabled={!currentDosage}
-              onClick={() => addToCart({
-                productId,
-                name: suggestedProduct.name,
-                price: displayPrice,
-                quantity: 1,
-                dosage: currentDosage,
-                image: suggestedProduct.imageUrl || undefined,
-              })}
-              data-testid={`button-cross-sell-add-${suggestedProduct.id}`}
-            >
-              <Plus className="h-3 w-3 mr-1" />
-              Add
-            </Button>
-          </div>
-        </div>
+    <div
+      className="flex items-center gap-3 py-2.5 px-3 rounded-lg border border-border/50 bg-background/50"
+      data-testid={`card-cross-sell-${suggestedProduct.id}`}
+    >
+      <div className="w-8 h-8 rounded bg-muted flex-shrink-0 overflow-hidden">
+        <img
+          src={suggestedProduct.imageUrl || productImage}
+          alt={suggestedProduct.name}
+          className="w-full h-full object-contain p-0.5"
+        />
       </div>
-    </Card>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="font-semibold text-xs">{suggestedProduct.name}</span>
+          <span className="text-xs font-bold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
+            ${Math.round(displayPrice)}
+          </span>
+        </div>
+        <p className="text-[10px] text-muted-foreground truncate">{reason}</p>
+      </div>
+      {hasMultipleOptions ? (
+        <Select value={currentDosage} onValueChange={setSelectedDosage}>
+          <SelectTrigger className="h-7 w-[70px] text-xs flex-shrink-0" data-testid={`select-cross-sell-dosage-${suggestedProduct.id}`}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {inStockDosages.map((d: string) => (
+              <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct.id}-${d}`}>{d}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : currentDosage ? (
+        <Badge variant="outline" className="text-[10px] px-1.5 flex-shrink-0">{currentDosage}</Badge>
+      ) : null}
+      <Button
+        variant="outline"
+        size="sm"
+        className="text-xs h-7 px-2.5 border-[#22c55e]/30 text-[#22c55e] flex-shrink-0"
+        disabled={!currentDosage}
+        onClick={() => addToCart({
+          productId,
+          name: suggestedProduct.name,
+          price: displayPrice,
+          quantity: 1,
+          dosage: currentDosage,
+          image: suggestedProduct.imageUrl || undefined,
+        })}
+        data-testid={`button-cross-sell-add-${suggestedProduct.id}`}
+      >
+        <Plus className="h-3 w-3 mr-1" />
+        Add
+      </Button>
+    </div>
   );
 }
 
@@ -204,7 +169,6 @@ export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [discountCode, setDiscountCode] = useState("");
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const { data: allProducts = [] } = useQuery<Product[]>({
@@ -249,94 +213,60 @@ export default function CartPage() {
     });
   }, [firstOrderStatus, items, addToCart]);
 
+  // BAC water paid upsell — shown when BAC water isn't already in cart
+  const bacWaterUpsell = allProducts.find(p =>
+    p.inStock !== false && (
+      p.name.toLowerCase().includes("bacteriostatic") ||
+      p.name.toLowerCase().includes("bac water")
+    )
+  );
+  const bacWaterInCart = bacWaterUpsell
+    ? items.some(i => String(i.productId) === String(bacWaterUpsell.id))
+    : true;
+  const showBacWaterUpsell = !!bacWaterUpsell && !bacWaterInCart && !firstOrderStatus?.isFirstOrder;
+
+  const handleAddBacWater = () => {
+    if (!bacWaterUpsell) return;
+    const dosage = (bacWaterUpsell.dosageOptions || [])[0] || "";
+    addToCart({
+      productId: String(bacWaterUpsell.id),
+      name: bacWaterUpsell.name,
+      price: Number(bacWaterUpsell.price),
+      quantity: 1,
+      dosage,
+      image: bacWaterUpsell.imageUrl || undefined,
+    });
+    toast({ title: "Added to cart", description: `${bacWaterUpsell.name} added.` });
+  };
+
   const crossSellSuggestions = getCrossSellSuggestions(items.map(i => i.name));
   const crossSellProducts = crossSellSuggestions.map(s => {
-    const product = allProducts.find(p => 
+    const product = allProducts.find(p =>
       p.name.toLowerCase() === s.product.toLowerCase() ||
       p.name.toLowerCase().includes(s.product.toLowerCase()) ||
       s.product.toLowerCase().includes(p.name.toLowerCase())
     );
-    return { ...s, product: product };
+    return { ...s, product };
   }).filter(s => s.product && s.product.inStock);
-  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
-    const saved = localStorage.getItem("appliedDiscount");
-    return saved ? JSON.parse(saved) : null;
-  });
-
-  const applyDiscountMutation = useMutation({
-    mutationFn: async (code: string) => {
-      const response = await apiRequest("POST", "/api/discount/validate", { code });
-      return response.json();
-    },
-    onSuccess: (data) => {
-      const discount: AppliedDiscount = {
-        code: data.code,
-        percentage: data.percentage,
-        type: data.type,
-        freeShipping: data.freeShipping || false,
-      };
-      setAppliedDiscount(discount);
-      localStorage.setItem("appliedDiscount", JSON.stringify(discount));
-      setDiscountCode("");
-      const description = data.freeShipping 
-        ? `${data.percentage}% discount + Free Shipping applied!`
-        : `${data.percentage}% discount has been applied to your order.`;
-      toast({
-        title: "Discount Applied!",
-        description,
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Invalid Code",
-        description: error.message || "This discount code is not valid.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleApplyDiscount = () => {
-    if (!discountCode.trim()) return;
-    applyDiscountMutation.mutate(discountCode.trim().toUpperCase());
-  };
-
-  const removeDiscount = () => {
-    setAppliedDiscount(null);
-    localStorage.removeItem("appliedDiscount");
-    toast({
-      title: "Discount Removed",
-      description: "The discount code has been removed from your order.",
-    });
-  };
 
   const handleCheckout = () => {
     if (items.length === 0) {
-      toast({
-        title: "Cart is empty",
-        description: "Add some products before checking out.",
-        variant: "destructive",
-      });
+      toast({ title: "Cart is empty", description: "Add some products before checking out.", variant: "destructive" });
       return;
     }
     setLocation("/checkout?fromCart=true");
   };
 
   const subtotal = getSubtotal();
-  const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
-  const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
-  const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
-  const total = subtotal - discountAmount + shipping;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+  const total = subtotal + shipping;
   const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
 
   if (items.length === 0) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
         <div className="max-w-4xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
             <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
               <ShoppingCart className="h-12 w-12 text-muted-foreground" />
             </div>
@@ -356,33 +286,60 @@ export default function CartPage() {
     );
   }
 
+  const researchPairingsSection = crossSellProducts.length > 0 ? (
+    <div data-testid="cart-cross-sell-section">
+      <h3 className="font-display font-semibold mb-1 flex items-center gap-2 text-base">
+        <Zap className="h-4 w-4 text-[#22c55e]" />
+        Research Pairings
+      </h3>
+      <p className="text-[10px] text-muted-foreground mb-3">
+        Based on your cart, these compounds share complementary mechanisms.
+      </p>
+      <div className="space-y-2">
+        {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => (
+          <CrossSellCard
+            key={suggestedProduct!.id}
+            suggestedProduct={suggestedProduct!}
+            reason={reason}
+            forProduct={forProduct}
+            addToCart={addToCart}
+          />
+        ))}
+      </div>
+    </div>
+  ) : null;
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
-      <SEOHead title="Cart" description={`Review your research compound order. Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}. Secure checkout with fast processing.`} canonicalPath="/cart" />
+      <SEOHead
+        title="Cart"
+        description={`Review your research compound order. Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}. Secure checkout with fast processing.`}
+        canonicalPath="/cart"
+      />
       <div className="max-w-6xl mx-auto w-full">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-6"
-        >
+        {/* Back + Title */}
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-4">
           <Link href="/products">
-            <Button variant="ghost" className="gap-2 md:-ml-4" data-testid="button-continue-shopping">
+            <Button variant="ghost" className="gap-2 -ml-2 md:-ml-4" data-testid="button-continue-shopping">
               <ArrowLeft className="h-4 w-4" />
               Continue Shopping
             </Button>
           </Link>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="font-display text-3xl font-bold mb-8"
-        >
-          Shopping Cart ({items.length} {items.length === 1 ? "item" : "items"})
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display text-2xl md:text-3xl font-bold mb-6">
+          Shopping Cart
+          <span className="text-muted-foreground font-normal text-base ml-2">({items.length} {items.length === 1 ? "item" : "items"})</span>
         </motion.h1>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
+        {/*
+          Mobile layout (flex-col): cart items → summary+CTA → research pairings
+          Desktop layout (lg:grid 3-col): left 2/3 = cart + pairings, right 1/3 = sticky summary
+        */}
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
+
+          {/* ====== CART ITEMS — order 1 on mobile, left col on desktop ====== */}
+          <div className="order-1 lg:col-span-2 space-y-3">
             {/* First-order free BAC water banner */}
             {firstOrderStatus?.isFirstOrder && !!firstOrderStatus.bacWaterProductId && !bannerDismissed && (
               <motion.div
@@ -407,394 +364,339 @@ export default function CartPage() {
               </motion.div>
             )}
 
-            {items.map((item, index) => (
-              <motion.div
-                key={`${item.productId}-${item.dosage}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-  {(() => {
-                  const isCustomStack = item.bundleId?.startsWith("custom-");
-                  const cardContent = (
-                    <Card 
-                      className={`p-3 transition-all duration-300 border-2 ${
-                        isCustomStack 
-                          ? "border-[#9d4edd]/40" 
-                          : "border-[#21d8ff]/40 cursor-pointer md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)] md:hover:scale-[1.01]"
-                      }`}
-                      data-testid={`cart-item-${item.productId}`}
+            {items.map((item, index) => {
+              const isCustomStack = item.bundleId?.startsWith("custom-");
+              const cardContent = (
+                <Card
+                  className={`p-3 transition-all duration-300 border-2 ${
+                    isCustomStack
+                      ? "border-[#9d4edd]/40"
+                      : "border-[#21d8ff]/40 cursor-pointer md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)] md:hover:scale-[1.01]"
+                  }`}
+                  data-testid={`cart-item-${item.productId}`}
+                >
+                  <div className="flex gap-3 items-center">
+                    {/* Product Image — compact on mobile */}
+                    <div
+                      className="w-12 h-12 md:w-20 md:h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
+                      data-testid={`cart-item-image-${item.productId}`}
                     >
-                      <div className="flex gap-3 md:gap-4 items-center">
-                        {/* Product Image - larger */}
-                        <div 
-                          className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
-                          data-testid={`cart-item-image-${item.productId}`}
-                        >
-                          <img
-                            src={item.image || productImage}
-                            alt={`${item.name} ${item.dosage} research peptide`}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        </div>
-                        
-                        {/* Product Info - center column */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-display font-bold text-xl md:text-2xl" data-testid={`cart-item-name-${item.productId}`}>
-                              {item.name}
-                            </h3>
-                            {item.packSize && (
-                              <Badge 
-                                className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-pack-${item.productId}-${item.packSize}`}
-                              >
-                                <Package className="h-2.5 w-2.5" />
-                                {item.packSize}-Pack
-                              </Badge>
-                            )}
-                            {item.isSubscription && (
-                              <Badge 
-                                className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-subscription-${item.productId}`}
-                              >
-                                <RefreshCw className="h-2.5 w-2.5" />
-                                Subscribe
-                              </Badge>
-                            )}
-                            {(item.isBundle || item.bundleId) && (
-                              <Badge 
-                                className={`gap-1 text-[10px] px-1.5 py-0 ${
-                                  isCustomStack 
-                                    ? "bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30" 
-                                    : "bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30"
-                                }`}
-                                data-testid={`badge-stack-${item.productId || item.bundleId}`}
-                              >
-                                <Layers className="h-2.5 w-2.5" />
-                                {isCustomStack ? "Custom Stack" : "Stack"}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {item.dosage}
-                          </p>
-                          {item.isSubscription && (
-                            <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
-                              {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
-                            </p>
-                          )}
-                        </div>
-                        
-                        {/* Right column: Price+Trash centered top, Quantity at bottom */}
-                        <div className="flex flex-col items-end justify-center gap-3 h-20 md:h-24 flex-shrink-0">
-                          {item.isFree ? (
-                            /* Free item: show FREE badge only — no remove or qty controls */
-                            <Badge
-                              className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5"
-                              data-testid={`badge-free-${item.productId}`}
-                            >
-                              <Gift className="h-3 w-3" />
-                              FREE
-                            </Badge>
-                          ) : (
-                            <>
-                              {/* Price + Trash */}
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-baseline gap-2">
-                                  <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                                    ${Math.round(item.price * item.quantity)}
-                                  </span>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-red-400 h-8 w-8"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    removeFromCart(item.productId, item.dosage, item.packSize);
-                                  }}
-                                  data-testid={`button-remove-${item.productId}`}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                      <img
+                        src={item.image || productImage}
+                        alt={`${item.name} ${item.dosage} research peptide`}
+                        className="w-full h-full object-contain p-1"
+                      />
+                    </div>
 
-                              {/* Quantity controls */}
-                              <div
-                                className="flex items-center border border-border rounded-md"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 w-7 p-0"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
-                                  }}
-                                  data-testid={`button-decrease-${item.productId}`}
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-                                <span className="w-7 text-center font-medium text-sm">
-                                  {item.quantity}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 w-7 p-0"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
-                                  }}
-                                  disabled={item.quantity >= 10}
-                                  data-testid={`button-increase-${item.productId}`}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h3 className="font-display font-bold text-base md:text-xl" data-testid={`cart-item-name-${item.productId}`}>
+                          {item.name}
+                        </h3>
+                        {item.packSize && (
+                          <Badge
+                            className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0"
+                            data-testid={`badge-pack-${item.productId}-${item.packSize}`}
+                          >
+                            <Package className="h-2.5 w-2.5" />
+                            {item.packSize}-Pack
+                          </Badge>
+                        )}
+                        {item.isSubscription && (
+                          <Badge
+                            className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
+                            data-testid={`badge-subscription-${item.productId}`}
+                          >
+                            <RefreshCw className="h-2.5 w-2.5" />
+                            Subscribe
+                          </Badge>
+                        )}
+                        {(item.isBundle || item.bundleId) && (
+                          <Badge
+                            className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
+                            data-testid={`badge-stack-${item.productId || item.bundleId}`}
+                          >
+                            <Layers className="h-2.5 w-2.5" />
+                            {isCustomStack ? "Custom Stack" : "Stack"}
+                          </Badge>
+                        )}
                       </div>
-                    </Card>
-                  );
+                      <p className="text-xs text-muted-foreground">{item.dosage}</p>
+                      {item.isSubscription && (
+                        <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
+                          {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                        </p>
+                      )}
+                    </div>
 
-                  const getCartItemHref = () => {
-                    if (!item.bundleId) return `/peptides/${item.productId}`;
-                    if (item.dosage === "Research Stack") return `/research-stacks/${item.bundleId}`;
-                    return `/bundles/${item.bundleId}`;
-                  };
+                    {/* Right: price + controls */}
+                    <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
+                      {item.isFree ? (
+                        <Badge
+                          className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5"
+                          data-testid={`badge-free-${item.productId}`}
+                        >
+                          <Gift className="h-3 w-3" />
+                          FREE
+                        </Badge>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-display font-bold text-lg md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                              ${Math.round(item.price * item.quantity)}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                removeFromCart(item.productId, item.dosage, item.packSize);
+                              }}
+                              data-testid={`button-remove-${item.productId}`}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                          <div
+                            className="flex items-center border border-border rounded-md"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
+                              }}
+                              data-testid={`button-decrease-${item.productId}`}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="w-7 text-center font-medium text-sm">{item.quantity}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
+                              }}
+                              disabled={item.quantity >= 10}
+                              data-testid={`button-increase-${item.productId}`}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              );
 
-                  return isCustomStack ? cardContent : (
-                    <Link 
-                      href={getCartItemHref()}
-                      className="block"
-                      data-testid={`link-cart-item-card-${item.productId}`}
-                    >
+              const getCartItemHref = () => {
+                if (!item.bundleId) return `/peptides/${item.productId}`;
+                if (item.dosage === "Research Stack") return `/research-stacks/${item.bundleId}`;
+                return `/bundles/${item.bundleId}`;
+              };
+
+              return (
+                <motion.div
+                  key={`${item.productId}-${item.dosage}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  {isCustomStack ? cardContent : (
+                    <Link href={getCartItemHref()} className="block" data-testid={`link-cart-item-card-${item.productId}`}>
                       {cardContent}
                     </Link>
-                  );
-                })()}
-              </motion.div>
-            ))}
+                  )}
+                </motion.div>
+              );
+            })}
 
-            <div className="flex justify-end pt-4">
-              <Button
-                variant="outline"
-                className="text-red-400 border-red-400/30 hover:bg-red-400/10"
-                onClick={clearCart}
-                data-testid="button-clear-cart"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Clear Cart
-              </Button>
-            </div>
-
+            {/* Research Pairings — desktop only (mobile version lives in sidebar) */}
             {crossSellProducts.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-border/50" data-testid="cart-cross-sell-section">
-                <h3 className="font-display font-semibold mb-1 flex items-center gap-2 text-[22px]">
-                  <Zap className="h-5 w-5 text-[#22c55e]" />
-                  Research Pairings
-                </h3>
-                <p className="text-xs text-muted-foreground mb-4">
-                  Based on what's in your cart, these compounds share complementary mechanisms.
-                </p>
-                <div className="space-y-3">
-                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => (
-                    <CrossSellCard
-                      key={suggestedProduct!.id}
-                      suggestedProduct={suggestedProduct!}
-                      reason={reason}
-                      forProduct={forProduct}
-                      addToCart={addToCart}
-                    />
-                  ))}
-                </div>
+              <div className="hidden lg:block mt-4 pt-4 border-t border-border/30">
+                {researchPairingsSection}
               </div>
             )}
+
+            {/* What to Expect — desktop only */}
+            <Card className="hidden lg:block p-4 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+              <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Thermometer className="h-4 w-4 text-[#21d8ff]" />
+                What to Expect
+              </h4>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <Link href="/guides/ordering-expectations">
+                  <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-ordering-expectations">
+                    <span>Full ordering & delivery guide</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </div>
+                </Link>
+                <Link href="/guides/peptide-package-arrived-warm">
+                  <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-package-warm">
+                    <span>Package arrived warm? Don't worry</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </div>
+                </Link>
+              </div>
+            </Card>
           </div>
 
-          <div className="lg:col-span-1">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="p-3 sm:p-4 md:p-6 md:sticky md:top-24">
-                <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
-                
-                <div className="space-y-3 text-sm">
+          {/* ====== SUMMARY + CTA + UPSELLS — order 2 on mobile, right sticky col on desktop ====== */}
+          <div className="order-2 lg:col-start-3 lg:row-start-1 lg:row-span-2">
+            <div className="lg:sticky lg:top-24 space-y-3">
+
+              {/* Order Summary */}
+              <Card className="p-4 md:p-5" data-testid="card-order-summary">
+                <h2 className="font-display font-semibold text-base mb-3">Order Summary</h2>
+                <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span data-testid="text-subtotal">${Math.round(subtotal)}</span>
                   </div>
-                  {appliedDiscount && (
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-3 w-3 text-green-500" />
-                        <span className="text-green-500">Discount ({appliedDiscount.percentage}%)</span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-4 w-4 p-0 hover:bg-transparent"
-                          onClick={removeDiscount}
-                          data-testid="button-remove-discount"
-                        >
-                          <X className="h-3 w-3 text-muted-foreground hover:text-red-400" />
-                        </Button>
-                      </div>
-                      <span className="text-green-500" data-testid="text-discount">-${Math.round(discountAmount)}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span className={shipping === 0 ? "text-green-500" : ""}>
+                    <span className={shipping === 0 ? "text-green-500 font-medium" : ""}>
                       {shipping === 0 ? "FREE" : `$${Math.round(shipping)}`}
                     </span>
                   </div>
                   {shipping > 0 && amountToFreeShipping > 0 && (
-                    <p className="text-xs text-muted-foreground">
-                      Add <span className="text-[#21d8ff] font-semibold">${Math.round(amountToFreeShipping)}</span> more for free shipping!
+                    <p className="text-[10px] text-[#21d8ff]">
+                      Add ${Math.round(amountToFreeShipping)} more for free shipping
                     </p>
                   )}
                 </div>
 
-                <Separator className="my-4" />
+                <Separator className="my-3" />
 
-                {!appliedDiscount ? (
-                  <div className="mb-4">
-                    <label className="text-xs text-muted-foreground mb-2 block">Discount Code</label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Enter code"
-                        value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                        onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
-                        className="flex-1 uppercase"
-                        data-testid="input-discount-code"
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={handleApplyDiscount}
-                        disabled={!discountCode.trim() || applyDiscountMutation.isPending}
-                        data-testid="button-apply-discount"
-                      >
-                        {applyDiscountMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          "Apply"
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mb-4 p-3 bg-green-950/30 border border-green-500/30 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">
-                          {appliedDiscount.code}
-                        </span>
-                        <span className="text-xs text-muted-foreground">applied</span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground md:hover:text-red-500"
-                        onClick={removeDiscount}
-                        data-testid="button-remove-discount"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                <Separator className="my-4" />
-
-                <div className="flex justify-between font-display font-bold text-xl mb-2">
-                  <span>Total</span>
-                  <span className="text-[#E7FB10]" data-testid="text-total">${Math.round(total)}</span>
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="font-display font-bold text-lg">Total</span>
+                  <span className="font-display font-bold text-2xl text-[#E7FB10]" data-testid="text-total">
+                    ${Math.round(total)}
+                  </span>
                 </div>
-                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
-
-                <Button
-                  size="lg"
-                  className="w-full bg-[#E7FB10] text-black md:hover:bg-[#E7FB10]/90 gap-2 shadow-glow-sm md:hover:shadow-glow-lg transition-shadow"
-                  onClick={handleCheckout}
-                  data-testid="button-checkout"
-                >
-                  Proceed to Checkout
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-
-                {/* Mobile: Compact icon row */}
-                <div className="flex items-center justify-center gap-4 mt-4 md:hidden" data-testid="cart-mobile-trust-icons">
-                  <Shield className="h-4 w-4 text-[#21d8ff]" />
-                  <Truck className="h-4 w-4 text-[#E7FB10]" />
-                  <FileCheck className="h-4 w-4 text-[#9d4edd]" />
-                </div>
-                
-                {/* Desktop: Full trust indicators */}
-                <div className="hidden md:block mt-6 space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Shield className="h-4 w-4 text-[#21d8ff]" />
-                    <span>Secure checkout</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Truck className="h-4 w-4 text-[#21d8ff]" />
-                    <span>Same-day shipping (orders before 12pm CT)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-                    <span>COA included with every order</span>
-                  </div>
-                </div>
-
-                <Separator className="my-4 hidden md:block" />
-
-                {/* Helpful Shipping Info - Desktop only */}
-                <Card className="hidden md:block p-4 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent mb-4">
-                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                    <Thermometer className="h-4 w-4 text-[#21d8ff]" />
-                    What to Expect
-                  </h4>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <Link href="/guides/ordering-expectations">
-                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-ordering-expectations">
-                        <span>Full ordering & delivery guide</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </div>
-                    </Link>
-                    <Link href="/guides/peptide-package-arrived-warm">
-                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-package-warm">
-                        <span>Package arrived warm? Don't worry</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </div>
-                    </Link>
-                  </div>
-                </Card>
-
-                <Separator className="my-4 hidden md:block" />
-
-                {/* RUO Warning - Compact on mobile */}
-                <div className="p-3 md:p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle" data-testid="cart-ruo-warning">
-                  <div className="flex items-center md:items-start gap-2 md:gap-3">
-                    <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-red-400 flex-shrink-0" />
-                    <div className="flex md:flex-col items-center md:items-start gap-1 md:gap-0">
-                      <p className="text-xs md:text-sm font-semibold text-red-400" data-testid="cart-ruo-title">Research Use Only</p>
-                      <p className="hidden md:block text-xs text-muted-foreground" data-testid="cart-ruo-description">
-                        Not for human consumption. All products are intended for laboratory research purposes only.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <p className="text-[10px] text-muted-foreground text-right">Tax calculated at checkout</p>
               </Card>
-            </motion.div>
+
+              {/* Checkout CTA */}
+              <Button
+                size="lg"
+                className="w-full bg-[#E7FB10] text-black font-display font-bold text-base gap-2 shadow-glow-sm"
+                onClick={handleCheckout}
+                data-testid="button-checkout"
+              >
+                Proceed to Checkout
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+
+              {/* Trust badges */}
+              <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground py-1" data-testid="cart-trust-badges">
+                <div className="flex items-center gap-1">
+                  <Shield className="h-3.5 w-3.5 text-[#21d8ff]" />
+                  <span>Secure checkout</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Truck className="h-3.5 w-3.5 text-[#E7FB10]" />
+                  <span>Same-day shipping</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <FileCheck className="h-3.5 w-3.5 text-[#9d4edd]" />
+                  <span>COA included</span>
+                </div>
+              </div>
+
+              <Separator className="opacity-30" />
+
+              {/* BAC Water Upsell */}
+              {showBacWaterUpsell && (
+                <div className="p-3 rounded-lg border border-[#0ea5e9]/30 bg-[#0ea5e9]/5" data-testid="bac-water-upsell-cart">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-md bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 flex items-center justify-center flex-shrink-0">
+                      <Beaker className="h-4 w-4 text-[#0ea5e9]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold mb-0.5">Missing something?</p>
+                      <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
+                        Add bacteriostatic water to reconstitute your peptides
+                      </p>
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-[#0ea5e9] hover:bg-[#0ea5e9]/90 text-white px-3"
+                        onClick={handleAddBacWater}
+                        data-testid="button-add-bac-water-upsell"
+                      >
+                        + Add {bacWaterUpsell?.name} — ${Math.round(Number(bacWaterUpsell?.price))}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Research Pairings — mobile only (desktop version in left col) */}
+              {crossSellProducts.length > 0 && (
+                <div className="lg:hidden space-y-2">
+                  <Separator className="opacity-30" />
+                  {researchPairingsSection}
+                </div>
+              )}
+
+              {/* What to Expect — mobile only (desktop in left col) */}
+              <div className="lg:hidden pt-1">
+                <Separator className="opacity-30 mb-3" />
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1.5 text-muted-foreground">
+                  <Thermometer className="h-3.5 w-3.5 text-[#21d8ff]" />
+                  What to Expect
+                </h4>
+                <div className="space-y-1.5 text-xs">
+                  <Link href="/guides/ordering-expectations">
+                    <div className="flex items-center gap-1 text-[#21d8ff] hover:underline" data-testid="link-ordering-expectations-mobile">
+                      <span>Full ordering & delivery guide</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
+                    </div>
+                  </Link>
+                  <Link href="/guides/peptide-package-arrived-warm">
+                    <div className="flex items-center gap-1 text-[#21d8ff] hover:underline" data-testid="link-package-warm-mobile">
+                      <span>Package arrived warm? Don't worry</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* RUO Disclaimer */}
+              <div className="p-3 bg-red-950/30 border border-red-500/40 rounded-lg" data-testid="cart-ruo-warning">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-red-400" data-testid="cart-ruo-title">Research Use Only</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5" data-testid="cart-ruo-description">
+                      Not for human consumption. For laboratory research purposes only.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clear cart — subtle text link, not a button */}
+              <div className="text-center pt-1">
+                <button
+                  onClick={clearCart}
+                  className="text-[10px] text-muted-foreground/50 hover:text-red-400/70 transition-colors underline-offset-2 hover:underline"
+                  data-testid="button-clear-cart"
+                >
+                  Clear cart
+                </button>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </main>
