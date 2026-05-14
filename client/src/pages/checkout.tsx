@@ -92,6 +92,11 @@ export default function Checkout() {
   });
   const [copied, setCopied] = useState(false);
 
+  // 2-step checkout state
+  const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
+  const [payAnotherWayExpanded, setPayAnotherWayExpanded] = useState(false);
+  const [saveToProfile, setSaveToProfile] = useState(false);
+
   // SessionStorage keys for checkout form persistence
   const CHECKOUT_KEYS = {
     name: "rr_checkout_name",
@@ -108,7 +113,6 @@ export default function Checkout() {
   };
 
   // Restore checkout fields from sessionStorage on mount
-  // Logged-in user profile data (loaded later) will overwrite via its own effect
   useEffect(() => {
     const name = sessionStorage.getItem(CHECKOUT_KEYS.name);
     const email = sessionStorage.getItem(CHECKOUT_KEYS.email);
@@ -128,9 +132,9 @@ export default function Checkout() {
         zip: zip || prev.zip,
       }));
     }
-  }, []); // run once on mount only
+  }, []);
 
-  // Debounced save of checkout fields to sessionStorage whenever they change
+  // Debounced save of checkout fields to sessionStorage
   useEffect(() => {
     const timer = setTimeout(() => {
       sessionStorage.setItem(CHECKOUT_KEYS.name, customerName);
@@ -155,20 +159,23 @@ export default function Checkout() {
       /^\d{5}(-\d{4})?$/.test(shippingAddress.zip)
     );
   }, [customerName, customerEmail, shippingAddress]);
-  
-  // RUO/Age reminder state - shown once per session on checkout
+
+  // RUO/Age reminder state
   const [showRuoReminder, setShowRuoReminder] = useState(false);
   const [ruoAcknowledged, setRuoAcknowledged] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
-  
+
   // Early access email signup state
   const [notifyEmail, setNotifyEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-  
+
   // Stock validation state
   const [stockErrors, setStockErrors] = useState<string[]>([]);
   const [stockValidating, setStockValidating] = useState(false);
-  
+
+  // Submit attempted flag for inline errors
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   // Validate stock when checkout loads and when cart changes
   useEffect(() => {
     const validateCartStock = async () => {
@@ -200,14 +207,14 @@ export default function Checkout() {
     validateCartStock();
   }, [cartItems]);
 
-  // Clear saved checkout data when cart becomes empty (order complete or user empties cart)
+  // Clear saved checkout data when cart becomes empty
   useEffect(() => {
     if (cartItems.length === 0) {
       clearCheckoutStorage();
     }
   }, [cartItems.length]);
 
-  // Query for BAC water product
+  // Query for BAC water product (still needed for first-order free BAC water injection)
   const { data: bacWaterProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     queryFn: async () => {
@@ -218,7 +225,7 @@ export default function Checkout() {
   });
 
   const bacWater = bacWaterProducts?.find(p => p.name.toLowerCase().includes("bacteriostatic"));
-  
+
   // Query for bac water dosage stocks (sizes)
   const { data: bacWaterStocks } = useQuery<Array<{ dosage: string; price: string | null; inStock: boolean }>>({
     queryKey: ["/api/products", bacWater?.id, "dosage-stocks"],
@@ -230,66 +237,17 @@ export default function Checkout() {
     },
     enabled: !!bacWater?.id,
   });
-  
-  // Get available bac water sizes
-  const bacWaterSizes = bacWaterStocks?.filter(s => s.inStock) || [];
-  const [selectedBacWaterSize, setSelectedBacWaterSize] = useState<string>("30ML");
-  const [selectedBacWaterQty, setSelectedBacWaterQty] = useState<number>(1);
-  const [submitAttempted, setSubmitAttempted] = useState(false);
-  const [shippingSaved, setShippingSaved] = useState(false);
-  const [payAnotherWayExpanded, setPayAnotherWayExpanded] = useState(false);
-  const [saveToProfile, setSaveToProfile] = useState(false);
-  
-  // Check if cart has peptides and BAC water
-  const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
-  const bacWaterInCart = cartItems.find(item => item.name.toLowerCase().includes("bacteriostatic"));
-  const hasBacWater = !!bacWaterInCart;
-  const shouldShowBacUpsell = hasPeptides && bacWater && !hasBacWater;
-  
+
   // Detect subscription items in cart
   const subscriptionItems = cartItems.filter(item => item.isSubscription);
   const oneTimeItems = cartItems.filter(item => !item.isSubscription);
   const hasSubscriptionItems = subscriptionItems.length > 0;
   const hasOneTimeItems = oneTimeItems.length > 0;
   const hasMixedCart = hasSubscriptionItems && hasOneTimeItems;
-  
-  // For single subscription item from cart (used in payment section)
+
+  // For single subscription item from cart
   const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
 
-  const handleAddBacWater = async (size?: string) => {
-    if (bacWater && !hasBacWater) {
-      const selectedSize = size || selectedBacWaterSize;
-      const sizeStock = bacWaterStocks?.find(s => s.dosage === selectedSize);
-      const price = sizeStock?.price ? Number(sizeStock.price) : Number(bacWater.price);
-      const added = await addToCart({
-        productId: bacWater.id,
-        name: bacWater.name,
-        price: price,
-        quantity: selectedBacWaterQty,
-        dosage: selectedSize,
-        image: bacWater.imageUrl || productImage,
-      });
-      if (!added) {
-        toast({ title: "Out of Stock", description: `${bacWater.name} (${selectedSize}) is out of stock.`, variant: "destructive" });
-        return;
-      }
-      toast({
-        title: "Added to cart",
-        description: `${selectedBacWaterQty}x ${bacWater.name} (${selectedSize}) added to your cart.`,
-      });
-    }
-  };
-  
-  const handleRemoveBacWater = () => {
-    if (bacWater && bacWaterInCart) {
-      removeFromCart(bacWater.id, bacWaterInCart.dosage);
-      toast({
-        title: "Removed from cart",
-        description: "Bacteriostatic Water removed.",
-      });
-    }
-  };
-  
   // Check if user has already acknowledged the RUO reminder this session
   useEffect(() => {
     const hasAcknowledged = sessionStorage.getItem('checkoutRuoAcknowledged');
@@ -297,7 +255,7 @@ export default function Checkout() {
       setShowRuoReminder(true);
     }
   }, []);
-  
+
   const handleRuoAcknowledge = () => {
     if (ruoAcknowledged && ageConfirmed) {
       sessionStorage.setItem('checkoutRuoAcknowledged', 'true');
@@ -337,8 +295,7 @@ export default function Checkout() {
     },
   });
 
-  // Save shipping address back to user's profile.
-  // PATCHes the existing default address if one exists; POSTs a new one otherwise.
+  // Save shipping address back to user's profile
   const saveAddressMutation = useMutation({
     mutationFn: async () => {
       const parts = customerName.trim().split(" ");
@@ -406,7 +363,7 @@ export default function Checkout() {
 
   const isAuthenticated = !!user;
 
-  // First-order status — injects free 3ml BAC water for first-time buyers at checkout too
+  // First-order status — injects free 3ml BAC water for first-time buyers
   const { data: checkoutFirstOrderStatus } = useQuery<{
     isFirstOrder: boolean;
     bacWaterProductId: string | null;
@@ -441,7 +398,7 @@ export default function Checkout() {
     });
   }, [checkoutFirstOrderStatus, cartItems, addToCart]);
 
-  // Fetch saved addresses for logged-in users (for checkout pre-fill)
+  // Fetch saved addresses for logged-in users
   const { data: savedAddresses, isFetched: savedAddressesFetched } = useQuery<SavedAddress[]>({
     queryKey: ["/api/addresses"],
     queryFn: async () => {
@@ -452,8 +409,7 @@ export default function Checkout() {
     enabled: !!user,
   });
 
-  // Fetch all distinct past shipping addresses for returning users.
-  // Powers the "Use a previous address" dropdown at checkout.
+  // Fetch all distinct past shipping addresses for returning users
   const { data: pastShippingAddresses } = useQuery<{ street: string; city: string; state: string; zip: string }[]>({
     queryKey: ["/api/orders/past-shipping-addresses"],
     queryFn: async () => {
@@ -464,8 +420,7 @@ export default function Checkout() {
     enabled: !!user,
   });
 
-  // Fetch the most recent order's shipping address as a fallback pre-fill source.
-  // Only used when the user has no saved addresses.
+  // Fetch the most recent order's shipping address as a fallback
   const { data: latestOrderAddress } = useQuery<{ street: string; city: string; state: string; zip: string } | null>({
     queryKey: ["/api/orders/latest-shipping-address"],
     queryFn: async () => {
@@ -473,7 +428,6 @@ export default function Checkout() {
       if (!res.ok) return null;
       return res.json();
     },
-    // Only fetch if the user is logged in and has no saved addresses
     enabled: !!user && savedAddressesFetched && (savedAddresses?.length ?? 0) === 0,
   });
 
@@ -485,8 +439,7 @@ export default function Checkout() {
     }
   }, [user]);
 
-  // Pre-fill shipping address from the user's default saved address.
-  // Fills each field individually so a partial sessionStorage restore is topped up.
+  // Pre-fill shipping address from the user's default saved address
   useEffect(() => {
     if (!savedAddresses || !user) return;
     const defaultAddr = savedAddresses.find(a => a.isDefault) ?? savedAddresses[0];
@@ -497,13 +450,10 @@ export default function Checkout() {
       state: prev.state || defaultAddr.state,
       zip: prev.zip || defaultAddr.zipCode,
     }));
-    // Fill name from saved address if still blank after user-data effect
     setCustomerName(prev => prev || `${defaultAddr.firstName} ${defaultAddr.lastName}`.trim());
   }, [savedAddresses, user]);
 
-  // Fallback: pre-fill from the most recent order when the user has no saved addresses.
-  // The query above is gated on savedAddressesFetched && length===0, so this effect
-  // only ever runs after saved addresses have been confirmed absent — no race condition.
+  // Fallback: pre-fill from the most recent order when the user has no saved addresses
   useEffect(() => {
     if (!latestOrderAddress || !user) return;
     setShippingAddress(prev => ({
@@ -532,8 +482,6 @@ export default function Checkout() {
         title: "Order Created!",
         description: "Your order has been placed. Please complete the payment as instructed.",
       });
-      
-      // Store order summary for confirmation page
       const orderSummary = {
         items: cartItems.map(item => ({
           name: item.name,
@@ -553,17 +501,13 @@ export default function Checkout() {
         zip: shippingAddress.zip,
       };
       sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
-      
-      // Invalidate all product-related caches so stock levels refresh immediately
       queryClient.invalidateQueries({ predicate: (query) => {
         const key = query.queryKey[0];
         return typeof key === 'string' && key.startsWith('/api/products');
       }});
-      
       clearCart();
       clearCheckoutStorage();
       localStorage.removeItem("appliedDiscount");
-      // Redirect to order confirmation or orders page
       window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;
     },
     onError: (error: Error) => {
@@ -576,16 +520,12 @@ export default function Checkout() {
   });
 
   const discountPercent = isSubscription ? (subscriptionDiscounts[interval] || 10) : 0;
-  const getDiscountedPrice = (price: number) => {
-    return price * (1 - discountPercent / 100);
-  };
 
-  // Early Access Mode - block actual purchases
-  const EARLY_ACCESS_MODE = false; // Disabled for sandbox testing
+  // Early Access Mode
+  const EARLY_ACCESS_MODE = false;
 
   const handlePayPalSuccess = async (orderData: any, paypalOrderId: string) => {
     try {
-      // Create order in our system with PayPal payment details
       const response = await fetch("/api/orders/paypal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -613,7 +553,6 @@ export default function Checkout() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Failed to create order:", errorData);
-        // Still redirect but show warning
         toast({
           title: "Payment Successful",
           description: "Payment received, but there was an issue creating your order record. Please contact support.",
@@ -621,10 +560,9 @@ export default function Checkout() {
         });
       } else {
         const result = await response.json();
-        console.log("Order created:", result);
         toast({
           title: "Payment Successful!",
-          description: result.emailSent 
+          description: result.emailSent
             ? "Your order has been placed and confirmation email sent!"
             : "Your order has been placed. Thank you for your purchase!",
         });
@@ -636,9 +574,7 @@ export default function Checkout() {
         description: "Payment received. Confirmation email will be sent shortly.",
       });
     }
-    
-    // Store order details for confirmation page before clearing cart.
-    // Use the same cart variables that were sent to PayPal so totals always match.
+
     const orderSummary = {
       paypalOrderId,
       items: cartItems.map(item => ({
@@ -650,7 +586,7 @@ export default function Checkout() {
       subtotal: cartSubtotal,
       shipping: cartShipping,
       tax: cartTax,
-      discount: 0, // Discount already applied to item prices
+      discount: 0,
       total: cartTotal,
       customerEmail: user?.email || customerEmail,
       customerName: customerName,
@@ -660,13 +596,10 @@ export default function Checkout() {
       zip: shippingAddress.zip,
     };
     sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
-    
-    // Invalidate all product-related caches so stock levels refresh immediately
     queryClient.invalidateQueries({ predicate: (query) => {
       const key = query.queryKey[0];
       return typeof key === 'string' && key.startsWith('/api/products');
     }});
-    
     orderCompleteRef.current = true;
     clearCart();
     clearCheckoutStorage();
@@ -723,10 +656,9 @@ export default function Checkout() {
   };
 
   const cartSubtotal = getSubtotal();
-  // Subscriptions always ship free
-  const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
+  const hasSubscriptionItemsForShipping = hasSubscriptionItems;
+  const baseShipping = hasSubscriptionItemsForShipping ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
   const cartShipping = baseShipping;
-  // Calculate tax based on ZIP code (applied to subtotal only, not shipping)
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
   const taxState = taxInfo.state;
@@ -737,7 +669,9 @@ export default function Checkout() {
   // Payment method info
   const CASHAPP_TAG = "$reviveresearchco";
   const VENMO_HANDLE = "@reviveresearchco";
-  const ZELLE_INFO = "Coming Soon"; // Placeholder until user provides
+  const ZELLE_INFO = "Coming Soon";
+
+  // ─── Empty / error states ─────────────────────────────────────────────────
 
   if (fromCart && cartItems.length === 0 && !orderCompleteRef.current) {
     return (
@@ -809,10 +743,10 @@ export default function Checkout() {
     );
   }
 
-  // RUO/Age Reminder Dialog Component
+  // ─── RUO Reminder Dialog ──────────────────────────────────────────────────
+
   const RuoReminderDialog = () => {
     if (!showRuoReminder) return null;
-    
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
@@ -827,7 +761,6 @@ export default function Checkout() {
                 Please confirm you understand the following
               </p>
             </div>
-            
             <div className="space-y-4">
               <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 animate-pulse-subtle">
                 <div className="flex items-start gap-3">
@@ -835,13 +768,12 @@ export default function Checkout() {
                   <div className="space-y-1">
                     <p className="font-semibold text-sm text-red-400">Research Use Only</p>
                     <p className="text-xs text-muted-foreground">
-                      These products are sold exclusively for scientific research purposes. 
+                      These products are sold exclusively for scientific research purposes.
                       They are not intended for human consumption, therapeutic use, or any other purpose.
                     </p>
                   </div>
                 </div>
               </div>
-              
               <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
@@ -853,16 +785,9 @@ export default function Checkout() {
                   </div>
                 </div>
               </div>
-              
               <div className="space-y-3 pt-2">
                 <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
-                  <div 
-                    className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
-                      ruoAcknowledged 
-                        ? 'bg-red-500 border-red-500' 
-                        : 'border-red-500/50'
-                    }`}
-                  >
+                  <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-red-500 border-red-500' : 'border-red-500/50'}`}>
                     {ruoAcknowledged && (
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -873,15 +798,8 @@ export default function Checkout() {
                     I understand these products are for <span className="text-red-400 font-medium">research purposes only</span> and not for human use
                   </span>
                 </div>
-                
                 <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
-                  <div 
-                    className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
-                      ageConfirmed 
-                        ? 'bg-[#E7FB10] border-[#E7FB10]' 
-                        : 'border-[#E7FB10]/50'
-                    }`}
-                  >
+                  <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ageConfirmed ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-[#E7FB10]/50'}`}>
                     {ageConfirmed && (
                       <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -894,8 +812,7 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
-            
-            <Button 
+            <Button
               onClick={handleRuoAcknowledge}
               disabled={!ruoAcknowledged || !ageConfirmed}
               className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50 mt-6"
@@ -909,66 +826,128 @@ export default function Checkout() {
     );
   };
 
-  // Payment Method Selection Component
+  // ─── Main 2-step fromCart flow ────────────────────────────────────────────
 
-  // Main Cart Checkout Flow
   if (fromCart) {
+    // Compact order summary line
+    const summaryLine = cartItems
+      .slice(0, 2)
+      .map(i => `${i.name} ${i.dosage}`)
+      .join(' · ') + (cartItems.length > 2 ? ` +${cartItems.length - 2} more` : '');
+
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#1f1f1f]">
+        <main className="min-h-screen pt-20 md:pt-28 pb-36 md:pb-16 px-3 sm:px-4 md:px-8 overflow-x-hidden bg-[#1a1a1f]">
           <SEOHead title="Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
-          <div className="max-w-4xl mx-auto w-full">
-            {/* Mobile Header - Compact */}
-            <div className="flex items-center justify-between mb-4 md:mb-8">
-              <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
-                <Button variant="ghost" size="sm" className="gap-1 -ml-2 md:-ml-4" data-testid="button-back-cart">
+          <div className="max-w-lg mx-auto w-full">
+
+            {/* ── Top nav row ── */}
+            <div className="flex items-center justify-between mb-5">
+              {checkoutStep === 1 ? (
+                <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
+                  <Button variant="ghost" size="sm" className="gap-1 -ml-2" data-testid="button-back-cart">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline">Back to Cart</span>
+                    <span className="sm:hidden">Cart</span>
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 -ml-2"
+                  onClick={() => setCheckoutStep(1)}
+                  data-testid="button-back-shipping"
+                >
                   <ArrowLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Back to Cart</span>
-                  <span className="sm:hidden">Cart</span>
+                  <span>Back</span>
                 </Button>
-              </Link>
-              {/* Mobile: Show total in header */}
-              <div className="md:hidden text-right">
-                <p className="text-xs text-muted-foreground">Total</p>
-                <p className="font-display font-bold text-lg" data-testid="text-mobile-total">${cartTotal.toFixed(2)}</p>
+              )}
+              {/* Lock badge */}
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                <span>Secure Checkout</span>
               </div>
             </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="font-display text-2xl md:text-4xl font-bold mb-4 md:mb-8"
-              data-testid="text-checkout-title"
-            >
-              Checkout
-            </motion.h1>
-
-            {/* Mobile Trust Indicators */}
-            <div className="flex items-center justify-between gap-2 p-2 mb-4 bg-muted/30 rounded-lg md:hidden" data-testid="mobile-trust-indicators">
-              <div className="flex items-center gap-1">
-                <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Secure Checkout</span>
+            {/* ── Progress stepper ── */}
+            <div className="flex items-center gap-0 mb-5">
+              {/* Step 1 */}
+              <div className="flex items-center gap-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${
+                  checkoutStep === 1
+                    ? 'bg-[#E7FB10] text-[#0a0a0a]'
+                    : 'bg-green-500 text-white'
+                }`}>
+                  {checkoutStep > 1 ? (
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : '1'}
+                </div>
+                <span className={`text-sm font-medium ${checkoutStep === 1 ? 'text-foreground' : 'text-green-400'}`}>
+                  Shipping
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-4 w-4 text-[#21d8ff]" />
-                <Truck className="h-4 w-4 text-[#E7FB10]" />
-                <FlaskConical className="h-4 w-4 text-[#9d4edd]" />
+              {/* Divider */}
+              <div className={`flex-1 h-px mx-3 transition-colors ${checkoutStep > 1 ? 'bg-green-500/40' : 'bg-border'}`} />
+              {/* Step 2 */}
+              <div className="flex items-center gap-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${
+                  checkoutStep === 2
+                    ? 'bg-[#E7FB10] text-[#0a0a0a]'
+                    : 'bg-[#2a2a2f] text-muted-foreground'
+                }`}>
+                  2
+                </div>
+                <span className={`text-sm font-medium ${checkoutStep === 2 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  Payment
+                </span>
               </div>
             </div>
 
-            {/* Desktop: Two columns. Mobile: Stack with order summary first */}
-            <div className="grid md:grid-cols-[1fr_360px] gap-6 md:gap-8">
-              {/* Left Column: Payment Methods */}
+            {/* ── Compact order summary bar ── */}
+            <div className="bg-[#141414] rounded-xl p-3 mb-4 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] text-muted-foreground/60 mb-0.5">
+                  {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+                  {checkoutStep === 2 && shippingAddress.city && (
+                    <> · Shipping to {shippingAddress.city}, {shippingAddress.state}</>
+                  )}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">{summaryLine}</p>
+              </div>
+              <p className="font-display font-bold text-lg text-[#E7FB10] flex-shrink-0">
+                ${Math.round(cartTotal)}
+              </p>
+            </div>
+
+            {/* ── Mixed cart warning ── */}
+            {hasMixedCart && (
+              <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-amber-200">
+                    <p className="font-medium mb-1">Subscription items need separate checkout</p>
+                    <p className="text-muted-foreground">Subscriptions and one-time purchases must be checked out separately.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ════════════════════════════════════════════════════
+                STEP 1: SHIPPING
+            ════════════════════════════════════════════════════ */}
+            {checkoutStep === 1 && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="order-2 md:order-1"
+                key="step1"
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.22 }}
               >
-                {/* Account Panel */}
-                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
-                  {/* Account Strip */}
+                {/* Account panel */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3">
                   <div className="flex items-center justify-between">
                     {userLoading ? (
                       <div className="h-5 w-40 bg-muted rounded animate-pulse" />
@@ -1014,307 +993,368 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Shipping Panel */}
-                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
+                {/* Shipping form */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">1</div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold leading-none">Shipping</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">Where we'll send your order</p>
                     </div>
-                    {shippingSaved && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShippingSaved(false);
-                          setSelectedPaymentMethod("card");
-                        }}
-                        className="text-xs text-[#d4ed1f] hover:text-[#d4ed1f]/80 underline-offset-2 hover:underline transition-colors"
-                        data-testid="button-edit-shipping"
-                      >
-                        Edit
-                      </button>
-                    )}
                   </div>
-                  <div className="bg-[#0a0a0a] border-[0.5px] border-white/[0.08] rounded-xl p-4">
-                      {shippingSaved ? (
-                        <div className="space-y-0.5" data-testid="shipping-summary">
-                          <p className="text-sm font-medium">{customerName}</p>
-                          <p className="text-xs text-muted-foreground">{shippingAddress.street}, {shippingAddress.city} {shippingAddress.state} {shippingAddress.zip}</p>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Contact group */}
-                          <div className="mb-4">
-                            <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-2.5">Contact</p>
-                            <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
-                          <Input
-                            id="ship-name"
-                            value={customerName}
-                            onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
-                            placeholder="John Doe"
-                            autoComplete="name"
-                            className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                            data-testid="input-customer-name"
-                          />
-                          {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
-                        </div>
-                        <div>
-                          <Label htmlFor="ship-email" className="text-xs">Email *</Label>
-                          <Input
-                            id="ship-email"
-                            type="email"
-                            value={customerEmail}
-                            onChange={(e) => setCustomerEmail(e.target.value)}
-                            placeholder="john@example.com"
-                            autoComplete="email"
-                            className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                            data-testid="input-customer-email"
-                          />
-                          {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
-                        </div>
-                      </div>
 
-                      {/* Phone (optional) */}
-                      <div>
-                        <Label htmlFor="ship-phone" className="text-xs">
-                          Phone <span className="text-muted-foreground/60 font-normal italic">(optional)</span>
-                        </Label>
-                        <Input
-                          id="ship-phone"
-                          type="tel"
-                          value={customerPhone}
-                          onChange={(e) => setCustomerPhone(e.target.value)}
-                          placeholder="(555) 000-0000"
-                          autoComplete="tel"
-                          className="mt-1"
-                          data-testid="input-customer-phone"
-                        />
-                        <p className="text-[10px] text-muted-foreground/60 mt-1">Recommended for shipping updates</p>
-                      </div>
-                            </div>
+                  {/* Saved address card — shown when user has a default address already filled */}
+                  {isAuthenticated && shippingValid && (savedAddresses?.length ?? 0) > 0 ? (
+                    <div className="space-y-3">
+                      <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3.5">
+                        <div className="flex items-start gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
                           </div>
-
-                          <div className="border-t border-white/[0.05] my-4" />
-
-                          {/* Address group */}
-                          <div>
-                            <div className="flex items-center justify-between mb-2.5">
-                              <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest">Address</p>
-                              {isAuthenticated && (pastShippingAddresses?.length ?? 0) > 1 && (
-                                <Select
-                                  value=""
-                                  onValueChange={(idx) => {
-                                    const addr = pastShippingAddresses?.[parseInt(idx)];
-                                    if (addr) {
-                                      setShippingAddress({
-                                        street: addr.street,
-                                        city: addr.city,
-                                        state: addr.state,
-                                        zip: addr.zip,
-                                      });
-                                    }
-                                  }}
-                                >
-                                  <SelectTrigger
-                                    className="h-7 text-[10px] w-auto gap-1 border-white/20 bg-transparent text-muted-foreground hover:text-foreground"
-                                    data-testid="select-past-address-trigger"
-                                  >
-                                    <MapPin className="h-3 w-3 flex-shrink-0" />
-                                    <SelectValue placeholder="Use a previous address" />
-                                  </SelectTrigger>
-                                  <SelectContent align="end" className="max-w-[280px]">
-                                    {pastShippingAddresses?.map((addr, i) => (
-                                      <SelectItem
-                                        key={i}
-                                        value={String(i)}
-                                        data-testid={`option-past-address-${i}`}
-                                      >
-                                        <span className="text-xs truncate">
-                                          {addr.street}, {addr.city}, {addr.state} {addr.zip}
-                                        </span>
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            </div>
-                            <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
-                        <Input
-                          id="ship-street"
-                          value={shippingAddress.street}
-                          onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
-                          placeholder="123 Research Lane"
-                          autoComplete="street-address"
-                          className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                          data-testid="input-street"
-                        />
-                        {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
-                      </div>
-
-                      {/* City / State / ZIP — 2fr 1fr 1fr */}
-                      <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
-                        <div>
-                          <Label htmlFor="ship-city" className="text-xs">City *</Label>
-                          <Input
-                            id="ship-city"
-                            value={shippingAddress.city}
-                            onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                            placeholder="Austin"
-                            autoComplete="address-level2"
-                            className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                            data-testid="input-city"
-                          />
-                          {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
-                        </div>
-                        <div>
-                          <Label htmlFor="ship-state" className="text-xs">State *</Label>
-                          <Select
-                            value={shippingAddress.state}
-                            onValueChange={(v) => setShippingAddress({...shippingAddress, state: v})}
-                          >
-                            <SelectTrigger
-                              className={`mt-1 ${submitAttempted && !shippingAddress.state ? "border-red-500" : ""}`}
-                              data-testid="select-state"
-                            >
-                              <SelectValue placeholder="—" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-60">
-                              <SelectItem value="AL">AL</SelectItem>
-                              <SelectItem value="AK">AK</SelectItem>
-                              <SelectItem value="AZ">AZ</SelectItem>
-                              <SelectItem value="AR">AR</SelectItem>
-                              <SelectItem value="CA">CA</SelectItem>
-                              <SelectItem value="CO">CO</SelectItem>
-                              <SelectItem value="CT">CT</SelectItem>
-                              <SelectItem value="DC">DC</SelectItem>
-                              <SelectItem value="DE">DE</SelectItem>
-                              <SelectItem value="FL">FL</SelectItem>
-                              <SelectItem value="GA">GA</SelectItem>
-                              <SelectItem value="HI">HI</SelectItem>
-                              <SelectItem value="ID">ID</SelectItem>
-                              <SelectItem value="IL">IL</SelectItem>
-                              <SelectItem value="IN">IN</SelectItem>
-                              <SelectItem value="IA">IA</SelectItem>
-                              <SelectItem value="KS">KS</SelectItem>
-                              <SelectItem value="KY">KY</SelectItem>
-                              <SelectItem value="LA">LA</SelectItem>
-                              <SelectItem value="ME">ME</SelectItem>
-                              <SelectItem value="MD">MD</SelectItem>
-                              <SelectItem value="MA">MA</SelectItem>
-                              <SelectItem value="MI">MI</SelectItem>
-                              <SelectItem value="MN">MN</SelectItem>
-                              <SelectItem value="MS">MS</SelectItem>
-                              <SelectItem value="MO">MO</SelectItem>
-                              <SelectItem value="MT">MT</SelectItem>
-                              <SelectItem value="NE">NE</SelectItem>
-                              <SelectItem value="NV">NV</SelectItem>
-                              <SelectItem value="NH">NH</SelectItem>
-                              <SelectItem value="NJ">NJ</SelectItem>
-                              <SelectItem value="NM">NM</SelectItem>
-                              <SelectItem value="NY">NY</SelectItem>
-                              <SelectItem value="NC">NC</SelectItem>
-                              <SelectItem value="ND">ND</SelectItem>
-                              <SelectItem value="OH">OH</SelectItem>
-                              <SelectItem value="OK">OK</SelectItem>
-                              <SelectItem value="OR">OR</SelectItem>
-                              <SelectItem value="PA">PA</SelectItem>
-                              <SelectItem value="RI">RI</SelectItem>
-                              <SelectItem value="SC">SC</SelectItem>
-                              <SelectItem value="SD">SD</SelectItem>
-                              <SelectItem value="TN">TN</SelectItem>
-                              <SelectItem value="TX">TX</SelectItem>
-                              <SelectItem value="UT">UT</SelectItem>
-                              <SelectItem value="VT">VT</SelectItem>
-                              <SelectItem value="VA">VA</SelectItem>
-                              <SelectItem value="WA">WA</SelectItem>
-                              <SelectItem value="WV">WV</SelectItem>
-                              <SelectItem value="WI">WI</SelectItem>
-                              <SelectItem value="WY">WY</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {submitAttempted && !shippingAddress.state && <p className="text-xs text-red-500 mt-1">Required</p>}
-                        </div>
-                        <div>
-                          <Label htmlFor="ship-zip" className="text-xs">ZIP *</Label>
-                          <Input
-                            id="ship-zip"
-                            value={shippingAddress.zip}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
-                              const zip = digits.length > 5
-                                ? `${digits.slice(0, 5)}-${digits.slice(5)}`
-                                : digits;
-                              setShippingAddress({...shippingAddress, zip});
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-green-300 leading-none mb-1">Saved Address</p>
+                            <p className="text-sm text-foreground">{customerName}</p>
+                            <p className="text-xs text-muted-foreground">{customerEmail}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {shippingAddress.street}, {shippingAddress.city} {shippingAddress.state} {shippingAddress.zip}
+                            </p>
+                          </div>
+                          <button
+                            className="text-xs text-[#d4ed1f] underline-offset-2 hover:underline transition-colors flex-shrink-0"
+                            onClick={() => {
+                              // Clear so form expands
+                              setShippingAddress({ street: "", city: "", state: "", zip: "" });
                             }}
-                            placeholder="78701"
-                            inputMode="numeric"
-                            autoComplete="postal-code"
-                            className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                            data-testid="input-zip"
-                          />
-                          {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            data-testid="button-edit-saved-address"
+                          >
+                            Edit
+                          </button>
                         </div>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="bg-[#0a0a0a] border-[0.5px] border-white/[0.08] rounded-xl p-4">
+                      {/* Contact group */}
+                      <div className="mb-4">
+                        <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-2.5">Contact</p>
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
+                              <Input
+                                id="ship-name"
+                                value={customerName}
+                                onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
+                                placeholder="John Doe"
+                                autoComplete="name"
+                                className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                data-testid="input-customer-name"
+                              />
+                              {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            </div>
+                            <div>
+                              <Label htmlFor="ship-email" className="text-xs">Email *</Label>
+                              <Input
+                                id="ship-email"
+                                type="email"
+                                value={customerEmail}
+                                onChange={(e) => setCustomerEmail(e.target.value)}
+                                placeholder="john@example.com"
+                                autoComplete="email"
+                                className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                data-testid="input-customer-email"
+                              />
+                              {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
                           </div>
-                          <div className="mt-4 pt-3 border-t border-white/[0.06]">
-                            {isAuthenticated && (
-                              <div
-                                className="flex items-center gap-2 mb-3 cursor-pointer select-none"
-                                onClick={() => setSaveToProfile(v => !v)}
-                                data-testid="checkbox-save-to-profile-wrapper"
-                              >
-                                <div
-                                  className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                                    saveToProfile
-                                      ? "bg-[#E7FB10] border-[#E7FB10]"
-                                      : "border-white/30"
-                                  }`}
-                                >
-                                  {saveToProfile && (
-                                    <svg className="w-2.5 h-2.5 text-[#1a1a1f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span className="text-xs text-muted-foreground" data-testid="checkbox-save-to-profile">
-                                  Save to my profile for next time
-                                </span>
-                              </div>
-                            )}
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                if (shippingValid) {
-                                  setShippingSaved(true);
-                                  if (saveToProfile && isAuthenticated) {
-                                    saveAddressMutation.mutate();
-                                  }
+                          <div>
+                            <Label htmlFor="ship-phone" className="text-xs">
+                              Phone <span className="text-muted-foreground/60 font-normal italic">(optional)</span>
+                            </Label>
+                            <Input
+                              id="ship-phone"
+                              type="tel"
+                              value={customerPhone}
+                              onChange={(e) => setCustomerPhone(e.target.value)}
+                              placeholder="(555) 000-0000"
+                              autoComplete="tel"
+                              className="mt-1"
+                              data-testid="input-customer-phone"
+                            />
+                            <p className="text-[10px] text-muted-foreground/60 mt-1">Recommended for shipping updates</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-white/[0.05] my-4" />
+
+                      {/* Address group */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2.5">
+                          <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest">Address</p>
+                          {isAuthenticated && (pastShippingAddresses?.length ?? 0) > 1 && (
+                            <Select
+                              value=""
+                              onValueChange={(idx) => {
+                                const addr = pastShippingAddresses?.[parseInt(idx)];
+                                if (addr) {
+                                  setShippingAddress({
+                                    street: addr.street,
+                                    city: addr.city,
+                                    state: addr.state,
+                                    zip: addr.zip,
+                                  });
                                 }
                               }}
-                              disabled={!shippingValid}
-                              className="w-full bg-[#E7FB10] text-[#1a1a1f] font-semibold"
-                              data-testid="button-save-address"
                             >
-                              Save Address
-                            </Button>
-                            {!shippingValid && (
-                              <p className="text-[10px] text-muted-foreground/50 text-center mt-2">Fill all required fields to continue</p>
-                            )}
+                              <SelectTrigger
+                                className="h-7 text-[10px] w-auto gap-1 border-white/20 bg-transparent text-muted-foreground hover:text-foreground"
+                                data-testid="select-past-address-trigger"
+                              >
+                                <MapPin className="h-3 w-3 flex-shrink-0" />
+                                <SelectValue placeholder="Use a previous address" />
+                              </SelectTrigger>
+                              <SelectContent align="end" className="max-w-[280px]">
+                                {pastShippingAddresses?.map((addr, i) => (
+                                  <SelectItem key={i} value={String(i)} data-testid={`option-past-address-${i}`}>
+                                    <span className="text-xs truncate">
+                                      {addr.street}, {addr.city}, {addr.state} {addr.zip}
+                                    </span>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
+                            <Input
+                              id="ship-street"
+                              value={shippingAddress.street}
+                              onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                              placeholder="123 Research Lane"
+                              autoComplete="street-address"
+                              className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                              data-testid="input-street"
+                            />
+                            {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
                           </div>
-                        </>
+                          <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
+                            <div>
+                              <Label htmlFor="ship-city" className="text-xs">City *</Label>
+                              <Input
+                                id="ship-city"
+                                value={shippingAddress.city}
+                                onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                                placeholder="Austin"
+                                autoComplete="address-level2"
+                                className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                data-testid="input-city"
+                              />
+                              {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            </div>
+                            <div>
+                              <Label htmlFor="ship-state" className="text-xs">State *</Label>
+                              <Select
+                                value={shippingAddress.state}
+                                onValueChange={(v) => setShippingAddress({...shippingAddress, state: v})}
+                              >
+                                <SelectTrigger
+                                  className={`mt-1 ${submitAttempted && !shippingAddress.state ? "border-red-500" : ""}`}
+                                  data-testid="select-state"
+                                >
+                                  <SelectValue placeholder="—" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-60">
+                                  <SelectItem value="AL">AL</SelectItem>
+                                  <SelectItem value="AK">AK</SelectItem>
+                                  <SelectItem value="AZ">AZ</SelectItem>
+                                  <SelectItem value="AR">AR</SelectItem>
+                                  <SelectItem value="CA">CA</SelectItem>
+                                  <SelectItem value="CO">CO</SelectItem>
+                                  <SelectItem value="CT">CT</SelectItem>
+                                  <SelectItem value="DC">DC</SelectItem>
+                                  <SelectItem value="DE">DE</SelectItem>
+                                  <SelectItem value="FL">FL</SelectItem>
+                                  <SelectItem value="GA">GA</SelectItem>
+                                  <SelectItem value="HI">HI</SelectItem>
+                                  <SelectItem value="ID">ID</SelectItem>
+                                  <SelectItem value="IL">IL</SelectItem>
+                                  <SelectItem value="IN">IN</SelectItem>
+                                  <SelectItem value="IA">IA</SelectItem>
+                                  <SelectItem value="KS">KS</SelectItem>
+                                  <SelectItem value="KY">KY</SelectItem>
+                                  <SelectItem value="LA">LA</SelectItem>
+                                  <SelectItem value="ME">ME</SelectItem>
+                                  <SelectItem value="MD">MD</SelectItem>
+                                  <SelectItem value="MA">MA</SelectItem>
+                                  <SelectItem value="MI">MI</SelectItem>
+                                  <SelectItem value="MN">MN</SelectItem>
+                                  <SelectItem value="MS">MS</SelectItem>
+                                  <SelectItem value="MO">MO</SelectItem>
+                                  <SelectItem value="MT">MT</SelectItem>
+                                  <SelectItem value="NE">NE</SelectItem>
+                                  <SelectItem value="NV">NV</SelectItem>
+                                  <SelectItem value="NH">NH</SelectItem>
+                                  <SelectItem value="NJ">NJ</SelectItem>
+                                  <SelectItem value="NM">NM</SelectItem>
+                                  <SelectItem value="NY">NY</SelectItem>
+                                  <SelectItem value="NC">NC</SelectItem>
+                                  <SelectItem value="ND">ND</SelectItem>
+                                  <SelectItem value="OH">OH</SelectItem>
+                                  <SelectItem value="OK">OK</SelectItem>
+                                  <SelectItem value="OR">OR</SelectItem>
+                                  <SelectItem value="PA">PA</SelectItem>
+                                  <SelectItem value="RI">RI</SelectItem>
+                                  <SelectItem value="SC">SC</SelectItem>
+                                  <SelectItem value="SD">SD</SelectItem>
+                                  <SelectItem value="TN">TN</SelectItem>
+                                  <SelectItem value="TX">TX</SelectItem>
+                                  <SelectItem value="UT">UT</SelectItem>
+                                  <SelectItem value="VT">VT</SelectItem>
+                                  <SelectItem value="VA">VA</SelectItem>
+                                  <SelectItem value="WA">WA</SelectItem>
+                                  <SelectItem value="WV">WV</SelectItem>
+                                  <SelectItem value="WI">WI</SelectItem>
+                                  <SelectItem value="WY">WY</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {submitAttempted && !shippingAddress.state && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            </div>
+                            <div>
+                              <Label htmlFor="ship-zip" className="text-xs">ZIP *</Label>
+                              <Input
+                                id="ship-zip"
+                                value={shippingAddress.zip}
+                                onChange={(e) => {
+                                  const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                  const zip = digits.length > 5
+                                    ? `${digits.slice(0, 5)}-${digits.slice(5)}`
+                                    : digits;
+                                  setShippingAddress({...shippingAddress, zip});
+                                }}
+                                placeholder="78701"
+                                inputMode="numeric"
+                                autoComplete="postal-code"
+                                className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                data-testid="input-zip"
+                              />
+                              {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Save to profile */}
+                      {isAuthenticated && (
+                        <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                          <div
+                            className="flex items-center gap-2 cursor-pointer select-none"
+                            onClick={() => setSaveToProfile(v => !v)}
+                            data-testid="checkbox-save-to-profile-wrapper"
+                          >
+                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${saveToProfile ? "bg-[#E7FB10] border-[#E7FB10]" : "border-white/30"}`}>
+                              {saveToProfile && (
+                                <svg className="w-2.5 h-2.5 text-[#1a1a1f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground" data-testid="checkbox-save-to-profile">
+                              Save to my profile for next time
+                            </span>
+                          </div>
+                        </div>
                       )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Shipping method */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3">
+                  <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-3">Shipping Method</p>
+                  <div className="space-y-2">
+                    <div className={`flex items-center gap-3 px-3 py-3 rounded-lg border-2 transition-all cursor-pointer ${
+                      baseShipping === 0 ? 'border-green-500/60 bg-green-500/10' : 'border-border'
+                    }`}>
+                      <Truck className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">Standard Shipping</p>
+                        <p className="text-[10px] text-muted-foreground">3–5 business days · Discreet packaging</p>
+                      </div>
+                      <span className={`text-sm font-semibold ${baseShipping === 0 ? 'text-green-400' : 'text-foreground'}`}>
+                        {baseShipping === 0 ? 'FREE' : `$${Math.round(baseShipping)}`}
+                      </span>
+                    </div>
+                  </div>
+                  {baseShipping === 0 && cartSubtotal < FREE_SHIPPING_THRESHOLD && !hasSubscriptionItems && (
+                    <p className="text-[10px] text-green-400/70 mt-2">Free shipping on orders over ${FREE_SHIPPING_THRESHOLD}</p>
+                  )}
+                  {cartSubtotal >= FREE_SHIPPING_THRESHOLD && (
+                    <p className="text-[10px] text-green-400/70 mt-2">Free shipping unlocked on your order</p>
+                  )}
+                </div>
+
+                {/* Trust strip */}
+                <div className="flex items-center justify-center gap-5 py-3 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[10px] text-muted-foreground/60">SSL Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[10px] text-muted-foreground/60">Verified Lab Testing</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Package className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[10px] text-muted-foreground/60">Discreet Shipping</span>
                   </div>
                 </div>
 
-                {/* Payment Panel */}
-                <div className="bg-[#141414] rounded-xl p-4 mb-3.5">
+                {/* Continue to Payment CTA */}
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    if (!shippingValid) {
+                      setSubmitAttempted(true);
+                      return;
+                    }
+                    if (saveToProfile && isAuthenticated) {
+                      saveAddressMutation.mutate();
+                    }
+                    setCheckoutStep(2);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={!shippingValid}
+                  className={`w-full font-display text-base gap-2 transition-all ${
+                    shippingValid
+                      ? 'bg-[#E7FB10] text-[#0a0a0a] hover:bg-[#E7FB10]/90'
+                      : 'bg-[#E7FB10]/20 text-[#E7FB10]/50 cursor-not-allowed'
+                  }`}
+                  data-testid="button-continue-to-payment"
+                >
+                  Continue to Payment →
+                </Button>
+                {!shippingValid && (
+                  <p className="text-[10px] text-muted-foreground/40 text-center mt-2">Fill all required fields to continue</p>
+                )}
+              </motion.div>
+            )}
+
+            {/* ════════════════════════════════════════════════════
+                STEP 2: PAYMENT & REVIEW
+            ════════════════════════════════════════════════════ */}
+            {checkoutStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.22 }}
+              >
+
+                {/* ── Payment method selector ── */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">2</div>
                     <div className="flex-1 min-w-0">
@@ -1323,205 +1363,186 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                    {/* ── Top tier: Card + PayPal — 50/50 desktop, stacked mobile ── */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-
-                      {/* Credit / Debit Card */}
-                      <button
-                        className={`relative flex items-center gap-3 px-4 py-6 rounded-lg border-2 transition-all text-left ${
-                          selectedPaymentMethod === "card"
-                            ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
-                            : "border-[#d4ed1f] bg-transparent text-white"
-                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                        disabled={!shippingSaved}
-                        onClick={() => { setSelectedPaymentMethod("card"); setManualPaymentStep("select"); }}
-                        data-testid="payment-method-card"
-                      >
-                        <span className={`absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                          selectedPaymentMethod === "card"
-                            ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
-                            : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
-                        }`}>RECOMMENDED</span>
-                        <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
-                          selectedPaymentMethod === "card" ? "bg-[#0a0a0a]/20" : "bg-[#d4ed1f]/10"
-                        }`}>
-                          <CreditCard className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 flex-1 flex flex-col justify-center">
-                          <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
-                          <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
-                            Pay directly on this page
-                          </p>
-                        </div>
-                        {selectedPaymentMethod === "card" && (
-                          <CheckCircle className="h-3.5 w-3.5 text-[#0a0a0a] flex-shrink-0" />
-                        )}
-                      </button>
-
-                      {/* PayPal */}
-                      <button
-                        className={`flex items-center gap-3 px-4 py-6 rounded-lg border-2 transition-all text-left ${
-                          selectedPaymentMethod === "paypal"
-                            ? "border-[#0070ba] bg-[#0070ba] text-white"
-                            : "border-[#0070ba] bg-transparent text-white"
-                        } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                        disabled={!shippingSaved}
-                        onClick={() => { setSelectedPaymentMethod("paypal"); setManualPaymentStep("select"); }}
-                        data-testid="payment-method-paypal"
-                      >
-                        <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
-                          selectedPaymentMethod === "paypal" ? "bg-white/30" : "bg-[#0070ba]/30"
-                        }`}>
-                          <span className="text-sm font-black leading-none text-white">PP</span>
-                        </div>
-                        <div className="min-w-0 flex-1 flex flex-col justify-center">
-                          <p className="text-sm font-semibold leading-tight">PayPal</p>
-                          <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
-                            Sign in to your PayPal
-                          </p>
-                        </div>
-                        {selectedPaymentMethod === "paypal" && (
-                          <CheckCircle className="h-3.5 w-3.5 text-white flex-shrink-0" />
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Option A: PayPal address note — outside button, only when selected */}
-                    {selectedPaymentMethod === "paypal" && (
-                      <p className="text-[9px] italic text-muted-foreground/50 mt-1.5 px-1">
-                        PayPal will use the shipping address on your PayPal account
-                      </p>
-                    )}
-
-                    {/* ── Pay another way — collapsed toggle row ── */}
+                  {/* Top tier: Card + PayPal */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                    {/* Credit / Debit Card */}
                     <button
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.08] bg-[#141414] transition-all text-left ${
-                        !shippingSaved ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                      className={`relative flex items-center gap-3 px-4 py-5 rounded-lg border-2 transition-all text-left ${
+                        selectedPaymentMethod === "card"
+                          ? "border-[#d4ed1f] bg-[#d4ed1f] text-[#0a0a0a]"
+                          : "border-[#d4ed1f] bg-transparent text-white"
                       }`}
-                      disabled={!shippingSaved}
-                      onClick={() => setPayAnotherWayExpanded(prev => !prev)}
-                      data-testid="pay-another-way-toggle"
+                      onClick={() => { setSelectedPaymentMethod("card"); setManualPaymentStep("select"); }}
+                      data-testid="payment-method-card"
                     >
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <div className="w-[22px] h-[22px] bg-[#00D632] rounded flex items-center justify-center">
-                          <DollarSign className="h-3 w-3 text-white" />
-                        </div>
-                        <div className="w-[22px] h-[22px] bg-[#00AFF1] rounded flex items-center justify-center">
-                          <span className="text-[10px] font-black text-white leading-none">V</span>
-                        </div>
-                        <div className="w-[22px] h-[22px] bg-[#6D1ED4] rounded flex items-center justify-center">
-                          <span className="text-[10px] font-black text-white leading-none">Z</span>
-                        </div>
-                        <div className="w-[22px] h-[22px] bg-[#d4ed1f] rounded flex items-center justify-center">
-                          <span className="text-[8px] font-black leading-none text-[#0a0a0a]">ACH</span>
-                        </div>
+                      <span className={`absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded ${
+                        selectedPaymentMethod === "card"
+                          ? "bg-[#0a0a0a]/20 text-[#0a0a0a]"
+                          : "bg-[#d4ed1f]/20 text-[#d4ed1f]"
+                      }`}>RECOMMENDED</span>
+                      <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
+                        selectedPaymentMethod === "card" ? "bg-[#0a0a0a]/20" : "bg-[#d4ed1f]/10"
+                      }`}>
+                        <CreditCard className="h-4 w-4" />
                       </div>
-                      <span className="flex-1 text-sm text-muted-foreground">Pay another way</span>
-                      {payAnotherWayExpanded
-                        ? <ChevronUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                        : <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      }
+                      <div className="min-w-0 flex-1 flex flex-col justify-center">
+                        <p className="text-sm font-semibold leading-tight">Credit / Debit Card</p>
+                        <p className={`text-[10px] ${selectedPaymentMethod === "card" ? "text-[#0a0a0a]/70" : "text-muted-foreground"}`}>
+                          Pay directly on this page
+                        </p>
+                      </div>
+                      {selectedPaymentMethod === "card" && (
+                        <CheckCircle className="h-3.5 w-3.5 text-[#0a0a0a] flex-shrink-0" />
+                      )}
                     </button>
 
-                    {/* ── Expanded 2×2 grid ── */}
-                    <AnimatePresence>
-                      {payAnotherWayExpanded && (
-                        <motion.div
-                          key="pay-another-way-grid"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="grid grid-cols-2 gap-2 pt-1">
-
-                            {/* CashApp */}
-                            <button
-                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
-                                selectedPaymentMethod === "cashapp"
-                                  ? "border-[#00D632] bg-[#00D632]/10"
-                                  : "border-border hover:border-[#00D632]/40"
-                              } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                              disabled={!shippingSaved}
-                              onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
-                              data-testid="payment-method-cashapp"
-                            >
-                              <div className="w-8 h-8 bg-[#00D632] rounded-md flex items-center justify-center flex-shrink-0">
-                                <DollarSign className="h-3.5 w-3.5 text-white" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold leading-tight">CashApp</p>
-                                <p className="text-[10px] text-muted-foreground">{CASHAPP_TAG}</p>
-                              </div>
-                              {selectedPaymentMethod === "cashapp" && (
-                                <CheckCircle className="h-3.5 w-3.5 text-[#00D632] flex-shrink-0" />
-                              )}
-                            </button>
-
-                            {/* Venmo */}
-                            <button
-                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
-                                selectedPaymentMethod === "venmo"
-                                  ? "border-[#00AFF1] bg-[#00AFF1]/10"
-                                  : "border-border hover:border-[#00AFF1]/40"
-                              } ${!shippingSaved ? "opacity-40 cursor-not-allowed" : ""}`}
-                              disabled={!shippingSaved}
-                              onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
-                              data-testid="payment-method-venmo"
-                            >
-                              <div className="w-8 h-8 bg-[#00AFF1] rounded-md flex items-center justify-center flex-shrink-0">
-                                <span className="text-sm font-black text-white leading-none">V</span>
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold leading-tight">Venmo</p>
-                                <p className="text-[10px] text-muted-foreground">{VENMO_HANDLE}</p>
-                              </div>
-                              {selectedPaymentMethod === "venmo" && (
-                                <CheckCircle className="h-3.5 w-3.5 text-[#00AFF1] flex-shrink-0" />
-                              )}
-                            </button>
-
-                            {/* Zelle — disabled */}
-                            <button
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
-                              disabled
-                              data-testid="payment-method-zelle"
-                            >
-                              <div className="w-8 h-8 bg-[#6D1ED4] rounded-md flex items-center justify-center flex-shrink-0">
-                                <Building2 className="h-3.5 w-3.5 text-white" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold leading-tight">Zelle</p>
-                                <p className="text-[10px] text-muted-foreground">Coming soon</p>
-                              </div>
-                            </button>
-
-                            {/* Bank Transfer — disabled */}
-                            <button
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
-                              disabled
-                              data-testid="payment-method-bank"
-                            >
-                              <div className="w-8 h-8 bg-[#d4ed1f] rounded-md flex items-center justify-center flex-shrink-0">
-                                <Building2 className="h-3.5 w-3.5 text-[#0a0a0a]" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold leading-tight">Bank Transfer</p>
-                                <p className="text-[10px] text-muted-foreground">Coming soon · Link Money</p>
-                              </div>
-                            </button>
-
-                          </div>
-                        </motion.div>
+                    {/* PayPal */}
+                    <button
+                      className={`flex items-center gap-3 px-4 py-5 rounded-lg border-2 transition-all text-left ${
+                        selectedPaymentMethod === "paypal"
+                          ? "border-[#0070ba] bg-[#0070ba] text-white"
+                          : "border-[#0070ba] bg-transparent text-white"
+                      }`}
+                      onClick={() => { setSelectedPaymentMethod("paypal"); setManualPaymentStep("select"); }}
+                      data-testid="payment-method-paypal"
+                    >
+                      <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
+                        selectedPaymentMethod === "paypal" ? "bg-white/30" : "bg-[#0070ba]/30"
+                      }`}>
+                        <span className="text-sm font-black leading-none text-white">PP</span>
+                      </div>
+                      <div className="min-w-0 flex-1 flex flex-col justify-center">
+                        <p className="text-sm font-semibold leading-tight">PayPal</p>
+                        <p className={`text-[10px] ${selectedPaymentMethod === "paypal" ? "text-white/70" : "text-muted-foreground"}`}>
+                          Sign in to your PayPal
+                        </p>
+                      </div>
+                      {selectedPaymentMethod === "paypal" && (
+                        <CheckCircle className="h-3.5 w-3.5 text-white flex-shrink-0" />
                       )}
-                    </AnimatePresence>
+                    </button>
+                  </div>
 
-                    {!shippingSaved && (
-                      <p className="text-[10px] text-muted-foreground/40 text-center italic mt-2">Save your shipping address above to continue</p>
+                  {selectedPaymentMethod === "paypal" && (
+                    <p className="text-[9px] italic text-muted-foreground/50 mt-1.5 px-1">
+                      PayPal will use the shipping address on your PayPal account
+                    </p>
+                  )}
+
+                  {/* Pay another way toggle */}
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.08] bg-[#141414] transition-all text-left cursor-pointer mt-2"
+                    onClick={() => setPayAnotherWayExpanded(prev => !prev)}
+                    data-testid="pay-another-way-toggle"
+                  >
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <div className="w-[22px] h-[22px] bg-[#00D632] rounded flex items-center justify-center">
+                        <DollarSign className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="w-[22px] h-[22px] bg-[#00AFF1] rounded flex items-center justify-center">
+                        <span className="text-[10px] font-black text-white leading-none">V</span>
+                      </div>
+                      <div className="w-[22px] h-[22px] bg-[#6D1ED4] rounded flex items-center justify-center">
+                        <span className="text-[10px] font-black text-white leading-none">Z</span>
+                      </div>
+                    </div>
+                    <span className="flex-1 text-sm text-muted-foreground">Pay another way</span>
+                    {payAnotherWayExpanded
+                      ? <ChevronUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      : <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    }
+                  </button>
+
+                  <AnimatePresence>
+                    {payAnotherWayExpanded && (
+                      <motion.div
+                        key="pay-another-way-grid"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid grid-cols-2 gap-2 pt-2">
+                          {/* CashApp */}
+                          <button
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                              selectedPaymentMethod === "cashapp"
+                                ? "border-[#00D632] bg-[#00D632]/10"
+                                : "border-border hover:border-[#00D632]/40"
+                            }`}
+                            onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
+                            data-testid="payment-method-cashapp"
+                          >
+                            <div className="w-8 h-8 bg-[#00D632] rounded-md flex items-center justify-center flex-shrink-0">
+                              <DollarSign className="h-3.5 w-3.5 text-white" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold leading-tight">CashApp</p>
+                              <p className="text-[10px] text-muted-foreground">{CASHAPP_TAG}</p>
+                            </div>
+                            {selectedPaymentMethod === "cashapp" && (
+                              <CheckCircle className="h-3.5 w-3.5 text-[#00D632] flex-shrink-0" />
+                            )}
+                          </button>
+
+                          {/* Venmo */}
+                          <button
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                              selectedPaymentMethod === "venmo"
+                                ? "border-[#00AFF1] bg-[#00AFF1]/10"
+                                : "border-border hover:border-[#00AFF1]/40"
+                            }`}
+                            onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
+                            data-testid="payment-method-venmo"
+                          >
+                            <div className="w-8 h-8 bg-[#00AFF1] rounded-md flex items-center justify-center flex-shrink-0">
+                              <span className="text-sm font-black text-white leading-none">V</span>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold leading-tight">Venmo</p>
+                              <p className="text-[10px] text-muted-foreground">{VENMO_HANDLE}</p>
+                            </div>
+                            {selectedPaymentMethod === "venmo" && (
+                              <CheckCircle className="h-3.5 w-3.5 text-[#00AFF1] flex-shrink-0" />
+                            )}
+                          </button>
+
+                          {/* Zelle — disabled */}
+                          <button
+                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
+                            disabled
+                            data-testid="payment-method-zelle"
+                          >
+                            <div className="w-8 h-8 bg-[#6D1ED4] rounded-md flex items-center justify-center flex-shrink-0">
+                              <Building2 className="h-3.5 w-3.5 text-white" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold leading-tight">Zelle</p>
+                              <p className="text-[10px] text-muted-foreground">Coming soon</p>
+                            </div>
+                          </button>
+
+                          {/* Bank Transfer — disabled */}
+                          <button
+                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
+                            disabled
+                            data-testid="payment-method-bank"
+                          >
+                            <div className="w-8 h-8 bg-[#d4ed1f] rounded-md flex items-center justify-center flex-shrink-0">
+                              <Building2 className="h-3.5 w-3.5 text-[#0a0a0a]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold leading-tight">Bank Transfer</p>
+                              <p className="text-[10px] text-muted-foreground">Coming soon · Link Money</p>
+                            </div>
+                          </button>
+                        </div>
+                      </motion.div>
                     )}
+                  </AnimatePresence>
 
-                  {/* Animated content per method */}
+                  {/* PayPal info note */}
                   <AnimatePresence mode="wait">
                     {selectedPaymentMethod === "paypal" && (
                       <motion.div
@@ -1530,74 +1551,67 @@ export default function Checkout() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.18 }}
-                        className="rounded-lg bg-[#0070ba]/10 border border-[#0070ba]/30 p-3 flex items-center gap-3"
+                        className="rounded-lg bg-[#0070ba]/10 border border-[#0070ba]/30 p-3 flex items-center gap-3 mt-3"
                       >
                         <div className="w-9 h-9 bg-[#0070ba] rounded-md flex items-center justify-center flex-shrink-0">
                           <Lock className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <p className="text-sm font-medium">Secure PayPal checkout</p>
-                          <p className="text-xs text-muted-foreground">Review your order summary, then click "Pay with PayPal" — you'll complete payment on PayPal's site and be brought right back.</p>
+                          <p className="text-xs text-muted-foreground">Review your order below, then click "Pay with PayPal" — you'll complete payment on PayPal's site and be brought right back.</p>
                         </div>
                       </motion.div>
                     )}
 
+                    {/* Manual payment instructions */}
                     {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (
                       <motion.div
-                        key="manual-form"
+                        key="manual-instructions"
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.18 }}
-                        className="space-y-5"
+                        className="mt-3"
                       >
-                        {/* What happens next */}
-                        <div>
-                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">What happens next</p>
-                          {(() => {
-                            const methodColor = selectedPaymentMethod === "cashapp" ? "#00D632" : selectedPaymentMethod === "venmo" ? "#00AFF1" : "#6D1ED4";
-                            const methodHandle = selectedPaymentMethod === "cashapp" ? CASHAPP_TAG : selectedPaymentMethod === "venmo" ? VENMO_HANDLE : ZELLE_INFO;
-                            return (
-                              <ol className="space-y-3">
-                                <li className="flex items-start gap-3">
-                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>1</div>
-                                  <p className="text-sm text-muted-foreground leading-snug">Confirm your order — you'll get a unique order number</p>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>2</div>
-                                  <p className="text-sm text-muted-foreground leading-snug">
-                                    Send <span className="font-semibold text-foreground">${cartTotal.toFixed(2)}</span> to{" "}
-                                    <button
-                                      className="font-mono font-semibold underline underline-offset-2 cursor-pointer"
-                                      style={{ color: methodColor }}
-                                      onClick={() => copyToClipboard(methodHandle)}
-                                    >
-                                      {methodHandle}
-                                    </button>{" "}
-                                    with{" "}
-                                    <span className="font-semibold text-foreground underline underline-offset-2">your order number in the note</span>
-                                    {" "}— this is required to match your payment
-                                  </p>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>3</div>
-                                  <p className="text-sm text-muted-foreground leading-snug">We verify payment and ship — you'll receive a shipping notification once it's on the way</p>
-                                </li>
-                              </ol>
-                            );
-                          })()}
-                        </div>
-
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">What happens next</p>
+                        {(() => {
+                          const methodColor = selectedPaymentMethod === "cashapp" ? "#00D632" : selectedPaymentMethod === "venmo" ? "#00AFF1" : "#6D1ED4";
+                          const methodHandle = selectedPaymentMethod === "cashapp" ? CASHAPP_TAG : selectedPaymentMethod === "venmo" ? VENMO_HANDLE : ZELLE_INFO;
+                          return (
+                            <ol className="space-y-3">
+                              <li className="flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>1</div>
+                                <p className="text-sm text-muted-foreground leading-snug">Confirm your order — you'll get a unique order number</p>
+                              </li>
+                              <li className="flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>2</div>
+                                <p className="text-sm text-muted-foreground leading-snug">
+                                  Send <span className="font-semibold text-foreground">${Math.round(cartTotal)}</span> to{" "}
+                                  <button
+                                    className="font-mono font-semibold underline underline-offset-2 cursor-pointer"
+                                    style={{ color: methodColor }}
+                                    onClick={() => copyToClipboard(methodHandle)}
+                                  >
+                                    {methodHandle}
+                                  </button>{" "}
+                                  with <span className="font-semibold text-foreground underline underline-offset-2">your order number in the note</span>
+                                </p>
+                              </li>
+                              <li className="flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>3</div>
+                                <p className="text-sm text-muted-foreground leading-snug">We verify payment and ship — you'll receive a shipping notification</p>
+                              </li>
+                            </ol>
+                          );
+                        })()}
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                 </div>
 
-                {/* Card Details Panel — only shown once shipping is saved */}
-                {shippingSaved && hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
-                  <div className={`relative bg-[#141414] rounded-xl p-4 mb-3.5 border border-[#d4ed1f]/20 overflow-hidden${selectedPaymentMethod !== "card" ? " hidden" : ""}`}>
-                    {/* ambient glow */}
+                {/* ── Card details panel — only shown when card is selected ── */}
+                {hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
+                  <div className={`relative bg-[#141414] rounded-xl p-4 mb-3 border border-[#d4ed1f]/20 overflow-hidden${selectedPaymentMethod !== "card" ? " hidden" : ""}`}>
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#d4ed1f]/6 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-3 mb-4 relative">
                       <div className="w-[26px] h-[26px] rounded-full bg-[#d4ed1f] flex items-center justify-center text-[#0a0a0a] font-bold text-xs flex-shrink-0">3</div>
@@ -1605,7 +1619,6 @@ export default function Checkout() {
                         <p className="text-sm font-semibold leading-none">Card details</p>
                         <p className="text-[10px] text-muted-foreground mt-0.5">Encrypted by PayPal</p>
                       </div>
-                      {/* card brand logos */}
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <div className="h-[22px] w-[34px] bg-white rounded-[3px] flex items-center justify-center overflow-hidden shadow-sm px-1">
                           <img src="/card-logos/visa.svg" alt="Visa" className="h-[11px] w-auto object-contain" />
@@ -1645,273 +1658,164 @@ export default function Checkout() {
                   </div>
                 )}
 
-                {/* Mobile spacer for sticky bar */}
-                {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (
-                  <div className="md:hidden h-24" />
-                )}
+                {/* ── Order review card ── */}
+                <div className="bg-[#141414] rounded-xl p-4 mb-3">
+                  <p className="text-[9px] font-semibold text-muted-foreground/40 uppercase tracking-widest mb-3">Order Review</p>
 
-
-                {/* Trust & Verification Links - Desktop only */}
-                <Card className="hidden md:block p-4 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/20 to-transparent">
-                  <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
-                    <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
-                    Buying With Confidence
-                  </h3>
-                  <p className="text-xs text-muted-foreground mb-3">Review our standards and quality assurance</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Link href="/guides/peptide-vendor-checklist">
-                      <div className="flex items-center gap-2 p-2 rounded-lg border border-border md:hover:border-[#E7FB10] transition-all duration-300 cursor-pointer" data-testid="link-buyer-checklist">
-                        <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
-                        <span className="text-xs font-medium text-[#E7FB10]">Vendor Checklist</span>
-                      </div>
-                    </Link>
-                    <Link href="/guides/peptide-quality-assurance-process">
-                      <div className="flex items-center gap-2 p-2 rounded-lg border border-border md:hover:border-[#21d8ff] transition-all duration-300 cursor-pointer" data-testid="link-quality-process">
-                        <Target className="h-3.5 w-3.5 text-[#21d8ff]" />
-                        <span className="text-xs font-medium">Quality Process</span>
-                      </div>
-                    </Link>
-                  </div>
-                </Card>
-              </motion.div>
-
-              {/* Right Column: Order Summary */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="order-1 md:order-2 md:sticky md:top-20 md:self-start z-[40]"
-              >
-                <Card className="p-3 sm:p-4 md:p-6">
-                  <h2 className="font-display text-lg md:text-xl font-semibold mb-4 md:mb-6">
-                    Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
-                  </h2>
-
-                  {/* Mixed cart warning */}
-                  {hasMixedCart && (
-                    <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                        <div className="text-xs text-amber-200">
-                          <p className="font-medium mb-1">Subscription items need separate checkout</p>
-                          <p className="text-muted-foreground">Subscriptions and one-time purchases must be checked out separately. We'll process your subscription item below.</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Item list */}
-                  <div className="divide-y divide-border/40 mb-4 md:mb-6">
+                  {/* Item list — compact, no full images */}
+                  <div className="space-y-2 mb-4">
                     {cartItems.map((item) => (
-                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`} className="flex gap-3 md:gap-4 py-3 first:pt-0 last:pb-0">
-                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative ring-1 ring-[#E7FB10]/20">
-                          <img 
-                            src={item.image || productImage} 
-                            alt={`${item.name} ${item.dosage} research peptide`}
-                            className="w-full h-full object-contain p-1"
+                      <div
+                        key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`}
+                        className="flex items-center gap-3"
+                      >
+                        {/* Small 36px thumbnail */}
+                        <div className="w-9 h-9 rounded-md bg-muted/40 flex items-center justify-center flex-shrink-0 overflow-hidden ring-1 ring-[#E7FB10]/15">
+                          <img
+                            src={item.image || productImage}
+                            alt={item.name}
+                            className="w-full h-full object-contain p-0.5"
                           />
-                          {item.isSubscription && (
-                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                              <Repeat className="h-3 w-3 text-primary-foreground" />
-                            </div>
-                          )}
                         </div>
-                        <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <h3 className="font-display font-bold text-base leading-tight truncate">
-                              {item.name}
-                              {item.packSize && <span className="text-[#E7FB10] ml-1.5 text-sm">({item.packSize}-Pack)</span>}
-                            </h3>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {item.dosage} × {item.quantity}
-                              {item.isSubscription && item.subscriptionInterval && (
-                                <span className="ml-1 text-primary">
-                                  • {intervalLabels[item.subscriptionInterval]} Sub
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">
-                            ${Math.round(item.price * item.quantity)}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium leading-tight truncate">
+                            {item.name}
+                            {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {item.dosage} × {item.quantity}
+                            {item.isSubscription && item.subscriptionInterval && (
+                              <span className="ml-1 text-primary"> · {intervalLabels[item.subscriptionInterval]} Sub</span>
+                            )}
                           </p>
                         </div>
+                        <p className="text-sm font-semibold text-[#E7FB10] tabular-nums flex-shrink-0">
+                          {item.isFree ? 'FREE' : `$${Math.round(item.price * item.quantity)}`}
+                        </p>
                       </div>
                     ))}
                   </div>
 
-                  {/* BAC Water Upsell */}
-                  {shouldShowBacUpsell && bacWater && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mb-3 md:mb-4 p-3 md:p-4 rounded-lg border bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border-[#21d8ff]/30"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm">Missing something?</h4>
-                          <p className="text-xs text-muted-foreground">Add bacteriostatic water to reconstitute your peptides</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30 flex-wrap">
-                        {bacWaterSizes.length > 1 ? (
-                          <Select
-                            value={selectedBacWaterSize}
-                            onValueChange={(val) => setSelectedBacWaterSize(val)}
-                            data-testid="select-bac-water-size"
-                          >
-                            <SelectTrigger className="flex-1 min-w-0 h-9 text-sm bg-background border-border">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {bacWaterSizes.map((size) => (
-                                <SelectItem key={size.dosage} value={size.dosage}>
-                                  {size.dosage} — ${Math.round(Number(size.price || bacWater.price))}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <span className="text-sm font-bold text-[#21d8ff] flex-1">
-                            ${Math.round(Number(bacWater.price))}
-                          </span>
-                        )}
-                        <div className="flex items-center border border-border rounded-md overflow-hidden flex-shrink-0" data-testid="bac-water-qty-control">
-                          <button
-                            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
-                            onClick={() => setSelectedBacWaterQty(q => Math.max(1, q - 1))}
-                            data-testid="button-bac-water-qty-minus"
-                          >
-                            −
-                          </button>
-                          <span className="w-7 text-center text-sm font-medium" data-testid="text-bac-water-qty">
-                            {selectedBacWaterQty}
-                          </span>
-                          <button
-                            className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
-                            onClick={() => setSelectedBacWaterQty(q => Math.min(10, q + 1))}
-                            data-testid="button-bac-water-qty-plus"
-                          >
-                            +
-                          </button>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="bg-[#21d8ff] text-black font-semibold text-xs px-4 flex-shrink-0"
-                          onClick={() => handleAddBacWater()}
-                          data-testid="button-add-bac-water"
-                        >
-                          Add
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
+                  <Separator className="my-3 bg-white/[0.06]" />
 
-                  <Separator className="my-4 md:my-6" />
-
-                  {/* Pricing */}
-                  <div className="space-y-3 text-sm">
+                  {/* Totals */}
+                  <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
                       <span>${Math.round(cartSubtotal)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Shipping</span>
-                      <span className={baseShipping === 0 ? "text-green-500" : ""}>
+                      <span className={baseShipping === 0 ? "text-green-400" : ""}>
                         {baseShipping === 0 ? "FREE" : `$${Math.round(baseShipping)}`}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">
                         Tax {hasValidZip && taxState && (
-                          <span className="text-xs text-muted-foreground/70">({taxState} - {taxRatePercent.toFixed(2)}%)</span>
+                          <span className="text-xs text-muted-foreground/60">({taxState} — {taxRatePercent.toFixed(2)}%)</span>
                         )}
                       </span>
                       {!hasValidZip ? (
-                        <span className="text-xs text-muted-foreground/50 italic">Enter ZIP above</span>
+                        <span className="text-xs text-muted-foreground/50 italic">—</span>
                       ) : (
-                        <span className={cartTax === 0 ? "text-green-500" : ""}>
+                        <span className={cartTax === 0 ? "text-green-400" : ""}>
                           {cartTax === 0 ? "No tax" : `$${cartTax.toFixed(2)}`}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <Separator className="my-4 md:my-6" />
+                  <Separator className="my-3 bg-white/[0.06]" />
 
-                  {/* Total */}
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-display text-lg font-semibold">Total</span>
-                    <span className="font-display text-2xl font-bold" data-testid="text-order-total">
+                  <div className="flex justify-between items-center">
+                    <span className="font-display text-base font-semibold">Total</span>
+                    <span className="font-display text-2xl font-bold text-[#E7FB10]" data-testid="text-order-total">
                       ${cartTotal.toFixed(2)}
                     </span>
                   </div>
 
-                  {/* Early Access Notice */}
-                  {EARLY_ACCESS_MODE && (
-                    <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-[#E7FB10]">Purchasing disabled during Early Access</p>
-                          {emailSubmitted ? (
-                            <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                              <CheckCircle className="h-3 w-3" />
-                              You'll be notified at launch!
-                            </p>
-                          ) : (
-                            <div className="mt-2">
-                              <p className="text-xs text-muted-foreground mb-2">Get notified at launch:</p>
-                              <div className="flex gap-2">
-                                <Input
-                                  type="email"
-                                  placeholder="your@email.com"
-                                  value={notifyEmail}
-                                  onChange={(e) => setNotifyEmail(e.target.value)}
-                                  className="flex-1 h-8 text-sm"
-                                  disabled={newsletterMutation.isPending}
-                                  data-testid="input-launch-email"
-                                />
-                                <Button
-                                  size="sm"
-                                  className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 h-8"
-                                  onClick={() => notifyEmail && newsletterMutation.mutate(notifyEmail)}
-                                  disabled={!notifyEmail || newsletterMutation.isPending}
-                                  data-testid="button-notify-me"
-                                >
-                                  {newsletterMutation.isPending ? (
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                  ) : (
-                                    <Mail className="h-3 w-3" />
-                                  )}
-                                </Button>
-                              </div>
+                  {/* Shipping to summary */}
+                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+                    <p className="text-[11px] text-muted-foreground/60 truncate">
+                      {shippingAddress.street}, {shippingAddress.city}, {shippingAddress.state} {shippingAddress.zip}
+                    </p>
+                    <button
+                      className="text-[10px] text-[#d4ed1f] hover:underline flex-shrink-0 ml-auto"
+                      onClick={() => setCheckoutStep(1)}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── Early Access Notice ── */}
+                {EARLY_ACCESS_MODE && (
+                  <div className="mb-3 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-[#E7FB10]">Purchasing disabled during Early Access</p>
+                        {emailSubmitted ? (
+                          <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3" />
+                            You'll be notified at launch!
+                          </p>
+                        ) : (
+                          <div className="mt-2">
+                            <p className="text-xs text-muted-foreground mb-2">Get notified at launch:</p>
+                            <div className="flex gap-2">
+                              <Input
+                                type="email"
+                                placeholder="your@email.com"
+                                value={notifyEmail}
+                                onChange={(e) => setNotifyEmail(e.target.value)}
+                                className="flex-1 h-8 text-sm"
+                                disabled={newsletterMutation.isPending}
+                                data-testid="input-launch-email"
+                              />
+                              <Button
+                                size="sm"
+                                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 h-8"
+                                onClick={() => notifyEmail && newsletterMutation.mutate(notifyEmail)}
+                                disabled={!notifyEmail || newsletterMutation.isPending}
+                                data-testid="button-notify-me"
+                              >
+                                {newsletterMutation.isPending ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <Mail className="h-3 w-3" />
+                                )}
+                              </Button>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Stock Validation Warning */}
-                  {stockErrors.length > 0 && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30" data-testid="stock-error-warning">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-red-400">Some items in your cart are unavailable</p>
-                          <ul className="mt-1 space-y-0.5">
-                            {stockErrors.map((err, i) => (
-                              <li key={i} className="text-xs text-red-300">{err}</li>
-                            ))}
-                          </ul>
-                          <p className="text-xs text-muted-foreground mt-2">Please remove unavailable items to continue.</p>
-                        </div>
+                {/* ── Stock Validation Warning ── */}
+                {stockErrors.length > 0 && (
+                  <div className="mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30" data-testid="stock-error-warning">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-red-400">Some items in your cart are unavailable</p>
+                        <ul className="mt-1 space-y-0.5">
+                          {stockErrors.map((err, i) => (
+                            <li key={i} className="text-xs text-red-300">{err}</li>
+                          ))}
+                        </ul>
+                        <p className="text-xs text-muted-foreground mt-2">Please remove unavailable items to continue.</p>
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Payment Button */}
+                {/* ── PAY BUTTON — always the last element ── */}
+                <div className="space-y-3 mb-3">
                   {stockErrors.length > 0 ? (
                     <Button
                       size="lg"
@@ -1923,7 +1827,7 @@ export default function Checkout() {
                       Items Out of Stock
                     </Button>
                   ) : selectedPaymentMethod === "card" ? (
-                    <div className="space-y-3">
+                    <>
                       {!hasValidZip ? (
                         <Button
                           size="lg"
@@ -1992,15 +1896,15 @@ export default function Checkout() {
                           )}
                         </>
                       )}
-                    </div>
+                    </>
                   ) : selectedPaymentMethod === "paypal" ? (
-                    <div className="space-y-3">
+                    <>
                       {!hasValidZip ? (
                         <Button
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
                           disabled
-                          data-testid="button-enter-zip-required"
+                          data-testid="button-enter-zip-required-paypal"
                         >
                           <AlertTriangle className="h-5 w-5" />
                           Enter ZIP Code to Continue
@@ -2010,7 +1914,7 @@ export default function Checkout() {
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                           disabled
-                          data-testid="button-checkout-disabled"
+                          data-testid="button-checkout-disabled-paypal"
                         >
                           <Clock className="h-5 w-5" />
                           Coming Soon
@@ -2020,7 +1924,7 @@ export default function Checkout() {
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                           disabled
-                          data-testid="button-subscription-coming-soon"
+                          data-testid="button-subscription-coming-soon-paypal"
                         >
                           <Clock className="h-5 w-5" />
                           Subscriptions Coming Soon
@@ -2044,15 +1948,15 @@ export default function Checkout() {
                           className="w-full"
                         />
                       )}
-                    </div>
+                    </>
                   ) : ['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') ? (
-                    <div className="space-y-2">
+                    <>
                       {!hasValidZip ? (
                         <Button
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
                           disabled
-                          data-testid="button-enter-zip-required"
+                          data-testid="button-enter-zip-required-manual"
                         >
                           <AlertTriangle className="h-5 w-5" />
                           Enter ZIP Code to Continue
@@ -2062,7 +1966,7 @@ export default function Checkout() {
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                           disabled
-                          data-testid="button-checkout-disabled"
+                          data-testid="button-checkout-disabled-manual"
                         >
                           <Clock className="h-5 w-5" />
                           Coming Soon
@@ -2072,7 +1976,7 @@ export default function Checkout() {
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                           disabled
-                          data-testid="button-subscription-coming-soon"
+                          data-testid="button-subscription-coming-soon-manual"
                         >
                           <Clock className="h-5 w-5" />
                           Subscriptions Coming Soon
@@ -2109,21 +2013,47 @@ export default function Checkout() {
                           </p>
                         </>
                       )}
-                    </div>
+                    </>
                   ) : null}
-                </Card>
+                </div>
+
+                {/* ── Trust badges + RUO disclaimer ── */}
+                <div className="flex items-center justify-center gap-4 py-3 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">SSL Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">Secure Payment</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Truck className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <span className="text-[10px] text-muted-foreground/50">Same-Day Shipping</span>
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground/40 text-center leading-relaxed">
+                  By purchasing, you confirm these products are for <span className="text-red-400/70">research use only</span> and that you are 21+. No refunds policy applies.
+                </p>
+
+                {/* Spacer for mobile sticky bar */}
+                {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod || '') && (
+                  <div className="md:hidden h-24" />
+                )}
               </motion.div>
-            </div>
+            )}
+
           </div>
         </main>
 
-        {/* Sticky mobile bottom bar — always visible when filling out manual payment */}
-        {['cashapp', 'zelle', 'venmo'].includes(selectedPaymentMethod || '') && (
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
+        {/* ── Mobile sticky bottom bar — manual payments on step 2 ── */}
+        {checkoutStep === 2 && ['cashapp', 'zelle', 'venmo'].includes(selectedPaymentMethod || '') && (
+          <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">Order Total</p>
-                <p className="font-display font-bold text-xl">${cartTotal.toFixed(2)}</p>
+                <p className="font-display font-bold text-xl">${Math.round(cartTotal)}</p>
               </div>
               <Button
                 size="lg"
@@ -2170,7 +2100,6 @@ export default function Checkout() {
   }
 
   // For single product or bundle checkout, redirect to cart checkout
-  // This simplifies the checkout flow to use cart-based checkout only
   if (bundle || product) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center">
