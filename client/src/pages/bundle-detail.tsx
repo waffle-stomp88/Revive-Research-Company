@@ -231,7 +231,7 @@ export default function BundleDetail() {
               ) : (
                 <div className="flex items-baseline gap-3">
                   <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
-                    ${getDiscountedPrice().toFixed(2)}
+                    ${Math.round(getDiscountedPrice())}
                   </span>
                 </div>
               )}
@@ -289,7 +289,7 @@ export default function BundleDetail() {
                     </div>
                     {!softGated && (
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        ${getBasePrice().toFixed(2)}
+                        ${Math.round(getBasePrice())}
                       </p>
                     )}
                   </div>
@@ -472,7 +472,7 @@ export default function BundleDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{bundle.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getDiscountedPrice().toFixed(2)}` : "—"}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${Math.round(getDiscountedPrice())}` : "—"}</p>
             </div>
             <Button
               size="lg"

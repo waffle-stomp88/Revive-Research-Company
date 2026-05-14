@@ -136,7 +136,7 @@ function CrossSellCard({
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-semibold text-sm">{suggestedProduct.name}</p>
             <span className="text-xs font-semibold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
-              ${displayPrice.toFixed(2)}
+              ${Math.round(displayPrice)}
             </span>
           </div>
           <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -503,7 +503,7 @@ export default function CartPage() {
                               <div className="flex items-center gap-2">
                                 <div className="flex items-baseline gap-2">
                                   <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                                    ${(item.price * item.quantity).toFixed(2)}
+                                    ${Math.round(item.price * item.quantity)}
                                   </span>
                                 </div>
                                 <Button
@@ -629,7 +629,7 @@ export default function CartPage() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span data-testid="text-subtotal">${subtotal.toFixed(2)}</span>
+                    <span data-testid="text-subtotal">${Math.round(subtotal)}</span>
                   </div>
                   {appliedDiscount && (
                     <div className="flex justify-between items-center">
@@ -646,18 +646,18 @@ export default function CartPage() {
                           <X className="h-3 w-3 text-muted-foreground hover:text-red-400" />
                         </Button>
                       </div>
-                      <span className="text-green-500" data-testid="text-discount">-${discountAmount.toFixed(2)}</span>
+                      <span className="text-green-500" data-testid="text-discount">-${Math.round(discountAmount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className={shipping === 0 ? "text-green-500" : ""}>
-                      {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                      {shipping === 0 ? "FREE" : `$${Math.round(shipping)}`}
                     </span>
                   </div>
                   {shipping > 0 && amountToFreeShipping > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Add <span className="text-[#21d8ff] font-semibold">${amountToFreeShipping.toFixed(2)}</span> more for free shipping!
+                      Add <span className="text-[#21d8ff] font-semibold">${Math.round(amountToFreeShipping)}</span> more for free shipping!
                     </p>
                   )}
                 </div>
@@ -717,7 +717,7 @@ export default function CartPage() {
 
                 <div className="flex justify-between font-display font-bold text-xl mb-2">
                   <span>Total</span>
-                  <span className="text-[#E7FB10]" data-testid="text-total">${total.toFixed(2)}</span>
+                  <span className="text-[#E7FB10]" data-testid="text-total">${Math.round(total)}</span>
                 </div>
                 <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
 

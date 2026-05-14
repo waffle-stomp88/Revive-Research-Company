@@ -523,7 +523,7 @@ export default function OrderConfirmation() {
                           </div>
                         </div>
                         {item.price > 0 && (
-                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${Math.round(item.price * item.quantity)}</p>
                         )}
                       </motion.div>
                     ))}
@@ -533,13 +533,13 @@ export default function OrderConfirmation() {
                     {orderSummary.subtotal > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Subtotal</span>
-                        <span>${orderSummary.subtotal.toFixed(2)}</span>
+                        <span>${Math.round(orderSummary.subtotal)}</span>
                       </div>
                     )}
                     {orderSummary.discount > 0 && (
                       <div className="flex justify-between text-sm text-green-400">
                         <span>Discount</span>
-                        <span>-${orderSummary.discount.toFixed(2)}</span>
+                        <span>-${Math.round(orderSummary.discount)}</span>
                       </div>
                     )}
                     {orderSummary.subtotal > 0 && (
@@ -547,7 +547,7 @@ export default function OrderConfirmation() {
                         <span className="text-muted-foreground">Shipping</span>
                         <span>{orderSummary.shipping === 0 ? (
                           <Badge variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30 text-xs">FREE</Badge>
-                        ) : `$${orderSummary.shipping.toFixed(2)}`}</span>
+                        ) : `$${Math.round(orderSummary.shipping)}`}</span>
                       </div>
                     )}
                     {orderSummary.subtotal > 0 && (orderSummary.tax ?? 0) > 0 && (

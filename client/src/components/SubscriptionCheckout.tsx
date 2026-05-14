@@ -134,7 +134,7 @@ export default function SubscriptionCheckout({
         <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Regular price ({quantity}x)</span>
-            <span className="line-through text-muted-foreground">${totalBeforeDiscount.toFixed(2)}</span>
+            <span className="line-through text-muted-foreground">${Math.round(totalBeforeDiscount)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Subscription discount</span>
@@ -142,7 +142,7 @@ export default function SubscriptionCheckout({
           </div>
           <div className="flex justify-between font-medium pt-2 border-t border-border/50">
             <span>You pay {frequencyLabels[frequency].toLowerCase()}</span>
-            <span className="text-primary">${discountedPrice.toFixed(2)}</span>
+            <span className="text-primary">${Math.round(discountedPrice)}</span>
           </div>
         </div>
       </Card>

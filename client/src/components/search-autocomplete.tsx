@@ -358,7 +358,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                             </Badge>
                             {isProduct && (
                               <span className="text-xs text-[#E7FB10] font-semibold">
-                                ${Number((result as any).price).toFixed(2)}
+                                ${Math.round(Number((result as any).price))}
                               </span>
                             )}
                           </div>

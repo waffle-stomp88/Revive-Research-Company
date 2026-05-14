@@ -1069,8 +1069,8 @@ function ProductsComponent() {
                                   ) : (
                                     <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#E7FB10]">
                                       {product.minPrice && product.maxPrice
-                                        ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
-                                        : `$${Number(product.price).toFixed(2)}`
+                                        ? `$${Math.round(Number(product.minPrice))}–$${Math.round(Number(product.maxPrice))}`
+                                        : `$${Math.round(Number(product.price))}`
                                       }
                                     </span>
                                   )}

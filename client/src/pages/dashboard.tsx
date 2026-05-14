@@ -2044,7 +2044,7 @@ export default function Dashboard() {
                                 <Link href={`/product/${product.id}`}>
                                   <p className="font-medium text-sm truncate hover:text-[#ec4899] transition-colors cursor-pointer">{product.name}</p>
                                 </Link>
-                                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+                                <p className="text-xs text-muted-foreground">${Math.round(Number(product.price))}</p>
                               </div>
                               <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} className="shrink-0" data-testid={`button-add-to-cart-${product.id}`}>
                                 <Plus className="h-4 w-4" />

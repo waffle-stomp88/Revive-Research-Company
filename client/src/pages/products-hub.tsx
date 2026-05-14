@@ -201,7 +201,7 @@ export default function ProductsHub() {
                   </div>
                   <h3 className="font-semibold text-sm truncate mb-1">{product.name}</h3>
                   <p className="text-lg font-display font-bold text-[#E7FB10]">
-                    ${Number(product.price).toFixed(2)}
+                    ${Math.round(Number(product.price))}
                   </p>
                   {product.inStock === false && (
                     <Badge variant="secondary" className="text-xs mt-2">Out of Stock</Badge>

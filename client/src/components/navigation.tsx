@@ -455,7 +455,7 @@ export function Navigation() {
                                 </Button>
                               ) : (
                                 <p className="text-sm font-semibold text-[#E7FB10]">
-                                  ${(item.price * item.quantity).toFixed(2)}
+                                  ${Math.round(item.price * item.quantity)}
                                 </p>
                               )}
                             </div>
@@ -495,7 +495,7 @@ export function Navigation() {
                                   </Button>
                                 ) : (
                                   <p className="text-sm font-semibold text-[#21d8ff]">
-                                    ${(bundle.price * bundle.quantity).toFixed(2)}
+                                    ${Math.round(bundle.price * bundle.quantity)}
                                   </p>
                                 )}
                               </div>
@@ -510,7 +510,7 @@ export function Navigation() {
                         <div className="p-4 border-t border-border bg-muted/20">
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-sm text-muted-foreground">Subtotal</span>
-                            <span className="font-semibold text-[#E7FB10]">${getSubtotal().toFixed(2)}</span>
+                            <span className="font-semibold text-[#E7FB10]">${Math.round(getSubtotal())}</span>
                           </div>
                           <Link href="/cart">
                             <Button className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" size="sm">

@@ -488,7 +488,7 @@ export function CompoundFinder({ products, onAddToCart }: CompoundFinderProps) {
                     })()}
                     <div className="flex items-center gap-3 mt-2">
                       <span className="text-sm font-semibold text-[#21d8ff]">
-                        ${Number(product.price).toFixed(2)}
+                        ${Math.round(Number(product.price))}
                       </span>
                       <Link href={`/product/${product.id}`}>
                         <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-view-${product.id}`}>

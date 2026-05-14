@@ -241,7 +241,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
 
   const comparisonFields: { key: string; label: string; format?: (v: any) => string }[] = [
     { key: "category", label: "Category" },
-    { key: "price", label: "Price", format: (v: string) => `$${Number(v).toFixed(2)}` },
+    { key: "price", label: "Price", format: (v: string) => `$${Math.round(Number(v))}` },
     { key: "inStock", label: "In Stock", format: (v: boolean | null) => v ? "Yes" : "No" },
   ];
 
@@ -276,7 +276,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
                 {product.name}
               </h3>
               <p className="text-2xl font-bold text-[#E7FB10] mb-2">
-                ${Number(product.price).toFixed(2)}
+                ${Math.round(Number(product.price))}
               </p>
               
               <div className="flex gap-2">

@@ -109,7 +109,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                     </div>
                   ) : (
                     <p className="text-base text-[#E7FB10] font-black mt-1">
-                      ${Number(product.price).toFixed(2)}
+                      ${Math.round(Number(product.price))}
                     </p>
                   )}
                 </div>
@@ -200,7 +200,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                           </div>
                         ) : (
                           <p className="text-[10px] text-[#E7FB10]">
-                            ${Number(product.price).toFixed(2)}
+                            ${Math.round(Number(product.price))}
                           </p>
                         )}
                       </div>

@@ -1732,7 +1732,7 @@ export default function Checkout() {
                             </p>
                           </div>
                           <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ${Math.round(item.price * item.quantity)}
                           </p>
                         </div>
                       </div>
@@ -1766,14 +1766,14 @@ export default function Checkout() {
                             <SelectContent>
                               {bacWaterSizes.map((size) => (
                                 <SelectItem key={size.dosage} value={size.dosage}>
-                                  {size.dosage} — ${Number(size.price || bacWater.price).toFixed(2)}
+                                  {size.dosage} — ${Math.round(Number(size.price || bacWater.price))}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         ) : (
                           <span className="text-sm font-bold text-[#21d8ff] flex-1">
-                            ${Number(bacWater.price).toFixed(2)}
+                            ${Math.round(Number(bacWater.price))}
                           </span>
                         )}
                         <div className="flex items-center border border-border rounded-md overflow-hidden flex-shrink-0" data-testid="bac-water-qty-control">
@@ -1813,12 +1813,12 @@ export default function Checkout() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${cartSubtotal.toFixed(2)}</span>
+                      <span>${Math.round(cartSubtotal)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Shipping</span>
                       <span className={baseShipping === 0 ? "text-green-500" : ""}>
-                        {baseShipping === 0 ? "FREE" : `$${baseShipping.toFixed(2)}`}
+                        {baseShipping === 0 ? "FREE" : `$${Math.round(baseShipping)}`}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">

@@ -362,7 +362,7 @@ export default function ResearchStackDetail() {
               ) : (
                 <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
                   <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
-                    ${getBasePrice().toFixed(2)}
+                    ${Math.round(getBasePrice())}
                   </span>
                 </div>
               )}
@@ -416,7 +416,7 @@ export default function ResearchStackDetail() {
                       <ShoppingCart className="h-3.5 w-3.5" />
                       <span className="font-medium text-sm">One-time</span>
                     </div>
-                    {!softGated && <p className="text-xs text-muted-foreground mt-0.5">${getBasePrice().toFixed(2)}</p>}
+                    {!softGated && <p className="text-xs text-muted-foreground mt-0.5">${Math.round(getBasePrice())}</p>}
                   </div>
                   {purchaseType === "one-time" && (
                     <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
@@ -970,7 +970,7 @@ export default function ResearchStackDetail() {
                               </div>
                             ) : (
                               <p className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto">
-                                ${Number(partnerProduct.price).toFixed(2)}
+                                ${Math.round(Number(partnerProduct.price))}
                               </p>
                             )}
                           </div>
@@ -1002,7 +1002,7 @@ export default function ResearchStackDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{stack.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getBasePrice().toFixed(2)}` : "—"}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${Math.round(getBasePrice())}` : "—"}</p>
             </div>
             <Button
               size="lg"
