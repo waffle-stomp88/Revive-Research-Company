@@ -1131,8 +1131,9 @@ export async function registerRoutes(
         }
       }
 
-      // Pack-tier discount table — must mirror client/src/lib/pack-tiers.ts.
-      // Quantity IS the pack size: buying 5 vials always gets the 5-pack rate.
+      // Pack-tier discount table — MUST stay in sync with PACK_TIERS in
+      // client/src/lib/pack-tiers.ts. If you change volume pricing percentages
+      // or add/remove tier quantities there, update this table to match.
       const PACK_DISCOUNTS: Record<number, number> = { 1: 0, 3: 0.10, 5: 0.15, 10: 0.20 };
 
       let serverSubtotal = 0;
