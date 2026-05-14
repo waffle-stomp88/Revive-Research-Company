@@ -30,99 +30,69 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
   if (inline) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative rounded-2xl overflow-hidden"
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="relative rounded-xl overflow-hidden"
         style={{
-          background: "linear-gradient(145deg, #1c1c24, #14141a)",
+          background: "linear-gradient(145deg, #1c1c24, #141419)",
           border: "1px solid #E7FB10",
-          boxShadow: "0 0 24px #E7FB1030, 0 0 48px #E7FB1012, inset 0 1px 0 #E7FB1025",
+          boxShadow: "0 0 20px #E7FB1028, 0 0 60px #E7FB1010, inset 0 1px 0 #E7FB1030",
         }}
         data-testid="auth-gate-inline"
       >
-        {/* Scanline texture */}
-        <div className="absolute inset-0 pointer-events-none opacity-30" style={{
-          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, #ffffff03 2px, #ffffff03 3px)",
-        }} />
-
-        {/* Top glow strip */}
+        {/* Top glow line */}
         <div className="absolute top-0 inset-x-0 h-px" style={{
-          background: "linear-gradient(90deg, transparent 5%, #E7FB10 35%, #E7FB10cc 65%, transparent 95%)",
+          background: "linear-gradient(90deg, transparent 5%, #E7FB10cc 40%, #E7FB10 60%, transparent 95%)",
         }} />
 
-        {/* Corner accent */}
-        <div className="absolute top-0 left-0 w-8 h-8 pointer-events-none" style={{
-          background: "linear-gradient(135deg, #E7FB1020 0%, transparent 60%)",
-        }} />
-
-        <div className="relative p-5">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-4">
+        <div className="relative px-4 py-4">
+          {/* Header row: icon + title + perks inline */}
+          <div className="flex items-center gap-3 mb-3">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{
-                background: "linear-gradient(135deg, #E7FB1025, #E7FB1008)",
-                border: "1px solid #E7FB1050",
-                boxShadow: "0 0 12px #E7FB1020",
+                background: "#E7FB1015",
+                border: "1px solid #E7FB1045",
+                boxShadow: "0 0 10px #E7FB1020",
               }}
             >
-              <Lock className="w-5 h-5" style={{ color: "#E7FB10" }} />
+              <Lock className="w-4 h-4" style={{ color: "#E7FB10" }} />
             </div>
             <div className="flex-1 min-w-0">
               <p
-                className="font-bold text-white leading-none"
-                style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.06em", fontSize: "1.25rem" }}
+                className="text-white leading-none"
+                style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.06em", fontSize: "1.1rem" }}
               >
                 {inlineTitle || "Researcher Access"}
               </p>
-              {!inlineDescription ? (
-                <div className="flex items-center gap-1.5 mt-1">
-                  <Droplets className="w-3 h-3 flex-shrink-0" style={{ color: "#21d8ff" }} />
-                  <p className="text-xs" style={{ color: "#21d8ff" }}>Free BAC water on your first order</p>
-                </div>
-              ) : (
-                <p className="text-xs text-gray-400 mt-1 leading-snug">{inlineDescription}</p>
-              )}
+              <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                {!inlineDescription
+                  ? "Free account · Verified pricing · COA library"
+                  : inlineDescription}
+              </p>
             </div>
           </div>
 
-          {/* What you unlock */}
-          <div
-            className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl"
-            style={{ background: "#E7FB1008", border: "1px solid #E7FB1018" }}
-          >
-            {["Pricing", "COA library", "Dashboard"].map((label, i) => (
-              <div key={label} className="flex items-center gap-1.5">
-                {i > 0 && <div className="w-px h-3 bg-white/10 mr-1.5" />}
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#E7FB10" }} />
-                <span className="text-[10px] font-medium text-gray-300">{label}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Primary CTA */}
+          {/* CTA */}
           <button
             onClick={handleCreateAccount}
-            className="w-full h-11 rounded-xl font-bold text-sm text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+            className="w-full h-10 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 mb-2.5"
             style={{ background: "#E7FB10" }}
             data-testid="button-inline-gate-create"
           >
             Create Free Account
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
 
-          {/* Sign in link */}
+          {/* Sign in */}
           <button
             onClick={handleLogin}
-            className="w-full mt-3 text-center text-xs transition-colors"
-            style={{ color: "#6b7280" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#9ca3af")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#6b7280")}
+            className="w-full text-center text-xs text-gray-500 hover:text-gray-300 transition-colors"
             data-testid="button-inline-gate-signin"
           >
             Already a researcher?{" "}
-            <span className="font-semibold" style={{ color: "#E7FB10" }}>Sign in</span>
+            <span style={{ color: "#E7FB10" }} className="font-semibold">Sign in</span>
           </button>
         </div>
       </motion.div>
