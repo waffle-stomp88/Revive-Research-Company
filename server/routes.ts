@@ -409,15 +409,18 @@ export async function registerRoutes(
           const client = await pool.connect();
           try {
             await client.query('BEGIN');
-            // Step 1: insert the new user row by copying the old one.
-            // ON CONFLICT DO NOTHING handles the rare case where the Supabase
-            // UUID row was already created by a concurrent request.
+            // Step 1a: clear email on old row to release the unique constraint
+            // so the new row can take it.
+            await client.query('UPDATE users SET email = NULL WHERE id = $1', [oldId]);
+            // Step 1b: insert the new user row with the real email.
+            // ON CONFLICT (id) DO NOTHING handles a concurrent request that
+            // already inserted the new row.
             await client.query(
               `INSERT INTO users (id, email, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, updated_at)
-               SELECT $1, email, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, NOW()
-               FROM users WHERE id = $2
+               SELECT $1, $2, first_name, last_name, profile_image_url, is_admin, ruo_attestation_at, created_at, NOW()
+               FROM users WHERE id = $3
                ON CONFLICT (id) DO NOTHING`,
-              [supabaseId, oldId]
+              [supabaseId, email, oldId]
             );
             // Step 2: point all child rows to the new ID (FK is satisfied because
             // the new user row now exists).

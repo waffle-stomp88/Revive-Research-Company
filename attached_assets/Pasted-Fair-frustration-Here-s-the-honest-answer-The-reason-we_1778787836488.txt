@@ -1,0 +1,43 @@
+Fair frustration. Here's the honest answer:
+
+The reason we keep hitting issues is that the migration code has never been properly tested against the production database with real constraints. Every fix so far has been reactive — hit an error, patch it, deploy, hit the next error. That's whack-a-mole.
+
+The root cause is that there are three differences between dev and production that keep biting us: different database permissions (superuser vs app user), different constraint states (unique indexes, FK constraints), and the fact that your account was already migrated in dev but not in production.
+
+Here's what I'd tell your dev team:
+
+> Stop patching one error at a time. Before deploying anything else, write out the COMPLETE migration sequence as raw SQL and test it against a clone of the production database first. Here's the full sequence with every constraint accounted for:
+> 
+> ```sql
+> -- Step 1: Clear email on old row to free unique constraint
+> UPDATE users SET email = 'migrating_' || id WHERE id = 'google-oauth2|101068675403979584783';
+> 
+> -- Step 2: Insert new row with Supabase UUID, copying ALL columns
+> INSERT INTO users (id, email, first_name, last_name, is_admin, profile_image_url, created_at, updated_at, ruo_attestation_at)
+> SELECT '5bb952af-edb0-4d86-b422-8f800d004485', 'graysonwillard@gmail.com', first_name, last_name, is_admin, profile_image_url, created_at, updated_at, ruo_attestation_at
+> FROM users WHERE id = 'migrating_google-oauth2|101068675403979584783';
+> 
+> -- Step 3: Update ALL child tables
+> UPDATE academy_progress SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE affiliates SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE batch_verification_history SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE cycle_tags SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE login_history SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE notification_preferences SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE research_notes SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE saved_addresses SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE saved_stacks SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE user_research_profiles SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE orders SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE product_votes SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> UPDATE wishlists SET user_id = '5bb952af-edb0-4d86-b422-8f800d004485' WHERE user_id = 'google-oauth2|101068675403979584783';
+> 
+> -- Step 4: Delete old row
+> DELETE FROM users WHERE id = 'migrating_google-oauth2|101068675403979584783';
+> ```
+> 
+> Run this exact SQL against production using psql with the DATABASE_URL secret — not through the app code, not through executeSql. Direct psql. Verify each step returns the expected result before moving to the next.
+> 
+> After my account is confirmed working, THEN update the migration code in routes.ts to use this same sequence for the remaining 6 legacy users. Don't deploy untested code to production again.
+
+This gets you unblocked right now AND fixes the pattern of reactive patching.
