@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2, HeartHandshake, Lock, Database, BellOff, ChevronRight, CheckSquare } from "lucide-react";
+import { FlaskConical, Shield, Eye, EyeOff, ArrowRight, Loader2, HeartHandshake, Lock, Database, BellOff, ChevronRight, CheckSquare, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,170 @@ const TRUST_BADGES = [
 ];
 
 const AVATAR_COLORS = ["#E7FB10", "#21d8ff", "#a855f7", "#ec4899", "#22c55e"];
+
+function PKChartVisual() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.35 }}
+      className="absolute inset-0 p-4 flex flex-col"
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "#E7FB1015", border: "1px solid #E7FB1030" }}>
+          <FlaskConical className="w-3 h-3" style={{ color: "#E7FB10" }} />
+        </div>
+        <span className="text-[11px] font-semibold text-white/70 tracking-wide">Pharmacokinetics</span>
+        <span className="ml-auto text-[9px] font-mono text-gray-600">BPC-157</span>
+      </div>
+      <div className="flex-1 relative">
+        <svg viewBox="0 0 220 70" className="w-full h-full" preserveAspectRatio="none">
+          <line x1="0" y1="55" x2="220" y2="55" stroke="#ffffff06" strokeWidth="1"/>
+          <line x1="0" y1="28" x2="220" y2="28" stroke="#ffffff06" strokeWidth="1"/>
+          <line x1="0" y1="5" x2="220" y2="5" stroke="#ffffff06" strokeWidth="1"/>
+          <motion.path
+            d="M 0 65 C 8 65 12 5 28 4 C 40 3 52 18 75 33 C 105 52 145 60 220 64"
+            fill="none" stroke="#E7FB10" strokeWidth="2" strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 1.3, ease: "easeInOut" }}
+          />
+          <motion.path
+            d="M 0 65 C 8 65 12 5 28 4 C 40 3 52 18 75 33 C 105 52 145 60 220 64 L 220 65 Z"
+            fill="#E7FB10" fillOpacity="0.07"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+          />
+          <motion.circle cx="28" cy="4" r="3" fill="#E7FB10"
+            initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, type: "spring", stiffness: 400 }}
+          />
+        </svg>
+      </div>
+      <div className="flex gap-2 mt-2">
+        {[["T½", "4.2h"], ["Tmax", "1.8h"], ["Bio", "85%"]].map(([label, val]) => (
+          <div key={label} className="flex-1 rounded-lg px-2 py-1.5 text-center" style={{ background: "#E7FB1010", border: "1px solid #E7FB1018" }}>
+            <p className="text-[8px] text-gray-600 uppercase tracking-wide">{label}</p>
+            <p className="text-[11px] font-bold" style={{ color: "#E7FB10" }}>{val}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function COAVisual() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.35 }}
+      className="absolute inset-0 p-4 flex flex-col justify-between"
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[8px] text-gray-600 uppercase tracking-widest font-mono">Certificate of Analysis</p>
+          <p className="text-xs font-mono font-bold text-white mt-0.5">#2025-BPC-047</p>
+          <p className="text-[9px] text-gray-500 mt-0.5">Janoshik Analytical</p>
+        </div>
+        <motion.div
+          initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
+          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: "#21d8ff18", border: "1px solid #21d8ff40" }}
+        >
+          <CheckCircle2 className="w-4 h-4" style={{ color: "#21d8ff" }} />
+        </motion.div>
+      </div>
+      <div className="space-y-2.5">
+        {[["Purity", 99.2, "#21d8ff"], ["Identity", 100, "#E7FB10"], ["Endotoxin", 97, "#a855f7"]].map(([label, val, color]) => (
+          <div key={String(label)}>
+            <div className="flex justify-between mb-1">
+              <span className="text-[10px] text-gray-400">{String(label)}</span>
+              <span className="text-[10px] font-bold font-mono" style={{ color: String(color) }}>{Number(val).toFixed(1)}%</span>
+            </div>
+            <div className="h-1 rounded-full" style={{ background: "#ffffff08" }}>
+              <motion.div className="h-full rounded-full" style={{ background: String(color) }}
+                initial={{ width: "0%" }} animate={{ width: `${val}%` }}
+                transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-1.5">
+        <motion.div className="w-1.5 h-1.5 rounded-full" style={{ background: "#21d8ff" }}
+          animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
+        />
+        <span className="text-[9px] text-gray-500">Independent · Third-party verified</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function StackVisual() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.35 }}
+      className="absolute inset-0 p-4 flex flex-col justify-between"
+    >
+      <div className="flex items-center justify-center gap-3">
+        {(["BPC-157", "TB-500"] as const).map((name, i) => (
+          <motion.div key={name}
+            initial={{ opacity: 0, x: i === 0 ? -16 : 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15 + i * 0.1, duration: 0.4 }}
+            className="px-3 py-2 rounded-xl text-center"
+            style={{ background: "#a855f718", border: "1px solid #a855f740" }}
+          >
+            <p className="text-xs font-bold text-white">{name}</p>
+            <p className="text-[8px] text-gray-500 mt-0.5">Peptide</p>
+          </motion.div>
+        ))}
+      </div>
+      <div className="flex items-center justify-center gap-4">
+        <div className="flex-1 flex flex-col items-end">
+          <motion.div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #a855f7)" }}
+            initial={{ scaleX: 0, originX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          />
+        </div>
+        <div className="relative w-16 h-16 flex-shrink-0">
+          <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+            <circle cx="32" cy="32" r="24" fill="none" stroke="#ffffff08" strokeWidth="5" />
+            <motion.circle cx="32" cy="32" r="24" fill="none" stroke="#a855f7" strokeWidth="5"
+              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 24}`}
+              initial={{ strokeDashoffset: 2 * Math.PI * 24 }}
+              animate={{ strokeDashoffset: 2 * Math.PI * 24 * (1 - 0.94) }}
+              transition={{ delay: 0.5, duration: 1.1, ease: "easeOut" }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.span className="text-lg font-black text-white leading-none"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>94</motion.span>
+            <span className="text-[8px] text-gray-500">synergy</span>
+          </div>
+        </div>
+        <div className="flex-1">
+          <motion.div className="h-px w-full" style={{ background: "linear-gradient(90deg, #21d8ff, transparent)" }}
+            initial={{ scaleX: 0, originX: 1 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          />
+        </div>
+      </div>
+      <div className="flex items-center justify-center gap-2 flex-wrap">
+        {["Tissue Repair", "Healing", "Recovery"].map((tag, i) => (
+          <motion.span key={tag}
+            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7 + i * 0.08 }}
+            className="px-2 py-0.5 rounded-full text-[9px] font-medium"
+            style={{ background: "#a855f712", color: "#a855f7", border: "1px solid #a855f730" }}
+          >{tag}</motion.span>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 const ATTESTATION_TEXT =
   "I confirm I am 21+ years of age and that all products purchased are for laboratory research purposes only. Not for human or animal consumption.";
@@ -45,6 +209,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [attestationChecked, setAttestationChecked] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setActiveSlide(p => (p + 1) % 3), 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   // Navigate to returnTo after successful email/password sign-in
   const handlePostSignIn = () => {
@@ -189,24 +359,57 @@ export default function LoginPage() {
               Premium peptide compounds with verified purity you can trust.
             </p>
 
-            <div className="space-y-4 w-full max-w-sm">
-              {TRUST_POINTS.map((point) => {
-                const Icon = point.icon;
-                return (
-                  <div key={point.title} className="flex items-start gap-4 text-left">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${point.color}15`, border: `1px solid ${point.color}40` }}
-                    >
-                      <Icon className="h-5 w-5" style={{ color: point.color }} />
-                    </div>
-                    <div className="flex-1 min-w-0 pt-0.5">
-                      <p className="font-semibold text-white text-sm leading-snug">{point.title}</p>
-                      <p className="text-xs text-gray-400 mt-1 leading-relaxed">{point.subtitle}</p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="w-full max-w-sm">
+              {/* Animated visual panel */}
+              <div
+                className="relative rounded-2xl overflow-hidden mb-4"
+                style={{ background: "#0b0b10", border: "1px solid #ffffff0d", height: "210px" }}
+              >
+                {/* Subtle scanline overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, #ffffff03 3px, #ffffff03 4px)",
+                  zIndex: 10
+                }} />
+                <AnimatePresence mode="wait">
+                  {activeSlide === 0 && <PKChartVisual key="pk" />}
+                  {activeSlide === 1 && <COAVisual key="coa" />}
+                  {activeSlide === 2 && <StackVisual key="stack" />}
+                </AnimatePresence>
+              </div>
+
+              {/* Text below panel */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeSlide}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.28 }}
+                  className="text-left min-h-[56px]"
+                >
+                  <p className="font-semibold text-sm leading-snug" style={{ color: TRUST_POINTS[activeSlide].color }}>
+                    {TRUST_POINTS[activeSlide].title}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                    {TRUST_POINTS[activeSlide].subtitle}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Dot / progress navigation */}
+              <div className="flex items-center gap-2 mt-3">
+                {TRUST_POINTS.map((point, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveSlide(i)}
+                    className="h-1 rounded-full transition-all duration-400 cursor-pointer"
+                    style={{
+                      background: i === activeSlide ? point.color : "#ffffff18",
+                      width: i === activeSlide ? "28px" : "8px",
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
