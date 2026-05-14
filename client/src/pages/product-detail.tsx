@@ -450,6 +450,20 @@ export default function ProductDetail() {
     setHasSetInitialDosage(true);
   }, [product, dosageStocks, hasSetInitialDosage, urlDosageParam]);
 
+  // Keep ?dosage= in the URL in sync with the selected dosage so that the
+  // address bar is always shareable/deep-linkable.  replaceState is used so
+  // the back button is not affected by dosage changes.
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (selectedDosage) {
+      searchParams.set("dosage", selectedDosage);
+    } else {
+      searchParams.delete("dosage");
+    }
+    const newSearch = searchParams.toString() ? `?${searchParams.toString()}` : "";
+    window.history.replaceState(null, "", `${window.location.pathname}${newSearch}${window.location.hash}`);
+  }, [selectedDosage]);
+
   // Redirect UUID URLs to slug URLs for SEO
   // Use replaceState to update the URL bar without affecting navigation history,
   // so back button returns to the originating page (e.g. bulk-packs) instead of skipping it.
