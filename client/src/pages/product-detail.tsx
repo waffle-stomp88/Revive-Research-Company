@@ -175,7 +175,11 @@ export default function ProductDetail() {
   const { isAuthenticated, login } = useAuth();
   const softGateEnabled = SOFT_GATE_ENABLED;
   const [quantity, setQuantity] = useState(1);
-  const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
+  // Capture the dosage query param once at mount so URL mutations (e.g. UUID→slug
+  // replaceState) cannot invalidate it on a subsequent render.
+  const urlDosageParamRef = useRef(new URLSearchParams(window.location.search).get("dosage") || "");
+  const urlDosageParam = urlDosageParamRef.current;
+  const [selectedDosage, setSelectedDosage] = useState<string>(urlDosageParam || "10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
   const [notifyEmail, setNotifyEmail] = useState("");
@@ -422,6 +426,13 @@ export default function ProductDetail() {
     if (!product?.dosageOptions || product.dosageOptions.length === 0) return;
     if (dosageStocks.length === 0) return;
 
+    // If the URL specified a dosage and it's a valid option for this product,
+    // honour it and skip the auto-select logic entirely.
+    if (urlDosageParam && product.dosageOptions.includes(urlDosageParam)) {
+      setHasSetInitialDosage(true);
+      return;
+    }
+
     const parseDosage = (dosage: string): number => {
       const match = dosage.match(/(\d+(?:\.\d+)?)/);
       return match ? parseFloat(match[1]) : 0;
@@ -437,7 +448,7 @@ export default function ProductDetail() {
     });
     setSelectedDosage(lowestInStock || sortedDosages[0]);
     setHasSetInitialDosage(true);
-  }, [product, dosageStocks, hasSetInitialDosage]);
+  }, [product, dosageStocks, hasSetInitialDosage, urlDosageParam]);
 
   // Redirect UUID URLs to slug URLs for SEO
   // Use replaceState to update the URL bar without affecting navigation history,
@@ -447,7 +458,8 @@ export default function ProductDetail() {
     if (product?.slug && params.id !== product.slug) {
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id || "");
       if (isUUID) {
-        window.history.replaceState(null, "", `/peptides/${product.slug}`);
+        const search = window.location.search;
+        window.history.replaceState(null, "", `/peptides/${product.slug}${search}`);
       }
     }
   }, [product, params.id]);
