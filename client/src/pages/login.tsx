@@ -189,20 +189,20 @@ export default function LoginPage() {
               Premium peptide compounds with verified purity you can trust.
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-4 w-full max-w-sm">
               {TRUST_POINTS.map((point) => {
                 const Icon = point.icon;
                 return (
-                  <div key={point.title} className="flex items-start gap-4">
+                  <div key={point.title} className="flex items-start gap-4 text-left">
                     <div
-                      className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ background: `${point.color}18`, border: `1px solid ${point.color}30` }}
+                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: `${point.color}15`, border: `1px solid ${point.color}40` }}
                     >
                       <Icon className="h-5 w-5" style={{ color: point.color }} />
                     </div>
-                    <div>
-                      <p className="font-semibold text-white text-sm">{point.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{point.subtitle}</p>
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <p className="font-semibold text-white text-sm leading-snug">{point.title}</p>
+                      <p className="text-xs text-gray-400 mt-1 leading-relaxed">{point.subtitle}</p>
                     </div>
                   </div>
                 );
