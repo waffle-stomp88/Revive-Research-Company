@@ -3671,7 +3671,7 @@ function ResearchStacks() {
               />
               {SOFT_GATE_ENABLED && !isAuthenticated && (
                 <div
-                  className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
+                  className="absolute inset-0 z-20 flex items-start justify-center rounded-2xl pt-10 px-4"
                   style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", background: "rgba(26,26,31,0.55)" }}
                   data-testid="synergy-engine-auth-gate"
                 >
@@ -3679,7 +3679,7 @@ function ResearchStacks() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="relative w-full max-w-sm mx-4"
+                    className="relative w-full max-w-sm"
                   >
                     <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/40 via-[#21d8ff]/20 to-[#E7FB10]/10 blur-sm" />
                     <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-8 overflow-hidden text-center">
