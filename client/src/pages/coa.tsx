@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { AuthGate } from "@/components/auth-gate";
+import { BlurredGate } from "@/components/blurred-gate";
 import {
   Form,
   FormControl,
@@ -432,13 +432,17 @@ export default function CoaVerification() {
                       </a>
                     )}
                     {softGateEnabled && !isAuthenticated ? (
-                      <div className="flex-1" data-testid="auth-gate-coa-download">
-                        <AuthGate
-                          inline
-                          inlineTitle="Sign in to download COA PDF"
-                          inlineDescription="Create a free account to download certificates of analysis"
-                        />
-                      </div>
+                      <BlurredGate
+                        previewContent={
+                          <Button variant="outline" className="gap-2" tabIndex={-1}>
+                            <Download className="h-4 w-4" />
+                            Download PDF
+                          </Button>
+                        }
+                        title="Sign in to download COA PDF"
+                        description="Create a free account to download certificates of analysis"
+                        testId="auth-gate-coa-download"
+                      />
                     ) : (
                       <Button variant="outline" className="gap-2" data-testid="button-download-coa">
                         <Download className="h-4 w-4" />
