@@ -940,7 +940,18 @@ export default function ProductDetail() {
             <div className="mb-2 md:mb-3">
               {softGateEnabled && !isAuthenticated ? (
                 <div data-testid="text-product-price">
-                  <AuthGate inline />
+                  <BlurredGate
+                    previewContent={
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">$59.99</span>
+                        <span className="text-sm text-muted-foreground line-through">$74.99</span>
+                        <span className="text-xs font-medium text-[#E7FB10]/80 px-1.5 py-0.5 rounded bg-[#E7FB10]/10">Save 20%</span>
+                      </div>
+                    }
+                    title="Sign in to see pricing"
+                    description="Create a free account to unlock verified pricing and place orders."
+                    testId="blurred-gate-price"
+                  />
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
@@ -1144,7 +1155,23 @@ export default function ProductDetail() {
             {!isOutOfStock ? (
               softGateEnabled && !isAuthenticated ? (
                 <div data-testid="stack-cta">
-                  <AuthGate inline />
+                  <BlurredGate
+                    previewContent={
+                      <div className="flex flex-col gap-2">
+                        <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                          <ShoppingCart className="h-5 w-5 text-black" />
+                          <span className="font-display font-bold text-black">Buy Now</span>
+                        </div>
+                        <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
+                          <ShoppingBag className="h-5 w-5 text-foreground" />
+                          <span className="font-display text-foreground">Add to Cart</span>
+                        </div>
+                      </div>
+                    }
+                    title="Create an account to order"
+                    description="Sign up free to unlock pricing, place orders, and access your research dashboard."
+                    testId="blurred-gate-purchase"
+                  />
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
