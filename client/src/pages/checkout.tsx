@@ -1243,13 +1243,14 @@ export default function Checkout() {
                                     : digits;
                                   setShippingAddress({...shippingAddress, zip});
                                 }}
+                                onBlur={() => touch('zip')}
                                 placeholder="78701"
                                 inputMode="numeric"
                                 autoComplete="postal-code"
-                                className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                className={`mt-1 ${(submitAttempted || touched.zip) && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                                 data-testid="input-zip"
                               />
-                              {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              {(submitAttempted || touched.zip) && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
                           </div>
                         </div>
@@ -2183,7 +2184,7 @@ export default function Checkout() {
             </div>
             <p className="text-xs text-muted-foreground text-center mt-1.5">
               You'll send{" "}
-              {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"}{" "}
+              {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : selectedPaymentMethod === "bank" ? "bank transfer" : "Zelle"}{" "}
               payment after receiving your order number
             </p>
           </div>
