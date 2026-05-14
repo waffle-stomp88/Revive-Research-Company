@@ -1,0 +1,208 @@
+# Checkout Page Redesign — 2-Step Flow Implementation Brief
+
+**Priority:** High — ship before launch
+**Goal:** Replace the current checkout layout with a 2-step linear flow (Shipping → Payment) that eliminates back-and-forth scrolling and places the Pay button at the bottom of the experience
+
+---
+
+## Why 2 Steps
+
+Stripe's analysis of millions of checkout sessions found that for transactions above $200, multi-step checkout completes at 82.4% vs 78.1% for single-page. Our average order will exceed $200. The reason: completing Step 1 (shipping) creates psychological investment through the "endowment effect" — once someone has entered their info, they're more likely to finish.
+
+However, each additional step loses 10-20% of users. A 3-step flow (shipping → payment → review) adds a redundant review page. The solution: 2 steps with the review built into Step 2. This gives us the commitment benefit without the extra drop-off point.
+
+Additional data points driving this design:
+- 66% of customers want checkout completed in 4 minutes or less
+- Reducing form fields from 12-15 to 7-9 cuts abandonment by 8-12%
+- Mobile checkout converts at 1.53% vs desktop 3.36% — the gap is caused by UX friction, not intent
+- Single-page checkout reduces mobile abandonment by 20-30% vs multi-PAGE flows, but 2-step (not multi-page) with progress indicator performs best for high-AOV purchases
+
+---
+
+## Current Problems Being Solved
+
+1. **PAY button appears ABOVE the shipping form on mobile.** Customer sees a pay button they can't use, scrolls past it to fill in address, then has to scroll back up to pay.
+
+2. **Full product images and BAC water upsell in checkout.** These are cart behaviors leaking into checkout. The customer already reviewed their order — showing it again with images pushes form fields below the fold.
+
+3. **Order summary duplicated at full size.** The complete order summary with product images takes up an entire screen on mobile before the customer can start entering information.
+
+4. **No clear visual progression.** Customer doesn't know how many steps are left or where they are in the process.
+
+---
+
+## Step 1: Shipping
+
+### Layout (top to bottom):
+
+**Progress Bar**
+- 2-step horizontal indicator: "1 Shipping" (active, cyan) → "2 Pay" (pending, gray)
+- Clean, minimal, always visible at the top below the nav
+
+**Compact Order Summary Bar**
+- Single line: product name, dosage, quantity, and total price
+- Example: "TB-500 · 10mg × 10 — $600"
+- Dark background bar, not a card — takes up minimal vertical space
+- NO product image in this bar
+
+**Trust Strip**
+- One line below the summary bar: "COA included · Same-day shipping · Batch verified"
+- Green dots, small text — this is the competitive defense element (customers at checkout often have competitor tabs open)
+
+**Saved Address Card (if address exists in profile)**
+- Green-tinted card showing their saved address
+- Green checkmark icon + "Saved Address" label
+- Full address displayed
+- "Edit" link in cyan to modify
+- "Use a different address" collapsed option below
+
+**If no saved address:** Show the full address form instead:
+- Full Name *
+- Email * (pre-filled from account)
+- Phone (optional, labeled "Recommended for shipping updates")
+- Street Address *
+- City * / State * / ZIP * (on one row)
+
+**Shipping Method Selector**
+- Standard (free, same-day if before 12pm CT) — pre-selected, green border
+- Express ($15, 1-2 business days)
+- Radio button style, same visual pattern as the pack selector on product pages
+
+**CTA Button**
+- "Continue to Payment →"
+- Full-width, neon green
+- This is the ONLY primary action on this page
+
+**Trust Badges (below CTA)**
+- SSL encrypted · Data protected · No spam
+
+---
+
+## Step 2: Payment & Review
+
+### Layout (top to bottom):
+
+**Progress Bar**
+- Step 1 shows green checkmark (completed)
+- Step 2 active (cyan)
+- "← Back" link in the nav returns to Step 1
+
+**Compact Order Summary Bar**
+- Same product line as Step 1
+- Now also shows "Shipping to [City, State]" to confirm their info carried over
+
+**Trust Strip**
+- Same as Step 1
+
+**Payment Method Selector**
+- Credit/Debit (labeled "RECOMMENDED" with cyan badge) — pre-selected
+- PayPal
+- ACH
+- Horizontal row of three cards, same visual style as pack selector
+
+**Card Fields (when Credit/Debit selected)**
+- Card Number (with small "VISA MC AMEX" text right-aligned)
+- Expiry / CVC (side by side on one row)
+- Name on Card
+
+**PayPal (when PayPal selected)**
+- Replace card fields with a single "Pay with PayPal" button that redirects to PayPal
+
+**ACH (when ACH selected)**
+- Replace card fields with Link Money / ACH flow as implemented
+
+**Order Review Card**
+- Small product thumbnail (36px), product name, dosage, pack info, price — one row
+- Subtotal
+- Shipping (Standard — FREE or Express — $15)
+- Tax (calculated from Step 1 address)
+- Divider
+- **Total** — large, neon green, prominent
+
+**PAY Button**
+- "🔒 Pay $[total]"
+- Full-width, neon green, 14px font, 14px padding — the most prominent element on the page
+- This is the LAST element before the footer content
+- Must be visible after filling in payment fields without scrolling past anything else
+
+**Terms Line**
+- "By completing this purchase you agree to our Terms of Service and Refund Policy"
+- Small text, centered, with cyan links
+
+**Trust Badges**
+- SSL encrypted · PCI compliant · Secure payment
+
+**RUO Disclaimer**
+- Red-tinted card: "Research Use Only — Not for human or animal consumption"
+
+---
+
+## Technical Implementation Notes
+
+### State Management
+- Step 1 data (shipping address, method) persists when moving to Step 2
+- "← Back" from Step 2 returns to Step 1 with all fields preserved (not cleared)
+- URL can optionally update: `/checkout` (Step 1) → `/checkout/payment` (Step 2), or handle with internal state — either works
+
+### Pre-filling
+- Email: always pre-fill from the logged-in user's account
+- Name: pre-fill from account profile if available
+- Address: if user has a saved address (from previous order or profile), show the Saved Address Card instead of empty form fields
+- Phone: leave empty but show as optional
+
+### Validation
+- Step 1: Validate all required fields before allowing "Continue to Payment"
+- Step 2: Validate payment fields before allowing "Pay"
+- Show inline field-level errors, not a generic alert
+
+### Tax Calculation
+- Tax should calculate when the user completes Step 1 (we now have their address)
+- Show "Tax calculated at checkout" in the cart page
+- Show the actual tax amount in Step 2's Order Review card
+
+### Mobile Behavior
+- Both steps are full-width single-column layouts
+- The progress bar is sticky at the top (below the nav) so the customer always knows where they are
+- The compact order summary bar scrolls with the content (not sticky — save vertical space)
+
+### BAC Water Upsell
+- Do NOT show the BAC water upsell in checkout — it belongs on the cart page only
+- Checkout is for completing the purchase, not adding items
+
+### "Missing Something?" Prompt
+- If the cart contains peptides but no bacteriostatic water, and the user has NOT dismissed this prompt on the cart page, consider showing a small non-intrusive reminder at the top of Step 1 (above the address form): "You have peptides in your cart but no BAC water. Add one?" with a quick-add button
+- This is optional and should be dismissible — do NOT block the checkout flow
+
+---
+
+## What to Remove from Current Checkout
+
+1. **Full-size product images** — replace with the compact summary bar (product name + quantity + total only)
+2. **BAC water upsell card** — move to cart page only
+3. **Full order summary appearing before the shipping form** — order summary moves to Step 2, after payment fields
+4. **PAY button appearing above the shipping form** — PAY button is now the last element on Step 2
+
+---
+
+## What NOT to Change
+
+- Payment processing logic (PayPal, ACH, credit card)
+- Order creation flow on the server
+- Email confirmation templates
+- Tax calculation logic (just move where it displays)
+- The logged-in user verification
+
+---
+
+## Reference Mockup
+
+See the checkout mockup in attached_assets (the 2-step side-by-side mockup, right phone). Step 1 is the shipping flow, Step 2 is payment + review + pay.
+
+---
+
+## Files Affected
+
+- Checkout page component (likely `client/src/pages/checkout.tsx`)
+- May need to split into two sub-components (CheckoutShipping + CheckoutPayment) or manage with internal step state
+- Cart page: remove any checkout-related upsells that should only appear in cart
+- Order summary component: create a compact "summary bar" variant for checkout
