@@ -1599,7 +1599,77 @@ export default function ProductDetail() {
 
               {/* Section: Pharmacokinetics */}
               {activeResearchTab === "pk" && <section data-testid="section-pk-panel">
-                {/* PK Chart */}
+                {/* Auth gate for unauthenticated users — blurred teaser + overlaid CTA */}
+                {softGateEnabled && !isAuthenticated ? (
+                  <div className="relative py-4 overflow-hidden" data-testid="auth-gate-pk">
+                    {/* Blurred preview of PK chart to show value */}
+                    <div className="blur-sm pointer-events-none select-none opacity-75" aria-hidden="true">
+                      <div className="rounded-xl border border-[#21d8ff]/20 bg-gradient-to-br from-[#0d1a2a] to-[#0a0f1a] overflow-hidden">
+                        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#21d8ff]/10">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                              <Clock className="h-5 w-5 text-[#21d8ff]" />
+                            </div>
+                            <div>
+                              <h2 className="font-display text-lg font-bold text-white">Plasma Concentration Profile</h2>
+                              <p className="text-xs text-[#21d8ff]/60 mt-0.5">Published pharmacokinetic data · primary literature</p>
+                            </div>
+                          </div>
+                          <Badge className="text-xs no-default-hover-elevate no-default-active-elevate bg-[#21d8ff]/10 text-[#21d8ff] border border-[#21d8ff]/20">
+                            PK Data
+                          </Badge>
+                        </div>
+                        <div className="px-6 pb-6 pt-4">
+                          {/* Simplified fake PK curve preview */}
+                          <svg viewBox="0 0 400 160" className="w-full" style={{ maxHeight: 160 }}>
+                            <defs>
+                              <linearGradient id="pkGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
+                                <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
+                              </linearGradient>
+                            </defs>
+                            {/* Grid lines */}
+                            {[40, 80, 120].map((y) => (
+                              <line key={y} x1="40" y1={y} x2="380" y2={y} stroke="#21d8ff" strokeOpacity="0.08" strokeWidth="1" strokeDasharray="4,4" />
+                            ))}
+                            {/* Area fill */}
+                            <path d="M40,140 C60,140 70,30 100,28 C130,26 150,60 180,80 C210,100 240,115 280,125 C320,132 360,136 380,138 L380,140 Z" fill="url(#pkGrad)" />
+                            {/* Curve */}
+                            <path d="M40,140 C60,140 70,30 100,28 C130,26 150,60 180,80 C210,100 240,115 280,125 C320,132 360,136 380,138" fill="none" stroke="#21d8ff" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+                            {/* Peak dot */}
+                            <circle cx="100" cy="28" r="4" fill="#21d8ff" />
+                            {/* Axis labels */}
+                            <text x="40" y="155" fontSize="9" fill="#21d8ff" fillOpacity="0.5" fontFamily="monospace">0h</text>
+                            <text x="180" y="155" fontSize="9" fill="#21d8ff" fillOpacity="0.5" fontFamily="monospace">12h</text>
+                            <text x="360" y="155" fontSize="9" fill="#21d8ff" fillOpacity="0.5" fontFamily="monospace">24h</text>
+                            <text x="2" y="32" fontSize="9" fill="#21d8ff" fillOpacity="0.5" fontFamily="monospace">Cmax</text>
+                          </svg>
+                          <div className="mt-4 grid grid-cols-3 gap-3">
+                            {["Half-life", "Tmax", "Bioavailability"].map((label, i) => (
+                              <div key={label} className="rounded-lg border border-[#21d8ff]/15 bg-[#21d8ff]/5 px-3 py-2">
+                                <p className="text-xs text-[#21d8ff]/60">{label}</p>
+                                <p className="text-sm font-semibold text-white mt-0.5">{["~3 hrs", "30 min", "Sub-Q"][i]}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Gradient fade-out overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1a1f]/60 to-[#1a1a1f]" />
+                    {/* Auth gate CTA floating over the blurred content */}
+                    <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4 pt-24">
+                      <div className="w-full max-w-sm">
+                        <AuthGate
+                          inline
+                          inlineTitle="Sign in to view pharmacokinetics data"
+                          inlineDescription="Create a free account to access plasma concentration profiles and PK parameters"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                <>{/* PK Chart */}
                 {(() => {
                   const slugKey = resolveComboSlugKey(product);
                   const constituentNames = slugKey ? COMBO_STACK_CONSTITUENTS[slugKey] : undefined;
@@ -1642,6 +1712,8 @@ export default function ProductDetail() {
                     </motion.div>
                   );
                 })()}
+                </>
+                )}
               </section>}
 
               {/* Section: Certification */}
@@ -1935,6 +2007,71 @@ export default function ProductDetail() {
 
               {/* Section: Research Partners */}
               {activeResearchTab === "partners" && <section data-testid="section-partners-panel">
+                {/* Auth gate for unauthenticated users — blurred teaser + overlaid CTA */}
+                {softGateEnabled && !isAuthenticated ? (
+                  <div className="relative py-4 overflow-hidden" data-testid="auth-gate-partners">
+                    {/* Blurred preview of partner cards to show value */}
+                    <div className="blur-sm pointer-events-none select-none opacity-75" aria-hidden="true">
+                      <div className="flex flex-wrap items-center gap-3 mb-6">
+                        <Layers className="h-6 w-6 text-[#22c55e]" />
+                        <h2 className="font-display text-2xl font-bold">Works Well With</h2>
+                      </div>
+                      <p className="text-muted-foreground mb-6">
+                        Research-backed pairings based on complementary mechanisms of action.
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                          { name: "BPC-157", tier: { label: "Legendary", color: "#E7FB10", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }, score: 92, mechanism: "Synergistic tissue repair via GH receptor upregulation and angiogenic co-activation." },
+                          { name: "TB-500", tier: { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }, score: 87, mechanism: "Complementary actin-binding pathway enhances systemic recovery and anti-inflammatory response." },
+                          { name: "Ipamorelin", tier: { label: "Good", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" }, score: 80, mechanism: "Pulse GH release amplified by combined GHRH and ghrelin receptor co-agonism." },
+                        ].map((partner) => (
+                          <Card
+                            key={partner.name}
+                            className="p-4 h-full"
+                            style={{ borderColor: partner.tier.border }}
+                          >
+                            <div className="flex flex-wrap items-start gap-4 h-full">
+                              <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0" />
+                              <div className="flex-1 min-w-0 flex flex-col h-full">
+                                <p className="font-medium text-sm truncate">{partner.name}</p>
+                                <Badge
+                                  className="mt-2 text-xs no-default-hover-elevate no-default-active-elevate w-fit"
+                                  style={{ backgroundColor: partner.tier.bg, color: partner.tier.color, borderColor: partner.tier.border }}
+                                >
+                                  <Zap className="h-3 w-3 mr-1" />
+                                  {partner.score}% {partner.tier.label}
+                                </Badge>
+                                <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1">
+                                  {partner.mechanism}
+                                </p>
+                                <div className="flex items-center justify-between mt-2 gap-2">
+                                  <p className="text-sm font-bold text-[#E7FB10]">From $XX.XX</p>
+                                  <Button variant="outline" size="sm" className="flex-shrink-0 gap-1">
+                                    <ShoppingBag className="h-3 w-3" />
+                                    + Add
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Gradient fade-out overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1a1f]/60 to-[#1a1a1f]" />
+                    {/* Auth gate CTA floating over the blurred content */}
+                    <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4 pt-24">
+                      <div className="w-full max-w-sm">
+                        <AuthGate
+                          inline
+                          inlineTitle="Sign in to discover research partner compounds"
+                          inlineDescription="Create a free account to explore synergy pairings and add partners to your stack"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                <>{/* Research Partners content */}
                 {(() => {
                   const synergyPartners = getSynergyPartners(product.name);
                   if (synergyPartners.length === 0) return null;
@@ -2079,6 +2216,8 @@ export default function ProductDetail() {
                     </motion.div>
                   );
                 })()}
+                </>
+                )}
               </section>}
 
             </div>
