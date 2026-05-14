@@ -487,10 +487,10 @@ export default function ProductDetail() {
     : false;
 
   useEffect(() => {
-    if (!hasPkData && activeResearchTab === "pk") {
+    if (!hasPkData && activeResearchTab === "pk" && !(softGateEnabled && !isAuthenticated)) {
       setActiveResearchTab("overview");
     }
-  }, [hasPkData, activeResearchTab]);
+  }, [hasPkData, activeResearchTab, softGateEnabled, isAuthenticated]);
 
   // Feature 1: Sticky desktop purchase bar — scroll handler
   useEffect(() => {
@@ -1391,7 +1391,7 @@ export default function ProductDetail() {
                   {(
                     [
                       { key: "overview", label: "Overview", mobileLabel: "Overview", testId: "tab-overview" },
-                      ...(hasPkData ? [{ key: "pk", label: "Pharmacokinetics", mobileLabel: "PK", testId: "tab-pk" }] : []),
+                      ...((hasPkData || (softGateEnabled && !isAuthenticated)) ? [{ key: "pk", label: "Pharmacokinetics", mobileLabel: "PK", testId: "tab-pk" }] : []),
                       { key: "cert", label: "Certification", mobileLabel: "COA", testId: "tab-cert" },
                       { key: "partners", label: "Research Partners", mobileLabel: "Partners", testId: "tab-partners" },
                     ] as { key: "overview" | "pk" | "cert" | "partners"; label: string; mobileLabel: string; testId: string }[]
