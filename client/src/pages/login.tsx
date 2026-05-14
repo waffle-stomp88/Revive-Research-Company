@@ -10,9 +10,9 @@ import { supabase } from "@/lib/supabase";
 import logoPath from "@assets/Revive_PNG_1766012118069.png";
 
 const TRUST_POINTS = [
-  { icon: FlaskConical, color: "#E7FB10", title: "Every Batch Third-Party Tested", subtitle: "COA-verified purity on every product" },
-  { icon: Shield, color: "#21d8ff", title: "Research-Grade Quality", subtitle: "Manufactured to the highest standards" },
-  { icon: HeartHandshake, color: "#a855f7", title: "Dedicated Research Support", subtitle: "Expert team available 7 days a week" },
+  { icon: FlaskConical, color: "#E7FB10", title: "Research tools built into the platform.", subtitle: "Synergy scoring, pharmacokinetics charts, and a reconstitution wizard — tools for your research, not just your order." },
+  { icon: Shield, color: "#21d8ff", title: "Transparency you can verify.", subtitle: "Batch archive, COA library, and ethical pricing — published openly, not hidden behind a claim." },
+  { icon: HeartHandshake, color: "#a855f7", title: "More than a vendor. A research partner.", subtitle: "Compound profiles, guided education, and stack analysis — the relationship doesn't end when the box ships." },
 ];
 
 const TRUST_BADGES = [
