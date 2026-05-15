@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -146,6 +146,17 @@ export default function Dashboard() {
     const tab = params.get("tab");
     return ["general", "orders", "stacks", "logbook", "cycles", "education", "settings"].includes(tab || "") ? tab! : "general";
   });
+  const tabsListRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = tabsListRef.current;
+    if (!list) return;
+    const activeEl = list.querySelector<HTMLElement>('[data-state="active"]');
+    if (!activeEl) return;
+    const listRect = list.getBoundingClientRect();
+    const elRect = activeEl.getBoundingClientRect();
+    const scrollLeft = list.scrollLeft + (elRect.left - listRect.left) - (listRect.width / 2 - elRect.width / 2);
+    list.scrollTo({ left: scrollLeft, behavior: "smooth" });
+  }, [activeTab]);
   const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addressEditDialogOpen, setAddressEditDialogOpen] = useState(false);
@@ -829,7 +840,7 @@ export default function Dashboard() {
             {/* 6-Tab Layout */}
             <motion.div variants={itemVariants}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="flex justify-start w-full overflow-x-auto scrollbar-hide sm:grid sm:grid-cols-7 sm:overflow-visible gap-1 mb-6 h-auto">
+                <TabsList ref={tabsListRef} className="flex justify-start w-full overflow-x-auto scrollbar-hide sm:grid sm:grid-cols-7 sm:overflow-visible gap-1 mb-6 h-auto">
                   <TabsTrigger value="general" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-general">
                     <Home className="h-4 w-4" />
                     <span className="text-[10px] sm:hidden">Home</span>
