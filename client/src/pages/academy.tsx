@@ -1191,7 +1191,7 @@ export default function Academy() {
               >
                 <h2 className="text-2xl font-bold text-white mb-6">Curriculum</h2>
 
-                <div className="flex items-center justify-between lg:hidden mb-4">
+                <div className="flex items-center justify-between lg:hidden sticky top-0 z-40 bg-background py-2 -mx-6 px-6 mb-4">
                   <button
                     onClick={() => {
                       const prevIndex = Math.max(activeMobileModuleIndex - 1, 0);
