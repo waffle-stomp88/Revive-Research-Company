@@ -157,14 +157,11 @@ export default function Checkout() {
 
   // Derived: true when all required shipping fields are valid
   const shippingValid = useMemo(() => {
-    return (
-      customerName.trim().length > 0 &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) &&
-      shippingAddress.street.trim().length > 0 &&
-      shippingAddress.city.trim().length > 0 &&
-      shippingAddress.state.length === 2 &&
-      /^\d{5}(-\d{4})?$/.test(shippingAddress.zip)
-    );
+    return (customerName.trim().length > 0 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) &&
+    shippingAddress.street.trim().length > 0 &&
+    shippingAddress.city.trim().length > 0 &&
+    shippingAddress.state.length === 2 && /^\d{5}(-\d{4})?$/.test(shippingAddress.zip));
   }, [customerName, customerEmail, shippingAddress]);
 
   // RUO/Age reminder state
@@ -2126,15 +2123,7 @@ export default function Checkout() {
                         <>
                           <Button
                             size="lg"
-                            className={`w-full font-display text-base gap-2 ${
-                              selectedPaymentMethod === "cashapp"
-                                ? "bg-[#00D632] text-white"
-                                : selectedPaymentMethod === "venmo"
-                                  ? "bg-[#00AFF1] text-white"
-                                  : selectedPaymentMethod === "bank"
-                                    ? "bg-[#d4ed1f] text-[#0a0a0a]"
-                                    : "bg-[#6D1ED4] text-white"
-                            }`}
+                            className="inline-flex items-center justify-center whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border border-primary-border min-h-10 rounded-md px-8 w-full font-display gap-2 bg-[#00AFF1] text-white text-[21px]"
                             onClick={handleManualPaymentSubmit}
                             disabled={createManualOrderMutation.isPending}
                             data-testid="button-checkout"
@@ -2194,7 +2183,6 @@ export default function Checkout() {
 
           </div>
         </main>
-
         {/* ── Mobile sticky bottom bar — all Step 2 payment methods ── */}
         {checkoutStep === 2 && (
           <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
