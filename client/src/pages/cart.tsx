@@ -468,10 +468,11 @@ export default function CartPage() {
                   }`}
                   data-testid={`cart-item-${item.productId}`}
                 >
-                  <div className="flex gap-2.5 md:gap-3 items-start md:items-center">
-                    {/* Product Image */}
+                  {/* ── MOBILE layout (hidden md+) ─────────────────────────────── */}
+                  <div className="flex gap-2.5 items-center md:hidden">
+                    {/* Image */}
                     <div
-                      className="w-10 h-10 md:w-20 md:h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden mt-0.5 md:mt-0"
+                      className="w-12 h-12 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
                       data-testid={`cart-item-image-${item.productId}`}
                     >
                       <img
@@ -481,130 +482,140 @@ export default function CartPage() {
                       />
                     </div>
 
-                    {/* Mobile layout: name+price top row, dosage+qty+trash bottom row */}
-                    <div className="flex-1 min-w-0 md:contents">
+                    {/* Text + controls column */}
+                    <div className="flex-1 min-w-0">
+                      {/* Row 1: name (left) · price + trash (right) */}
+                      <div className="flex items-center gap-1.5 justify-between">
+                        <div className="flex items-center gap-1 flex-wrap min-w-0">
+                          <h3
+                            className="font-display font-bold text-sm leading-tight"
+                            data-testid={`cart-item-name-${item.productId}`}
+                          >
+                            {item.name}
+                          </h3>
+                          {item.packSize && (
+                            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
+                              <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
+                            </Badge>
+                          )}
+                          {item.isSubscription && (
+                            <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-subscription-${item.productId}`}>
+                              <RefreshCw className="h-2.5 w-2.5" />Subscribe
+                            </Badge>
+                          )}
+                          {(item.isBundle || item.bundleId) && (
+                            <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-stack-${item.productId || item.bundleId}`}>
+                              <Layers className="h-2.5 w-2.5" />{isCustomStack ? "Custom Stack" : "Stack"}
+                            </Badge>
+                          )}
+                        </div>
+                        {/* Price + trash — always on row 1 */}
+                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                          {item.isFree ? (
+                            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
+                              <Gift className="h-3 w-3" />FREE
+                            </Badge>
+                          ) : (
+                            <>
+                              <span
+                                className="font-display font-bold text-base text-[#E7FB10]"
+                                data-testid={`cart-item-total-${item.productId}`}
+                              >
+                                ${Math.round(item.price * item.quantity)}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromCart(item.productId, item.dosage, item.packSize); }}
+                                data-testid={`button-remove-${item.productId}`}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
 
-                      {/* Top row on mobile: name (left) + price (right) */}
-                      <div className="flex items-start gap-2 justify-between md:flex-1 md:min-w-0">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <h3 className="font-display font-bold text-sm md:text-xl leading-tight" data-testid={`cart-item-name-${item.productId}`}>
-                              {item.name}
-                            </h3>
-                            {item.packSize && (
-                              <Badge
-                                className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-pack-${item.productId}-${item.packSize}`}
-                              >
-                                <Package className="h-2.5 w-2.5" />
-                                {item.packSize}-Pack
-                              </Badge>
-                            )}
-                            {item.isSubscription && (
-                              <Badge
-                                className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-subscription-${item.productId}`}
-                              >
-                                <RefreshCw className="h-2.5 w-2.5" />
-                                Subscribe
-                              </Badge>
-                            )}
-                            {(item.isBundle || item.bundleId) && (
-                              <Badge
-                                className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-stack-${item.productId || item.bundleId}`}
-                              >
-                                <Layers className="h-2.5 w-2.5" />
-                                {isCustomStack ? "Custom Stack" : "Stack"}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-0.5">{item.dosage}</p>
+                      {/* Row 2: dosage (left) · qty stepper (right) */}
+                      <div
+                        className="flex items-center justify-between mt-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div>
+                          <p className="text-xs text-muted-foreground">{item.dosage}</p>
                           {item.isSubscription && (
                             <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
                               {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
                             </p>
                           )}
                         </div>
-
-                        {/* Price — inline on mobile, hidden on desktop (shown in own column) */}
-                        <div className="md:hidden flex-shrink-0">
-                          {item.isFree ? (
-                            <Badge
-                              className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5"
-                              data-testid={`badge-free-${item.productId}`}
-                            >
-                              <Gift className="h-3 w-3" />
-                              FREE
-                            </Badge>
-                          ) : (
-                            <span className="font-display font-bold text-base text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                              ${Math.round(item.price * item.quantity)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Bottom row on mobile: qty stepper (left) + trash (right) */}
-                      {!item.isFree && (
-                        <div
-                          className="md:hidden flex items-center justify-between mt-2"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        {!item.isFree && (
                           <div className="flex items-center border border-border rounded-md">
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
-                              }}
+                              variant="ghost" size="sm" className="h-7 w-7 p-0"
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize); }}
                               data-testid={`button-decrease-${item.productId}`}
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
-                            <span className="w-7 text-center font-medium text-sm">{item.quantity}</span>
+                            <span className="w-6 text-center font-medium text-sm">{item.quantity}</span>
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
-                              }}
+                              variant="ghost" size="sm" className="h-7 w-7 p-0"
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize); }}
                               disabled={item.quantity >= 10}
                               data-testid={`button-increase-${item.productId}`}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground hover:text-red-400 h-8 w-8"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              removeFromCart(item.productId, item.dosage, item.packSize);
-                            }}
-                            data-testid={`button-remove-${item.productId}`}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── DESKTOP layout (hidden below md) ──────────────────────── */}
+                  <div className="hidden md:flex gap-3 items-center">
+                    <div
+                      className="w-20 h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
+                      data-testid={`cart-item-image-${item.productId}`}
+                    >
+                      <img
+                        src={item.image || productImage}
+                        alt={`${item.name} ${item.dosage} research peptide`}
+                        className="w-full h-full object-contain p-1"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h3 className="font-display font-bold text-xl" data-testid={`cart-item-name-${item.productId}`}>{item.name}</h3>
+                        {item.packSize && (
+                          <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
+                            <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
+                          </Badge>
+                        )}
+                        {item.isSubscription && (
+                          <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-subscription-${item.productId}`}>
+                            <RefreshCw className="h-2.5 w-2.5" />Subscribe
+                          </Badge>
+                        )}
+                        {(item.isBundle || item.bundleId) && (
+                          <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-stack-${item.productId || item.bundleId}`}>
+                            <Layers className="h-2.5 w-2.5" />{isCustomStack ? "Custom Stack" : "Stack"}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{item.dosage}</p>
+                      {item.isSubscription && (
+                        <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
+                          {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                        </p>
                       )}
                     </div>
-
-                    {/* Desktop-only right column: price + trash stacked over qty stepper */}
-                    <div className="hidden md:flex flex-col items-end justify-center gap-2 flex-shrink-0">
+                    <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
                       {item.isFree ? (
-                        <Badge
-                          className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5"
-                          data-testid={`badge-free-${item.productId}`}
-                        >
-                          <Gift className="h-3 w-3" />
-                          FREE
+                        <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
+                          <Gift className="h-3 w-3" />FREE
                         </Badge>
                       ) : (
                         <>
@@ -613,44 +624,26 @@ export default function CartPage() {
                               ${Math.round(item.price * item.quantity)}
                             </span>
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="ghost" size="icon"
                               className="text-muted-foreground hover:text-red-400 h-7 w-7"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                removeFromCart(item.productId, item.dosage, item.packSize);
-                              }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromCart(item.productId, item.dosage, item.packSize); }}
                               data-testid={`button-remove-${item.productId}`}
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
-                          <div
-                            className="flex items-center border border-border rounded-md"
-                            onClick={(e) => e.stopPropagation()}
-                          >
+                          <div className="flex items-center border border-border rounded-md" onClick={(e) => e.stopPropagation()}>
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
-                              }}
+                              variant="ghost" size="sm" className="h-7 w-7 p-0"
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize); }}
                               data-testid={`button-decrease-${item.productId}`}
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
                             <span className="w-7 text-center font-medium text-sm">{item.quantity}</span>
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
-                              }}
+                              variant="ghost" size="sm" className="h-7 w-7 p-0"
+                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize); }}
                               disabled={item.quantity >= 10}
                               data-testid={`button-increase-${item.productId}`}
                             >
