@@ -119,7 +119,23 @@ import {
   RotateCcw,
   FlaskConical,
   Send,
+  GripVertical,
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
@@ -2118,11 +2134,96 @@ const stackFormSchema = z.object({
 
 type StackFormValues = z.infer<typeof stackFormSchema>;
 
+function DraggableStackRow({
+  stack,
+  toggleMutation,
+  onEdit,
+}: {
+  stack: ResearchStackApiResponse;
+  toggleMutation: ReturnType<typeof useMutation<ResearchStackApiResponse, Error, { id: string; field: "showOnPage" | "isActive"; value: boolean }>>;
+  onEdit: (stack: ResearchStackApiResponse) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: stack.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+    position: "relative",
+  };
+
+  return (
+    <TableRow ref={setNodeRef} style={style} data-testid={`row-stack-${stack.id}`}>
+      <TableCell className="w-10 p-2">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-1 rounded"
+          data-testid={`drag-handle-stack-${stack.id}`}
+          aria-label="Drag to reorder"
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
+      </TableCell>
+      <TableCell className="text-muted-foreground text-sm">{stack.sortOrder}</TableCell>
+      <TableCell className="font-medium">{stack.name}</TableCell>
+      <TableCell>
+        <Badge variant="outline">{stack.category}</Badge>
+      </TableCell>
+      <TableCell>
+        {stack.badge
+          ? <Badge style={{ backgroundColor: stack.badgeColor || undefined }}>{stack.badge}</Badge>
+          : <span className="text-muted-foreground text-sm">—</span>}
+      </TableCell>
+      <TableCell className="text-muted-foreground text-sm">{stack.synergyBonus}</TableCell>
+      <TableCell className="text-center">
+        <Switch
+          checked={stack.showOnPage}
+          disabled={toggleMutation.isPending}
+          onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "showOnPage", value: v })}
+          data-testid={`toggle-showOnPage-${stack.id}`}
+        />
+      </TableCell>
+      <TableCell className="text-center">
+        <Switch
+          checked={stack.isActive}
+          disabled={toggleMutation.isPending}
+          onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "isActive", value: v })}
+          data-testid={`toggle-isActive-${stack.id}`}
+        />
+      </TableCell>
+      <TableCell>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => onEdit(stack)}
+          data-testid={`button-edit-stack-${stack.id}`}
+        >
+          <Pencil className="w-4 h-4" />
+        </Button>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 function StacksTab() {
   const { toast } = useToast();
   const [editingStack, setEditingStack] = useState<ResearchStackApiResponse | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAddMode, setIsAddMode] = useState(false);
+  const [localOrder, setLocalOrder] = useState<ResearchStackApiResponse[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const { data: stacks, isLoading } = useQuery<ResearchStackApiResponse[]>({
     queryKey: ["/api/admin/research-stacks"],
@@ -2132,6 +2233,10 @@ function StacksTab() {
     () => stacks ? [...stacks].sort((a, b) => a.sortOrder - b.sortOrder) : [],
     [stacks]
   );
+
+  useEffect(() => {
+    setLocalOrder(sortedStacks);
+  }, [sortedStacks]);
 
   const form = useForm<StackFormValues>({
     resolver: zodResolver(stackFormSchema),
@@ -2164,6 +2269,35 @@ function StacksTab() {
     onSuccess: () => { invalidateStacks(); toast({ title: "Stack updated" }); },
     onError: () => { toast({ title: "Update failed", variant: "destructive" }); },
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (updates: Array<{ id: string; sortOrder: number }>) => {
+      await Promise.all(
+        updates.map(({ id, sortOrder }) =>
+          apiRequest("PATCH", `/api/admin/research-stacks/${id}`, { sortOrder })
+        )
+      );
+    },
+    onSuccess: () => { invalidateStacks(); },
+    onError: () => {
+      toast({ title: "Reorder failed", variant: "destructive" });
+      setLocalOrder(sortedStacks);
+    },
+  });
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = localOrder.findIndex((s) => s.id === active.id);
+    const newIndex = localOrder.findIndex((s) => s.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove(localOrder, oldIndex, newIndex);
+    const updates = reordered
+      .map((s, i) => ({ id: s.id, sortOrder: i }))
+      .filter((u, i) => localOrder[i]?.id !== reordered[i]?.id || u.sortOrder !== localOrder.find((s) => s.id === u.id)?.sortOrder);
+    setLocalOrder(reordered.map((s, i) => ({ ...s, sortOrder: i })));
+    reorderMutation.mutate(updates);
+  }
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...data }: StackFormValues & { id: string }) => {
@@ -2264,63 +2398,35 @@ function StacksTab() {
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-16">Order</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Badge</TableHead>
-            <TableHead>Synergy</TableHead>
-            <TableHead className="text-center">Show on Page</TableHead>
-            <TableHead className="text-center">Active</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedStacks.map((stack) => (
-            <TableRow key={stack.id} data-testid={`row-stack-${stack.id}`}>
-              <TableCell className="text-muted-foreground text-sm">{stack.sortOrder}</TableCell>
-              <TableCell className="font-medium">{stack.name}</TableCell>
-              <TableCell>
-                <Badge variant="outline">{stack.category}</Badge>
-              </TableCell>
-              <TableCell>
-                {stack.badge
-                  ? <Badge style={{ backgroundColor: stack.badgeColor || undefined }}>{stack.badge}</Badge>
-                  : <span className="text-muted-foreground text-sm">—</span>}
-              </TableCell>
-              <TableCell className="text-muted-foreground text-sm">{stack.synergyBonus}</TableCell>
-              <TableCell className="text-center">
-                <Switch
-                  checked={stack.showOnPage}
-                  disabled={toggleMutation.isPending}
-                  onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "showOnPage", value: v })}
-                  data-testid={`toggle-showOnPage-${stack.id}`}
-                />
-              </TableCell>
-              <TableCell className="text-center">
-                <Switch
-                  checked={stack.isActive}
-                  disabled={toggleMutation.isPending}
-                  onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "isActive", value: v })}
-                  data-testid={`toggle-isActive-${stack.id}`}
-                />
-              </TableCell>
-              <TableCell>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => openEdit(stack)}
-                  data-testid={`button-edit-stack-${stack.id}`}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-              </TableCell>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-10" />
+              <TableHead className="w-16">Order</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Badge</TableHead>
+              <TableHead>Synergy</TableHead>
+              <TableHead className="text-center">Show on Page</TableHead>
+              <TableHead className="text-center">Active</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <SortableContext items={localOrder.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+            <TableBody>
+              {localOrder.map((stack) => (
+                <DraggableStackRow
+                  key={stack.id}
+                  stack={stack}
+                  toggleMutation={toggleMutation}
+                  onEdit={openEdit}
+                />
+              ))}
+            </TableBody>
+          </SortableContext>
+        </Table>
+      </DndContext>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
