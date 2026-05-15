@@ -978,70 +978,6 @@ export default function Academy() {
               </div>
             </motion.div>
 
-            {/* Learning Path — mobile compact strip */}
-            <div className="block md:hidden py-4 px-6">
-              <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3">Your Learning Path</p>
-              <div ref={pillStripRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-                {CURRICULUM.map((module, pillIndex) => {
-                  const completedCount = module.lessons.filter((l: { id: string }) => localProgress.completedLessons.includes(l.id)).length;
-                  const isComplete = completedCount === module.lessons.length;
-                  const isStarted = completedCount > 0;
-                  const isActivePill = pillIndex === activeMobileModuleIndex;
-                  const Icon = module.icon;
-                  const pillUnlockMode = getPersonaConfig()?.unlockMode || "linear";
-                  const isLocked = !user
-                    ? pillIndex > 0
-                    : !(pillUnlockMode === "full" || pillIndex === 0 ||
-                        CURRICULUM.slice(0, pillIndex).every((m) =>
-                          m.lessons.every((l: { id: string }) => localProgress.completedLessons.includes(l.id))
-                        ));
-                  return (
-                    <button
-                      key={module.id}
-                      onClick={() => {
-                        const element = document.getElementById(`module-section-${module.id}`);
-                        if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
-                      }}
-                      className="flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-full border transition-all"
-                      style={{
-                        background: isActivePill
-                          ? `${module.color}28`
-                          : isComplete ? `${module.color}18` : isLocked ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-                        borderColor: isActivePill
-                          ? `${module.color}90`
-                          : isComplete ? `${module.color}60` : isStarted ? `${module.color}35` : isLocked ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)",
-                        opacity: isLocked ? 0.55 : 1,
-                        boxShadow: isActivePill ? `0 0 10px ${module.color}30` : undefined,
-                      }}
-                      data-testid={`pill-module-${module.id}`}
-                    >
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: isLocked ? "rgba(255,255,255,0.08)" : `${module.color}25` }}
-                      >
-                        {isComplete ? (
-                          <CheckCircle2 className="w-3 h-3" style={{ color: module.color }} />
-                        ) : isLocked ? (
-                          <Lock className="w-3 h-3 text-white/30" />
-                        ) : (
-                          <Icon className="w-3 h-3" style={{ color: module.color }} />
-                        )}
-                      </div>
-                      <span
-                        className="text-xs font-medium whitespace-nowrap"
-                        style={{ color: isLocked ? "rgba(255,255,255,0.3)" : isComplete ? module.color : isActivePill ? module.color : isStarted ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)" }}
-                      >
-                        {module.title}
-                      </span>
-                      {isStarted && !isComplete && !isLocked && (
-                        <span className="text-[10px] text-white/40">{completedCount}/{module.lessons.length}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Learning Path - Hidden on mobile */}
             <div className="hidden md:block py-8 px-6">
               <HorizontalLearningPath
@@ -1180,6 +1116,70 @@ export default function Academy() {
             </motion.div>
           </div>
         </section>
+
+        {/* Learning Path — mobile sticky strip */}
+        <div className="block md:hidden sticky top-0 z-50 bg-[#1a1a1f]/95 backdrop-blur-md border-b border-white/10 py-3 px-4">
+          <p className="text-[10px] font-semibold text-white/35 uppercase tracking-widest mb-2">Your Learning Path</p>
+          <div ref={pillStripRef} className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+            {CURRICULUM.map((module, pillIndex) => {
+              const completedCount = module.lessons.filter((l: { id: string }) => localProgress.completedLessons.includes(l.id)).length;
+              const isComplete = completedCount === module.lessons.length;
+              const isStarted = completedCount > 0;
+              const isActivePill = pillIndex === activeMobileModuleIndex;
+              const Icon = module.icon;
+              const pillUnlockMode = getPersonaConfig()?.unlockMode || "linear";
+              const isLocked = !user
+                ? pillIndex > 0
+                : !(pillUnlockMode === "full" || pillIndex === 0 ||
+                    CURRICULUM.slice(0, pillIndex).every((m) =>
+                      m.lessons.every((l: { id: string }) => localProgress.completedLessons.includes(l.id))
+                    ));
+              return (
+                <button
+                  key={module.id}
+                  onClick={() => {
+                    const element = document.getElementById(`module-section-${module.id}`);
+                    if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-full border transition-all"
+                  style={{
+                    background: isActivePill
+                      ? `${module.color}28`
+                      : isComplete ? `${module.color}18` : isLocked ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
+                    borderColor: isActivePill
+                      ? `${module.color}90`
+                      : isComplete ? `${module.color}60` : isStarted ? `${module.color}35` : isLocked ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)",
+                    opacity: isLocked ? 0.55 : 1,
+                    boxShadow: isActivePill ? `0 0 10px ${module.color}30` : undefined,
+                  }}
+                  data-testid={`pill-module-${module.id}`}
+                >
+                  <div
+                    className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: isLocked ? "rgba(255,255,255,0.08)" : `${module.color}25` }}
+                  >
+                    {isComplete ? (
+                      <CheckCircle2 className="w-2.5 h-2.5" style={{ color: module.color }} />
+                    ) : isLocked ? (
+                      <Lock className="w-2.5 h-2.5 text-white/30" />
+                    ) : (
+                      <Icon className="w-2.5 h-2.5" style={{ color: module.color }} />
+                    )}
+                  </div>
+                  <span
+                    className="text-xs font-medium whitespace-nowrap"
+                    style={{ color: isLocked ? "rgba(255,255,255,0.3)" : isComplete ? module.color : isActivePill ? module.color : isStarted ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)" }}
+                  >
+                    {module.title}
+                  </span>
+                  {isStarted && !isComplete && !isLocked && (
+                    <span className="text-[10px] text-white/40">{completedCount}/{module.lessons.length}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <section className="py-16 px-6">
           <div className="max-w-6xl mx-auto">
