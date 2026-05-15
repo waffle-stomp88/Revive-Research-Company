@@ -483,19 +483,33 @@ export default function Education() {
     }
   }, []);
   
-  // Parse tab from URL query parameter (with SSR guard)
+  const VALID_TABS = ["peptides", "general", "lab-guides", "trust"];
+  const LS_TAB_KEY = "education_last_tab";
+
+  // Parse tab from URL query parameter, falling back to localStorage, then default
   const getTabFromUrl = () => {
     if (typeof window === "undefined") return "peptides";
     const searchParams = new URLSearchParams(window.location.search);
     const tab = searchParams.get("tab");
-    if (tab && ["peptides", "general", "lab-guides", "trust"].includes(tab)) {
+    if (tab && VALID_TABS.includes(tab)) {
       return tab;
     }
+    try {
+      const saved = localStorage.getItem(LS_TAB_KEY);
+      if (saved && VALID_TABS.includes(saved)) return saved;
+    } catch {}
     return "peptides";
   };
   
   const [activeTab, setActiveTab] = useState(getTabFromUrl);
   
+  // Persist active tab to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(LS_TAB_KEY, activeTab);
+    } catch {}
+  }, [activeTab]);
+
   // Sync tab with URL query param when location changes (for SPA navigation)
   useEffect(() => {
     const tab = getTabFromUrl();
