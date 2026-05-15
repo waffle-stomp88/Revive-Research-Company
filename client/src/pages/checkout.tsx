@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, EXPRESS_SHIPPING_COST } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -662,7 +662,6 @@ export default function Checkout() {
   const cartSubtotal = getSubtotal();
   const hasSubscriptionItemsForShipping = hasSubscriptionItems;
   const baseShipping = hasSubscriptionItemsForShipping ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
-  const EXPRESS_SHIPPING_COST = 15;
   const cartShipping = shippingMethod === 'express' ? EXPRESS_SHIPPING_COST : baseShipping;
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
@@ -1306,7 +1305,7 @@ export default function Checkout() {
                       <Truck className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium">Standard Shipping</p>
-                        <p className="text-[10px] text-muted-foreground">3–5 business days · Discreet packaging</p>
+                        <p className="text-[10px] text-muted-foreground">UPS Ground · 3–5 business days · Discreet packaging</p>
                       </div>
                       <span className={`text-sm font-semibold flex-shrink-0 ${baseShipping === 0 ? 'text-green-400' : 'text-foreground'}`}>
                         {baseShipping === 0 ? 'FREE' : `$${Math.round(baseShipping)}`}
@@ -1334,7 +1333,7 @@ export default function Checkout() {
                       <Package className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium">Express Shipping</p>
-                        <p className="text-[10px] text-muted-foreground">1–2 business days · Priority handling</p>
+                        <p className="text-[10px] text-muted-foreground">UPS 2-Day · 1–2 business days · Priority handling</p>
                       </div>
                       <span className="text-sm font-semibold text-foreground flex-shrink-0">
                         ${EXPRESS_SHIPPING_COST}

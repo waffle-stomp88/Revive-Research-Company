@@ -1,2 +1,3 @@
 export const FREE_SHIPPING_THRESHOLD = 250;
 export const FLAT_RATE_SHIPPING = 20;
+export const EXPRESS_SHIPPING_COST = 35;
