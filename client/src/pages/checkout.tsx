@@ -76,6 +76,7 @@ export default function Checkout() {
   const { login, logout } = useAuth();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("card");
   const cardPaypalRef = useRef<PayPalCheckoutHandle | null>(null);
+  const paypalSectionRef = useRef<HTMLDivElement | null>(null);
   const orderCompleteRef = useRef(false);
   const [isCardReady, setIsCardReady] = useState(false);
   const [isSubmittingCard, setIsSubmittingCard] = useState(false);
@@ -2111,23 +2112,25 @@ export default function Checkout() {
                           Subscriptions Coming Soon
                         </Button>
                       ) : (
-                        <PayPalCheckout
-                          amount={cartTotal.toFixed(2)}
-                          currency="USD"
-                          intent="CAPTURE"
-                          cartItems={cartItems}
-                          customerEmail={user?.email || customerEmail}
-                          customerName={customerName}
-                          shippingAddress={shippingAddress}
-                          subtotal={cartSubtotal}
-                          shippingCost={cartShipping}
-                          taxAmount={cartTax}
-                          defaultMethod="paypal"
-                          onSuccess={handlePayPalSuccess}
-                          onError={handlePayPalError}
-                          onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
-                          className="w-full"
-                        />
+                        <div ref={paypalSectionRef}>
+                          <PayPalCheckout
+                            amount={cartTotal.toFixed(2)}
+                            currency="USD"
+                            intent="CAPTURE"
+                            cartItems={cartItems}
+                            customerEmail={user?.email || customerEmail}
+                            customerName={customerName}
+                            shippingAddress={shippingAddress}
+                            subtotal={cartSubtotal}
+                            shippingCost={cartShipping}
+                            taxAmount={cartTax}
+                            defaultMethod="paypal"
+                            onSuccess={handlePayPalSuccess}
+                            onError={handlePayPalError}
+                            onCancel={() => toast({ title: "Payment Cancelled", description: "You cancelled the payment." })}
+                            className="w-full"
+                          />
+                        </div>
                       )}
                     </>
                   ) : ['cashapp', 'venmo', 'zelle', 'bank'].includes(selectedPaymentMethod || '') ? (
@@ -2202,63 +2205,124 @@ export default function Checkout() {
                   ) : null}
                 </div>
 
-                {/* Spacer for mobile sticky bar */}
-                {['cashapp', 'venmo', 'zelle', 'bank'].includes(selectedPaymentMethod || '') && (
-                  <div className="md:hidden h-24" />
-                )}
+                {/* Spacer for mobile sticky bar — all Step 2 payment methods */}
+                <div className="md:hidden h-24" />
               </motion.div>
             )}
 
           </div>
         </main>
 
-        {/* ── Mobile sticky bottom bar — manual payments on step 2 ── */}
-        {checkoutStep === 2 && ['cashapp', 'zelle', 'venmo', 'bank'].includes(selectedPaymentMethod || '') && (
+        {/* ── Mobile sticky bottom bar — all Step 2 payment methods ── */}
+        {checkoutStep === 2 && (
           <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">Order Total</p>
                 <p className="font-display font-bold text-xl">${Math.round(cartTotal)}</p>
               </div>
-              <Button
-                size="lg"
-                className={`font-display gap-2 flex-shrink-0 ${
-                  EARLY_ACCESS_MODE
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : selectedPaymentMethod === "cashapp"
-                      ? "bg-[#00D632] text-white"
-                      : selectedPaymentMethod === "venmo"
-                        ? "bg-[#00AFF1] text-white"
-                        : selectedPaymentMethod === "bank"
-                          ? "bg-[#d4ed1f] text-[#0a0a0a]"
-                          : "bg-[#6D1ED4] text-white"
-                }`}
-                onClick={handleManualPaymentSubmit}
-                disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
-                data-testid="button-checkout-sticky"
-              >
-                {createManualOrderMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : EARLY_ACCESS_MODE ? (
-                  <>
+
+              {/* Card payment sticky button */}
+              {selectedPaymentMethod === "card" && (
+                !hasValidZip ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required">
+                    <AlertTriangle className="h-4 w-4" />
+                    Enter ZIP
+                  </Button>
+                ) : isSubscription || cartSubscriptionItem ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
                     <Clock className="h-4 w-4" />
                     Coming Soon
-                  </>
+                  </Button>
                 ) : (
-                  <>
-                    <CheckCircle className="h-4 w-4" />
-                    Confirm Order
-                  </>
-                )}
-              </Button>
+                  <Button
+                    size="lg"
+                    className="font-display gap-2 flex-shrink-0 bg-[#d4ed1f] text-[#0a0a0a]"
+                    onClick={() => { setCheckoutCardDeclineError(null); cardPaypalRef.current?.submit(); }}
+                    disabled={isSubmittingCard || !isCardReady}
+                    data-testid="button-checkout-sticky-card"
+                  >
+                    {isSubmittingCard ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" />Processing...</>
+                    ) : (
+                      <><Lock className="h-4 w-4" />Pay ${Math.round(cartTotal)}</>
+                    )}
+                  </Button>
+                )
+              )}
+
+              {/* PayPal sticky button — scrolls to the inline PayPal button */}
+              {selectedPaymentMethod === "paypal" && (
+                !hasValidZip ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-paypal">
+                    <AlertTriangle className="h-4 w-4" />
+                    Enter ZIP
+                  </Button>
+                ) : isSubscription || cartSubscriptionItem ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
+                    <Clock className="h-4 w-4" />
+                    Coming Soon
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="font-display gap-2 flex-shrink-0 bg-[#0070ba] text-white"
+                    onClick={() => paypalSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                    data-testid="button-checkout-sticky-paypal"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.9A.77.77 0 0 1 5.7 2.26h6.988c2.277 0 4.115.6 5.333 1.797.638.626 1.082 1.376 1.324 2.23.257.909.266 1.984.016 3.239l-.001.008v.006c-.432 2.2-1.408 3.938-2.858 5.098-1.425 1.14-3.22 1.695-5.328 1.695h-1.76a.76.76 0 0 0-.758.668l-.001.007-.74 4.7a.59.59 0 0 1-.587.506H7.076v.123z"/></svg>
+                    Pay with PayPal
+                  </Button>
+                )
+              )}
+
+              {/* Manual payment sticky button */}
+              {['cashapp', 'zelle', 'venmo', 'bank'].includes(selectedPaymentMethod || '') && (
+                !hasValidZip ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-manual">
+                    <AlertTriangle className="h-4 w-4" />
+                    Enter ZIP
+                  </Button>
+                ) : EARLY_ACCESS_MODE ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
+                    <Clock className="h-4 w-4" />
+                    Coming Soon
+                  </Button>
+                ) : isSubscription || cartSubscriptionItem ? (
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
+                    <Clock className="h-4 w-4" />
+                    Coming Soon
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className={`font-display gap-2 flex-shrink-0 ${
+                      selectedPaymentMethod === "cashapp" ? "bg-[#00D632] text-white"
+                      : selectedPaymentMethod === "venmo" ? "bg-[#00AFF1] text-white"
+                      : selectedPaymentMethod === "bank" ? "bg-[#d4ed1f] text-[#0a0a0a]"
+                      : "bg-[#6D1ED4] text-white"
+                    }`}
+                    onClick={handleManualPaymentSubmit}
+                    disabled={createManualOrderMutation.isPending}
+                    data-testid="button-checkout-sticky"
+                  >
+                    {createManualOrderMutation.isPending ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" />Processing...</>
+                    ) : (
+                      <><CheckCircle className="h-4 w-4" />Confirm Order</>
+                    )}
+                  </Button>
+                )
+              )}
             </div>
+
+            {/* Sub-label */}
             <p className="text-xs text-muted-foreground text-center mt-1.5">
-              You'll send{" "}
-              {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : selectedPaymentMethod === "bank" ? "bank transfer" : "Zelle"}{" "}
-              payment after receiving your order number
+              {selectedPaymentMethod === "card"
+                ? isCardReady ? "Your card details are encrypted and secure" : "Fill in your card details above"
+                : selectedPaymentMethod === "paypal"
+                  ? "Tap to scroll to the PayPal button"
+                  : `You'll send ${selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : selectedPaymentMethod === "bank" ? "bank transfer" : "Zelle"} payment after receiving your order number`}
             </p>
           </div>
         )}
