@@ -1953,27 +1953,7 @@ export default function Checkout() {
                   </div>
                 )}
 
-                {/* ── Trust badges + RUO disclaimer ── */}
-                <div className="flex items-center justify-center gap-4 py-3 mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">SSL Encrypted</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">Secure Payment</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Truck className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-[10px] text-muted-foreground/50">Same-Day Shipping</span>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-muted-foreground/40 text-center leading-relaxed mb-4">
-                  By purchasing, you confirm these products are for <span className="text-red-400/70">research use only</span> and that you are 21+. No refunds policy applies.
-                </p>
-
-                {/* ── PAY BUTTON — the absolute last interactive element ── */}
+                {/* ── PAY BUTTON ── */}
                 <div className="space-y-3 mb-3">
                   {stockErrors.length > 0 ? (
                     <Button
@@ -2181,6 +2161,25 @@ export default function Checkout() {
                     </>
                   ) : null}
                 </div>
+
+                {/* ── Trust badges + RUO disclaimer ── */}
+                <div className="flex items-center justify-center gap-4 py-3">
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[11px] text-muted-foreground/60">SSL Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[11px] text-muted-foreground/60">Secure Payment</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Truck className="h-3.5 w-3.5 text-muted-foreground/60" />
+                    <span className="text-[11px] text-muted-foreground/60">Same-Day Shipping</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground/70 text-center leading-relaxed mb-2">
+                  By purchasing, you confirm these products are for <span className="text-red-400">research use only</span> and that you are 21+. No refunds policy applies.
+                </p>
 
                 {/* Spacer for mobile sticky bar — all Step 2 payment methods */}
                 <div className="md:hidden h-24" />
