@@ -754,10 +754,10 @@ export default function Checkout() {
   const RuoReminderDialog = () => {
     if (!showRuoReminder) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 pb-24 sm:pb-4">
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-        <div className="relative bg-background border border-border rounded-lg shadow-lg max-w-md w-full">
-          <div className="p-6">
+        <div className="relative bg-background border border-border rounded-lg shadow-lg max-w-md w-full max-h-[calc(100vh-8rem)] flex flex-col">
+          <div className="p-6 overflow-y-auto">
             <div className="text-center mb-6">
               <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
                 <AlertTriangle className="h-6 w-6 text-red-500" />
