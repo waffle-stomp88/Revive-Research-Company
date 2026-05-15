@@ -2166,23 +2166,23 @@ export default function Checkout() {
                 <div className="mt-5 pt-4 border-t border-white/[0.07]">
                   <div className="flex items-center justify-center gap-6 mb-3">
                     <div className="flex items-center gap-1.5">
-                      <Lock className="h-3.5 w-3.5 text-zinc-500" />
-                      <span className="text-[11px] font-medium text-zinc-500 tracking-wide">SSL Encrypted</span>
+                      <Lock className="h-3.5 w-3.5 text-[#21d8ff]" />
+                      <span className="text-[11px] font-medium text-zinc-300 tracking-wide">SSL Encrypted</span>
                     </div>
-                    <div className="w-px h-3 bg-white/10" />
+                    <div className="w-px h-3 bg-white/15" />
                     <div className="flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-zinc-500" />
-                      <span className="text-[11px] font-medium text-zinc-500 tracking-wide">Secure Payment</span>
+                      <ShieldCheck className="h-3.5 w-3.5 text-[#E7FB10]" />
+                      <span className="text-[11px] font-medium text-zinc-300 tracking-wide">Secure Payment</span>
                     </div>
-                    <div className="w-px h-3 bg-white/10" />
+                    <div className="w-px h-3 bg-white/15" />
                     <div className="flex items-center gap-1.5">
-                      <Truck className="h-3.5 w-3.5 text-zinc-500" />
-                      <span className="text-[11px] font-medium text-zinc-500 tracking-wide">Same-Day Shipping</span>
+                      <Truck className="h-3.5 w-3.5 text-[#21d8ff]" />
+                      <span className="text-[11px] font-medium text-zinc-300 tracking-wide">Same-Day Shipping</span>
                     </div>
                   </div>
-                  <p className="text-[11px] text-zinc-600 text-center leading-relaxed">
+                  <p className="text-[11px] text-zinc-400 text-center leading-relaxed">
                     By purchasing you confirm these products are for{" "}
-                    <span className="text-red-500/80 font-medium">research use only</span>{" "}
+                    <span className="text-red-400 font-medium">research use only</span>{" "}
                     and that you are 21+. All sales are final.
                   </p>
                 </div>
