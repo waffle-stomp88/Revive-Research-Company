@@ -2123,7 +2123,15 @@ export default function Checkout() {
                         <>
                           <Button
                             size="lg"
-                            className="inline-flex items-center justify-center whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border border-primary-border min-h-10 rounded-md px-8 w-full font-display gap-2 bg-[#00AFF1] text-white text-[21px]"
+                            className={`w-full font-display text-base gap-2 ${
+                              selectedPaymentMethod === "cashapp"
+                                ? "bg-[#00D632] text-white"
+                                : selectedPaymentMethod === "venmo"
+                                  ? "bg-[#00AFF1] text-white"
+                                  : selectedPaymentMethod === "bank"
+                                    ? "bg-[#d4ed1f] text-[#0a0a0a]"
+                                    : "bg-[#6D1ED4] text-white"
+                            }`}
                             onClick={handleManualPaymentSubmit}
                             disabled={createManualOrderMutation.isPending}
                             data-testid="button-checkout"
