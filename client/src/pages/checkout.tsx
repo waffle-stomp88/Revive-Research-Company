@@ -94,6 +94,7 @@ export default function Checkout() {
   const [copied, setCopied] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [summaryExpanded, setSummaryExpanded] = useState(false);
+  const [addressPickerOpen, setAddressPickerOpen] = useState(false);
 
   const touch = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
@@ -950,9 +951,9 @@ export default function Checkout() {
                       {/* Item rows */}
                       {cartItems.map((item, idx) => (
                         <div key={idx} className="flex items-center gap-2.5">
-                          {item.imageUrl && (
+                          {item.image && (
                             <img
-                              src={item.imageUrl}
+                              src={item.image}
                               alt={item.name}
                               className="w-9 h-9 rounded-md object-cover flex-shrink-0 bg-[#1e1e23]"
                             />
@@ -1094,17 +1095,69 @@ export default function Checkout() {
                               {shippingAddress.street}, {shippingAddress.city} {shippingAddress.state} {shippingAddress.zip}
                             </p>
                           </div>
-                          <button
-                            className="text-xs text-[#d4ed1f] underline-offset-2 hover:underline transition-colors flex-shrink-0"
-                            onClick={() => {
-                              // Clear so form expands
-                              setShippingAddress({ street: "", city: "", state: "", zip: "" });
-                            }}
-                            data-testid="button-edit-saved-address"
-                          >
-                            Edit
-                          </button>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {(savedAddresses?.length ?? 0) > 1 && (
+                              <button
+                                className="text-xs text-[#21d8ff] underline-offset-2 hover:underline transition-colors"
+                                onClick={() => setAddressPickerOpen(prev => !prev)}
+                                data-testid="button-change-saved-address"
+                              >
+                                Change
+                              </button>
+                            )}
+                            <button
+                              className="text-xs text-[#d4ed1f] underline-offset-2 hover:underline transition-colors"
+                              onClick={() => {
+                                setAddressPickerOpen(false);
+                                setShippingAddress({ street: "", city: "", state: "", zip: "" });
+                              }}
+                              data-testid="button-edit-saved-address"
+                            >
+                              Edit
+                            </button>
+                          </div>
                         </div>
+
+                        {/* Address picker — shown when user has multiple saved addresses and clicks Change */}
+                        {addressPickerOpen && (savedAddresses?.length ?? 0) > 1 && (
+                          <div className="mt-3 pt-3 border-t border-green-500/20 space-y-2" data-testid="address-picker-list">
+                            <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Choose an address</p>
+                            {savedAddresses!.map((addr) => {
+                              const isSelected =
+                                shippingAddress.street === addr.address &&
+                                shippingAddress.city === addr.city &&
+                                shippingAddress.state === addr.state &&
+                                shippingAddress.zip === addr.zipCode;
+                              return (
+                                <button
+                                  key={addr.id}
+                                  className={`w-full text-left rounded-lg px-3 py-2.5 text-xs transition-colors border ${
+                                    isSelected
+                                      ? "bg-green-500/20 border-green-500/40 text-green-300"
+                                      : "bg-white/[0.03] border-white/[0.06] text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                                  }`}
+                                  onClick={() => {
+                                    setShippingAddress({
+                                      street: addr.address,
+                                      city: addr.city,
+                                      state: addr.state,
+                                      zip: addr.zipCode,
+                                    });
+                                    setCustomerName(`${addr.firstName} ${addr.lastName}`.trim());
+                                    setAddressPickerOpen(false);
+                                  }}
+                                  data-testid={`button-select-address-${addr.id}`}
+                                >
+                                  <span className="font-medium text-[11px] block mb-0.5">
+                                    {addr.label}{addr.isDefault ? " · Default" : ""}
+                                  </span>
+                                  <span className="block">{addr.address}, {addr.city} {addr.state} {addr.zipCode}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
                         {/* Express Checkout CTA */}
                         <div className="mt-3 pt-3 border-t border-green-500/20">
                           <Button
