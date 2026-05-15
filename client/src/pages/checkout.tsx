@@ -1105,6 +1105,23 @@ export default function Checkout() {
                             Edit
                           </button>
                         </div>
+                        {/* Express Checkout CTA */}
+                        <div className="mt-3 pt-3 border-t border-green-500/20">
+                          <Button
+                            size="lg"
+                            onClick={() => {
+                              if (saveToProfile && isAuthenticated) {
+                                saveAddressMutation.mutate();
+                              }
+                              setCheckoutStep(2);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="w-full font-display text-base gap-2 bg-[#E7FB10] text-[#0a0a0a] hover:bg-[#E7FB10]/90"
+                            data-testid="button-express-checkout"
+                          >
+                            Express Checkout →
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ) : (
