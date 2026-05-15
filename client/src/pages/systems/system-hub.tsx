@@ -19,7 +19,8 @@ import { SEOHead } from "@/components/seo-head";
 import { BODY_SYSTEM_HUBS, BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
 import { resolvePrimarySystem } from "@/lib/peptide-systems";
-import { getStacksByPeptideNames } from "@/data/research-stacks";
+import { useQuery } from "@tanstack/react-query";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 
 function toProductSlug(id: string): string {
   return id.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -45,11 +46,27 @@ export default function SystemHub() {
 
   const peptides = PEPTIDES_BY_SYSTEM[slug] ?? [];
 
+  const { data: allApiStacks } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
   const relatedStacks = useMemo(() => {
-    if (!hub) return [];
-    const peptideNames = peptides.map((p) => p.name);
-    return getStacksByPeptideNames(peptideNames).slice(0, 3);
-  }, [hub, peptides]);
+    if (!hub || !allApiStacks) return [];
+    const peptideNames = peptides.map((p) => p.name.toLowerCase());
+    return allApiStacks
+      .filter(
+        (s) =>
+          s.showOnPage &&
+          Array.isArray(s.peptideDetails) &&
+          s.peptideDetails.some((p) => peptideNames.includes(p.name.toLowerCase()))
+      )
+      .sort((a, b) => {
+        const countA = (a.peptideDetails ?? []).filter((p) => peptideNames.includes(p.name.toLowerCase())).length;
+        const countB = (b.peptideDetails ?? []).filter((p) => peptideNames.includes(p.name.toLowerCase())).length;
+        return countB - countA;
+      })
+      .slice(0, 3);
+  }, [hub, peptides, allApiStacks]);
 
   const currentIndex = BODY_SYSTEM_HUBS.findIndex((h) => h.slug === slug);
   const prevHub = currentIndex > 0 ? BODY_SYSTEM_HUBS[currentIndex - 1] : null;
@@ -270,7 +287,7 @@ export default function SystemHub() {
                         <Badge
                           variant="outline"
                           className="text-xs flex-shrink-0"
-                          style={{ borderColor: `${stack.badgeColor}50`, color: stack.badgeColor }}
+                          style={{ borderColor: `${stack.badgeColor ?? ""}50`, color: stack.badgeColor ?? undefined }}
                         >
                           {stack.badge}
                         </Badge>
@@ -280,7 +297,7 @@ export default function SystemHub() {
                       {stack.description}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {stack.peptides.map((p) => (
+                      {(stack.peptideDetails ?? []).map((p) => (
                         <Badge
                           key={p.name}
                           variant="outline"

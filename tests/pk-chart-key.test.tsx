@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MiniPKChart } from "@/components/mini-pk-chart";
-import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
 
 // jsdom does not implement window.matchMedia — stub it so MiniPKChart's
 // hover-capability guard (matchMedia("(hover: hover) and (pointer: fine)"))
@@ -23,6 +22,29 @@ beforeAll(() => {
 });
 
 /**
+ * Minimal fixture data for the pre-built stacks. Mirrors the set of stacks
+ * seeded in the database so tests stay stable without importing the removed
+ * RESEARCH_STACKS_DATA constant.
+ */
+interface TestStackDef {
+  id: string;
+  peptides: { name: string }[];
+}
+
+const TEST_STACKS: TestStackDef[] = [
+  { id: "recovery-tissue-stack", peptides: [{ name: "BPC-157" }, { name: "TB-500" }] },
+  { id: "gh-amplifier", peptides: [{ name: "Ipamorelin" }, { name: "CJC-1295" }] },
+  { id: "cognitive-edge-stack", peptides: [{ name: "Semax" }, { name: "Selank" }] },
+  { id: "glow-protocol", peptides: [{ name: "BPC-157" }, { name: "TB-500" }, { name: "GHK-Cu" }] },
+  { id: "longevity-protocol", peptides: [{ name: "Epithalon" }, { name: "GHK-Cu" }] },
+  { id: "fat-burner", peptides: [{ name: "AOD-9604" }, { name: "5-Amino-1MQ" }] },
+  { id: "melanocortin-arousal-stack", peptides: [{ name: "PT-141" }, { name: "Oxytocin" }] },
+  { id: "gonadorelin-kisspeptin-hpg-cascade", peptides: [{ name: "Kisspeptin-10" }, { name: "Gonadorelin" }] },
+  { id: "triptorelin-enclomiphene-hpg-axis", peptides: [{ name: "Triptorelin" }, { name: "Enclomiphene" }] },
+  { id: "hpg-axis-restore-stack", peptides: [{ name: "Kisspeptin-10" }, { name: "MT-2" }] },
+];
+
+/**
  * Rendering tests for the listing-page mini PK chart and SC/Other-route key.
  *
  * These tests mount the actual MiniPKChart component in jsdom and assert that:
@@ -39,7 +61,7 @@ beforeAll(() => {
 
 describe("MiniPKChart — listing-page rendering", () => {
   it("renders the mini-pk-chart SVG for stacks with known PK data", () => {
-    const recoveryStack = RESEARCH_STACKS_DATA.find(s => s.id === "recovery-tissue-stack");
+    const recoveryStack = TEST_STACKS.find(s => s.id === "recovery-tissue-stack");
     expect(recoveryStack).toBeDefined();
 
     const peptideNames = recoveryStack!.peptides.map(p => p.name);
@@ -51,7 +73,7 @@ describe("MiniPKChart — listing-page rendering", () => {
   });
 
   it("renders mini-pk-chart SVGs for all pre-built research stacks that have PK data", () => {
-    for (const stack of RESEARCH_STACKS_DATA) {
+    for (const stack of TEST_STACKS) {
       const peptideNames = stack.peptides.map(p => p.name);
       const { container, unmount } = render(
         <MiniPKChart peptideNames={peptideNames} stackId={stack.id} />
@@ -68,7 +90,7 @@ describe("MiniPKChart — listing-page rendering", () => {
   });
 
   it("renders the pk-line-style-key for fat-burner (AOD-9604 SC + 5-Amino-1MQ oral — genuinely mixed routes)", () => {
-    const fatBurnerStack = RESEARCH_STACKS_DATA.find(s => s.id === "fat-burner");
+    const fatBurnerStack = TEST_STACKS.find(s => s.id === "fat-burner");
     expect(fatBurnerStack).toBeDefined();
 
     const peptideNames = fatBurnerStack!.peptides.map(p => p.name);
@@ -82,7 +104,7 @@ describe("MiniPKChart — listing-page rendering", () => {
     // Selank has ivHalfLifeLabel set ("~2–3 min") from the Zolotarev 2006 citation audit, so
     // hasIVOverlay is true and the legend correctly shows the IV bolus overlay key even though
     // both primary administration routes are intranasal.
-    const cognitiveStack = RESEARCH_STACKS_DATA.find(s => s.id === "cognitive-edge-stack");
+    const cognitiveStack = TEST_STACKS.find(s => s.id === "cognitive-edge-stack");
     expect(cognitiveStack).toBeDefined();
 
     const peptideNames = cognitiveStack!.peptides.map(p => p.name);
@@ -108,7 +130,7 @@ describe("MiniPKChart — listing-page rendering", () => {
   it("shows 'SC' primary-route label for a mixed-route stack (fat-burner: AOD-9604 SC + 5-Amino-1MQ oral)", () => {
     // When the stack contains at least one SC compound, the solid-line key entry
     // correctly shows "SC" (unchanged behaviour, regression guard).
-    const fatBurnerStack = RESEARCH_STACKS_DATA.find(s => s.id === "fat-burner");
+    const fatBurnerStack = TEST_STACKS.find(s => s.id === "fat-burner");
     expect(fatBurnerStack).toBeDefined();
 
     const peptideNames = fatBurnerStack!.peptides.map(p => p.name);
@@ -120,7 +142,7 @@ describe("MiniPKChart — listing-page rendering", () => {
   });
 
   it("does NOT render pk-line-style-key for all-SC stacks (recovery-tissue-stack: BPC-157 + TB-500)", () => {
-    const recoveryStack = RESEARCH_STACKS_DATA.find(s => s.id === "recovery-tissue-stack");
+    const recoveryStack = TEST_STACKS.find(s => s.id === "recovery-tissue-stack");
     expect(recoveryStack).toBeDefined();
 
     const peptideNames = recoveryStack!.peptides.map(p => p.name);
@@ -132,7 +154,7 @@ describe("MiniPKChart — listing-page rendering", () => {
 
   it("at least one pre-built stack card renders a pk-line-style-key (non-SC compound must exist)", () => {
     let foundKey = false;
-    for (const stack of RESEARCH_STACKS_DATA) {
+    for (const stack of TEST_STACKS) {
       const peptideNames = stack.peptides.map(p => p.name);
       const { container, unmount } = render(
         <MiniPKChart peptideNames={peptideNames} stackId={stack.id} />

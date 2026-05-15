@@ -4,7 +4,8 @@ import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getStacksByPeptideNames } from "@/data/research-stacks";
+import { useQuery } from "@tanstack/react-query";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 
 interface RelatedStacksProps {
   peptideNames: string[];
@@ -14,7 +15,23 @@ export function RelatedStacks({ peptideNames }: RelatedStacksProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
-  const stacks = getStacksByPeptideNames(peptideNames);
+  const { data: apiStacks } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const normalised = peptideNames.map((n) => n.toLowerCase());
+
+  const stacks = (apiStacks ?? [])
+    .filter((s) =>
+      s.showOnPage &&
+      Array.isArray(s.peptideDetails) &&
+      s.peptideDetails.some((p) => normalised.includes(p.name.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const countA = (a.peptideDetails ?? []).filter((p) => normalised.includes(p.name.toLowerCase())).length;
+      const countB = (b.peptideDetails ?? []).filter((p) => normalised.includes(p.name.toLowerCase())).length;
+      return countB - countA;
+    });
 
   if (stacks.length === 0) return null;
 
@@ -49,7 +66,7 @@ export function RelatedStacks({ peptideNames }: RelatedStacksProps) {
               </div>
 
               <div className="flex flex-wrap gap-1.5">
-                {stack.peptides.map((peptide) => (
+                {(stack.peptideDetails ?? []).map((peptide) => (
                   <span
                     key={peptide.name}
                     className="text-xs px-2 py-0.5 rounded-full border font-mono"

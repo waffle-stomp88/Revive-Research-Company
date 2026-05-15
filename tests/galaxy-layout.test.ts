@@ -6,7 +6,7 @@ import {
   toProductSlug,
 } from "@/lib/galaxy-layout";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
-import { KNOWN_STACKS } from "@/data/known-stacks";
+import { KNOWN_STACKS } from "@/lib/synergy-data";
 import { BODY_SYSTEMS } from "@/data/body-systems";
 
 describe("galaxy layout", () => {

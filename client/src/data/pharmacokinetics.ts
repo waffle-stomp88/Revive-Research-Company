@@ -1964,10 +1964,10 @@ function nameToSlug(name: string): string {
 }
 
 /**
- * Audit log — known-stacks.ts slug coverage (last verified: 2026-04-28)
+ * Audit log — synergy-data.ts KNOWN_STACKS slug coverage (last verified: 2026-04-28)
  *
- * All 24 unique peptide slugs from client/src/data/known-stacks.ts resolve to a
- * PEPTIDE_HALF_LIVES entry via this map. No description-only fallbacks exist for
+ * All unique peptide slugs from KNOWN_STACKS in client/src/lib/synergy-data.ts resolve
+ * to a PEPTIDE_HALF_LIVES entry via this map. No description-only fallbacks exist for
  * any known-stack peptide. Slugs that share a name with their PK slug are listed
  * here explicitly so future audits can rely on this map as a single source of truth
  * rather than the fallback HALF_LIFE_MAP direct-key lookup.
@@ -1976,7 +1976,7 @@ function nameToSlug(name: string): string {
  * (registered with the platform CI system). Run it manually with:
  *   node scripts/audit-pk-catalog.cjs
  *
- * When adding a new slug to known-stacks.ts:
+ * When adding a new slug to KNOWN_STACKS:
  *   1. Add a HalfLifeEntry to PEPTIDE_HALF_LIVES, OR
  *   2. Add a mapping here to an existing entry, OR
  *   3. Leave a comment explaining why the slug is intentionally non-chartable.

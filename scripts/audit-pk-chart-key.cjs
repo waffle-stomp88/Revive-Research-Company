@@ -109,7 +109,8 @@ function run() {
   let allPassed = true;
 
   const pkSrc = readFile("client/src/data/pharmacokinetics.ts");
-  const stacksSrc = readFile("client/src/data/research-stacks.ts");
+  // Pre-built stack fixture lives in the test file since research-stacks.ts is now types-only.
+  const stacksSrc = readFile("tests/pk-chart-key.test.tsx");
 
   // MiniPKChart testids live in the extracted component file
   const miniPkChartSrc = readFile("client/src/components/mini-pk-chart.tsx");

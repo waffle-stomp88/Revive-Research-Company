@@ -110,22 +110,30 @@ import {
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
 import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
-import { STACKS_SLUG_TO_PEPTIDE_NAMES } from "@/data/research-stacks";
-
 // Maps individual peptide article slugs to the peptide name(s) used in research-stacks data.
 // This drives the RelatedStacks component shown at the bottom of each article.
 //
-// The bulk of this map is auto-derived from educationLinks in RESEARCH_STACKS_DATA — new
-// stacks whose educationLinks point to a "what-is-*" article slug will surface here
-// automatically without any manual update.
-//
-// Static entries below handle multi-compound complex articles (glow/klow) that should show
-// stacks for all three constituent peptides — a case the auto-derivation cannot cover because
-// no single educationLink slug maps to all three peptides simultaneously.
+// Derived from the educationLinks of each stack stored in the DB. Update this map when new
+// stacks are added so that their peptide articles surface the related-stacks section.
 const SLUG_TO_PEPTIDE_NAMES: Record<string, string[]> = {
-  ...STACKS_SLUG_TO_PEPTIDE_NAMES,
-  // Multi-peptide complex articles (auto-derivation cannot handle these because no single
-  // educationLink slug maps to all three constituent peptides)
+  "what-is-bpc-157-peptide": ["BPC-157"],
+  "what-is-tb-500-peptide": ["TB-500"],
+  "what-is-ipamorelin-peptide": ["Ipamorelin"],
+  "what-is-cjc-1295-peptide": ["CJC-1295"],
+  "what-is-semax-peptide": ["Semax"],
+  "what-is-selank-peptide": ["Selank"],
+  "what-is-ghk-cu-peptide": ["GHK-Cu"],
+  "what-is-epithalon-peptide": ["Epithalon"],
+  "what-is-aod-9604-peptide": ["AOD-9604"],
+  "what-is-5-amino-1mq-peptide": ["5-Amino-1MQ"],
+  "what-is-pt-141-bremelanotide-peptide": ["PT-141"],
+  "what-is-oxytocin-peptide": ["Oxytocin"],
+  "what-is-kisspeptin-peptide": ["Kisspeptin-10"],
+  "what-is-gonadorelin-peptide": ["Gonadorelin"],
+  "what-is-triptorelin-peptide": ["Triptorelin"],
+  "what-is-enclomiphene-peptide": ["Enclomiphene"],
+  "what-is-melanotan-peptide": ["MT-2"],
+  // Multi-peptide complex articles: no single slug maps to all three constituent peptides
   "what-is-glow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
   "what-is-klow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
 };
