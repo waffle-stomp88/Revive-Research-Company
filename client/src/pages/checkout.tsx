@@ -752,76 +752,69 @@ export default function Checkout() {
   // ─── RUO Reminder Dialog ──────────────────────────────────────────────────
 
   const RuoReminderDialog = () => {
+    useEffect(() => {
+      if (!showRuoReminder) return;
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = prev; };
+    }, []);
+
     if (!showRuoReminder) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 pb-24 sm:pb-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-        <div className="relative bg-background border border-border rounded-lg shadow-lg max-w-md w-full max-h-[calc(100vh-8rem)] flex flex-col">
-          <div className="p-6 overflow-y-auto">
-            <div className="text-center mb-6">
-              <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-500" />
-              </div>
-              <h2 className="font-display text-xl font-semibold">Before You Continue</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Please confirm you understand the following
-              </p>
+        <div className="relative bg-background border border-border rounded-lg shadow-lg max-w-sm w-full">
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+              <h2 className="font-display text-base font-semibold">Before You Continue</h2>
             </div>
-            <div className="space-y-4">
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 animate-pulse-subtle">
-                <div className="flex items-start gap-3">
-                  <Beaker className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-sm text-red-400">Research Use Only</p>
-                    <p className="text-xs text-muted-foreground">
-                      These products are sold exclusively for scientific research purposes.
-                      They are not intended for human consumption, therapeutic use, or any other purpose.
-                    </p>
-                  </div>
+            <div className="space-y-2 mb-3">
+              <div className="bg-red-500/10 border border-red-500/30 rounded-md p-2.5 flex items-center gap-2">
+                <Beaker className="h-4 w-4 text-red-400 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-xs text-red-400">Research Use Only</p>
+                  <p className="text-xs text-muted-foreground leading-tight">Not for human consumption or therapeutic use.</p>
                 </div>
               </div>
-              <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <ShieldCheck className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-sm text-[#E7FB10]">Age Requirement</p>
-                    <p className="text-xs text-muted-foreground">
-                      You must be 21 years or older to purchase research compounds from Revive Research.
-                    </p>
-                  </div>
+              <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-md p-2.5 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-xs text-[#E7FB10]">Age Requirement</p>
+                  <p className="text-xs text-muted-foreground leading-tight">You must be 21 years or older to purchase.</p>
                 </div>
               </div>
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
-                  <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-red-500 border-red-500' : 'border-red-500/50'}`}>
-                    {ruoAcknowledged && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-ruo-acknowledge">
-                    I understand these products are for <span className="text-red-400 font-medium">research purposes only</span> and not for human use
-                  </span>
+            </div>
+            <div className="space-y-2 mb-3">
+              <div className="flex items-start gap-2 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
+                <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-red-500 border-red-500' : 'border-red-500/50'}`}>
+                  {ruoAcknowledged && (
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
                 </div>
-                <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
-                  <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ageConfirmed ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-[#E7FB10]/50'}`}>
-                    {ageConfirmed && (
-                      <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-age-confirm">
-                    I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
-                  </span>
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-tight" data-testid="checkbox-ruo-acknowledge">
+                  Products are for <span className="text-red-400 font-medium">research purposes only</span>, not for human use
+                </span>
+              </div>
+              <div className="flex items-start gap-2 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
+                <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ageConfirmed ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-[#E7FB10]/50'}`}>
+                  {ageConfirmed && (
+                    <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
                 </div>
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-tight" data-testid="checkbox-age-confirm">
+                  I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
+                </span>
               </div>
             </div>
             <Button
               onClick={handleRuoAcknowledge}
               disabled={!ruoAcknowledged || !ageConfirmed}
-              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50 mt-6"
+              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50"
               data-testid="button-confirm-ruo"
             >
               Continue to Checkout
