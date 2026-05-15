@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { X, ExternalLink, ArrowRight, Activity, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
@@ -46,28 +47,79 @@ interface GalaxySidePanelProps {
   knownStacks?: KnownStack[];
 }
 
+function useIsMobile(breakpoint = 1024) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  );
+  useEffect(() => {
+    function check() {
+      setIsMobile(window.innerWidth < breakpoint);
+    }
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelProps) {
   if (!node) return null;
 
+  const isMobile = useIsMobile();
   const stacks = getStacksForPeptide(node.id, knownStacks);
   const accentColor = node.color;
   const borderColor = `${accentColor}60`;
   const cornerColor = `${accentColor}b3`;
 
-  return (
-    <motion.aside
-      initial={{ x: "100%", opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: "100%", opacity: 0 }}
-      transition={{ type: "spring", damping: 26, stiffness: 220 }}
-      className="absolute top-24 md:top-28 bottom-0 right-0 w-full max-w-md backdrop-blur-sm z-30 overflow-y-auto"
-      style={{
+  // Mobile: slide up from bottom as a full-width drawer
+  // Desktop: slide in from the right as a sidebar
+  const motionProps = isMobile
+    ? {
+        initial: { y: "100%", opacity: 0 },
+        animate: { y: 0, opacity: 1 },
+        exit: { y: "100%", opacity: 0 },
+        transition: { type: "spring" as const, damping: 28, stiffness: 240 },
+      }
+    : {
+        initial: { x: "100%", opacity: 0 },
+        animate: { x: 0, opacity: 1 },
+        exit: { x: "100%", opacity: 0 },
+        transition: { type: "spring" as const, damping: 26, stiffness: 220 },
+      };
+
+  const panelClassName = isMobile
+    ? "absolute bottom-0 left-0 right-0 max-h-[80vh] backdrop-blur-sm z-30 overflow-y-auto rounded-t-2xl"
+    : "absolute top-24 md:top-28 bottom-0 right-0 w-full max-w-md backdrop-blur-sm z-30 overflow-y-auto";
+
+  const panelStyle = isMobile
+    ? {
+        background: "rgba(0,0,0,0.97)",
+        borderTop: `2px solid ${borderColor}`,
+        borderLeft: `1px solid ${borderColor}`,
+        borderRight: `1px solid ${borderColor}`,
+      }
+    : {
         background: "rgba(0,0,0,0.95)",
         borderLeft: `2px solid ${borderColor}`,
         borderTop: `1px solid ${borderColor}`,
-      }}
+      };
+
+  return (
+    <motion.aside
+      {...motionProps}
+      className={panelClassName}
+      style={panelStyle}
       data-testid="galaxy-side-panel"
     >
+      {/* Drag handle for mobile */}
+      {isMobile && (
+        <div className="flex justify-center pt-3 pb-1">
+          <div
+            className="w-10 h-1 rounded-full bg-white/20"
+            aria-hidden="true"
+          />
+        </div>
+      )}
+
       {/* Scan-line overlay */}
       <div
         aria-hidden="true"
@@ -81,63 +133,67 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
         }}
       />
 
-      {/* Corner decorations */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          top: 8,
-          left: 8,
-          width: 10,
-          height: 10,
-          borderTop: `2px solid ${cornerColor}`,
-          borderLeft: `2px solid ${cornerColor}`,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          width: 10,
-          height: 10,
-          borderTop: `2px solid ${cornerColor}`,
-          borderRight: `2px solid ${cornerColor}`,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          bottom: 8,
-          left: 8,
-          width: 10,
-          height: 10,
-          borderBottom: `2px solid ${cornerColor}`,
-          borderLeft: `2px solid ${cornerColor}`,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          bottom: 8,
-          right: 8,
-          width: 10,
-          height: 10,
-          borderBottom: `2px solid ${cornerColor}`,
-          borderRight: `2px solid ${cornerColor}`,
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
+      {/* Corner decorations — desktop only */}
+      {!isMobile && (
+        <>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              width: 10,
+              height: 10,
+              borderTop: `2px solid ${cornerColor}`,
+              borderLeft: `2px solid ${cornerColor}`,
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              width: 10,
+              height: 10,
+              borderTop: `2px solid ${cornerColor}`,
+              borderRight: `2px solid ${cornerColor}`,
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: 8,
+              width: 10,
+              height: 10,
+              borderBottom: `2px solid ${cornerColor}`,
+              borderLeft: `2px solid ${cornerColor}`,
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              bottom: 8,
+              right: 8,
+              width: 10,
+              height: 10,
+              borderBottom: `2px solid ${cornerColor}`,
+              borderRight: `2px solid ${cornerColor}`,
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+        </>
+      )}
 
       {/* Content — keyed to node.id for glitch-reveal on each new selection */}
       <motion.div
@@ -177,13 +233,13 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
               {node.synergyCount === 1 ? "" : "s"}
             </p>
           </div>
+          {/* Close button — 44px touch target guaranteed on mobile via explicit sizing */}
           <Button
-            size="icon"
             variant="ghost"
             onClick={onClose}
             data-testid="galaxy-panel-close"
             aria-label="Close peptide details"
-            className="text-white/60 hover:text-white"
+            className="flex-shrink-0 flex items-center justify-center text-white/60 hover:text-white w-11 h-11 md:w-9 md:h-9 p-0"
           >
             <X className="h-4 w-4" />
           </Button>

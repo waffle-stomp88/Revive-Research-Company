@@ -66,12 +66,18 @@ function CoreLayer({ radius, color, alpha, renderOrder, pulseRef }: CoreLayerPro
   );
 }
 
+interface GalaxyCoreProps {
+  /** When true, render only the nucleus layer (for very small screens / low-end devices). */
+  reduceLayers?: boolean;
+}
+
 /**
  * GalaxyCore — three billboard planes creating a layered glowing galactic core.
  * Nucleus (white), mid-glow (warm yellow), outer halo (soft gold).
  * All use AdditiveBlending so they stack beautifully.
+ * On reduceLayers mode, only the nucleus is rendered to save GPU budget.
  */
-export function GalaxyCore() {
+export function GalaxyCore({ reduceLayers = false }: GalaxyCoreProps) {
   const groupRef = useRef<THREE.Group>(null);
   const pulseRef = useRef(0);
 
@@ -85,11 +91,15 @@ export function GalaxyCore() {
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Outer halo — largest, most transparent */}
-      <CoreLayer radius={28} color="#FFE696" alpha={0.18} renderOrder={1} pulseRef={pulseRef} />
-      {/* Mid-glow — warm yellow */}
-      <CoreLayer radius={12} color="#FFE0A0" alpha={0.55} renderOrder={2} pulseRef={pulseRef} />
-      {/* Nucleus — near-white, tightest */}
+      {/* Outer halo — omitted in reduce mode */}
+      {!reduceLayers && (
+        <CoreLayer radius={28} color="#FFE696" alpha={0.18} renderOrder={1} pulseRef={pulseRef} />
+      )}
+      {/* Mid-glow — omitted in reduce mode */}
+      {!reduceLayers && (
+        <CoreLayer radius={12} color="#FFE0A0" alpha={0.55} renderOrder={2} pulseRef={pulseRef} />
+      )}
+      {/* Nucleus — always rendered */}
       <CoreLayer radius={4} color="#FFFDF0" alpha={0.95} renderOrder={3} pulseRef={pulseRef} />
     </group>
   );

@@ -82,6 +82,23 @@ export function GalaxyHoverHUD({
   const sx = hasPos ? hoveredScreenPos!.x : 0;
   const sy = hasPos ? hoveredScreenPos!.y : 0;
 
+  // On portrait mobile (< 640px wide), move the telemetry panel to bottom-left
+  // to avoid overlapping with the filter bar at the top
+  const isPortraitMobile = canvasWidth > 0 && canvasWidth < 640;
+  const telemetryStyle = isPortraitMobile
+    ? {
+        bottom: 90,
+        left: 16,
+        top: "auto",
+        right: "auto",
+      }
+    : {
+        top: 80,
+        right: 16,
+        bottom: "auto",
+        left: "auto",
+      };
+
   return (
     <>
       {/* Targeting brackets + floating tooltip at star screen position */}
@@ -106,44 +123,46 @@ export function GalaxyHoverHUD({
               color={hoveredNode.color}
             />
 
-            {/* Floating tooltip above brackets */}
-            <div
-              style={{
-                position: "absolute",
-                left: sx,
-                top: sy - 40,
-                transform: "translateX(-50%)",
-                pointerEvents: "none",
-                fontFamily: "monospace",
-                fontSize: "10px",
-                lineHeight: 1.4,
-                color: hoveredNode.color,
-                background: "rgba(0,0,0,0.7)",
-                border: `0.5px solid ${hoveredNode.color}66`,
-                padding: "3px 7px",
-                borderRadius: "2px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              <span style={{ color: "#fff", fontWeight: 600 }}>
-                {hoveredNode.name}
-              </span>
-              <span style={{ color: "rgba(255,255,255,0.45)", margin: "0 4px" }}>·</span>
-              <span>{hoveredNode.systemName}</span>
-              {hoveredNode.synergyCount > 0 && (
-                <>
-                  <span style={{ color: "rgba(255,255,255,0.45)", margin: "0 4px" }}>·</span>
-                  <span style={{ color: "rgba(255,255,255,0.6)" }}>
-                    {hoveredNode.synergyCount} link{hoveredNode.synergyCount === 1 ? "" : "s"}
-                  </span>
-                </>
-              )}
-            </div>
+            {/* Floating tooltip above brackets — hidden on portrait mobile to avoid clutter */}
+            {!isPortraitMobile && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: sx,
+                  top: sy - 40,
+                  transform: "translateX(-50%)",
+                  pointerEvents: "none",
+                  fontFamily: "monospace",
+                  fontSize: "10px",
+                  lineHeight: 1.4,
+                  color: hoveredNode.color,
+                  background: "rgba(0,0,0,0.7)",
+                  border: `0.5px solid ${hoveredNode.color}66`,
+                  padding: "3px 7px",
+                  borderRadius: "2px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ color: "#fff", fontWeight: 600 }}>
+                  {hoveredNode.name}
+                </span>
+                <span style={{ color: "rgba(255,255,255,0.45)", margin: "0 4px" }}>·</span>
+                <span>{hoveredNode.systemName}</span>
+                {hoveredNode.synergyCount > 0 && (
+                  <>
+                    <span style={{ color: "rgba(255,255,255,0.45)", margin: "0 4px" }}>·</span>
+                    <span style={{ color: "rgba(255,255,255,0.6)" }}>
+                      {hoveredNode.synergyCount} link{hoveredNode.synergyCount === 1 ? "" : "s"}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Fixed top-right telemetry panel */}
+      {/* Fixed telemetry panel — repositioned on portrait mobile */}
       <AnimatePresence>
         {hoveredNode && (
           <motion.div
@@ -154,8 +173,6 @@ export function GalaxyHoverHUD({
             transition={{ duration: 0.15 }}
             style={{
               position: "absolute",
-              top: 80,
-              right: 16,
               zIndex: 30,
               pointerEvents: "none",
               fontFamily: "monospace",
@@ -168,11 +185,15 @@ export function GalaxyHoverHUD({
               borderRadius: "2px",
               letterSpacing: "0.05em",
               minWidth: 130,
+              ...telemetryStyle,
             }}
             data-testid="galaxy-hud-telemetry"
           >
             <div style={{ color: "#E7FB10", fontWeight: 700 }}>▸ TARGETING</div>
             <div style={{ color: "rgba(255,255,255,0.55)", marginTop: 2 }}>
+              {hoveredNode.name.length > 16 ? hoveredNode.name.slice(0, 14) + "…" : hoveredNode.name}
+            </div>
+            <div style={{ color: "rgba(255,255,255,0.55)" }}>
               SYS
               <span style={{ color: "rgba(255,255,255,0.25)", margin: "0 4px" }}>·</span>
               <span style={{ color: hoveredNode.color }}>

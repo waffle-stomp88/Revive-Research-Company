@@ -22,6 +22,7 @@ import { useGalaxyAudio } from "@/hooks/useGalaxyAudio";
 import { GalaxyHyperspaceOverlay } from "@/components/galaxy/galaxy-hyperspace-overlay";
 import { GalaxyHoverHUD } from "@/components/galaxy/galaxy-hover-hud";
 import { WarpBanner } from "@/components/galaxy/galaxy-warp-banner";
+import { GalaxyMobileOnboarding, isTouchDevice } from "@/components/galaxy/galaxy-mobile-onboarding";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -72,8 +73,34 @@ export default function GalaxyPage() {
   const prevScreenPosRef = useRef<{ x: number; y: number } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // Mobile / touch detection
+  const [isTouch] = useState(() => isTouchDevice());
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+  useEffect(() => {
+    function onResize() { setViewportWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  // Page Visibility API — pause rotation when tab is hidden
+  const [pageVisible, setPageVisible] = useState(true);
+  useEffect(() => {
+    function handleVisibility() {
+      setPageVisible(!document.hidden);
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   // Audio hook
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+
+  // Reduce effects when: touch device OR very small screen (<= 640px) OR prefers-reduced-motion
+  // (prefers-reduced-motion forces fallback normally, but may be in 3D via force3d=1 param)
+  const reduceEffects = isTouch || viewportWidth <= 640 || reducedMotion;
+  // Drop core billboard layers entirely on very narrow screens (< 400px)
+  const ultraSmall = viewportWidth < 400;
   const audio = useGalaxyAudio();
   const ambientStarted = useRef(false);
 
@@ -330,6 +357,9 @@ export default function GalaxyPage() {
       className={`min-h-screen ${vfxVariant === "cinematic" ? "bg-black" : "bg-[#0d0d10]"} text-foreground relative`}
       data-testid="page-galaxy"
     >
+      {/* Mobile welcome overlay — touch devices only, once per session */}
+      <GalaxyMobileOnboarding onDismiss={() => {}} />
+
       <SEOHead
         title="Peptide Synergy Galaxy"
         description="Explore every research peptide as a star in a 3D galaxy. Discover synergy connections between peptides, filter by body system, and find researched stack combinations."
@@ -518,11 +548,13 @@ export default function GalaxyPage() {
                   onHoverSound={audio.playHover}
                   externalWarpId={warpToId}
                   onExternalWarpConsumed={() => setWarpToId(null)}
-                  rotationPaused={rotationPaused}
+                  rotationPaused={rotationPaused || !pageVisible}
                   rotationSpeed={rotationSpeed}
                   onHoveredScreenPos={handleHoveredScreenPos}
                   onWarpStart={handleWarpStart}
                   knownStacks={knownStacksFromApi}
+                  reduceEffects={reduceEffects}
+                  reduceCoreLayers={ultraSmall}
                 />
               </ErrorBoundary>
             </Suspense>
@@ -628,14 +660,16 @@ export default function GalaxyPage() {
             </div>
           </motion.div>
 
-          {/* Bottom hints — fades in after entry */}
+          {/* Bottom hints — fades in after entry; touch-specific copy on mobile */}
           <motion.div
             className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
             animate={{ opacity: uiVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] font-mono text-muted-foreground">
-              Drag to orbit · scroll to zoom · click a star to inspect · double-click to warp in
+            <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] font-mono text-muted-foreground whitespace-nowrap">
+              {isTouch
+                ? "Drag to orbit · pinch to zoom · tap a star to inspect"
+                : "Drag to orbit · scroll to zoom · click a star to inspect · double-click to warp in"}
             </div>
           </motion.div>
 

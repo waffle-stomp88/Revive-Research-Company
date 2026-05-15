@@ -44,6 +44,10 @@ interface GalaxySceneProps {
   onHoveredScreenPos?: (pos: { x: number; y: number } | null) => void;
   onWarpStart?: (node: GalaxyNode) => void;
   knownStacks?: KnownStack[];
+  /** When true, lower particle count (touch device / small viewport / reduced-motion). */
+  reduceEffects?: boolean;
+  /** When true, render only the nucleus core billboard layer (screens < 400px). */
+  reduceCoreLayers?: boolean;
 }
 
 export function GalaxyScene({
@@ -67,6 +71,8 @@ export function GalaxyScene({
   onHoveredScreenPos,
   onWarpStart,
   knownStacks,
+  reduceEffects = false,
+  reduceCoreLayers = false,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(knownStacks), [knownStacks]);
   const { nodes, edges } = layout;
@@ -228,8 +234,8 @@ export function GalaxyScene({
         <pointLight position={[20, 20, 20]} intensity={0.6} color="#ffffff" />
         <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
         <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} vfxVariant={vfxVariant} />
-        <GalaxyDustStars count={2000} discRadius={120} ySpread={8} />
-        <GalaxyCore />
+        <GalaxyDustStars count={reduceEffects ? 500 : 2000} discRadius={120} ySpread={8} />
+        <GalaxyCore reduceLayers={reduceCoreLayers} />
         <GalaxyNebula nodes={nodes} config={vfx.nebula} fog={vfx.fog} />
         <GalaxyDistantGalaxy config={vfx.distantGalaxy} />
         <GalaxyEdges
