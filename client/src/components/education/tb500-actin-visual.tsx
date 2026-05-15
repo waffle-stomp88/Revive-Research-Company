@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boolean; activeMechanism: string }) {
   const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
@@ -634,6 +635,7 @@ export function TB500ActinVisual() {
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   const woundInView = useInView(woundRef, { margin: "-20px" });
   const visualInView = useInView(visualRef, { margin: "-20px" });
+  const hoverCapable = useHoverCapable();
   const [activeMechanism, setActiveMechanism] = useState<string>('actin');
   const [healingProgress, setHealingProgress] = useState(0);
   const [mechanismProgress, setMechanismProgress] = useState(0);
@@ -763,7 +765,7 @@ export function TB500ActinVisual() {
                     border: `1.5px solid ${isActive ? mechanism.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 15px ${mechanism.color}30` : 'none'
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
                   data-testid={`mechanism-${mechanism.id}`}
                 >
                   <motion.div

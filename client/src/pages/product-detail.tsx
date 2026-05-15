@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -174,6 +175,7 @@ const dosageMultipliers: Record<string, number> = {
 const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 export default function ProductDetail() {
+  const hoverCapable = useHoverCapable();
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -1054,7 +1056,7 @@ export default function ProductDetail() {
                 <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
                   <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Dosage</Label>
                   <Select value={selectedDosage} onValueChange={setSelectedDosage}>
-                    <SelectTrigger data-testid="select-dosage" className="h-9">
+                    <SelectTrigger data-testid="select-dosage" className="min-h-[44px]">
                       <SelectValue placeholder="Select dosage" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1106,19 +1108,19 @@ export default function ProductDetail() {
               {!isOutOfStock && (
                 <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
                   <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
-                  <div className="flex items-center h-9">
+                  <div className="flex items-center min-h-[44px]">
                     <button
                       type="button"
                       onClick={() => handleQtyChange(singleVialQty - 1)}
                       disabled={singleVialQty <= 1}
                       data-testid="button-qty-minus"
-                      className="w-9 h-9 rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
+                      className="min-w-[44px] min-h-[44px] rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
                     >
                       <span className="text-sm leading-none select-none">−</span>
                     </button>
                     <span
                       data-testid="text-qty-value"
-                      className="w-10 h-9 border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
+                      className="w-10 self-stretch border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
                     >
                       {singleVialQty}
                     </span>
@@ -1126,7 +1128,7 @@ export default function ProductDetail() {
                       type="button"
                       onClick={() => handleQtyChange(singleVialQty + 1)}
                       data-testid="button-qty-plus"
-                      className="w-9 h-9 rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
+                      className="min-w-[44px] min-h-[44px] rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
                     >
                       <span className="text-sm leading-none select-none">+</span>
                     </button>
@@ -1289,7 +1291,7 @@ export default function ProductDetail() {
                 <button
                   onClick={() => voteMutation.mutate(hasVoted ? "unvote" : "vote")}
                   disabled={voteMutation.isPending}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 mb-4 ${
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 min-h-[44px] rounded-md text-sm font-medium transition-all duration-200 mb-4 ${
                     hasVoted
                       ? "bg-[#21d8ff]/15 text-[#21d8ff] border border-[#21d8ff]/40"
                       : "bg-muted/30 text-muted-foreground border border-muted-foreground/20 hover:border-[#21d8ff]/40 hover:text-[#21d8ff]"
@@ -1507,7 +1509,7 @@ export default function ProductDetail() {
                       type="button"
                       data-testid={tab.testId}
                       onClick={() => setActiveResearchTab(tab.key)}
-                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
+                      className={`px-4 py-3 min-h-[44px] text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
                         activeResearchTab === tab.key
                           ? "border-[#E7FB10] text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
@@ -2260,7 +2262,7 @@ export default function ProductDetail() {
                         <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
                           <motion.div
                             className="inline-block relative"
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={hoverCapable ? { scale: 1.05 } : {}}
                             whileTap={{ scale: 0.98 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                           >

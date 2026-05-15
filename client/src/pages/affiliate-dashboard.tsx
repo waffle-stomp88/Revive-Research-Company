@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -175,6 +176,7 @@ const getBadgeStyles = (color: string, earned: boolean) => {
 };
 
 function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; team?: TeamMember[]; sales?: AffiliateSale[] }) {
+  const hoverCapable = useHoverCapable();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const badges: AchievementBadge[] = useMemo(() => {
     const salesCount = stats?.directSalesCount || 0;
@@ -259,7 +261,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
         <CardTitle className="flex items-center justify-between">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1"
+            className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 min-h-[44px]"
             data-testid="button-achievements-toggle"
           >
             <Award className="h-5 w-5 text-[#E7FB10]" />
@@ -296,7 +298,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                       key={badge.id}
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={hoverCapable ? { scale: 1.02 } : {}}
                       className="relative p-3 rounded-lg transition-all"
                       style={badge.earned ? badgeStyles : {
                         background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
@@ -573,14 +575,15 @@ function EarningsCalendarHeatmap({ sales }: { sales?: AffiliateSale[] }) {
         <CardDescription>{monthName}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="overflow-x-auto">
+        <div className="grid grid-cols-7 gap-1 mb-2 min-w-[420px]">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
             <div key={i} className="text-center text-[10px] text-muted-foreground font-medium">
               {day}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-1 min-w-[420px]">
           {calendarData.length > 0 && Array(calendarData[0].dayOfWeek).fill(null).map((_, i) => (
             <div key={`empty-${i}`} className="aspect-square" />
           ))}
@@ -603,6 +606,7 @@ function EarningsCalendarHeatmap({ sales }: { sales?: AffiliateSale[] }) {
               )}
             </motion.div>
           ))}
+        </div>
         </div>
         <div className="flex items-center justify-end gap-1 mt-3 text-[10px] text-muted-foreground">
           <span>Less</span>
@@ -1682,7 +1686,7 @@ export default function AffiliateDashboard() {
                           value={payoutMethod || affiliate.payoutMethod || "paypal"}
                           onValueChange={setPayoutMethod}
                         >
-                          <SelectTrigger id="payoutMethod" data-testid="select-payout-method">
+                          <SelectTrigger id="payoutMethod" data-testid="select-payout-method" className="min-h-[44px]">
                             <SelectValue placeholder="Select payout method" />
                           </SelectTrigger>
                           <SelectContent>

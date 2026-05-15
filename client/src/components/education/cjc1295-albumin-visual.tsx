@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Clock, Zap, Shield, Activity, TrendingUp } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 function AlbuminBindingAnimation({ isInView, showDAC }: { isInView: boolean; showDAC: boolean }) {
   return (
@@ -294,6 +295,7 @@ function HalfLifeComparison({ isInView }: { isInView: boolean }) {
 export function CJC1295AlbuminVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
   const [showDAC, setShowDAC] = useState(false);
 
   useEffect(() => {
@@ -353,7 +355,7 @@ export function CJC1295AlbuminVisual() {
               color: !showDAC ? '#ef4444' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: !showDAC ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none'
             }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={hoverCapable ? { scale: 1.02 } : {}}
             data-testid="button-no-dac"
           >
             Without DAC
@@ -367,7 +369,7 @@ export function CJC1295AlbuminVisual() {
               color: showDAC ? '#21d8ff' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showDAC ? '0 0 15px rgba(33, 216, 255, 0.3)' : 'none'
             }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={hoverCapable ? { scale: 1.02 } : {}}
             data-testid="button-with-dac"
           >
             With DAC

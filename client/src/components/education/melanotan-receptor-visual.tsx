@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Sun, Palette, Heart, Brain, Sparkles } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 interface MelanotanType {
   id: number;
@@ -214,6 +215,7 @@ function StructureComparison({ isInView }: { isInView: boolean }) {
 export function MelanotanReceptorVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
   const [activeType, setActiveType] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -307,7 +309,7 @@ export function MelanotanReceptorVisual() {
                 border: `2px solid ${activeType === mt.id ? mt.color : 'hsl(var(--foreground) / 0.1)'}`,
                 boxShadow: activeType === mt.id ? `0 0 20px ${mt.color}30` : 'none'
               }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={hoverCapable ? { scale: 1.02 } : {}}
               whileTap={{ scale: 0.98 }}
               data-testid={`mt-type-${mt.id}`}
             >

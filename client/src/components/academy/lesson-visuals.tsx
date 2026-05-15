@@ -20,6 +20,7 @@ import {
   Shield,
   FileCheck,
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 export interface HeroVisualProps {
   title: string;
@@ -148,6 +149,7 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const hoverCapable = useHoverCapable();
 
   if (layout === "horizontal") {
     return (
@@ -192,7 +194,7 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
                       borderColor: isActive ? step.color : "rgba(255,255,255,0.1)",
                       backgroundColor: isActive ? `${step.color}10` : "rgba(255,255,255,0.02)",
                     }}
-                    whileHover={{ y: -4 }}
+                    whileHover={hoverCapable ? { y: -4 } : {}}
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div
@@ -285,7 +287,7 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
                     backgroundColor: `${step.color}20`,
                     boxShadow: `0 0 20px ${step.color}20`,
                   }}
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={hoverCapable ? { scale: 1.1 } : {}}
                 >
                   <Icon className="w-6 h-6" style={{ color: step.color }} />
                 </motion.div>
@@ -541,6 +543,7 @@ export interface KnowledgeCheckProps {
 export function KnowledgeCheck({ title = "Knowledge Check", questions, onComplete }: KnowledgeCheckProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
+  const hoverCapable = useHoverCapable();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -641,7 +644,7 @@ export function KnowledgeCheck({ title = "Knowledge Check", questions, onComplet
                 key={idx}
                 onClick={() => handleAnswer(idx)}
                 disabled={showResult}
-                whileHover={!showResult ? { scale: 1.02 } : {}}
+                whileHover={!showResult && hoverCapable ? { scale: 1.02 } : {}}
                 whileTap={!showResult ? { scale: 0.98 } : {}}
                 className={`w-full text-left p-4 rounded-xl border transition-all ${
                   showCorrect

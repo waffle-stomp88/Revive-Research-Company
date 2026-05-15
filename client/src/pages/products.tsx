@@ -670,7 +670,7 @@ function ProductsComponent() {
                       variant="ghost"
                       size="icon"
                       onClick={() => setSidebarOpen(false)}
-                      className="h-8 w-8 hover:bg-white/10"
+                      className="min-h-[44px] min-w-[44px] hover:bg-white/10"
                       data-testid="button-hide-sidebar"
                     >
                       <PanelLeftClose className="h-4 w-4" />
@@ -692,7 +692,7 @@ function ProductsComponent() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px]"
                           onClick={() => setSearchQuery("")}
                         >
                           <X className="h-3 w-3" />
@@ -734,7 +734,7 @@ function ProductsComponent() {
                   {/* Peptide Groups */}
                   <Collapsible open={peptideGroupsExpanded} onOpenChange={setPeptideGroupsExpanded}>
                     <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-between px-0 h-8 hover:bg-transparent">
+                      <Button variant="ghost" className="w-full justify-between px-0 min-h-[44px] hover:bg-transparent">
                         <span className="text-sm font-medium">Peptide Groups</span>
                         {peptideGroupsExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </Button>
@@ -746,7 +746,7 @@ function ProductsComponent() {
                           <Button
                             key={group.id}
                             variant={peptideGroupFilter === group.id ? "secondary" : "ghost"}
-                            className="w-full justify-between h-8 text-sm"
+                            className="w-full justify-between min-h-[44px] text-sm"
                             onClick={() => setPeptideGroupFilter(group.id)}
                             data-testid={`filter-peptide-group-${group.id}`}
                           >
@@ -776,7 +776,7 @@ function ProductsComponent() {
                         <Button
                           key={option.value}
                           variant={stockFilter === option.value ? "secondary" : "ghost"}
-                          className="w-full justify-start h-8 text-sm"
+                          className="w-full justify-start min-h-[44px] text-sm"
                           onClick={() => setStockFilter(option.value as typeof stockFilter)}
                           data-testid={`filter-stock-${option.value}`}
                         >
@@ -825,7 +825,7 @@ function ProductsComponent() {
                         size="icon"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="h-8 w-8"
+                        className="min-h-[44px] min-w-[44px]"
                         data-testid="button-prev-page-inline"
                       >
                         <ChevronRight className="h-4 w-4 rotate-180" />
@@ -838,7 +838,7 @@ function ProductsComponent() {
                         size="icon"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="h-8 w-8"
+                        className="min-h-[44px] min-w-[44px]"
                         data-testid="button-next-page-inline"
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -850,7 +850,7 @@ function ProductsComponent() {
                   <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
                     <button
                       onClick={() => setGridColumns(2)}
-                      className={`p-1.5 rounded transition-colors ${
+                      className={`min-h-[44px] min-w-[44px] p-1.5 rounded transition-colors ${
                         gridColumns === 2
                           ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -862,7 +862,7 @@ function ProductsComponent() {
                     </button>
                     <button
                       onClick={() => setGridColumns(3)}
-                      className={`p-1.5 rounded transition-colors ${
+                      className={`min-h-[44px] min-w-[44px] p-1.5 rounded transition-colors ${
                         gridColumns === 3
                           ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -874,7 +874,7 @@ function ProductsComponent() {
                     </button>
                     <button
                       onClick={() => setGridColumns(4)}
-                      className={`p-1.5 rounded transition-colors ${
+                      className={`min-h-[44px] min-w-[44px] p-1.5 rounded transition-colors ${
                         gridColumns === 4
                           ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -891,7 +891,7 @@ function ProductsComponent() {
                 <div className="ml-auto flex items-center gap-2">
                   {/* Sort dropdown */}
                   <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                    <SelectTrigger className="w-auto min-w-[130px] h-8 text-sm" data-testid="select-sort-by">
+                    <SelectTrigger className="w-auto min-w-[130px] min-h-[44px] text-sm" data-testid="select-sort-by">
                       <SelectValue placeholder="Sort" />
                     </SelectTrigger>
                     <SelectContent>
@@ -905,7 +905,7 @@ function ProductsComponent() {
 
                   {/* Category / peptide group filter dropdown */}
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
-                    <SelectTrigger className="w-auto min-w-[160px] h-8 text-sm" data-testid="select-category-filter">
+                    <SelectTrigger className="w-auto min-w-[160px] min-h-[44px] text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1010,7 +1010,7 @@ function ProductsComponent() {
                                 {isOutOfStock && (
                                   <button
                                     onClick={(e) => handleVote(e, product.id)}
-                                    className={`absolute bottom-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-all duration-200 ${
+                                    className={`absolute bottom-2 right-2 z-20 flex items-center gap-1 px-2 py-1 min-h-[44px] min-w-[44px] rounded-full text-[10px] font-semibold tracking-wide transition-all duration-200 ${
                                       votedProducts.has(product.id)
                                         ? "bg-[#21d8ff]/25 text-[#21d8ff] border border-[#21d8ff]/50"
                                         : "bg-black/60 text-white/80 border border-white/20 hover:border-[#21d8ff]/50 hover:text-[#21d8ff]"
@@ -1129,6 +1129,7 @@ function ProductsComponent() {
                       <Button
                         variant="outline"
                         size="icon"
+                        className="min-h-[44px] min-w-[44px]"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                         data-testid="button-prev-page-bottom"
@@ -1140,6 +1141,7 @@ function ProductsComponent() {
                           key={page}
                           variant={currentPage === page ? "default" : "outline"}
                           size="icon"
+                          className="min-h-[44px] min-w-[44px]"
                           onClick={() => handlePageChange(page)}
                           data-testid={`button-page-${page}-bottom`}
                         >
@@ -1149,6 +1151,7 @@ function ProductsComponent() {
                       <Button
                         variant="outline"
                         size="icon"
+                        className="min-h-[44px] min-w-[44px]"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
                         data-testid="button-next-page-bottom"

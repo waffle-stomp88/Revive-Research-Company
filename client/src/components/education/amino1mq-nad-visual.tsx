@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Battery, Zap, Activity, Flame, TrendingUp } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 interface PathwayStep {
   id: number;
@@ -228,6 +229,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 export function Amino1MQNADVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
   const [activeStep, setActiveStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -319,7 +321,7 @@ export function Amino1MQNADVisual() {
                     border: `1.5px solid ${isActive ? step.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${step.color}30` : 'none'
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
                   whileTap={{ scale: 0.98 }}
                   data-testid={`step-${step.id}`}
                 >

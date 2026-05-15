@@ -7,6 +7,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const verificationSteps = [
   {
@@ -44,6 +45,7 @@ const verificationSteps = [
 ];
 
 export function VerificationJourney() {
+  const hoverCapable = useHoverCapable();
   return (
     <div className="relative py-8">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-0 relative">
@@ -68,10 +70,10 @@ export function VerificationJourney() {
                     backgroundColor: `${step.color}15`,
                     boxShadow: `0 0 30px ${step.color}30, 0 0 60px ${step.color}15`
                   }}
-                  whileHover={{ 
+                  whileHover={hoverCapable ? { 
                     scale: 1.1,
                     boxShadow: `0 0 40px ${step.color}50, 0 0 80px ${step.color}25`
-                  }}
+                  } : {}}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <motion.div

@@ -9,6 +9,7 @@ import {
   Award,
   FileCheck,
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const reasons = [
   {
@@ -53,6 +54,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-50px" });
   const Icon = reason.icon;
+  const hoverCapable = useHoverCapable();
 
   return (
     <motion.div
@@ -82,7 +84,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
             background: `${reason.color}15`,
             border: `1px solid ${reason.color}30`,
           }}
-          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileHover={hoverCapable ? { scale: 1.1, rotate: 5 } : {}}
           transition={{ type: "spring", stiffness: 400 }}
         >
           <Icon 
@@ -109,7 +111,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
           className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl opacity-0 md:group-hover:opacity-100"
           style={{ background: `linear-gradient(90deg, transparent, ${reason.color}, transparent)` }}
           initial={{ scaleX: 0 }}
-          whileHover={{ scaleX: 1 }}
+          whileHover={hoverCapable ? { scaleX: 1 } : {}}
           transition={{ duration: 0.3 }}
         />
       </div>
@@ -120,6 +122,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
 export function WhyResearchersChooseUs() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const hoverCapable = useHoverCapable();
 
   return (
     <section ref={containerRef} className="relative py-16 md:py-24 overflow-hidden">

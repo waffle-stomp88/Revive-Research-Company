@@ -830,31 +830,31 @@ export default function Dashboard() {
             <motion.div variants={itemVariants}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 gap-1 mb-6 h-auto">
-                  <TabsTrigger value="general" className="gap-2" data-testid="tab-general">
+                  <TabsTrigger value="general" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-general">
                     <Home className="h-4 w-4" />
                     <span className="hidden sm:inline">General</span>
                   </TabsTrigger>
-                  <TabsTrigger value="orders" className="gap-2" data-testid="tab-orders">
+                  <TabsTrigger value="orders" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-orders">
                     <ShoppingBag className="h-4 w-4" />
                     <span className="hidden sm:inline">Orders</span>
                   </TabsTrigger>
-                  <TabsTrigger value="stacks" className="gap-2" data-testid="tab-stacks">
+                  <TabsTrigger value="stacks" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-stacks">
                     <FlaskConical className="h-4 w-4" />
                     <span className="hidden sm:inline">Stacks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="logbook" className="gap-2" data-testid="tab-logbook">
+                  <TabsTrigger value="logbook" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-logbook">
                     <BookMarked className="h-4 w-4" />
                     <span className="hidden sm:inline">Logbook</span>
                   </TabsTrigger>
-                  <TabsTrigger value="cycles" className="gap-2" data-testid="tab-cycles">
+                  <TabsTrigger value="cycles" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-cycles">
                     <Activity className="h-4 w-4" />
                     <span className="hidden sm:inline">Cycles</span>
                   </TabsTrigger>
-                  <TabsTrigger value="education" className="gap-2" data-testid="tab-education">
+                  <TabsTrigger value="education" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-education">
                     <GraduationCap className="h-4 w-4" />
                     <span className="hidden sm:inline">Education</span>
                   </TabsTrigger>
-                  <TabsTrigger value="settings" className="gap-2" data-testid="tab-settings">
+                  <TabsTrigger value="settings" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-settings">
                     <Settings className="h-4 w-4" />
                     <span className="hidden sm:inline">Settings</span>
                   </TabsTrigger>
@@ -1268,7 +1268,7 @@ export default function Dashboard() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="shrink-0"
+                              className="shrink-0 min-h-[44px] min-w-[44px]"
                               data-testid="button-copy-grad-code"
                               onClick={() => {
                                 navigator.clipboard.writeText(graduateReward.discountCode!);
@@ -1281,7 +1281,7 @@ export default function Dashboard() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-xs shrink-0 border-[#E7FB10]/40 text-[#E7FB10]"
+                              className="text-xs shrink-0 min-h-[44px] border-[#E7FB10]/40 text-[#E7FB10]"
                               onClick={() => claimGraduateRewardMutation.mutate()}
                               disabled={claimGraduateRewardMutation.isPending}
                               data-testid="button-claim-graduate-reward"
@@ -1290,7 +1290,7 @@ export default function Dashboard() {
                             </Button>
                           ) : (
                             <Link href="/academy">
-                              <Button variant="ghost" size="sm" className="text-xs shrink-0" data-testid="button-go-academy">
+                              <Button variant="ghost" size="sm" className="text-xs shrink-0 min-h-[44px] min-w-[44px]" data-testid="button-go-academy">
                                 <ArrowRight className="h-3 w-3" />
                               </Button>
                             </Link>
@@ -1338,7 +1338,7 @@ export default function Dashboard() {
                             <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
                           ) : (
                             <Link href="/affiliate">
-                              <Button variant="ghost" size="sm" className="text-xs shrink-0" data-testid="button-apply-affiliate">
+                              <Button variant="ghost" size="sm" className="text-xs shrink-0 min-h-[44px] min-w-[44px]" data-testid="button-apply-affiliate">
                                 <ArrowRight className="h-3 w-3" />
                               </Button>
                             </Link>

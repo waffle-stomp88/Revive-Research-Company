@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Battery, Zap, Activity, Dna, Sparkles, TrendingUp } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean; activePathway: number }) {
   return (
@@ -223,6 +224,7 @@ export function NADSirtuinVisual() {
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   const visualRef = useRef<HTMLDivElement>(null);
   const visualInView = useInView(visualRef, { margin: "-20px" });
+  const hoverCapable = useHoverCapable();
   const [activePathway, setActivePathway] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -326,7 +328,7 @@ export function NADSirtuinVisual() {
                     border: `1.5px solid ${isActive ? pathway.color : 'hsl(var(--foreground) / 0.08)'}`,
                     boxShadow: isActive ? `0 0 15px ${pathway.color}30` : 'none'
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
                   data-testid={`pathway-${pathway.id}`}
                 >
                   <motion.div

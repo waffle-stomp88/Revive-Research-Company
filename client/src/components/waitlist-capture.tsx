@@ -31,6 +31,7 @@ import {
   initSiteEnterTime,
 } from "@/lib/waitlist-utils";
 import { trackEvent } from "@/lib/analytics";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
 
@@ -363,6 +364,7 @@ function PreLaunchState({
   handleClose: () => void;
 }) {
   const isMobile = useIsMobile();
+  const hoverCapable = useHoverCapable();
 
   return (
     <Card className="relative overflow-hidden border-0 bg-[#0a0a0e]" style={{ transform: "translateZ(0)", willChange: "transform" }}>
@@ -572,7 +574,7 @@ function PreLaunchState({
                   "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
                 ],
               }}
-              whileHover={{ scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" }}
+              whileHover={hoverCapable ? { scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" } : {}}
               whileTap={{ scale: 1.0 }}
               className="rounded-md cursor-pointer"
             >
@@ -621,6 +623,7 @@ export function ExitIntentPopup() {
     initSiteEnterTime();
   }, []);
 
+  const hoverCapable = useHoverCapable();
   const handleClose = useCallback(() => {
     setVisible(false);
     suppressExitPopup();
@@ -771,7 +774,7 @@ export function ExitIntentPopup() {
                             "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
                           ],
                         }}
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" }}
+                        whileHover={hoverCapable ? { scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" } : {}}
                         whileTap={{ scale: 1.0 }}
                         className="rounded-md cursor-pointer"
                       >

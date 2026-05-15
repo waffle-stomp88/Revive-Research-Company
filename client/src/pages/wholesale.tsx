@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const wholesaleFormSchema = z.object({
   businessName: z.string().min(2, "Business name is required"),
@@ -234,6 +235,7 @@ export default function Wholesale() {
     },
   });
 
+  const hoverCapable = useHoverCapable();
   const submitMutation = useMutation({
     mutationFn: async (data: WholesaleFormData) => {
       return apiRequest("POST", "/api/contact", {
@@ -453,10 +455,10 @@ export default function Wholesale() {
                       backgroundColor: `${tier.color}15`,
                       border: `2px solid ${tier.color}40`
                     }}
-                    whileHover={{ 
+                    whileHover={hoverCapable ? { 
                       scale: 1.1,
                       borderColor: tier.color
-                    }}
+                    } : {}}
                     animate={{
                       boxShadow: [
                         `0 0 0 0 ${tier.color}00`,

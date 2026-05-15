@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Brain, Heart, Dna, Activity, Droplets } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 interface B12Phase {
   id: number;
@@ -295,6 +296,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
 export function B12MethylationVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
   const [activePhase, setActivePhase] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -386,7 +388,7 @@ export function B12MethylationVisual() {
                     border: `1.5px solid ${isActive ? phase.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${phase.color}30` : 'none'
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
                   whileTap={{ scale: 0.98 }}
                   data-testid={`phase-${phase.id}`}
                 >

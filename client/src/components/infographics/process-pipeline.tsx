@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Play
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const pipelineSteps = [
   {
@@ -66,6 +67,7 @@ export function ProcessPipeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const hoverCapable = useHoverCapable();
 
   return (
     <div ref={containerRef} className="relative py-8">
@@ -123,7 +125,7 @@ export function ProcessPipeline() {
                   borderColor: isActive ? step.color : 'hsl(var(--foreground) / 0.1)',
                   boxShadow: isActive ? `0 0 30px ${step.color}30` : 'none'
                 }}
-                whileHover={{ y: -5 }}
+                whileHover={hoverCapable ? { y: -5 } : {}}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <motion.div
@@ -234,6 +236,7 @@ export function ProcessPipeline() {
 export function ProcessPipelineVertical() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
 
   return (
     <div ref={containerRef} className="relative">
@@ -267,7 +270,7 @@ export function ProcessPipelineVertical() {
                   backgroundColor: `${step.color}20`,
                   boxShadow: `0 0 20px ${step.color}30`
                 }}
-                whileHover={{ scale: 1.1 }}
+                whileHover={hoverCapable ? { scale: 1.1 } : {}}
               >
                 <Icon className="h-7 w-7" style={{ color: step.color }} />
                 <motion.div

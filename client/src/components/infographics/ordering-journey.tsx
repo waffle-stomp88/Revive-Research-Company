@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Clock
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const journeySteps = [
   {
@@ -81,6 +82,7 @@ const journeySteps = [
 export function OrderingJourney() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const hoverCapable = useHoverCapable();
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
   return (
@@ -157,7 +159,7 @@ export function OrderingJourney() {
                       borderColor: isActive ? step.color : 'hsl(var(--foreground) / 0.1)',
                       boxShadow: isActive ? `0 0 30px ${step.color}40, inset 0 0 20px ${step.color}10` : 'none'
                     }}
-                    whileHover={{ x: 10, scale: 1.02 }}
+                    whileHover={hoverCapable ? { x: 10, scale: 1.02 } : {}}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     {/* Background glow */}

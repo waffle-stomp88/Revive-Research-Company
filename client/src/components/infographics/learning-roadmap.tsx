@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Play
 } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 const courseModules = [
   {
@@ -74,6 +75,7 @@ interface LearningRoadmapProps {
 export function LearningRoadmap({ onModuleClick, completedModules = [] }: LearningRoadmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const hoverCapable = useHoverCapable();
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
   return (
@@ -138,7 +140,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                     ? `0 0 25px ${module.color}40, 0 0 50px ${module.color}20` 
                     : `0 0 15px ${module.color}20`,
                 }}
-                whileHover={{ y: -5 }}
+                whileHover={hoverCapable ? { y: -5 } : {}}
                 onClick={() => onModuleClick?.(module.slug)}
               >
                 <motion.div

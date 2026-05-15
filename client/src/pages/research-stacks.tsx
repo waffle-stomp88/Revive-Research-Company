@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "wouter";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -1888,6 +1889,7 @@ function GuidanceAccordion({ autoOpen, selectedCount, children }: { autoOpen: st
 }
 
 function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied, knownStacks = KNOWN_STACKS }: CustomStackBuilderProps) {
+  const hoverCapable = useHoverCapable();
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
   const [stackName, setStackName] = useState("");
   const [isPublicStack, setIsPublicStack] = useState(true);
@@ -2249,7 +2251,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     return (
                       <motion.button
                         key={product.id}
-                        whileHover={{ scale: isDisabled ? 1 : 1.01 }}
+                        whileHover={hoverCapable ? { scale: isDisabled ? 1 : 1.01 } : {}}
                         whileTap={{ scale: isDisabled ? 1 : 0.99 }}
                         onClick={() => !isDisabled && togglePeptide(product)}
                         disabled={isDisabled}
@@ -2355,7 +2357,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               }}
                               transition={{ duration: 0.8, ease: "easeOut" }}
                               style={{
-                                filter: knownStack ? `drop-shadow(0 0 8px ${knownStack.color})` : undefined
+                                filter: knownStack ? `drop-shadow(0 0 8px ${knownStack.color})` : undefined,
+                                willChange: "transform"
                               }}
                             />
                           </svg>
@@ -2454,7 +2457,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                   window.dispatchEvent(new CustomEvent("pathway-overlap-highlight"));
                                 }
                               }}
-                              className="mt-2 inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30 hover-elevate active-elevate-2"
+                              className="mt-2 inline-flex items-center gap-1 rounded px-2 py-0.5 min-h-[44px] text-[11px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30 hover-elevate active-elevate-2"
                               data-testid="chip-overlap-cue"
                             >
                               <span>
@@ -2497,7 +2500,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             return (
                               <motion.button
                                 key={starter.goal}
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={hoverCapable ? { scale: 1.02 } : {}}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
                                   if (matchingProduct) {
@@ -2764,6 +2767,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         <Button
                                           size="icon"
                                           variant="ghost"
+                                          className="min-h-[44px] min-w-[44px]"
                                           onClick={() => {
                                             if (products) {
                                               const matchedPeptides = (stack.peptideIds || [])
@@ -2780,6 +2784,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         <Button
                                           size="icon"
                                           variant="ghost"
+                                          className="min-h-[44px] min-w-[44px]"
                                           onClick={() => {
                                             const url = `${window.location.origin}/research-stacks?share=${stack.shareCode}`;
                                             navigator.clipboard.writeText(url);
@@ -2792,7 +2797,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         <Button
                                           size="icon"
                                           variant="ghost"
-                                          className="text-red-400 hover:text-red-300"
+                                          className="min-h-[44px] min-w-[44px] text-red-400 hover:text-red-300"
                                           onClick={() => deleteStackMutation.mutate(stack.id)}
                                           data-testid={`button-delete-stack-${stack.id}`}
                                         >
@@ -3105,6 +3110,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           className="fixed bottom-16 md:bottom-0 left-0 right-0 z-[51] border-t border-[#21d8ff]/30 bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_-4px_30px_rgba(33,216,255,0.1)]"
+          style={{ willChange: "transform" }}
           data-testid="sticky-cart-bar"
         >
           {/* Collapsed bar */}
@@ -3256,6 +3262,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                   <Button
                                     size="icon"
                                     variant="ghost"
+                                    className="min-h-[44px] min-w-[44px]"
                                     onClick={() => togglePeptide(peptide)}
                                     data-testid={`button-remove-peptide-${peptide.id}`}
                                   >
@@ -3403,6 +3410,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         <p className="text-sm font-medium text-white">Public link</p>
                                         <p className="text-xs text-muted-foreground">Anyone with the link can view this stack</p>
                                       </div>
+                                      <div className="flex items-center justify-center min-h-[44px] min-w-[44px]">
                                       <button
                                         type="button"
                                         role="switch"
@@ -3413,6 +3421,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                       >
                                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPublicStack ? "translate-x-6" : "translate-x-1"}`} />
                                       </button>
+                                    </div>
                                     </div>
                                     <Button
                                       onClick={() => {
@@ -3466,7 +3475,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Share Stack</p>
                                         </div>
                                         <button
-                                          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/80 hover-elevate text-left"
+                                          className="flex items-center gap-3 w-full px-3 py-2.5 min-h-[44px] text-sm text-white/80 hover-elevate text-left"
                                           onClick={() => {
                                             navigator.clipboard.writeText(`${stackText}\n${stackUrl}`);
                                             toast({ title: "Copied to clipboard!" });
@@ -3478,7 +3487,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           Copy Link
                                         </button>
                                         <button
-                                          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/80 hover-elevate text-left"
+                                          className="flex items-center gap-3 w-full px-3 py-2.5 min-h-[44px] text-sm text-white/80 hover-elevate text-left"
                                           onClick={() => {
                                             window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank', 'noopener');
                                             setShowShareMenu(false);
@@ -3489,7 +3498,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           Share on X
                                         </button>
                                         <button
-                                          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/80 hover-elevate text-left"
+                                          className="flex items-center gap-3 w-full px-3 py-2.5 min-h-[44px] text-sm text-white/80 hover-elevate text-left"
                                           onClick={() => {
                                             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`, '_blank', 'noopener');
                                             setShowShareMenu(false);
@@ -3500,7 +3509,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           Facebook
                                         </button>
                                         <button
-                                          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/80 hover-elevate text-left"
+                                          className="flex items-center gap-3 w-full px-3 py-2.5 min-h-[44px] text-sm text-white/80 hover-elevate text-left"
                                           onClick={() => {
                                             window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank', 'noopener');
                                             setShowShareMenu(false);
@@ -3544,6 +3553,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 // ─────────────────────────────────────────────────────────────────────────────
 
 function ResearchStacks() {
+  const hoverCapable = useHoverCapable();
   const [activeTab, setActiveTab] = useState<StackTab>("pre-built");
   const [activeCategory, setActiveCategory] = useState<StackCategory | "All">("All");
   const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
@@ -3706,7 +3716,7 @@ function ResearchStacks() {
           <div className="inline-flex p-1 rounded-xl bg-[#1a1a1f] border border-[#2a2a32]">
             <button
               onClick={() => setActiveTab("pre-built")}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
+              className={`px-6 py-2.5 min-h-[44px] rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === "pre-built"
                   ? "bg-[#a855f7] text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                   : "text-muted-foreground hover:text-white"
@@ -3718,7 +3728,7 @@ function ResearchStacks() {
             </button>
             <button
               onClick={() => setActiveTab("custom")}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
+              className={`px-6 py-2.5 min-h-[44px] rounded-lg font-medium text-sm transition-all duration-200 ${
                 activeTab === "custom"
                   ? "bg-[#21d8ff] text-black shadow-[0_0_20px_rgba(33,216,255,0.4)]"
                   : "text-muted-foreground hover:text-white"
@@ -3792,7 +3802,7 @@ function ResearchStacks() {
                       </Button>
                       <button
                         onClick={() => setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks?tab=custom")}`)}
-                        className="text-sm text-[#21d8ff] hover:text-[#21d8ff]/80 font-medium transition-colors"
+                        className="text-sm text-[#21d8ff] hover:text-[#21d8ff]/80 font-medium transition-colors min-h-[44px] w-full"
                         data-testid="button-synergy-gate-signin"
                       >
                         Already a researcher? Sign in
@@ -3821,7 +3831,7 @@ function ResearchStacks() {
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
                       data-testid={`filter-category-${cat.toLowerCase().replace(" ", "-")}`}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                      className={`px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
                         isActive
                           ? "text-white"
                           : "bg-[#1a1a1f] border border-[#2a2a32] text-muted-foreground hover:text-white"
@@ -3872,16 +3882,16 @@ function ResearchStacks() {
               >
                 <Link href={`/research-stacks/${stack.id}`}>
                   <motion.div
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={hoverCapable ? { scale: 1.02 } : {}}
                     transition={{ type: "tween", duration: 0.15 }}
                     className="group"
                   >
                   <motion.div
                     initial={{ borderColor: "#2a2a32", boxShadow: "none" }}
-                    whileHover={{ 
+                    whileHover={hoverCapable ? { 
                       borderColor: stack.color,
                       boxShadow: `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40`
-                    }}
+                    } : {}}
                     transition={{ duration: 0.2, type: "tween" }}
                     className="border-2 rounded-lg"
                     data-testid={`card-stack-${stack.id}`}
@@ -3902,7 +3912,7 @@ function ResearchStacks() {
                     <div className="relative h-28 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                       <motion.div
                         initial={{ opacity: 0.2 }}
-                        whileHover={{ opacity: 0.4 }}
+                        whileHover={hoverCapable ? { opacity: 0.4 } : {}}
                         transition={{ duration: 0.2, type: "tween" }}
                         className="absolute inset-0"
                         style={{
@@ -3911,10 +3921,10 @@ function ResearchStacks() {
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <motion.div
-                          whileHover={{
+                          whileHover={hoverCapable ? {
                             scale: 1.05,
                             rotate: 3,
-                          }}
+                          } : {}}
                           transition={{ duration: 0.15, type: "tween" }}
                           className="relative pointer-events-auto"
                         >

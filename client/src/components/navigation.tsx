@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { Link, useLocation } from "wouter";
 import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ const resourceLinks = [
 
 
 export function Navigation() {
+  const hoverCapable = useHoverCapable();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -108,6 +110,7 @@ export function Navigation() {
           top: 'var(--banner-height, 36px)',
           WebkitTransform: 'translateZ(0)',
           transform: 'translateZ(0)',
+          willChange: 'transform',
         }}
       >
         <div className={`transition-all duration-300 ${
@@ -119,7 +122,7 @@ export function Navigation() {
             <div className="flex items-center justify-between h-14 md:h-16 min-w-0">
               <Link href="/" data-testid="link-home-logo" className="flex-shrink-0" onClick={() => window.scrollTo(0, 0)}>
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
                   whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-3"
                 >
@@ -139,7 +142,7 @@ export function Navigation() {
                     <Link key={link.href} href={link.href} onClick={() => window.scrollTo(0, 0)}>
                       <motion.div
                         className="relative px-4 py-2 rounded-md group"
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={hoverCapable ? { scale: 1.05 } : {}}
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
@@ -190,7 +193,7 @@ export function Navigation() {
                         <motion.div
                           className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                           style={{ backgroundColor: `${color}0d` }}
-                          whileHover={{ opacity: 1 }}
+                          whileHover={hoverCapable ? { opacity: 1 } : {}}
                         />
                       </motion.div>
                     </Link>

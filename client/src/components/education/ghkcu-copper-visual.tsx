@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Atom, Sparkles, Dna, Shield, Zap, Activity } from "lucide-react";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 
 function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; activeGene: number }) {
   const geneColors = ['#f97316', '#E7FB10', '#21d8ff', '#ec4899'];
@@ -286,6 +287,7 @@ function GeneExpressionBar({ category, isActive, progress }: {
   progress: number;
 }) {
   const Icon = category.icon;
+  const hoverCapable = useHoverCapable();
   
   return (
     <motion.div
@@ -294,7 +296,7 @@ function GeneExpressionBar({ category, isActive, progress }: {
         backgroundColor: isActive ? `${category.color}15` : 'hsl(var(--foreground) / 0.02)',
         border: `1px solid ${isActive ? category.color : 'hsl(var(--foreground) / 0.05)'}`,
       }}
-      whileHover={{ scale: 1.01 }}
+      whileHover={hoverCapable ? { scale: 1.01 } : {}}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">

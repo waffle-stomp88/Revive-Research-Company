@@ -1,4 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -394,6 +395,7 @@ function EducationTeaser() {
 }
 
 function CTASection() {
+  const hoverCapable = useHoverCapable();
   return (
     <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
       <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
@@ -412,7 +414,7 @@ function CTASection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/peptides">
               <motion.div
-                whileHover={{ scale: 1.05 }}
+                whileHover={hoverCapable ? { scale: 1.05 } : {}}
                 whileTap={{ scale: 0.95 }}
               >
                 <Button 
@@ -426,7 +428,7 @@ function CTASection() {
             </Link>
             <Link href="/affiliate">
               <motion.div
-                whileHover={{ scale: 1.05 }}
+                whileHover={hoverCapable ? { scale: 1.05 } : {}}
                 whileTap={{ scale: 0.95 }}
               >
                 <Button 
