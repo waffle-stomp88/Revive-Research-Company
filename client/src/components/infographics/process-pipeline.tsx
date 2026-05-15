@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Play
 } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const pipelineSteps = [
   {
@@ -125,7 +125,7 @@ export function ProcessPipeline() {
                   borderColor: isActive ? step.color : 'hsl(var(--foreground) / 0.1)',
                   boxShadow: isActive ? `0 0 30px ${step.color}30` : 'none'
                 }}
-                whileHover={hoverCapable ? { y: -5 } : {}}
+                whileHover={hoverIf(hoverCapable, { y: -5 })}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <motion.div
@@ -270,7 +270,7 @@ export function ProcessPipelineVertical() {
                   backgroundColor: `${step.color}20`,
                   boxShadow: `0 0 20px ${step.color}30`
                 }}
-                whileHover={hoverCapable ? { scale: 1.1 } : {}}
+                whileHover={hoverIf(hoverCapable, { scale: 1.1 })}
               >
                 <Icon className="h-7 w-7" style={{ color: step.color }} />
                 <motion.div

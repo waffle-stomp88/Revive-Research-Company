@@ -8,7 +8,7 @@ import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -211,7 +211,7 @@ export default function AffiliatePage() {
             className="flex flex-col sm:flex-row gap-3 justify-center"
           >
             <motion.div
-              whileHover={hoverCapable ? { scale: 1.08 } : {}}
+              whileHover={hoverIf(hoverCapable, { scale: 1.08 })}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               <Button

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { Link, useLocation } from "wouter";
 import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -122,7 +122,7 @@ export function Navigation() {
             <div className="flex items-center justify-between h-14 md:h-16 min-w-0">
               <Link href="/" data-testid="link-home-logo" className="flex-shrink-0" onClick={() => window.scrollTo(0, 0)}>
                 <motion.div
-                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                   whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-3"
                 >
@@ -142,7 +142,7 @@ export function Navigation() {
                     <Link key={link.href} href={link.href} onClick={() => window.scrollTo(0, 0)}>
                       <motion.div
                         className="relative px-4 py-2 rounded-md group"
-                        whileHover={hoverCapable ? { scale: 1.05 } : {}}
+                        whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
@@ -193,7 +193,7 @@ export function Navigation() {
                         <motion.div
                           className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                           style={{ backgroundColor: `${color}0d` }}
-                          whileHover={hoverCapable ? { opacity: 1 } : {}}
+                          whileHover={hoverIf(hoverCapable, { opacity: 1 })}
                         />
                       </motion.div>
                     </Link>

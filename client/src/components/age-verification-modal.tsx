@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Shield, AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
 
@@ -107,7 +107,7 @@ export function AgeVerificationModal() {
                 <motion.div 
                   className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all w-full"
                   style={{ background: 'rgba(157, 78, 221, 0.05)', border: '1px solid rgba(157, 78, 221, 0.2)' }}
-                  whileHover={hoverCapable ? { background: 'rgba(157, 78, 221, 0.1)', boxShadow: '0 0 15px rgba(157, 78, 221, 0.3)' } : {}}
+                  whileHover={hoverIf(hoverCapable, { background: 'rgba(157, 78, 221, 0.1)', boxShadow: '0 0 15px rgba(157, 78, 221, 0.3)' })}
                   onClick={() => setAgreed(!agreed)}
                   data-testid="button-age-terms"
                 >
@@ -129,7 +129,7 @@ export function AgeVerificationModal() {
 
               <div className="flex flex-col gap-2 mt-4 sm:mt-8">
                 <motion.div
-                  whileHover={agreed && hoverCapable ? { scale: 1.05, y: -2 } : {}}
+                  whileHover={hoverIf(agreed && hoverCapable, { scale: 1.05, y: -2 })}
                   whileTap={agreed ? { scale: 0.98 } : {}}
                   transition={{ duration: 0.2 }}
                 >

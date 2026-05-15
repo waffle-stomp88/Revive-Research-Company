@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Battery, Zap, Activity, Flame, TrendingUp } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 interface PathwayStep {
   id: number;
@@ -321,7 +321,7 @@ export function Amino1MQNADVisual() {
                     border: `1.5px solid ${isActive ? step.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${step.color}30` : 'none'
                   }}
-                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                   whileTap={{ scale: 0.98 }}
                   data-testid={`step-${step.id}`}
                 >

@@ -15,7 +15,7 @@ import {
   TrendingUp
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const synergyTiers = [
   { 
@@ -235,7 +235,7 @@ export function StackBuilderTeaser() {
           <Link href="/research-stacks?tab=custom" onClick={() => trackEvent('stack_builder_cta_click', 'engagement', 'homepage')} data-testid="link-build-stack">
             <motion.div 
               className="inline-block relative"
-              whileHover={hoverCapable ? { scale: 1.05 } : {}}
+              whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >

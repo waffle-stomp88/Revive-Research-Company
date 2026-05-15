@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { FileCheck, GraduationCap, Scale, BookOpen, ArrowRight, Shield, HelpCircle, Activity } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const resources = [
   {
@@ -107,7 +107,7 @@ export default function ResourcesHub() {
                 >
                   <Link href={resource.href} onClick={() => window.scrollTo(0, 0)}>
                     <motion.div
-                      whileHover={hoverCapable ? { scale: 1.04 } : {}}
+                      whileHover={hoverIf(hoverCapable, { scale: 1.04 })}
                       transition={{ type: "spring", stiffness: 400, damping: 10 }}
                       className="h-full group"
                     >
@@ -126,7 +126,7 @@ export default function ResourcesHub() {
                         <div className="relative z-10 flex items-start gap-4 mb-3">
                           <motion.div 
                             className="p-3 rounded-lg"
-                            whileHover={hoverCapable ? { scale: 1.15 } : {}}
+                            whileHover={hoverIf(hoverCapable, { scale: 1.15 })}
                             transition={{ type: "spring", stiffness: 400, damping: 10 }}
                             style={{ backgroundColor: `${resource.color}20` }}
                           >

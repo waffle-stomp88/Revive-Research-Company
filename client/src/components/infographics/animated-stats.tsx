@@ -10,7 +10,7 @@ import {
   Package,
   CheckCircle2
 } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 interface AnimatedCounterProps {
   value: number;
@@ -188,7 +188,7 @@ export function AnimatedTrustStats() {
                   <motion.div
                     className="w-[100px] h-[100px] rounded-full flex items-center justify-center"
                     style={{ backgroundColor: `${stat.color}15` }}
-                    whileHover={hoverCapable ? { scale: 1.05 } : {}}
+                    whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
                     initial={{ scale: 0.8, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
@@ -257,7 +257,7 @@ export function CompanyStats() {
             <motion.div
               className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
               style={{ backgroundColor: `${stat.color}15` }}
-              whileHover={hoverCapable ? { scale: 1.1, rotate: 5 } : {}}
+              whileHover={hoverIf(hoverCapable, { scale: 1.1, rotate: 5 })}
             >
               <Icon className="h-7 w-7" style={{ color: stat.color }} />
             </motion.div>

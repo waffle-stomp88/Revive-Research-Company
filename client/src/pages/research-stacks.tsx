@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "wouter";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -2251,7 +2251,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     return (
                       <motion.button
                         key={product.id}
-                        whileHover={hoverCapable ? { scale: isDisabled ? 1 : 1.01 } : {}}
+                        whileHover={hoverIf(hoverCapable, { scale: isDisabled ? 1 : 1.01 })}
                         whileTap={{ scale: isDisabled ? 1 : 0.99 }}
                         onClick={() => !isDisabled && togglePeptide(product)}
                         disabled={isDisabled}
@@ -2500,7 +2500,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             return (
                               <motion.button
                                 key={starter.goal}
-                                whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                                whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
                                   if (matchingProduct) {
@@ -3882,16 +3882,13 @@ function ResearchStacks() {
               >
                 <Link href={`/research-stacks/${stack.id}`}>
                   <motion.div
-                    whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                    whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                     transition={{ type: "tween", duration: 0.15 }}
                     className="group"
                   >
                   <motion.div
                     initial={{ borderColor: "#2a2a32", boxShadow: "none" }}
-                    whileHover={hoverCapable ? { 
-                      borderColor: stack.color,
-                      boxShadow: `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40`
-                    } : {}}
+                    whileHover={hoverIf(hoverCapable, { borderColor: stack.color, boxShadow: `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` })}
                     transition={{ duration: 0.2, type: "tween" }}
                     className="border-2 rounded-lg"
                     data-testid={`card-stack-${stack.id}`}
@@ -3912,7 +3909,7 @@ function ResearchStacks() {
                     <div className="relative h-28 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                       <motion.div
                         initial={{ opacity: 0.2 }}
-                        whileHover={hoverCapable ? { opacity: 0.4 } : {}}
+                        whileHover={hoverIf(hoverCapable, { opacity: 0.4 })}
                         transition={{ duration: 0.2, type: "tween" }}
                         className="absolute inset-0"
                         style={{
@@ -3921,10 +3918,7 @@ function ResearchStacks() {
                       />
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <motion.div
-                          whileHover={hoverCapable ? {
-                            scale: 1.05,
-                            rotate: 3,
-                          } : {}}
+                          whileHover={hoverIf(hoverCapable, { scale: 1.05, rotate: 3 })}
                           transition={{ duration: 0.15, type: "tween" }}
                           className="relative pointer-events-auto"
                         >

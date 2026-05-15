@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Activity, Zap, TrendingUp, AlertCircle, Check } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'tesamorelin' | 'direct' }) {
   const isPulsatile = mode === 'tesamorelin';
@@ -233,7 +233,7 @@ export function TesomorelinPulseVisual() {
               color: activeMode === 'tesamorelin' ? '#ec4899' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: activeMode === 'tesamorelin' ? '0 0 15px rgba(236, 72, 153, 0.3)' : 'none'
             }}
-            whileHover={hoverCapable ? { scale: 1.02 } : {}}
+            whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-tesamorelin"
           >
             Tesamorelin (Pulsatile)
@@ -247,7 +247,7 @@ export function TesomorelinPulseVisual() {
               color: activeMode === 'direct' ? '#f97316' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: activeMode === 'direct' ? '0 0 15px rgba(249, 115, 22, 0.3)' : 'none'
             }}
-            whileHover={hoverCapable ? { scale: 1.02 } : {}}
+            whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-direct-gh"
           >
             Direct GH (Constant)

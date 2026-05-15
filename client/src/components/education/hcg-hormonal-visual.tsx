@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Activity, Zap, TrendingUp, ArrowRight, Brain } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function HormonalAxisAnimation({ isInView, isActive }: { isInView: boolean; isActive: boolean }) {
   return (
@@ -288,7 +288,7 @@ export function HCGHormonalVisual() {
               color: showHCG ? '#ec4899' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showHCG ? '0 0 15px rgba(236, 72, 153, 0.3)' : 'none'
             }}
-            whileHover={hoverCapable ? { scale: 1.02 } : {}}
+            whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-toggle-hcg"
           >
             {showHCG ? '✓ HCG Active' : 'Show HCG Mechanism'}

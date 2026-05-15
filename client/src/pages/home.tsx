@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -414,7 +414,7 @@ function CTASection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/peptides">
               <motion.div
-                whileHover={hoverCapable ? { scale: 1.05 } : {}}
+                whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
                 whileTap={{ scale: 0.95 }}
               >
                 <Button 
@@ -428,7 +428,7 @@ function CTASection() {
             </Link>
             <Link href="/affiliate">
               <motion.div
-                whileHover={hoverCapable ? { scale: 1.05 } : {}}
+                whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
                 whileTap={{ scale: 0.95 }}
               >
                 <Button 

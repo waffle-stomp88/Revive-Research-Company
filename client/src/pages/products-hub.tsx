@@ -17,7 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -129,11 +129,7 @@ export default function ProductsHub() {
                 className="block p-6 cursor-pointer border-2 group rounded-lg bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 style={{ borderColor: `${category.color}40` }}
                 data-testid={`link-category-${category.label.toLowerCase().replace(/ /g, "-")}`}
-                whileHover={hoverCapable ? { 
-                  scale: 1.02,
-                  boxShadow: `0 0 30px ${category.color}40, 0 0 60px ${category.color}20, inset 0 0 20px ${category.color}10`,
-                  borderColor: `${category.color}80`,
-                } : {}}
+                whileHover={hoverIf(hoverCapable, { scale: 1.02, boxShadow: `0 0 30px ${category.color}40, 0 0 60px ${category.color}20, inset 0 0 20px ${category.color}10`, borderColor: `${category.color}80` })}
                 transition={{ duration: 0.3 }}
               >
                 <div className="flex items-start gap-4">

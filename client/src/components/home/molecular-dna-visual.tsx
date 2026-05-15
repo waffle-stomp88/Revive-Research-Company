@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Dna, Atom, FlaskConical } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function FloatingMolecule({ delay, x, size, color }: { delay: number; x: string; size: number; color: string }) {
   return (
@@ -284,7 +284,7 @@ export function MolecularDNAVisual() {
                     ease: "easeInOut",
                     delay: index * 0.4
                   }}
-                  whileHover={hoverCapable ? { scale: 1.1, boxShadow: `0 0 50px ${item.color}50` } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.1, boxShadow: `0 0 50px ${item.color}50` })}
                 >
                   <motion.div
                     animate={{ rotate: index === 1 ? [0, 360] : 0 }}

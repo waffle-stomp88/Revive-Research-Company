@@ -10,7 +10,7 @@ import {
   CircleDot,
   Atom
 } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 // Mitochondrial DNA Strand Visualization
 function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
@@ -305,7 +305,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
                         ? `0 0 25px ${pathway.color}80, inset 0 0 15px ${pathway.color}40` 
                         : `0 0 15px ${pathway.color}40`
                     }}
-                    whileHover={hoverCapable ? { scale: 1.15, boxShadow: `0 0 30px ${pathway.color}` } : {}}
+                    whileHover={hoverIf(hoverCapable, { scale: 1.15, boxShadow: `0 0 30px ${pathway.color}` })}
                     animate={isActive ? { scale: 1.1 } : {}}
                   >
                     <Icon className="h-6 w-6" style={{ color: pathway.color, filter: `drop-shadow(0 0 4px ${pathway.color})` }} />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -2272,7 +2272,7 @@ export default function ProductDetail() {
                         <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
                           <motion.div
                             className="inline-block relative"
-                            whileHover={hoverCapable ? { scale: 1.05 } : {}}
+                            whileHover={hoverIf(hoverCapable, { scale: 1.05 })}
                             whileTap={{ scale: 0.98 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
                           >

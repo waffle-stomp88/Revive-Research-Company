@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const COMMON_VIAL_STRENGTHS = [
   { value: "5", label: "5mg" },
@@ -787,7 +787,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
   return (
     <motion.div 
       className="relative group"
-      whileHover={hoverCapable ? { y: -4 } : {}}
+      whileHover={hoverIf(hoverCapable, { y: -4 })}
       transition={{ duration: 0.2 }}
     >
       <div 

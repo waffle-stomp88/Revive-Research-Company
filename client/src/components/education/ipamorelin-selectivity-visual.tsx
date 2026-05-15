@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Target, Check, X, Zap, Shield, Activity, Brain } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolean; showIpamorelin: boolean }) {
   const receptors = [
@@ -318,7 +318,7 @@ export function IpamorelinSelectivityVisual() {
               color: showIpamorelin ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showIpamorelin ? '0 0 15px rgba(231, 251, 16, 0.3)' : 'none'
             }}
-            whileHover={hoverCapable ? { scale: 1.02 } : {}}
+            whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-ipamorelin"
           >
             Ipamorelin (Selective)
@@ -332,7 +332,7 @@ export function IpamorelinSelectivityVisual() {
               color: !showIpamorelin ? '#9d4edd' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: !showIpamorelin ? '0 0 15px rgba(157, 78, 221, 0.3)' : 'none'
             }}
-            whileHover={hoverCapable ? { scale: 1.02 } : {}}
+            whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-other-ghrp"
           >
             Other GHRPs

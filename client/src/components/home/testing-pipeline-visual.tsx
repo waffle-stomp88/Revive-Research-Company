@@ -10,7 +10,7 @@ import {
   Sparkles,
   X
 } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const pipelineSteps = [
   {
@@ -194,10 +194,7 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
             scale: isActive || isExpanded ? 1.05 : 1
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          whileHover={hoverCapable ? { 
-            scale: 1.1,
-            boxShadow: `0 0 50px ${step.glowColor}`
-          } : {}}
+          whileHover={hoverIf(hoverCapable, { scale: 1.1, boxShadow: `0 0 50px ${step.glowColor}` })}
         >
           <motion.div
             animate={(isActive || isExpanded) ? { 
@@ -524,7 +521,7 @@ export function TestingPipelineVisual() {
                 setExpandedStep(null);
                 setIsPaused(false);
               }}
-              whileHover={hoverCapable ? { scale: 1.3 } : {}}
+              whileHover={hoverIf(hoverCapable, { scale: 1.3 })}
               data-testid={`pipeline-step-indicator-${index}`}
             />
           ))}

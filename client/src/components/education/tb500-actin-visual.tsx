@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boolean; activeMechanism: string }) {
   const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
@@ -765,7 +765,7 @@ export function TB500ActinVisual() {
                     border: `1.5px solid ${isActive ? mechanism.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 15px ${mechanism.color}30` : 'none'
                   }}
-                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                   data-testid={`mechanism-${mechanism.id}`}
                 >
                   <motion.div

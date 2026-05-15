@@ -7,7 +7,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const verificationSteps = [
   {
@@ -70,10 +70,7 @@ export function VerificationJourney() {
                     backgroundColor: `${step.color}15`,
                     boxShadow: `0 0 30px ${step.color}30, 0 0 60px ${step.color}15`
                   }}
-                  whileHover={hoverCapable ? { 
-                    scale: 1.1,
-                    boxShadow: `0 0 40px ${step.color}50, 0 0 80px ${step.color}25`
-                  } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.1, boxShadow: `0 0 40px ${step.color}50, 0 0 80px ${step.color}25` })}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <motion.div

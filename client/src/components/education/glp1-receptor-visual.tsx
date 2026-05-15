@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Target, Zap, Activity, TrendingDown, Info } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: { 
   isInView: boolean; 
@@ -301,7 +301,7 @@ export function GLP1ReceptorVisual() {
                 color: activePeptide.id === peptide.id ? peptide.color : 'hsl(var(--foreground) / 0.5)',
                 boxShadow: activePeptide.id === peptide.id ? `0 0 15px ${peptide.color}30` : 'none'
               }}
-              whileHover={hoverCapable ? { scale: 1.02 } : {}}
+              whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
               data-testid={`peptide-${peptide.id}`}
             >
               {peptide.name}

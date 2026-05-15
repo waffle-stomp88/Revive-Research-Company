@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -298,7 +298,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                       key={badge.id}
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                      whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                       className="relative p-3 rounded-lg transition-all"
                       style={badge.earned ? badgeStyles : {
                         background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,

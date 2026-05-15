@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Brain, Zap, Activity, Sparkles, TrendingUp } from "lucide-react";
-import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function NeuralSynapseAnimation({ isInView, activeFactor }: { isInView: boolean; activeFactor: number }) {
   const neurotransmitters = ['#E7FB10', '#21d8ff', '#ec4899', '#9d4edd'];
@@ -360,7 +360,7 @@ export function SemaxNeuralVisual() {
                     border: `1.5px solid ${isActive ? factor.color : 'hsl(var(--foreground) / 0.08)'}`,
                     boxShadow: isActive ? `0 0 20px ${factor.color}30` : 'none'
                   }}
-                  whileHover={hoverCapable ? { scale: 1.02 } : {}}
+                  whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                   data-testid={`factor-${factor.name.toLowerCase()}`}
                 >
                   <motion.div
