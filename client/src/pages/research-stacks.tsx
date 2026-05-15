@@ -25,6 +25,7 @@ import {
   findOverlapForPair,
 } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
+import { MobileSynergySheet } from "@/components/stacks/mobile-synergy-sheet";
 import { STACK_CATEGORIES } from "@/data/research-stacks";
 import type { SynergyCopy, StackIconName, StackCategory } from "@/data/research-stacks";
 import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
@@ -1892,6 +1893,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const [isPublicStack, setIsPublicStack] = useState(true);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [cartExpanded, setCartExpanded] = useState(false);
+  const [mobileSynergySheetOpen, setMobileSynergySheetOpen] = useState(false);
   const [showSavedStacks, setShowSavedStacks] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const { addToCart } = useCart();
@@ -2038,6 +2040,11 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     }
   }, [templatePeptideNames, products, onTemplateApplied, toast]);
 
+  // Auto-close synergy sheet when cart expands to avoid z-index stacking
+  useEffect(() => {
+    if (cartExpanded) setMobileSynergySheetOpen(false);
+  }, [cartExpanded]);
+
   const togglePeptide = (product: Product) => {
     if (selectedPeptides.find(p => p.id === product.id)) {
       setSelectedPeptides(prev => prev.filter(p => p.id !== product.id));
@@ -2114,39 +2121,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </Link>
-      </div>
-      <div className="hidden md:block">
-        <PathwayMap selectedPeptides={selectedPeptides} knownStacks={knownStacks} />
-      </div>
-      <div className="md:hidden" data-testid="mobile-synergy-teaser">
-        <Card className="border-[#2a2a32] bg-[#1a1a1f]/80 overflow-hidden">
-          <div className="relative p-5">
-            <div className="absolute inset-0 opacity-[0.07]" style={{
-              backgroundImage: `radial-gradient(circle at 30% 40%, #21d8ff 0%, transparent 50%), radial-gradient(circle at 70% 60%, #E7FB10 0%, transparent 50%), radial-gradient(circle at 50% 20%, #a78bfa 0%, transparent 40%)`,
-            }} />
-            <div className="relative space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-md bg-[#22c55e]/10 border border-[#22c55e]/20 flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-[#22c55e]" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-white tracking-wide">REVIVE Synergy Engine™</h4>
-                  <p className="text-[10px] text-white/40">Proprietary Research Tool</p>
-                </div>
-              </div>
-              <p className="text-xs text-white/70 leading-relaxed">
-                See an <span className="text-[#21d8ff]">interactive pathway visualization map</span> — watch animated connections form between your selected peptides, revealing shared biological mechanisms with glowing network nodes and real-time particle effects.
-              </p>
-              <div className="flex items-center gap-2 pt-1">
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#21d8ff]/10 border border-[#21d8ff]/20">
-                  <Monitor className="h-3.5 w-3.5 text-[#21d8ff]" />
-                  <span className="text-xs font-semibold text-[#21d8ff]">Desktop Only</span>
-                </div>
-                <p className="text-[10px] text-white/40">Open on a computer to unlock this feature</p>
-              </div>
-            </div>
-          </div>
-        </Card>
       </div>
       {/* Mobile-only Goal Starters - shown above grid so new users see it first */}
       {selectedPeptides.length === 0 && products && (
@@ -2962,92 +2936,169 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
-      {/* ====== MOBILE FLOATING SYNERGY BAR ====== */}
-      <AnimatePresence>
-        {selectedPeptides.length >= 2 && !cartExpanded && (() => {
-          const peptideNames = selectedPeptides.map(p => p.name);
-          const synergyScore = calculateSynergyScore(peptideNames, knownStacks);
-          const knownStack = checkKnownStack(peptideNames, knownStacks);
-          const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
-          const sharedPathways = findSharedPathways(peptideNames);
-          return (
-            <motion.div
-              initial={{ y: 60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 60, opacity: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="lg:hidden fixed bottom-[120px] md:bottom-[56px] left-2 right-2 z-[52] rounded-xl border bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-              style={{ borderColor: `${synergyColor}40` }}
-              data-testid="mobile-synergy-bar"
-            >
-              <div className="flex items-center gap-3 px-3 py-2">
-                {/* Mini Synergy Ring */}
-                <div className="relative w-11 h-11 flex-shrink-0">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2a32" strokeWidth="8" />
-                    <motion.circle
-                      cx="50" cy="50" r="42" fill="none"
-                      stroke={synergyColor}
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      initial={{ strokeDasharray: "0 264" }}
-                      animate={{ strokeDasharray: `${(synergyScore / 100) * 264} 264` }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                      style={{ filter: `drop-shadow(0 0 4px ${synergyColor}80)` }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.span
-                      key={synergyScore}
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      className="font-display text-sm font-bold"
-                      style={{ color: synergyColor }}
-                    >
-                      {synergyScore}%
-                    </motion.span>
-                  </div>
-                </div>
+      {/* ====== MOBILE SYNERGY TRIGGER PILL + BOTTOM SHEET ====== */}
+      {(() => {
+        const pillPeptideNames = selectedPeptides.map(p => p.name);
+        const pillSynergyScore = calculateSynergyScore(pillPeptideNames, knownStacks);
+        const pillKnownStack = checkKnownStack(pillPeptideNames, knownStacks);
+        const pillSynergyColor = pillKnownStack
+          ? pillKnownStack.color
+          : pillSynergyScore > 70 ? "#22c55e" : pillSynergyScore > 50 ? "#E7FB10" : "#21d8ff";
+        const pillSharedPathways = findSharedPathways(pillPeptideNames);
+        const pillActiveSystems = getActiveSystems(pillPeptideNames);
+        const pillPathwayOverlaps = detectPathwayOverlaps(
+          selectedPeptides.map(p => p.slug).filter((s): s is string => Boolean(s))
+        );
+        const pillRecommendation = getStackRecommendation(pillPeptideNames, knownStacks);
+        const pillContainedStacks = checkContainedStacks(pillPeptideNames, knownStacks);
+        const pillContainedStack = pillContainedStacks[0] || null;
 
-                {/* Stack Info */}
-                <div className="flex-1 min-w-0">
-                  {knownStack ? (
-                    <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                      <p className="font-display font-bold text-sm truncate" style={{ color: knownStack.color }}>
-                        {knownStack.name}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground truncate">{knownStack.description?.slice(0, 60)}...</p>
-                    </motion.div>
+        const pillGeneralPairings = selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products
+          ? getGeneralPairings(pillPeptideNames, products, pillRecommendation)
+          : [];
+
+        const isActive = selectedPeptides.length >= 2;
+
+        return (
+          <>
+            {/* Persistent trigger pill — always visible on mobile, tapping opens sheet */}
+            {!cartExpanded && (
+              <motion.button
+                type="button"
+                initial={{ y: 60, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                onClick={() => setMobileSynergySheetOpen(true)}
+                className="lg:hidden fixed bottom-[120px] md:bottom-[64px] left-3 right-3 z-[52] rounded-xl border bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_0_24px_rgba(0,0,0,0.5)] text-left"
+                style={{
+                  borderColor: isActive ? `${pillSynergyColor}50` : "#2a2a32",
+                  boxShadow: isActive
+                    ? `0 0 24px ${pillSynergyColor}20, 0 0 50px rgba(0,0,0,0.4)`
+                    : "0 0 20px rgba(0,0,0,0.4)",
+                }}
+                data-testid="mobile-synergy-bar"
+              >
+                <div className="flex items-center gap-3 px-3 py-2.5">
+                  {/* Mini Synergy Ring (active) or icon (idle) */}
+                  {isActive ? (
+                    <div className="relative w-10 h-10 flex-shrink-0">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2a32" strokeWidth="8" />
+                        <motion.circle
+                          cx="50" cy="50" r="42" fill="none"
+                          stroke={pillSynergyColor}
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          initial={{ strokeDasharray: "0 264" }}
+                          animate={{ strokeDasharray: `${(pillSynergyScore / 100) * 264} 264` }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          style={{ filter: `drop-shadow(0 0 4px ${pillSynergyColor}80)` }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <motion.span
+                          key={pillSynergyScore}
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="font-display text-xs font-bold"
+                          style={{ color: pillSynergyColor }}
+                        >
+                          {pillSynergyScore}%
+                        </motion.span>
+                      </div>
+                    </div>
                   ) : (
-                    <div>
-                      <p className="font-display font-bold text-sm text-white">
-                        {sharedPathways.length > 0 ? `${sharedPathways.length} Shared Pathway${sharedPathways.length > 1 ? 's' : ''}` : "Custom Stack"}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {sharedPathways.length > 0 ? sharedPathways.slice(0, 2).join(', ') : "Select more for higher synergy"}
-                      </p>
+                    <div className="w-10 h-10 flex-shrink-0 rounded-full bg-[#2a2a32] flex items-center justify-center">
+                      <Sparkles className="h-4 w-4 text-muted-foreground" />
                     </div>
                   )}
-                </div>
 
-                {/* Synergy label */}
-                <Badge 
-                  className="shrink-0 text-[10px] no-default-hover-elevate no-default-active-elevate"
-                  style={{ 
-                    backgroundColor: `${synergyColor}15`,
-                    color: synergyColor,
-                    border: `1px solid ${synergyColor}40`
-                  }}
-                >
-                  {synergyScore >= 85 ? "Legendary" : synergyScore >= 70 ? "Strong" : "Building"}
-                </Badge>
-              </div>
-            </motion.div>
-          );
-        })()}
-      </AnimatePresence>
-      {/* Spacer for sticky bottom bar + mobile synergy bar + mobile nav */}
-      <div className={`${selectedPeptides.length >= 2 ? "h-52" : "h-36"} md:h-20`} />
+                  {/* Label */}
+                  <div className="flex-1 min-w-0">
+                    {!isActive ? (
+                      <p className="text-sm font-semibold text-muted-foreground truncate">
+                        Select 2+ peptides to see synergy
+                      </p>
+                    ) : pillKnownStack ? (
+                      <div>
+                        <p className="font-display font-bold text-sm truncate" style={{ color: pillKnownStack.color }}>
+                          {pillKnownStack.name}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          Legendary Combo detected
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-display font-bold text-sm text-white truncate">
+                          {pillSharedPathways.length > 0
+                            ? `${pillSharedPathways.length} Shared Pathway${pillSharedPathways.length > 1 ? "s" : ""}`
+                            : "Custom Stack"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          Tap to open synergy analysis
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Badge / chevron */}
+                  {isActive ? (
+                    <Badge
+                      className="shrink-0 text-[10px] no-default-hover-elevate no-default-active-elevate"
+                      style={{
+                        backgroundColor: `${pillSynergyColor}15`,
+                        color: pillSynergyColor,
+                        border: `1px solid ${pillSynergyColor}40`,
+                      }}
+                    >
+                      {pillSynergyScore >= 85 ? "Legendary" : pillSynergyScore >= 70 ? "Strong" : "Building"}
+                    </Badge>
+                  ) : (
+                    <Sparkles className="h-4 w-4 text-muted-foreground shrink-0" />
+                  )}
+                </div>
+              </motion.button>
+            )}
+
+            {/* Mobile Synergy Bottom Sheet */}
+            <MobileSynergySheet
+              isOpen={mobileSynergySheetOpen}
+              onClose={() => setMobileSynergySheetOpen(false)}
+              selectedPeptides={selectedPeptides}
+              synergyScore={pillSynergyScore}
+              knownStack={pillKnownStack}
+              containedStack={pillContainedStack}
+              sharedPathways={pillSharedPathways}
+              activeSystems={pillActiveSystems}
+              pathwayOverlaps={pillPathwayOverlaps}
+              recommendation={pillRecommendation}
+              generalPairings={pillGeneralPairings}
+              isAuthenticated={isAuthenticated}
+              onSave={() => {
+                if (!isAuthenticated) {
+                  localStorage.setItem('pending-save-stack', JSON.stringify(selectedPeptides.map(p => p.id)));
+                  login('/research-stacks?openSave=true');
+                  return;
+                }
+                const systems = getActiveSystems(selectedPeptides.map(p => p.name));
+                const systemLabel = systems.length > 0
+                  ? systems[0].charAt(0).toUpperCase() + systems[0].slice(1)
+                  : "Custom";
+                if (!stackName) setStackName(`${systemLabel} Research Stack`);
+                setCartExpanded(true);
+                setShowSaveDialog(true);
+              }}
+              onShare={() => {
+                const url = `${window.location.origin}/research-stacks`;
+                navigator.clipboard.writeText(url);
+                toast({ title: "Link copied!", description: "Save your stack first to get a shareable link." });
+              }}
+            />
+          </>
+        );
+      })()}
+      {/* Spacer for sticky bottom bar + persistent synergy pill + mobile nav */}
+      <div className="h-48 md:h-20" />
       {/* ====== STICKY BOTTOM CART BAR ====== */}
       <AnimatePresence>
         <motion.div
