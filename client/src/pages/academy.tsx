@@ -559,6 +559,9 @@ export default function Academy() {
   const [showPersonaQuiz, setShowPersonaQuiz] = useState(false);
   const [pendingPersona, setPendingPersona] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+  const [activeMobileModuleIndex, setActiveMobileModuleIndex] = useState(0);
+  const touchStartXRef = useRef(0);
+  const pillStripRef = useRef<HTMLDivElement>(null);
   const perfectQuizAchievedRef = useRef(false);
   const [localProgress, setLocalProgress] = useState<{
     completedLessons: string[];
@@ -717,6 +720,59 @@ export default function Academy() {
   useEffect(() => {
     perfectQuizAchievedRef.current = false;
   }, [selectedLesson]);
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    CURRICULUM.forEach((module, index) => {
+      const el = document.getElementById(`module-section-${module.id}`);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+              setActiveMobileModuleIndex(index);
+            }
+          });
+        },
+        { threshold: 0.35 }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  useEffect(() => {
+    const activePill = pillStripRef.current?.querySelector(
+      `[data-testid="pill-module-${CURRICULUM[activeMobileModuleIndex]?.id}"]`
+    ) as HTMLElement | null;
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [activeMobileModuleIndex]);
+
+  const touchStartYRef = useRef(0);
+
+  const handleCurriculumTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleCurriculumTouchEnd = (e: React.TouchEvent) => {
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    const deltaX = touchStartXRef.current - e.changedTouches[0].clientX;
+    const deltaY = touchStartYRef.current - e.changedTouches[0].clientY;
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    if (deltaX > 0) {
+      const nextIndex = Math.min(activeMobileModuleIndex + 1, CURRICULUM.length - 1);
+      const el = document.getElementById(`module-section-${CURRICULUM[nextIndex].id}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      const prevIndex = Math.max(activeMobileModuleIndex - 1, 0);
+      const el = document.getElementById(`module-section-${CURRICULUM[prevIndex].id}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const completeLesson = (lessonId: string, xp: number) => {
     if (localProgress.completedLessons.includes(lessonId)) return;
@@ -925,11 +981,12 @@ export default function Academy() {
             {/* Learning Path — mobile compact strip */}
             <div className="block md:hidden py-4 px-6">
               <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3">Your Learning Path</p>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+              <div ref={pillStripRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
                 {CURRICULUM.map((module, pillIndex) => {
                   const completedCount = module.lessons.filter((l: { id: string }) => localProgress.completedLessons.includes(l.id)).length;
                   const isComplete = completedCount === module.lessons.length;
                   const isStarted = completedCount > 0;
+                  const isActivePill = pillIndex === activeMobileModuleIndex;
                   const Icon = module.icon;
                   const pillUnlockMode = getPersonaConfig()?.unlockMode || "linear";
                   const isLocked = !user
@@ -947,9 +1004,14 @@ export default function Academy() {
                       }}
                       className="flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-full border transition-all"
                       style={{
-                        background: isComplete ? `${module.color}18` : isLocked ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-                        borderColor: isComplete ? `${module.color}60` : isStarted ? `${module.color}35` : isLocked ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)",
+                        background: isActivePill
+                          ? `${module.color}28`
+                          : isComplete ? `${module.color}18` : isLocked ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
+                        borderColor: isActivePill
+                          ? `${module.color}90`
+                          : isComplete ? `${module.color}60` : isStarted ? `${module.color}35` : isLocked ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)",
                         opacity: isLocked ? 0.55 : 1,
+                        boxShadow: isActivePill ? `0 0 10px ${module.color}30` : undefined,
                       }}
                       data-testid={`pill-module-${module.id}`}
                     >
@@ -967,7 +1029,7 @@ export default function Academy() {
                       </div>
                       <span
                         className="text-xs font-medium whitespace-nowrap"
-                        style={{ color: isLocked ? "rgba(255,255,255,0.3)" : isComplete ? module.color : isStarted ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)" }}
+                        style={{ color: isLocked ? "rgba(255,255,255,0.3)" : isComplete ? module.color : isActivePill ? module.color : isStarted ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)" }}
                       >
                         {module.title}
                       </span>
@@ -1122,7 +1184,11 @@ export default function Academy() {
         <section className="py-16 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
+              <div
+                className="lg:col-span-2 space-y-6 order-2 lg:order-1"
+                onTouchStart={handleCurriculumTouchStart}
+                onTouchEnd={handleCurriculumTouchEnd}
+              >
                 <h2 className="text-2xl font-bold text-white mb-6">Curriculum</h2>
 
                 {CURRICULUM.map((module, moduleIndex) => {
