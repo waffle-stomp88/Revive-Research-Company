@@ -6603,25 +6603,85 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  const researchStackPatchSchema = z.object({
+    showOnPage: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+    name: z.string().min(1).optional(),
+    subtitle: z.string().optional(),
+    description: z.string().min(1).optional(),
+    badge: z.string().optional(),
+    badgeColor: z.string().optional(),
+    color: z.string().optional(),
+    category: z.string().optional(),
+    synergyBonus: z.number().int().min(0).optional(),
+    sortOrder: z.number().int().min(0).optional(),
+    detailPageId: z.string().optional(),
+  }).strict();
+
+  const researchStackPostSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    subtitle: z.string().optional(),
+    badge: z.string().optional(),
+    badgeColor: z.string().optional(),
+    color: z.string().optional(),
+    category: z.string().optional(),
+    synergyBonus: z.number().int().min(0).optional(),
+    sortOrder: z.number().int().min(0).optional(),
+    showOnPage: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+    detailPageId: z.string().optional(),
+  });
+
   app.patch("/api/admin/research-stacks/:id", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub;
       const user = userId ? await storage.getUser(userId) : null;
       if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
 
-      const { showOnPage, isActive } = req.body;
-      const fields: { showOnPage?: boolean; isActive?: boolean } = {};
-      if (typeof showOnPage === "boolean") fields.showOnPage = showOnPage;
-      if (typeof isActive === "boolean") fields.isActive = isActive;
-      if (Object.keys(fields).length === 0) {
-        return res.status(400).json({ error: "Provide showOnPage or isActive (boolean)" });
+      const parsed = researchStackPatchSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid fields", details: parsed.error.flatten() });
       }
-      const stack = await storage.updateResearchStackVisibility(req.params.id, fields);
+      if (Object.keys(parsed.data).length === 0) {
+        return res.status(400).json({ error: "No valid fields provided" });
+      }
+      const stack = await storage.updateResearchStack(req.params.id, parsed.data);
       if (!stack) return res.status(404).json({ error: "Stack not found" });
       return res.json(stack);
     } catch (error) {
       console.error("Error updating research stack:", error);
       return res.status(500).json({ error: "Failed to update stack" });
+    }
+  });
+
+  app.post("/api/admin/research-stacks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+      const parsed = researchStackPostSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
+      }
+      const { name, description } = parsed.data;
+      const id = (parsed.data.id || name)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      const existing = await storage.getResearchStackByIdAdmin(id);
+      if (existing) {
+        return res.status(409).json({ error: `A stack with id '${id}' already exists` });
+      }
+
+      const stack = await storage.createResearchStack({ ...parsed.data, id, name, description });
+      return res.status(201).json(stack);
+    } catch (error) {
+      console.error("Error creating research stack:", error);
+      return res.status(500).json({ error: "Failed to create stack" });
     }
   });
 

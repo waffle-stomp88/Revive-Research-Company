@@ -2101,26 +2101,146 @@ function ProductsTab() {
   );
 }
 
+const stackFormSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  subtitle: z.string().default(""),
+  description: z.string().min(1, "Description is required"),
+  category: z.string().default("Recovery"),
+  badge: z.string().default(""),
+  badgeColor: z.string().default(""),
+  color: z.string().default(""),
+  synergyBonus: z.coerce.number().default(0),
+  sortOrder: z.coerce.number().default(0),
+  showOnPage: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+});
+
+type StackFormValues = z.infer<typeof stackFormSchema>;
+
 function StacksTab() {
   const { toast } = useToast();
+  const [editingStack, setEditingStack] = useState<ResearchStackApiResponse | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAddMode, setIsAddMode] = useState(false);
+
   const { data: stacks, isLoading } = useQuery<ResearchStackApiResponse[]>({
     queryKey: ["/api/admin/research-stacks"],
   });
+
+  const sortedStacks = useMemo(
+    () => stacks ? [...stacks].sort((a, b) => a.sortOrder - b.sortOrder) : [],
+    [stacks]
+  );
+
+  const form = useForm<StackFormValues>({
+    resolver: zodResolver(stackFormSchema),
+    defaultValues: {
+      id: "",
+      name: "",
+      subtitle: "",
+      description: "",
+      category: "Recovery",
+      badge: "",
+      badgeColor: "",
+      color: "",
+      synergyBonus: 0,
+      sortOrder: 0,
+      showOnPage: false,
+      isActive: true,
+    },
+  });
+
+  const invalidateStacks = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["/api/research-stacks"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/research-stacks"] });
+  }, []);
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, field, value }: { id: string; field: "showOnPage" | "isActive"; value: boolean }) => {
       const res = await apiRequest("PATCH", `/api/admin/research-stacks/${id}`, { [field]: value });
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/research-stacks"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/research-stacks"] });
-      toast({ title: "Stack updated" });
-    },
-    onError: () => {
-      toast({ title: "Update failed", variant: "destructive" });
-    },
+    onSuccess: () => { invalidateStacks(); toast({ title: "Stack updated" }); },
+    onError: () => { toast({ title: "Update failed", variant: "destructive" }); },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...data }: StackFormValues & { id: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/research-stacks/${id}`, data);
+      if (!res.ok) throw new Error("Failed to update");
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateStacks();
+      toast({ title: "Stack saved" });
+      setIsFormOpen(false);
+    },
+    onError: () => { toast({ title: "Save failed", variant: "destructive" }); },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: StackFormValues) => {
+      const res = await apiRequest("POST", "/api/admin/research-stacks", data);
+      if (!res.ok) throw new Error("Failed to create");
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateStacks();
+      toast({ title: "Stack created" });
+      setIsFormOpen(false);
+    },
+    onError: () => { toast({ title: "Create failed", variant: "destructive" }); },
+  });
+
+  function openEdit(stack: ResearchStackApiResponse) {
+    setIsAddMode(false);
+    setEditingStack(stack);
+    form.reset({
+      name: stack.name,
+      subtitle: stack.subtitle || "",
+      description: stack.description,
+      category: stack.category || "Recovery",
+      badge: stack.badge || "",
+      badgeColor: stack.badgeColor || "",
+      color: stack.color || "",
+      synergyBonus: stack.synergyBonus,
+      sortOrder: stack.sortOrder,
+      showOnPage: stack.showOnPage,
+      isActive: stack.isActive,
+    });
+    setIsFormOpen(true);
+  }
+
+  function openAdd() {
+    setIsAddMode(true);
+    setEditingStack(null);
+    form.reset({
+      id: "",
+      name: "",
+      subtitle: "",
+      description: "",
+      category: "Recovery",
+      badge: "",
+      badgeColor: "",
+      color: "",
+      synergyBonus: 0,
+      sortOrder: sortedStacks.length,
+      showOnPage: false,
+      isActive: true,
+    });
+    setIsFormOpen(true);
+  }
+
+  function onSubmit(values: StackFormValues) {
+    if (isAddMode) {
+      createMutation.mutate(values);
+    } else if (editingStack) {
+      updateMutation.mutate({ ...values, id: editingStack.id });
+    }
+  }
+
+  const isSaving = updateMutation.isPending || createMutation.isPending;
 
   if (isLoading) {
     return (
@@ -2132,28 +2252,43 @@ function StacksTab() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold">Research Stacks Visibility</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Toggle which stacks appear on the Research Stacks page (<strong>Show on Page</strong>) and which are active in the synergy engine (<strong>Active</strong>).
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold">Research Stacks</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage stack visibility, descriptions, badges, and sort order without a code deploy.
+          </p>
+        </div>
+        <Button onClick={openAdd} data-testid="button-add-stack">
+          <Plus className="w-4 h-4 mr-2" />Add Stack
+        </Button>
       </div>
+
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-16">Order</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>Synergy Bonus</TableHead>
+            <TableHead>Badge</TableHead>
+            <TableHead>Synergy</TableHead>
             <TableHead className="text-center">Show on Page</TableHead>
             <TableHead className="text-center">Active</TableHead>
+            <TableHead className="w-10" />
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stacks?.map((stack) => (
+          {sortedStacks.map((stack) => (
             <TableRow key={stack.id} data-testid={`row-stack-${stack.id}`}>
+              <TableCell className="text-muted-foreground text-sm">{stack.sortOrder}</TableCell>
               <TableCell className="font-medium">{stack.name}</TableCell>
               <TableCell>
                 <Badge variant="outline">{stack.category}</Badge>
+              </TableCell>
+              <TableCell>
+                {stack.badge
+                  ? <Badge style={{ backgroundColor: stack.badgeColor || undefined }}>{stack.badge}</Badge>
+                  : <span className="text-muted-foreground text-sm">—</span>}
               </TableCell>
               <TableCell className="text-muted-foreground text-sm">{stack.synergyBonus}</TableCell>
               <TableCell className="text-center">
@@ -2172,10 +2307,229 @@ function StacksTab() {
                   data-testid={`toggle-isActive-${stack.id}`}
                 />
               </TableCell>
+              <TableCell>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => openEdit(stack)}
+                  data-testid={`button-edit-stack-${stack.id}`}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{isAddMode ? "Add Research Stack" : "Edit Research Stack"}</DialogTitle>
+            <DialogDescription>
+              {isAddMode
+                ? "Create a new research stack. The ID will be auto-generated from the name if left blank."
+                : `Editing: ${editingStack?.id}`}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {isAddMode && (
+                <FormField
+                  control={form.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID (slug, optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="auto-generated-from-name" {...field} data-testid="input-stack-id" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Recovery Essentials" {...field} data-testid="input-stack-name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subtitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subtitle</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Short tagline" {...field} data-testid="input-stack-subtitle" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Brief description of this stack's research focus..."
+                        className="resize-none"
+                        rows={3}
+                        {...field}
+                        data-testid="input-stack-description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Recovery" {...field} data-testid="input-stack-category" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="synergyBonus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Synergy Bonus</FormLabel>
+                      <FormControl>
+                        <Input type="number" min={0} {...field} data-testid="input-stack-synergy-bonus" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="badge"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Badge Label</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Best Seller" {...field} data-testid="input-stack-badge" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="badgeColor"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Badge Color</FormLabel>
+                      <FormControl>
+                        <Input placeholder="#hexcolor or CSS color" {...field} data-testid="input-stack-badge-color" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Accent Color</FormLabel>
+                      <FormControl>
+                        <Input placeholder="#hexcolor or CSS color" {...field} data-testid="input-stack-color" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sortOrder"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sort Order</FormLabel>
+                      <FormControl>
+                        <Input type="number" min={0} {...field} data-testid="input-stack-sort-order" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-center gap-8 pt-1">
+                <FormField
+                  control={form.control}
+                  name="showOnPage"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="switch-stack-show-on-page"
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer">Show on Page</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-3 space-y-0">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="switch-stack-is-active"
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer">Active in Synergy Engine</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter className="pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsFormOpen(false)}
+                  data-testid="button-stack-form-cancel"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSaving} data-testid="button-stack-form-save">
+                  {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  {isAddMode ? "Create Stack" : "Save Changes"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -8523,7 +8877,7 @@ export default function Admin() {
                 </TabsTrigger>
                 <TabsTrigger value="stacks" className="flex items-center gap-2" data-testid="tab-stacks">
                   <FlaskConical className="h-4 w-4" />
-                  <span className="hidden sm:inline">Stacks</span>
+                  <span className="hidden sm:inline">Research Stacks</span>
                 </TabsTrigger>
                 <TabsTrigger value="dead-links" className="flex items-center gap-2" data-testid="tab-dead-links">
                   <Link2Off className="h-4 w-4" />

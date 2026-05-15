@@ -408,6 +408,9 @@ export interface IStorage {
   getAllResearchStacksAdmin(): Promise<ResearchStack[]>;
   getResearchStackById(id: string): Promise<ResearchStack | undefined>;
   upsertResearchStack(data: { id: string } & Partial<InsertResearchStack>): Promise<ResearchStack>;
+  createResearchStack(data: { id: string } & InsertResearchStack): Promise<ResearchStack>;
+  updateResearchStack(id: string, fields: Partial<InsertResearchStack>): Promise<ResearchStack | undefined>;
+  getResearchStackByIdAdmin(id: string): Promise<ResearchStack | undefined>;
   updateResearchStackVisibility(id: string, fields: { showOnPage?: boolean; isActive?: boolean }): Promise<ResearchStack | undefined>;
   getResearchStacksCount(): Promise<number>;
 }
@@ -2772,6 +2775,28 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return stack;
+  }
+
+  async getResearchStackByIdAdmin(id: string): Promise<ResearchStack | undefined> {
+    const [stack] = await db.select().from(researchStacks)
+      .where(eq(researchStacks.id, id));
+    return stack || undefined;
+  }
+
+  async createResearchStack(data: { id: string } & InsertResearchStack): Promise<ResearchStack> {
+    const { id, ...rest } = data;
+    const [stack] = await db.insert(researchStacks)
+      .values({ id, ...rest })
+      .returning();
+    return stack;
+  }
+
+  async updateResearchStack(id: string, fields: Partial<InsertResearchStack>): Promise<ResearchStack | undefined> {
+    const [stack] = await db.update(researchStacks)
+      .set(fields)
+      .where(eq(researchStacks.id, id))
+      .returning();
+    return stack || undefined;
   }
 
   async updateResearchStackVisibility(id: string, fields: { showOnPage?: boolean; isActive?: boolean }): Promise<ResearchStack | undefined> {
