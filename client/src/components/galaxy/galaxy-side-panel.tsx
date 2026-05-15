@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { X, ExternalLink, ArrowRight, Activity, Sparkles, BookOpen } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -65,10 +65,19 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
   if (!node) return null;
 
   const isMobile = useIsMobile();
+  const dragControls = useDragControls();
   const stacks = getStacksForPeptide(node.id, knownStacks);
   const accentColor = node.color;
   const borderColor = `${accentColor}60`;
   const cornerColor = `${accentColor}b3`;
+
+  function handleDragEnd(_: unknown, info: { offset: { y: number }; velocity: { y: number } }) {
+    const DISTANCE_THRESHOLD = 80;
+    const VELOCITY_THRESHOLD = 400;
+    if (info.offset.y > DISTANCE_THRESHOLD || info.velocity.y > VELOCITY_THRESHOLD) {
+      onClose();
+    }
+  }
 
   // Mobile: slide up from bottom as a full-width drawer
   // Desktop: slide in from the right as a sidebar
@@ -78,6 +87,12 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
         animate: { y: 0, opacity: 1 },
         exit: { y: "100%", opacity: 0 },
         transition: { type: "spring" as const, damping: 28, stiffness: 240 },
+        drag: "y" as const,
+        dragControls,
+        dragListener: false,
+        dragConstraints: { top: 0, bottom: 0 },
+        dragElastic: { top: 0, bottom: 0.35 },
+        onDragEnd: handleDragEnd,
       }
     : {
         initial: { x: "100%", opacity: 0 },
@@ -110,13 +125,15 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
       style={panelStyle}
       data-testid="galaxy-side-panel"
     >
-      {/* Drag handle for mobile */}
+      {/* Drag handle for mobile — touch target starts the drag gesture */}
       {isMobile && (
-        <div className="flex justify-center pt-3 pb-1">
-          <div
-            className="w-10 h-1 rounded-full bg-white/20"
-            aria-hidden="true"
-          />
+        <div
+          className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none select-none"
+          onPointerDown={(e) => dragControls.start(e)}
+          data-testid="galaxy-panel-drag-handle"
+          aria-hidden="true"
+        >
+          <div className="w-10 h-1 rounded-full bg-white/30" />
         </div>
       )}
 
