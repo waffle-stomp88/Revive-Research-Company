@@ -24,6 +24,8 @@ import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
 import MistBackground from "@/components/home/mist-background";
+import { MobilePipelineStrip } from "@/components/home/mobile-pipeline-strip";
+import { MobileScienceStats } from "@/components/home/mobile-science-stats";
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -247,7 +249,7 @@ function EducationTeaser() {
                   </Badge>
                 </div>
 
-                {/* Modules Preview - Hidden on mobile for compact view */}
+                {/* Modules Preview - list on sm+, pill grid on mobile */}
                 <div className="hidden sm:block space-y-3 mb-6">
                   {academyModules.map((module, index) => (
                     <motion.div
@@ -259,13 +261,32 @@ function EducationTeaser() {
                       className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
                     >
                       <div 
-                        className="w-2 h-2 rounded-full" 
+                        className="w-2 h-2 rounded-full flex-shrink-0" 
                         style={{ backgroundColor: module.color }}
                       />
                       <div className="flex-1">
                         <span className="font-medium text-sm">{module.name}</span>
-                        <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">— {module.description}</span>
+                        <span className="text-xs text-muted-foreground ml-2">— {module.description}</span>
                       </div>
+                    </motion.div>
+                  ))}
+                </div>
+                {/* Mobile module pills — 2×2 grid */}
+                <div className="grid grid-cols-2 gap-2 mb-6 sm:hidden">
+                  {academyModules.slice(0, 4).map((module, index) => (
+                    <motion.div
+                      key={module.name}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 + index * 0.07 }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10"
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: module.color }}
+                      />
+                      <span className="text-xs font-medium truncate">{module.name}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -429,13 +450,29 @@ export default function Home() {
     <main>
       <SEOHead title="Home" description={`Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`} canonicalPath="/" />
       <HeroSection />
-      {/* MolecularDNAVisual - hidden on mobile for performance */}
+      {/* MolecularDNAVisual - hidden on mobile; MobileScienceStats shown instead */}
       <div className="hidden md:block">
         <MolecularDNAVisual />
       </div>
-      {/* TestingPipelineVisual - hidden on mobile (too complex) */}
+      <div className="block md:hidden py-10 px-4">
+        <div className="max-w-sm mx-auto">
+          <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-widest mb-5">
+            Precision Engineered Peptides
+          </p>
+          <MobileScienceStats />
+        </div>
+      </div>
+      {/* TestingPipelineVisual - hidden on mobile; MobilePipelineStrip shown instead */}
       <div className="hidden md:block">
         <TestingPipelineVisual />
+      </div>
+      <div className="block md:hidden py-10 px-4">
+        <div className="max-w-sm mx-auto">
+          <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-widest mb-5">
+            Quality Assurance Pipeline
+          </p>
+          <MobilePipelineStrip />
+        </div>
       </div>
       <EducationTeaser />
       <StackBuilderTeaser />
