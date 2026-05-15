@@ -272,10 +272,26 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
         });
         paypalSessionRef.current = paypalCheckout;
 
-        // Skip eligibility pre-check — attempt to mount card fields directly.
-        // findEligibleMethods() can return ineligible for valid accounts in some
-        // environments; we let the actual card session creation determine viability.
+        // Check eligibility for advanced card fields
+        let cardEligible = false;
         if (showCardFields) {
+          try {
+            const paymentMethods = await sdkInstance.findEligibleMethods();
+            cardEligible = paymentMethods.isEligible("advanced_cards");
+          } catch (eligibilityError) {
+            if (import.meta.env.DEV) { console.warn("[PayPal] findEligibleMethods() failed — defaulting card fields to ineligible:", eligibilityError); }
+            cardEligible = false;
+          }
+          if (!cardEligible && isMounted) {
+            setCardIneligible(true);
+            setSelectedMethod("paypal");
+            onCardIneligible?.();
+            if (import.meta.env.DEV) { console.log("[PayPal] advanced_cards ineligible — PayPal fallback active"); }
+          }
+        }
+
+        // Store SDK instance for mounting effect; flip sdkReady to trigger it
+        if (showCardFields && cardEligible) {
           sdkInstanceRef.current = sdkInstance;
           if (isMounted) setSdkReady(true);
         }
@@ -313,12 +329,7 @@ const PayPalCheckout = forwardRef<PayPalCheckoutHandle, PayPalCheckoutProps>(fun
       cardSession = sdkInstance.createCardFieldsOneTimePaymentSession();
       cardSessionRef.current = cardSession;
     } catch (sessionErr) {
-      console.error("[PayPal] Failed to create card session — falling back to PayPal:", sessionErr);
-      if (isMounted) {
-        setCardIneligible(true);
-        setSelectedMethod("paypal");
-        onCardIneligible?.();
-      }
+      console.error("[PayPal] Failed to create card session:", sessionErr);
       return;
     }
 
