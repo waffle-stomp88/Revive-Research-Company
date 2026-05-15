@@ -23,6 +23,7 @@ import { GalaxyHyperspaceOverlay } from "@/components/galaxy/galaxy-hyperspace-o
 import { GalaxyHoverHUD } from "@/components/galaxy/galaxy-hover-hud";
 import { WarpBanner } from "@/components/galaxy/galaxy-warp-banner";
 import { GalaxyMobileOnboarding, isTouchDevice } from "@/components/galaxy/galaxy-mobile-onboarding";
+import { GalaxyMobileSearch, GalaxyMobileSearchTrigger } from "@/components/galaxy/galaxy-mobile-search";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -63,6 +64,7 @@ export default function GalaxyPage() {
   const [warpToId, setWarpToId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState(0);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [rotationPaused, setRotationPaused] = useState(false);
   const [rotationSpeed, setRotationSpeed] = useState(0.45);
   const [forceFallback, setForceFallback] = useState(false);
@@ -395,8 +397,8 @@ export default function GalaxyPage() {
               Drag to orbit · click a star to inspect.
             </p>
 
-            {/* Inline galaxy search */}
-            {uiVisible && (
+            {/* Inline galaxy search — desktop only; mobile uses the bottom-sheet */}
+            {uiVisible && !isTouch && (
               <div className="relative mt-3 w-64" data-testid="galaxy-inline-search-wrap">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none z-10" />
                 <Input
@@ -471,6 +473,16 @@ export default function GalaxyPage() {
           </motion.div>
         </div>
       </motion.div>
+
+      {/* Mobile full-screen search modal — touch devices only */}
+      {isTouch && (
+        <GalaxyMobileSearch
+          nodes={nodes}
+          onSelect={handleSearchSelect}
+          open={mobileSearchOpen}
+          onClose={() => setMobileSearchOpen(false)}
+        />
+      )}
 
       {/* Galaxy canvas / fallback */}
       {useFallback === null ? (
@@ -575,6 +587,14 @@ export default function GalaxyPage() {
               hoveredScreenPos={hoveredScreenPos}
               canvasWidth={canvasDims.w}
               canvasHeight={canvasDims.h}
+            />
+          )}
+
+          {/* Mobile search trigger — touch devices only */}
+          {isTouch && (
+            <GalaxyMobileSearchTrigger
+              visible={uiVisible}
+              onClick={() => setMobileSearchOpen(true)}
             />
           )}
 
