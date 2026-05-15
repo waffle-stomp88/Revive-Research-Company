@@ -560,6 +560,7 @@ export default function Academy() {
   const [pendingPersona, setPendingPersona] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [activeMobileModuleIndex, setActiveMobileModuleIndex] = useState(0);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
   const touchStartXRef = useRef(0);
   const pillStripRef = useRef<HTMLDivElement>(null);
   const perfectQuizAchievedRef = useRef(false);
@@ -753,6 +754,27 @@ export default function Academy() {
 
   const touchStartYRef = useRef(0);
 
+  const dismissSwipeHint = () => {
+    try { localStorage.setItem("academy_swipe_hint_seen", "1"); } catch { /* ignore */ }
+    setShowSwipeHint(false);
+  };
+
+  useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (!isMobile) return;
+    try {
+      if (!localStorage.getItem("academy_swipe_hint_seen")) {
+        setShowSwipeHint(true);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (!showSwipeHint) return;
+    const t = setTimeout(dismissSwipeHint, 2800);
+    return () => clearTimeout(t);
+  }, [showSwipeHint]);
+
   const handleCurriculumTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
@@ -763,6 +785,7 @@ export default function Academy() {
     const deltaX = touchStartXRef.current - e.changedTouches[0].clientX;
     const deltaY = touchStartYRef.current - e.changedTouches[0].clientY;
     if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    dismissSwipeHint();
     if (deltaX > 0) {
       const nextIndex = Math.min(activeMobileModuleIndex + 1, CURRICULUM.length - 1);
       const el = document.getElementById(`module-section-${CURRICULUM[nextIndex].id}`);
@@ -1191,38 +1214,70 @@ export default function Academy() {
               >
                 <h2 className="text-2xl font-bold text-white mb-6">Curriculum</h2>
 
-                <div className="flex items-center justify-between lg:hidden sticky top-0 z-40 bg-background py-2 -mx-6 px-6 mb-4">
-                  <button
-                    onClick={() => {
-                      const prevIndex = Math.max(activeMobileModuleIndex - 1, 0);
-                      const el = document.getElementById(`module-section-${CURRICULUM[prevIndex].id}`);
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }}
-                    className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
-                    style={{ visibility: activeMobileModuleIndex === 0 ? "hidden" : "visible" }}
-                    aria-label="Previous module"
-                    data-testid="button-curriculum-prev"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                    <span className="text-sm">Prev</span>
-                  </button>
-                  <span className="text-sm text-white/50">
-                    Module {activeMobileModuleIndex + 1} of {CURRICULUM.length}
-                  </span>
-                  <button
-                    onClick={() => {
-                      const nextIndex = Math.min(activeMobileModuleIndex + 1, CURRICULUM.length - 1);
-                      const el = document.getElementById(`module-section-${CURRICULUM[nextIndex].id}`);
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }}
-                    className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
-                    style={{ visibility: activeMobileModuleIndex === CURRICULUM.length - 1 ? "hidden" : "visible" }}
-                    aria-label="Next module"
-                    data-testid="button-curriculum-next"
-                  >
-                    <span className="text-sm">Next</span>
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+                <div className="flex flex-col gap-1 lg:hidden mb-4 sticky top-0 z-40 bg-background py-2 -mx-6 px-6">
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => {
+                        dismissSwipeHint();
+                        const prevIndex = Math.max(activeMobileModuleIndex - 1, 0);
+                        const el = document.getElementById(`module-section-${CURRICULUM[prevIndex].id}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
+                      style={{ visibility: activeMobileModuleIndex === 0 ? "hidden" : "visible" }}
+                      aria-label="Previous module"
+                      data-testid="button-curriculum-prev"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                      <span className="text-sm">Prev</span>
+                    </button>
+                    <span className="text-sm text-white/50">
+                      Module {activeMobileModuleIndex + 1} of {CURRICULUM.length}
+                    </span>
+                    <button
+                      onClick={() => {
+                        dismissSwipeHint();
+                        const nextIndex = Math.min(activeMobileModuleIndex + 1, CURRICULUM.length - 1);
+                        const el = document.getElementById(`module-section-${CURRICULUM[nextIndex].id}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
+                      style={{ visibility: activeMobileModuleIndex === CURRICULUM.length - 1 ? "hidden" : "visible" }}
+                      aria-label="Next module"
+                      data-testid="button-curriculum-next"
+                    >
+                      <span className="text-sm">Next</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <AnimatePresence>
+                    {showSwipeHint && (
+                      <motion.div
+                        key="swipe-hint"
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.35 }}
+                        className="flex items-center justify-center gap-2 pointer-events-none select-none"
+                        data-testid="swipe-hint"
+                        aria-hidden="true"
+                      >
+                        <motion.div
+                          animate={{ x: [-6, 0, -6] }}
+                          transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <ChevronLeft className="w-4 h-4 text-white/40" />
+                        </motion.div>
+                        <span className="text-xs text-white/40 tracking-wide">swipe to navigate</span>
+                        <motion.div
+                          animate={{ x: [6, 0, 6] }}
+                          transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <ChevronRight className="w-4 h-4 text-white/40" />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {CURRICULUM.map((module, moduleIndex) => {
