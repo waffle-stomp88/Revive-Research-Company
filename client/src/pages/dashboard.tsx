@@ -829,34 +829,41 @@ export default function Dashboard() {
             {/* 6-Tab Layout */}
             <motion.div variants={itemVariants}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 gap-1 mb-6 h-auto">
-                  <TabsTrigger value="general" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-general">
+                <TabsList className="flex justify-start w-full overflow-x-auto scrollbar-hide sm:grid sm:grid-cols-7 sm:overflow-visible gap-1 mb-6 h-auto">
+                  <TabsTrigger value="general" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-general">
                     <Home className="h-4 w-4" />
-                    <span className="hidden sm:inline">General</span>
+                    <span className="text-[10px] sm:hidden">Home</span>
+                    <span className="hidden sm:inline sm:text-sm">General</span>
                   </TabsTrigger>
-                  <TabsTrigger value="orders" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-orders">
+                  <TabsTrigger value="orders" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-orders">
                     <ShoppingBag className="h-4 w-4" />
-                    <span className="hidden sm:inline">Orders</span>
+                    <span className="text-[10px] sm:hidden">Orders</span>
+                    <span className="hidden sm:inline sm:text-sm">Orders</span>
                   </TabsTrigger>
-                  <TabsTrigger value="stacks" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-stacks">
+                  <TabsTrigger value="stacks" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-stacks">
                     <FlaskConical className="h-4 w-4" />
-                    <span className="hidden sm:inline">Stacks</span>
+                    <span className="text-[10px] sm:hidden">Stacks</span>
+                    <span className="hidden sm:inline sm:text-sm">Stacks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="logbook" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-logbook">
+                  <TabsTrigger value="logbook" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-logbook">
                     <BookMarked className="h-4 w-4" />
-                    <span className="hidden sm:inline">Logbook</span>
+                    <span className="text-[10px] sm:hidden">Log</span>
+                    <span className="hidden sm:inline sm:text-sm">Logbook</span>
                   </TabsTrigger>
-                  <TabsTrigger value="cycles" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-cycles">
+                  <TabsTrigger value="cycles" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-cycles">
                     <Activity className="h-4 w-4" />
-                    <span className="hidden sm:inline">Cycles</span>
+                    <span className="text-[10px] sm:hidden">Cycles</span>
+                    <span className="hidden sm:inline sm:text-sm">Cycles</span>
                   </TabsTrigger>
-                  <TabsTrigger value="education" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-education">
+                  <TabsTrigger value="education" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-education">
                     <GraduationCap className="h-4 w-4" />
-                    <span className="hidden sm:inline">Education</span>
+                    <span className="text-[10px] sm:hidden">Edu</span>
+                    <span className="hidden sm:inline sm:text-sm">Education</span>
                   </TabsTrigger>
-                  <TabsTrigger value="settings" className="gap-2 min-h-[44px] py-2.5" data-testid="tab-settings">
+                  <TabsTrigger value="settings" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-settings">
                     <Settings className="h-4 w-4" />
-                    <span className="hidden sm:inline">Settings</span>
+                    <span className="text-[10px] sm:hidden">Settings</span>
+                    <span className="hidden sm:inline sm:text-sm">Settings</span>
                   </TabsTrigger>
                 </TabsList>
 
