@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { X, ExternalLink, ArrowRight, Activity, Sparkles, BookOpen } from "lucide-react";
 import { motion, useDragControls } from "framer-motion";
@@ -66,6 +66,8 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
 
   const isMobile = useIsMobile();
   const dragControls = useDragControls();
+  const panelScrollRef = useRef<HTMLElement>(null);
+  const isAtTopRef = useRef(true);
   const stacks = getStacksForPeptide(node.id, knownStacks);
   const accentColor = node.color;
   const borderColor = `${accentColor}60`;
@@ -77,6 +79,62 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
     if (info.offset.y > DISTANCE_THRESHOLD || info.velocity.y > VELOCITY_THRESHOLD) {
       onClose();
     }
+  }
+
+  function handleScroll() {
+    const el = panelScrollRef.current;
+    isAtTopRef.current = !el || el.scrollTop === 0;
+  }
+
+  function isInteractive(target: EventTarget | null): boolean {
+    if (!target) return false;
+    return !!(target as HTMLElement).closest('button, a, [role="button"], input, textarea, select');
+  }
+
+  function handlePanelPointerDown(e: React.PointerEvent) {
+    if (!isMobile) return;
+    if (isInteractive(e.target)) return;
+    if (!isAtTopRef.current) return;
+
+    // Defer drag start until we know the gesture is downward.
+    // This prevents hijacking an upward "read more" scroll that starts at the top.
+    const DIRECTION_THRESHOLD = 8; // px of downward movement to confirm intent
+    const nativeDown = e.nativeEvent as PointerEvent;
+    const startY = nativeDown.clientY;
+    const pointerId = nativeDown.pointerId;
+
+    function onMove(ev: PointerEvent) {
+      if (ev.pointerId !== pointerId) return;
+      const deltaY = ev.clientY - startY;
+      if (deltaY > DIRECTION_THRESHOLD) {
+        cleanup();
+        dragControls.start(ev);
+      } else if (deltaY < -DIRECTION_THRESHOLD) {
+        cleanup();
+      }
+    }
+
+    function onUp(ev: PointerEvent) {
+      if (ev.pointerId !== pointerId) return;
+      cleanup();
+    }
+
+    function cleanup() {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  }
+
+  function handleHeaderPointerDown(e: React.PointerEvent) {
+    if (!isMobile) return;
+    if (isInteractive(e.target)) return;
+    e.stopPropagation();
+    dragControls.start(e);
   }
 
   // Mobile: slide up from bottom as a full-width drawer
@@ -121,15 +179,18 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
   return (
     <motion.aside
       {...motionProps}
+      ref={panelScrollRef as React.Ref<HTMLElement>}
       className={panelClassName}
       style={panelStyle}
       data-testid="galaxy-side-panel"
+      onScroll={handleScroll}
+      onPointerDown={handlePanelPointerDown}
     >
       {/* Drag handle for mobile — touch target starts the drag gesture */}
       {isMobile && (
         <div
           className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none select-none"
-          onPointerDown={(e) => dragControls.start(e)}
+          onPointerDown={(e) => { e.stopPropagation(); dragControls.start(e); }}
           data-testid="galaxy-panel-drag-handle"
           aria-hidden="true"
         >
@@ -221,7 +282,11 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
         className="relative p-5 md:p-6"
         style={{ zIndex: 2 }}
       >
-        <div className="flex items-start justify-between gap-3 mb-5">
+        <div
+          className="flex items-start justify-between gap-3 mb-5 touch-none select-none"
+          onPointerDown={handleHeaderPointerDown}
+          data-testid="galaxy-panel-header"
+        >
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
               <span
