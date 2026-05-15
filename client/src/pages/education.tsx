@@ -731,6 +731,17 @@ export default function Education() {
     return articles.filter(a => tab.categories.includes(a.category));
   };
 
+  const crossTabResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase();
+    return articles
+      .filter(a =>
+        a.title.toLowerCase().includes(query) ||
+        (a.summary || "").toLowerCase().includes(query)
+      )
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [articles, searchQuery]);
+
   const filteredArticles = (() => {
     // Get articles based on active tab
     const currentTab = EDUCATION_TABS.find(t => t.id === activeTab);
@@ -844,9 +855,98 @@ export default function Education() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.08 }}
           className="mt-10"
+          id="browse-by-system"
         >
           <BrowseBySystem />
         </motion.div>
+
+        {/* Mobile Entry Screen — only on small screens */}
+        <div className="block md:hidden mt-8 space-y-4">
+          {/* Mobile search bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <input
+              type="search"
+              placeholder="Search all articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-3 rounded-lg bg-card/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff]/60 focus:ring-1 focus:ring-[#21d8ff]/40 transition-all"
+              data-testid="input-mobile-search"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                data-testid="button-mobile-search-clear"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Goal-entry cards */}
+          <div className="grid grid-cols-1 gap-3">
+            <button
+              onClick={() => {
+                const el = document.getElementById("browse-by-system");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
+              data-testid="card-entry-body-system"
+            >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#22c55e20" }}>
+                <Activity className="h-5 w-5" style={{ color: "#22c55e" }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Explore by Body System</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Browse peptide research by target area</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("peptides");
+                setExpandedArticle(null);
+                setPeptideGroupFilter("all");
+                const el = document.getElementById("education-tabs");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
+              data-testid="card-entry-peptide-guides"
+            >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ec489920" }}>
+                <FlaskConical className="h-5 w-5" style={{ color: "#ec4899" }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Find a Peptide Guide</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Compound-specific research breakdowns</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveTab("general");
+                setExpandedArticle(null);
+                setPeptideGroupFilter("all");
+                const el = document.getElementById("education-tabs");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
+              data-testid="card-entry-general-education"
+            >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#21d8ff20" }}>
+                <BookOpen className="h-5 w-5" style={{ color: "#21d8ff" }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">General Education</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Basics, storage, glossary & lab guides</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+            </button>
+          </div>
+        </div>
 
         {/* Main Tabbed Content Area */}
         <motion.div
@@ -854,6 +954,7 @@ export default function Education() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-8"
+          id="education-tabs"
         >
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setExpandedArticle(null); setPeptideGroupFilter("all"); }} className="w-full">
             <TabsList className="w-full justify-start bg-card/50 border border-border p-1 rounded-lg mb-6 flex-wrap h-auto gap-1">
@@ -863,22 +964,79 @@ export default function Education() {
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
-                    className="flex items-center gap-2 px-4 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
+                    className="flex items-center gap-1.5 px-2.5 py-2 sm:px-4 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
                     style={{
                       color: activeTab === tab.id ? tab.color : undefined,
                       borderColor: activeTab === tab.id ? `${tab.color}40` : undefined,
                     }}
                     data-testid={`tab-${tab.id}`}
                   >
-                    <Icon className="h-4 w-4" style={{ color: tab.color }} />
-                    <span className="hidden sm:inline">{tab.label}</span>
+                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" style={{ color: tab.color }} />
+                    <span className="text-xs sm:text-sm leading-tight">{tab.label}</span>
                   </TabsTrigger>
                 );
               })}
             </TabsList>
 
+            {/* Cross-tab search results — mobile only, shown when a query is active and no article is expanded */}
+            {searchQuery.trim() && !expandedArticle && (
+              <div className="md:hidden mt-4 space-y-2" data-testid="cross-tab-search-results">
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <span className="text-sm text-muted-foreground">
+                    <strong>{crossTabResults.length}</strong> result{crossTabResults.length !== 1 ? "s" : ""} for &ldquo;{searchQuery}&rdquo; across all sections
+                  </span>
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="ml-auto text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    data-testid="button-clear-cross-search"
+                  >
+                    <X className="h-3 w-3" /> Clear
+                  </button>
+                </div>
+                {crossTabResults.length === 0 ? (
+                  <p className="text-center py-12 text-muted-foreground text-sm">No articles match &ldquo;{searchQuery}&rdquo;</p>
+                ) : (
+                  <div className="space-y-2">
+                    {crossTabResults.map((a) => {
+                      const color = getCategoryColor(a.category);
+                      const CatIcon = getCategoryIcon(a.category);
+                      return (
+                        <button
+                          key={a.id}
+                          onClick={() => setExpandedArticle(a.id)}
+                          className="w-full text-left p-4 rounded-lg bg-card/60 border border-border hover-elevate transition-all"
+                          data-testid={`result-article-${a.id}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div
+                              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                              style={{ backgroundColor: `${color}20` }}
+                            >
+                              <CatIcon className="h-4 w-4" style={{ color }} />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-foreground">{a.title}</p>
+                              {a.summary && (
+                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{a.summary}</p>
+                              )}
+                            </div>
+                            <Badge
+                              className="text-[10px] flex-shrink-0 ml-2 border-0"
+                              style={{ backgroundColor: `${color}20`, color }}
+                            >
+                              {getCategoryLabel(a.category)}
+                            </Badge>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Main Content Area */}
-            <div className="mt-2">
+            <div className={`mt-2${searchQuery.trim() && !expandedArticle ? " hidden md:block" : ""}`}>
             {expandedArticle ? (
               <div className="relative">
                 {/* Floating Back Button - visible while scrolling */}

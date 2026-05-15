@@ -922,6 +922,64 @@ export default function Academy() {
               </div>
             </motion.div>
 
+            {/* Learning Path — mobile compact strip */}
+            <div className="block md:hidden py-4 px-6">
+              <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3">Your Learning Path</p>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+                {CURRICULUM.map((module, pillIndex) => {
+                  const completedCount = module.lessons.filter((l: { id: string }) => localProgress.completedLessons.includes(l.id)).length;
+                  const isComplete = completedCount === module.lessons.length;
+                  const isStarted = completedCount > 0;
+                  const Icon = module.icon;
+                  const pillUnlockMode = getPersonaConfig()?.unlockMode || "linear";
+                  const isLocked = !user
+                    ? pillIndex > 0
+                    : !(pillUnlockMode === "full" || pillIndex === 0 ||
+                        CURRICULUM.slice(0, pillIndex).every((m) =>
+                          m.lessons.every((l: { id: string }) => localProgress.completedLessons.includes(l.id))
+                        ));
+                  return (
+                    <button
+                      key={module.id}
+                      onClick={() => {
+                        const element = document.getElementById(`module-section-${module.id}`);
+                        if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className="flex-shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-full border transition-all"
+                      style={{
+                        background: isComplete ? `${module.color}18` : isLocked ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
+                        borderColor: isComplete ? `${module.color}60` : isStarted ? `${module.color}35` : isLocked ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)",
+                        opacity: isLocked ? 0.55 : 1,
+                      }}
+                      data-testid={`pill-module-${module.id}`}
+                    >
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: isLocked ? "rgba(255,255,255,0.08)" : `${module.color}25` }}
+                      >
+                        {isComplete ? (
+                          <CheckCircle2 className="w-3 h-3" style={{ color: module.color }} />
+                        ) : isLocked ? (
+                          <Lock className="w-3 h-3 text-white/30" />
+                        ) : (
+                          <Icon className="w-3 h-3" style={{ color: module.color }} />
+                        )}
+                      </div>
+                      <span
+                        className="text-xs font-medium whitespace-nowrap"
+                        style={{ color: isLocked ? "rgba(255,255,255,0.3)" : isComplete ? module.color : isStarted ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.5)" }}
+                      >
+                        {module.title}
+                      </span>
+                      {isStarted && !isComplete && !isLocked && (
+                        <span className="text-[10px] text-white/40">{completedCount}/{module.lessons.length}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Learning Path - Hidden on mobile */}
             <div className="hidden md:block py-8 px-6">
               <HorizontalLearningPath
@@ -1064,7 +1122,7 @@ export default function Academy() {
         <section className="py-16 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
                 <h2 className="text-2xl font-bold text-white mb-6">Curriculum</h2>
 
                 {CURRICULUM.map((module, moduleIndex) => {
@@ -1084,6 +1142,7 @@ export default function Academy() {
                     return (
                       <motion.div
                         key={module.id}
+                        id={`module-section-${module.id}`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: moduleIndex * 0.1 }}
@@ -1136,6 +1195,7 @@ export default function Academy() {
                     return (
                       <motion.div
                         key={module.id}
+                        id={`module-section-${module.id}`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: moduleIndex * 0.1 }}
@@ -1292,7 +1352,7 @@ export default function Academy() {
 
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 order-1 lg:order-2">
                 <h2 className="text-2xl font-bold text-white mb-6">Achievements</h2>
 
                 {user ? (
