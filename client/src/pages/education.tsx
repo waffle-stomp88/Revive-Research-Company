@@ -485,6 +485,32 @@ export default function Education() {
   
   const VALID_TABS = ["peptides", "general", "lab-guides", "trust"];
   const LS_TAB_KEY = "education_last_tab";
+  // Stores {tabId: articleSlug} so each tab independently remembers its last article.
+  const LS_ARTICLES_KEY = "education_last_articles";
+
+  const readStoredArticles = (): Record<string, string> => {
+    try {
+      const raw = localStorage.getItem(LS_ARTICLES_KEY);
+      if (raw) return JSON.parse(raw) as Record<string, string>;
+    } catch {}
+    return {};
+  };
+
+  const writeStoredArticle = (tabId: string, slug: string) => {
+    try {
+      const map = readStoredArticles();
+      map[tabId] = slug;
+      localStorage.setItem(LS_ARTICLES_KEY, JSON.stringify(map));
+    } catch {}
+  };
+
+  const clearStoredArticle = (tabId: string) => {
+    try {
+      const map = readStoredArticles();
+      delete map[tabId];
+      localStorage.setItem(LS_ARTICLES_KEY, JSON.stringify(map));
+    } catch {}
+  };
 
   // Parse tab from URL query parameter, falling back to localStorage, then default
   const getTabFromUrl = () => {
@@ -524,6 +550,8 @@ export default function Education() {
   const [generalEdCategoryFilter, setGeneralEdCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Declare articles before the effects below so they are in scope when the
+  // dependency arrays are evaluated during the component function execution.
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
@@ -531,6 +559,41 @@ export default function Education() {
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  // Restore last-expanded article for the active tab once articles have loaded.
+  // A ref prevents re-running on subsequent renders after restoration fires.
+  // We skip restoration when on a direct /guides/:slug URL since that state is
+  // already driven by the URL and must not be overridden by stored context.
+  const articleRestoredRef = useRef(false);
+  useEffect(() => {
+    if (articleRestoredRef.current || !articles.length || params.slug || expandedArticle) return;
+    const map = readStoredArticles();
+    const savedSlug = map[activeTab];
+    if (!savedSlug) return;
+    const found = articles.find(a => a.slug === savedSlug);
+    if (found) {
+      articleRestoredRef.current = true;
+      setExpandedArticle(found.id);
+      const defaultMode = hasQuickBreakdown(found.slug ?? "") ? "quick-breakdown" : "deep-dive";
+      setArticleMode(defaultMode);
+      prevReadingModeRef.current = defaultMode;
+    } else {
+      // Article no longer exists; clean up stale entry
+      clearStoredArticle(activeTab);
+    }
+  }, [articles]);
+
+  // Persist the expanded article slug per tab whenever expandedArticle changes.
+  // Only writes — explicit close (handleBackToArticles) handles clearing so that
+  // tab switches, which also set expandedArticle to null, do not erase memory.
+  // Skipped on direct /guides/:slug URL visits (URL-driven, not user-initiated).
+  useEffect(() => {
+    if (!expandedArticle || params.slug) return;
+    const article = articles.find(a => a.id === expandedArticle);
+    if (article?.slug) {
+      writeStoredArticle(activeTab, article.slug);
+    }
+  }, [expandedArticle, activeTab]);
 
   const [, setLocation] = useLocation();
   
@@ -548,6 +611,8 @@ export default function Education() {
   };
 
   const handleBackToArticles = () => {
+    // Clear storage for this tab on explicit back — tab switches must NOT clear it
+    clearStoredArticle(activeTab);
     setExpandedArticle(null);
     if (params.slug) {
       const fromParam = new URLSearchParams(window.location.search).get("from");
@@ -1058,7 +1123,7 @@ export default function Education() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
-                  onClick={() => setExpandedArticle(null)}
+                  onClick={handleBackToArticles}
                   className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-[#1a1a1f]/95 border border-[#21d8ff]/40 shadow-lg shadow-black/30 backdrop-blur-sm md:hover:border-[#21d8ff] md:hover:shadow-[#21d8ff]/20 transition-all cursor-pointer lg:left-auto lg:right-8 lg:translate-x-0"
                   data-testid="button-floating-back"
                 >
