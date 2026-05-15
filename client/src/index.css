@@ -863,6 +863,19 @@ body.modal-open {
   width: 100%;
 }
 
+/* Galaxy SVG fallback — one-shot highlight when a peptide is selected via mobile search */
+@keyframes fallback-node-highlight-pulse {
+  0% { background-color: transparent; }
+  20% { background-color: rgba(33, 216, 255, 0.18); }
+  80% { background-color: rgba(33, 216, 255, 0.10); }
+  100% { background-color: transparent; }
+}
+
+.fallback-node-highlight {
+  animation: fallback-node-highlight-pulse 1.8s ease-out forwards;
+  border-radius: 4px;
+}
+
 .holographic-pill .holo-text {
   background: linear-gradient(90deg, #21d8ff, #E7FB10, #a855f7, #21d8ff);
   background-size: 200% auto;

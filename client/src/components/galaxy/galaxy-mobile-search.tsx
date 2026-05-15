@@ -304,7 +304,7 @@ export function GalaxyMobileSearchTrigger({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
           transition={{ duration: 0.25 }}
-          className="absolute bottom-14 right-4 z-20"
+          className="fixed bottom-14 right-4 z-20"
         >
           <Button
             size="icon"

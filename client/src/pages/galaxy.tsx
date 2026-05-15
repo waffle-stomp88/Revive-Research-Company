@@ -301,6 +301,15 @@ export default function GalaxyPage() {
     [handleWarpTo, addRecentSearch]
   );
 
+  const handleFallbackSearchSelect = useCallback((id: string) => {
+    const el = document.getElementById(`fallback-node-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("fallback-node-highlight");
+      setTimeout(() => el.classList.remove("fallback-node-highlight"), 1800);
+    }
+  }, []);
+
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSearchDropdown) return;
     if (e.key === "ArrowDown") {
@@ -543,10 +552,18 @@ export default function GalaxyPage() {
       {isTouch && (
         <GalaxyMobileSearch
           nodes={nodes}
-          onSelect={handleSearchSelect}
+          onSelect={showFallback ? handleFallbackSearchSelect : handleSearchSelect}
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
           recentIds={recentSearchIds}
+        />
+      )}
+
+      {/* Mobile search trigger for SVG fallback — fixed to viewport bottom-right */}
+      {isTouch && showFallback && (
+        <GalaxyMobileSearchTrigger
+          visible={true}
+          onClick={() => setMobileSearchOpen(true)}
         />
       )}
 

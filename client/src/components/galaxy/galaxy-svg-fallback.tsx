@@ -157,7 +157,7 @@ export function GalaxySvgFallback({
                       )
                     );
                     return (
-                      <li key={n.id} className="text-sm">
+                      <li key={n.id} id={`fallback-node-${n.id}`} className="text-sm scroll-mt-4">
                         <Link
                           href={`/peptides/${n.slug}`}
                           className="font-medium hover:underline"
