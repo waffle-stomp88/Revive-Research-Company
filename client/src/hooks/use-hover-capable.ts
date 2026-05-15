@@ -5,7 +5,8 @@ export function useHoverCapable(): boolean {
   return useMemo(
     () =>
       typeof window !== "undefined" &&
-      window.matchMedia("(hover: hover)").matches,
+      window.matchMedia("(hover: hover)").matches &&
+      window.matchMedia("(prefers-reduced-motion: no-preference)").matches,
     []
   );
 }
