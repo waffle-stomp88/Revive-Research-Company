@@ -955,6 +955,20 @@ export default function ProductDetail() {
                     </Link>
                   ))}
                 </div>
+
+                {/* Academy callout — desktop */}
+                <Link href="/academy" data-testid="link-academy-callout-desktop">
+                  <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#ec4899]/5 border border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer group mt-2">
+                    <div className="p-1.5 rounded-md bg-[#ec4899]/10 flex-shrink-0">
+                      <GraduationCap className="h-4 w-4 text-[#ec4899]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-[#ec4899]">Peptide Academy</p>
+                      <p className="text-[10px] text-muted-foreground leading-tight">Earn XP, track progress &amp; get certified</p>
+                    </div>
+                    <ChevronRight className="h-3.5 w-3.5 text-[#ec4899]/50 group-hover:text-[#ec4899] transition-colors flex-shrink-0" />
+                  </div>
+                </Link>
               </motion.section>
             )}
 
@@ -1366,6 +1380,20 @@ export default function ProductDetail() {
 
             <Separator className="my-4 md:my-6" />
 
+            {/* Reconstitution Wizard callout */}
+            <Link href="/reconstitution-wizard" data-testid="link-reconstitution-wizard-callout">
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#E7FB10]/5 border border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-all cursor-pointer group mb-3">
+                <div className="p-1.5 rounded-md bg-[#E7FB10]/10 flex-shrink-0">
+                  <FlaskConical className="h-4 w-4 text-[#E7FB10]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-[#E7FB10]">Reconstitution Calculator</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Calculate exact BAC water &amp; dose per syringe</p>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-[#E7FB10]/50 group-hover:text-[#E7FB10] transition-colors flex-shrink-0" />
+              </div>
+            </Link>
+
             {/* RUO inline notice */}
             <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
               <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
@@ -1410,6 +1438,19 @@ export default function ProductDetail() {
                       </Card>
                     </Link>
                   ))}
+                  {/* Academy callout — mobile */}
+                  <Link href="/academy" data-testid="link-academy-callout-mobile">
+                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#ec4899]/5 border border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer group">
+                      <div className="p-1.5 rounded-md bg-[#ec4899]/10 flex-shrink-0">
+                        <GraduationCap className="h-4 w-4 text-[#ec4899]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-[#ec4899]">Peptide Academy</p>
+                        <p className="text-[10px] text-muted-foreground leading-tight">Earn XP, track progress &amp; get certified</p>
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 text-[#ec4899]/50 group-hover:text-[#ec4899] transition-colors flex-shrink-0" />
+                    </div>
+                  </Link>
                 </CollapsibleContent>
               </Collapsible>
             )}
