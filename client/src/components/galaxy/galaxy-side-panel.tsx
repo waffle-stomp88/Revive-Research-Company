@@ -7,6 +7,7 @@ import {
   type GalaxyNode,
   getStacksForPeptide,
 } from "@/lib/galaxy-layout";
+import { type KnownStack } from "@/lib/synergy-data";
 
 const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
   healing: {
@@ -42,12 +43,13 @@ const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
 interface GalaxySidePanelProps {
   node: GalaxyNode | null;
   onClose: () => void;
+  knownStacks?: KnownStack[];
 }
 
-export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
+export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelProps) {
   if (!node) return null;
 
-  const stacks = getStacksForPeptide(node.id);
+  const stacks = getStacksForPeptide(node.id, knownStacks);
   const accentColor = node.color;
   const borderColor = `${accentColor}60`;
   const cornerColor = `${accentColor}b3`;

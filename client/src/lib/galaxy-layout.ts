@@ -127,8 +127,9 @@ function findNodeIdForPeptideRef(
 
 let cachedLayout: GalaxyLayout | null = null;
 
-export function buildGalaxyLayout(): GalaxyLayout {
-  if (cachedLayout) return cachedLayout;
+export function buildGalaxyLayout(knownStacks?: KnownStack[]): GalaxyLayout {
+  const stacks = knownStacks ?? KNOWN_STACKS;
+  if (!knownStacks && cachedLayout) return cachedLayout;
 
   // Group peptides by primary body system
   const grouped: Record<string, string[]> = {};
@@ -142,9 +143,9 @@ export function buildGalaxyLayout(): GalaxyLayout {
     grouped[sys].push(id);
   }
 
-  // Count synergies per peptide (across all KNOWN_STACKS)
+  // Count synergies per peptide (across all stacks)
   const synergyCount: Record<string, number> = {};
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     for (const p of stack.peptides) {
       synergyCount[p] = (synergyCount[p] || 0) + (stack.peptides.length - 1);
     }
@@ -243,7 +244,7 @@ export function buildGalaxyLayout(): GalaxyLayout {
   const edges: GalaxyEdge[] = [];
   const edgeIndex = new Map<string, number>();
 
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     const detailPageId = (stack as KnownStack & { detailPageId?: string }).detailPageId;
 
     const seen = new Set<string>();
@@ -300,13 +301,15 @@ export function buildGalaxyLayout(): GalaxyLayout {
     }
   }
 
-  cachedLayout = { nodes, edges, nodeIndex };
-  return cachedLayout;
+  const result = { nodes, edges, nodeIndex };
+  if (!knownStacks) cachedLayout = result;
+  return result;
 }
 
-export function getStacksForPeptide(peptideId: string): KnownStack[] {
+export function getStacksForPeptide(peptideId: string, knownStacks?: KnownStack[]): KnownStack[] {
+  const stacks = knownStacks ?? KNOWN_STACKS;
   const norm = normalizePeptideKey(peptideId);
-  return KNOWN_STACKS.filter((s) =>
+  return stacks.filter((s) =>
     s.peptides.some((p) => {
       const np = normalizePeptideKey(p);
       return np === norm || np.includes(norm) || norm.includes(np);

@@ -1008,3 +1008,34 @@ export const labNotes = pgTable("lab_notes", {
 export const insertLabNoteSchema = createInsertSchema(labNotes).omit({ id: true });
 export type InsertLabNote = z.infer<typeof insertLabNoteSchema>;
 export type LabNote = typeof labNotes.$inferSelect;
+
+// Research Stacks table — DB as single source of truth for all curated stacks
+export const researchStacks = pgTable("research_stacks", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  subtitle: text("subtitle").default(""),
+  description: text("description").notNull(),
+  longDescription: text("long_description").default(""),
+  peptideIds: text("peptide_ids").array().notNull().default(sql`'{}'`),
+  peptideDetails: jsonb("peptide_details").default(sql`'[]'::jsonb`),
+  keyBenefits: text("key_benefits").array().default(sql`'{}'`),
+  researchApplications: text("research_applications").array().default(sql`'{}'`),
+  synergyCopy: jsonb("synergy_copy").default(sql`'{}'::jsonb`),
+  storageGuide: text("storage_guide").default(""),
+  educationLinks: jsonb("education_links").default(sql`'[]'::jsonb`),
+  iconName: text("icon_name").default("FlaskConical"),
+  color: text("color").default("#6366f1"),
+  badge: text("badge"),
+  badgeColor: text("badge_color"),
+  category: text("category").default("Recovery"),
+  synergyBonus: integer("synergy_bonus").default(0),
+  detailPageId: text("detail_page_id"),
+  showOnPage: boolean("show_on_page").default(false),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertResearchStackSchema = createInsertSchema(researchStacks).omit({ id: true, createdAt: true });
+export type InsertResearchStack = z.infer<typeof insertResearchStackSchema>;
+export type ResearchStack = typeof researchStacks.$inferSelect;

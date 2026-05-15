@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toPng } from "html-to-image";
@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StackCard } from "@/components/stack-card";
 import { detectPathwayOverlaps } from "@/lib/pathway-overlaps";
-import { PEPTIDE_PATHWAYS, KNOWN_STACKS, normalizePeptideName } from "@/lib/synergy-data";
+import { PEPTIDE_PATHWAYS, KNOWN_STACKS, normalizePeptideName, type KnownStack } from "@/lib/synergy-data";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
 import {
@@ -53,11 +54,11 @@ function getPeptidePathway(productName: string) {
   return null;
 }
 
-function calculateSynergyScore(peptideNames: string[]): number {
+function calculateSynergyScore(peptideNames: string[], stacks: KnownStack[] = KNOWN_STACKS): number {
   if (peptideNames.length < 2) return 0;
   const normalized = peptideNames.map(normalizePeptideName);
 
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     const hasAll = stack.peptides.every(p =>
       normalized.some(s => s.includes(p.replace(/[^a-z0-9]/g, "")))
     );
@@ -65,7 +66,7 @@ function calculateSynergyScore(peptideNames: string[]): number {
     if (hasAll && isExact) return stack.synergyBonus;
   }
 
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     const hasAll = stack.peptides.every(p =>
       normalized.some(s => s.includes(p.replace(/[^a-z0-9]/g, "")))
     );
@@ -125,6 +126,23 @@ export default function StackShare() {
     enabled: !!stack,
   });
 
+  const { data: stacksApiData } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const knownStacksFromApi: KnownStack[] = useMemo(() => {
+    if (!stacksApiData || stacksApiData.length === 0) return KNOWN_STACKS;
+    return stacksApiData.map((s) => ({
+      name: s.name,
+      peptides: s.peptideIds,
+      icon: KNOWN_STACKS[0]?.icon,
+      color: s.color,
+      description: s.description,
+      synergyBonus: s.synergyBonus,
+      detailPageId: s.detailPageId ?? undefined,
+    }));
+  }, [stacksApiData]);
+
   const forkMutation = useMutation<{ shareCode: string; name: string; alreadyOwned?: boolean }>({
     mutationFn: async () => {
       const res = await apiRequest("POST", `/api/saved-stacks/fork/${shareCode}`, {});
@@ -145,7 +163,7 @@ export default function StackShare() {
 
   const sanitizeName = (n: string) => n.replace(/\s*\([^)]*\)/g, '').trim();
   const displayNames = stack ? stack.peptideNames.map(sanitizeName) : [];
-  const synergyScore = stack ? calculateSynergyScore(displayNames) : 0;
+  const synergyScore = stack ? calculateSynergyScore(displayNames, knownStacksFromApi) : 0;
   const activeSystems = stack ? getActiveSystems(displayNames) : [];
   const slugs = displayNames.map(nameToSlug);
   const pathwayOverlaps = stack ? detectPathwayOverlaps(slugs) : [];

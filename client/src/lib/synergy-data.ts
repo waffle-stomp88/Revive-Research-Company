@@ -985,7 +985,7 @@ export function normalizePeptideName(name: string): string {
     .replace(/\s*\(.*?\)\s*/g, '');
 }
 
-export function getSynergyPartners(peptideName: string): { partner: string; stack: KnownStack; synergyBonus: number }[] {
+export function getSynergyPartners(peptideName: string, stacks: KnownStack[] = KNOWN_STACKS): { partner: string; stack: KnownStack; synergyBonus: number }[] {
   const normalizedName = normalizePeptideName(peptideName);
 
   const knownAliases: Record<string, string> = {
@@ -997,7 +997,7 @@ export function getSynergyPartners(peptideName: string): { partner: string; stac
 
   const partners: { partner: string; stack: KnownStack; synergyBonus: number }[] = [];
 
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     if (stack.peptides.includes(resolvedName)) {
       for (const p of stack.peptides) {
         if (p !== resolvedName) {

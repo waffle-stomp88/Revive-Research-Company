@@ -4,18 +4,20 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildGalaxyLayout } from "@/lib/galaxy-layout";
 import { BODY_SYSTEMS } from "@/data/body-systems";
-import { KNOWN_STACKS } from "@/data/known-stacks";
+import { type KnownStack, KNOWN_STACKS } from "@/lib/synergy-data";
 
 interface GalaxySvgFallbackProps {
   onTry3D?: () => void;
   try3DReason?: "reduced-motion" | "error" | null;
+  knownStacks?: KnownStack[];
 }
 
 export function GalaxySvgFallback({
   onTry3D,
   try3DReason,
+  knownStacks,
 }: GalaxySvgFallbackProps = {}) {
-  const { nodes } = useMemo(() => buildGalaxyLayout(), []);
+  const { nodes } = useMemo(() => buildGalaxyLayout(knownStacks), [knownStacks]);
 
   // Project nodes to 2D using a simple isometric-like projection of (x, y)
   const SIZE = 800;
@@ -81,7 +83,7 @@ export function GalaxySvgFallback({
           {/* edges first */}
           <g opacity="0.55">
             {(() => {
-              const layout = buildGalaxyLayout();
+              const layout = buildGalaxyLayout(knownStacks);
               return layout.edges.map((e, i) => {
                 const a = project(layout.nodes[e.fromIndex].position);
                 const b = project(layout.nodes[e.toIndex].position);
@@ -147,7 +149,7 @@ export function GalaxySvgFallback({
                 </h3>
                 <ul className="space-y-2">
                   {list.map((n) => {
-                    const stacks = KNOWN_STACKS.filter((s) =>
+                    const stacks = (knownStacks ?? KNOWN_STACKS).filter((s) =>
                       s.peptides.some(
                         (p) =>
                           p.toLowerCase().replace(/[^a-z0-9]/g, "") ===

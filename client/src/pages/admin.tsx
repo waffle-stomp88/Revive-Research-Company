@@ -125,6 +125,8 @@ import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics, type StripePreset } from "@shared/schema";
+import { Switch } from "@/components/ui/switch";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 import { MANUFACTURER_PRODUCT_IDS, getMfgIdForProduct, getAllMfgIdsForProduct, generateBatchNumber, getNextCycleLetter, validateBatchNumber } from "@shared/batchNumbers";
 import { z } from "zod";
 
@@ -2095,6 +2097,85 @@ function ProductsTab() {
           </TableBody>
         </Table>
       </div>
+    </div>
+  );
+}
+
+function StacksTab() {
+  const { toast } = useToast();
+  const { data: stacks, isLoading } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/admin/research-stacks"],
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, field, value }: { id: string; field: "showOnPage" | "isActive"; value: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/research-stacks/${id}`, { [field]: value });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/research-stacks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/research-stacks"] });
+      toast({ title: "Stack updated" });
+    },
+    onError: () => {
+      toast({ title: "Update failed", variant: "destructive" });
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold">Research Stacks Visibility</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Toggle which stacks appear on the Research Stacks page (<strong>Show on Page</strong>) and which are active in the synergy engine (<strong>Active</strong>).
+        </p>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Synergy Bonus</TableHead>
+            <TableHead className="text-center">Show on Page</TableHead>
+            <TableHead className="text-center">Active</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {stacks?.map((stack) => (
+            <TableRow key={stack.id} data-testid={`row-stack-${stack.id}`}>
+              <TableCell className="font-medium">{stack.name}</TableCell>
+              <TableCell>
+                <Badge variant="outline">{stack.category}</Badge>
+              </TableCell>
+              <TableCell className="text-muted-foreground text-sm">{stack.synergyBonus}</TableCell>
+              <TableCell className="text-center">
+                <Switch
+                  checked={stack.showOnPage}
+                  disabled={toggleMutation.isPending}
+                  onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "showOnPage", value: v })}
+                  data-testid={`toggle-showOnPage-${stack.id}`}
+                />
+              </TableCell>
+              <TableCell className="text-center">
+                <Switch
+                  checked={stack.isActive}
+                  disabled={toggleMutation.isPending}
+                  onCheckedChange={(v) => toggleMutation.mutate({ id: stack.id, field: "isActive", value: v })}
+                  data-testid={`toggle-isActive-${stack.id}`}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -8403,7 +8484,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-6xl grid-cols-10">
+              <TabsList className="grid w-full max-w-6xl grid-cols-11">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -8439,6 +8520,10 @@ export default function Admin() {
                 <TabsTrigger value="settings" className="flex items-center gap-2" data-testid="tab-settings">
                   <Settings className="h-4 w-4" />
                   <span className="hidden sm:inline">Settings</span>
+                </TabsTrigger>
+                <TabsTrigger value="stacks" className="flex items-center gap-2" data-testid="tab-stacks">
+                  <FlaskConical className="h-4 w-4" />
+                  <span className="hidden sm:inline">Stacks</span>
                 </TabsTrigger>
                 <TabsTrigger value="dead-links" className="flex items-center gap-2" data-testid="tab-dead-links">
                   <Link2Off className="h-4 w-4" />
@@ -8490,6 +8575,12 @@ export default function Admin() {
 
               <TabsContent value="settings">
                 <SettingsTab />
+              </TabsContent>
+
+              <TabsContent value="stacks">
+                <Card className="p-6">
+                  <StacksTab />
+                </Card>
               </TabsContent>
 
               <TabsContent value="dead-links">

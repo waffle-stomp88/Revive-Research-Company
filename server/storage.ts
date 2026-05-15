@@ -8,6 +8,8 @@ import {
   deadLinkHits,
   citationDismissals,
   stripePresets,
+  researchStacks,
+  type ResearchStack, type InsertResearchStack,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -400,6 +402,14 @@ export interface IStorage {
   getAllLabNotes(): Promise<LabNote[]>;
   createLabNote(note: InsertLabNote): Promise<LabNote>;
   seedLabNotes(notes: InsertLabNote[]): Promise<void>;
+
+  // Research Stacks
+  getResearchStacks(options?: { showOnPage?: boolean }): Promise<ResearchStack[]>;
+  getAllResearchStacksAdmin(): Promise<ResearchStack[]>;
+  getResearchStackById(id: string): Promise<ResearchStack | undefined>;
+  upsertResearchStack(data: { id: string } & Partial<InsertResearchStack>): Promise<ResearchStack>;
+  updateResearchStackVisibility(id: string, fields: { showOnPage?: boolean; isActive?: boolean }): Promise<ResearchStack | undefined>;
+  getResearchStacksCount(): Promise<number>;
 }
 
 export function resolveDisplayPrice(
@@ -2729,6 +2739,53 @@ export class DatabaseStorage implements IStorage {
     for (const note of notes) {
       await db.insert(labNotes).values(note).onConflictDoNothing();
     }
+  }
+
+  async getResearchStacks(options?: { showOnPage?: boolean }): Promise<ResearchStack[]> {
+    if (options?.showOnPage !== undefined) {
+      return db.select().from(researchStacks)
+        .where(and(eq(researchStacks.isActive, true), eq(researchStacks.showOnPage, options.showOnPage)))
+        .orderBy(researchStacks.sortOrder);
+    }
+    return db.select().from(researchStacks)
+      .where(eq(researchStacks.isActive, true))
+      .orderBy(researchStacks.sortOrder);
+  }
+
+  async getAllResearchStacksAdmin(): Promise<ResearchStack[]> {
+    return db.select().from(researchStacks).orderBy(researchStacks.sortOrder);
+  }
+
+  async getResearchStackById(id: string): Promise<ResearchStack | undefined> {
+    const [stack] = await db.select().from(researchStacks)
+      .where(and(eq(researchStacks.id, id), eq(researchStacks.isActive, true)));
+    return stack || undefined;
+  }
+
+  async upsertResearchStack(data: { id: string } & Partial<InsertResearchStack>): Promise<ResearchStack> {
+    const { id, ...rest } = data;
+    const [stack] = await db.insert(researchStacks)
+      .values({ id, name: rest.name ?? "", description: rest.description ?? "", ...rest })
+      .onConflictDoUpdate({
+        target: researchStacks.id,
+        set: rest,
+      })
+      .returning();
+    return stack;
+  }
+
+  async updateResearchStackVisibility(id: string, fields: { showOnPage?: boolean; isActive?: boolean }): Promise<ResearchStack | undefined> {
+    const [stack] = await db.update(researchStacks)
+      .set(fields)
+      .where(eq(researchStacks.id, id))
+      .returning();
+    return stack || undefined;
+  }
+
+  async getResearchStacksCount(): Promise<number> {
+    const [result] = await db.select({ total: count() }).from(researchStacks)
+      .where(eq(researchStacks.isActive, true));
+    return result?.total ?? 0;
   }
 }
 

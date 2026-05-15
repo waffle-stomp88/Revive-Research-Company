@@ -25,8 +25,9 @@ import {
   findOverlapForPair,
 } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
-import { RESEARCH_STACKS_DATA, STACK_CATEGORIES } from "@/data/research-stacks";
+import { STACK_CATEGORIES } from "@/data/research-stacks";
 import type { SynergyCopy, StackIconName, StackCategory } from "@/data/research-stacks";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 import { getSystemIcon } from "@/data/body-systems";
 import { getHalfLifeBySlug, getHalfLifeByName } from "@/data/pharmacokinetics";
 import { MiniPKChart } from "@/components/mini-pk-chart";
@@ -45,6 +46,7 @@ interface ResearchStack {
   subtitle: string;
   description: string;
   peptides: string[];
+  peptideNames: string[];
   icon: typeof FlaskConical;
   color: string;
   badge?: string;
@@ -76,20 +78,6 @@ const CATEGORY_CHIP_COLORS: Record<string, string> = {
   "Hormonal": "#f43f5e",
 };
 
-const researchStacks: ResearchStack[] = RESEARCH_STACKS_DATA.map((s) => ({
-  id: s.id,
-  name: s.name,
-  subtitle: s.subtitle,
-  description: s.description,
-  peptides: s.peptides.map((p) => p.name),
-  icon: STACK_ICON_MAP[s.iconName] ?? FlaskConical,
-  color: s.color,
-  badge: s.badge,
-  badgeColor: s.badgeColor,
-  synergy: s.synergy,
-  intentionalOverlap: s.intentionalOverlap,
-  category: s.category,
-}));
 
 type StackTab = "pre-built" | "custom";
 
@@ -118,10 +106,10 @@ const getPeptidePathway = (productName: string): PeptidePathway | null => {
 };
 
 // Check if selected peptides form an EXACT known stack (same peptides, same count)
-const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
+const checkKnownStack = (selectedNames: string[], stacks: KnownStack[] = KNOWN_STACKS): KnownStack | null => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
   
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     const stackPeptides = stack.peptides;
     const hasAll = stackPeptides.every(p => 
       normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
@@ -136,11 +124,11 @@ const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
 };
 
 // Check for known stacks that are CONTAINED within current selection (with extra peptides)
-const checkContainedStacks = (selectedNames: string[]): KnownStack[] => {
+const checkContainedStacks = (selectedNames: string[], stacks: KnownStack[] = KNOWN_STACKS): KnownStack[] => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
   const containedStacks: KnownStack[] = [];
   
-  for (const stack of KNOWN_STACKS) {
+  for (const stack of stacks) {
     const hasAll = stack.peptides.every(p => 
       normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
     );
@@ -157,12 +145,12 @@ const checkContainedStacks = (selectedNames: string[]): KnownStack[] => {
 };
 
 // Get recommendation to complete a known stack (only if achievable)
-const getStackRecommendation = (selectedNames: string[]): { stack: KnownStack; missing: string[] } | null => {
+const getStackRecommendation = (selectedNames: string[], stacks: KnownStack[] = KNOWN_STACKS): { stack: KnownStack; missing: string[] } | null => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
   const maxPeptides = 4;
   
   // Sort stacks by synergy bonus (recommend best stacks first)
-  const sortedStacks = [...KNOWN_STACKS].sort((a, b) => b.synergyBonus - a.synergyBonus);
+  const sortedStacks = [...stacks].sort((a, b) => b.synergyBonus - a.synergyBonus);
   
   for (const stack of sortedStacks) {
     const matchCount = stack.peptides.filter(p => 
@@ -214,15 +202,15 @@ const findSharedPathways = (peptideNames: string[]): string[] => {
 };
 
 // Calculate synergy score
-const calculateSynergyScore = (peptideNames: string[]): number => {
+const calculateSynergyScore = (peptideNames: string[], stacks: KnownStack[] = KNOWN_STACKS): number => {
   if (peptideNames.length < 2) return 0;
   
   // Check for exact known stacks first (highest priority)
-  const knownStack = checkKnownStack(peptideNames);
+  const knownStack = checkKnownStack(peptideNames, stacks);
   if (knownStack) return knownStack.synergyBonus;
   
   // Check for contained stacks (give partial credit)
-  const containedStacks = checkContainedStacks(peptideNames);
+  const containedStacks = checkContainedStacks(peptideNames, stacks);
   if (containedStacks.length > 0) {
     // Give credit based on the best contained stack, but reduce slightly since it's not pure
     const bestContained = containedStacks[0];
@@ -633,9 +621,10 @@ const getPeptideCategories = (productName: string) => {
 // Custom Stack Builder Component
 interface PathwayMapProps {
   selectedPeptides: { name: string; slug?: string | null }[];
+  knownStacks?: KnownStack[];
 }
 
-function PathwayMap({ selectedPeptides }: PathwayMapProps) {
+function PathwayMap({ selectedPeptides, knownStacks = KNOWN_STACKS }: PathwayMapProps) {
   const [clickedConnection, setClickedConnection] = useState<string | null>(null);
   const [clickedNode, setClickedNode] = useState<string | null>(null);
   const [hoveredConnection, setHoveredConnection] = useState<string | null>(null);
@@ -787,7 +776,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
         let matchedStack: KnownStack | undefined;
         const selectedNorms = peptideData.map(p => normalizePeptideName(p.originalName));
-        for (const stack of KNOWN_STACKS) {
+        for (const stack of knownStacks) {
           const stackNorms = stack.peptides.map(p => p.replace(/[^a-z0-9]/g, ''));
           const iInStack = stackNorms.some(sn => normI.includes(sn));
           const jInStack = stackNorms.some(sn => normJ.includes(sn));
@@ -1873,6 +1862,7 @@ interface CustomStackBuilderProps {
   onSwitchToPreBuilt: () => void;
   templatePeptideNames?: string[];
   onTemplateApplied?: () => void;
+  knownStacks?: KnownStack[];
 }
 
 function GuidanceAccordion({ autoOpen, selectedCount, children }: { autoOpen: string[]; selectedCount: number; children: React.ReactNode }) {
@@ -1897,7 +1887,7 @@ function GuidanceAccordion({ autoOpen, selectedCount, children }: { autoOpen: st
   );
 }
 
-function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
+function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied, knownStacks = KNOWN_STACKS }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
   const [stackName, setStackName] = useState("");
   const [isPublicStack, setIsPublicStack] = useState(true);
@@ -2127,7 +2117,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </Link>
       </div>
       <div className="hidden md:block">
-        <PathwayMap selectedPeptides={selectedPeptides} />
+        <PathwayMap selectedPeptides={selectedPeptides} knownStacks={knownStacks} />
       </div>
       <div className="md:hidden" data-testid="mobile-synergy-teaser">
         <Card className="border-[#2a2a32] bg-[#1a1a1f]/80 overflow-hidden">
@@ -2348,9 +2338,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
             {/* ====== SYNERGY RING & SCORE ====== */}
             {(() => {
               const peptideNames = selectedPeptides.map(p => p.name);
-              const synergyScore = calculateSynergyScore(peptideNames);
-              const knownStack = checkKnownStack(peptideNames);
-              const recommendation = getStackRecommendation(peptideNames);
+              const synergyScore = calculateSynergyScore(peptideNames, knownStacks);
+              const knownStack = checkKnownStack(peptideNames, knownStacks);
+              const recommendation = getStackRecommendation(peptideNames, knownStacks);
               const sharedPathways = findSharedPathways(peptideNames);
               const activeSystems = getActiveSystems(peptideNames);
               const pathwayOverlaps = detectPathwayOverlaps(
@@ -2441,7 +2431,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             </motion.div>
                           ) : selectedPeptides.length >= 2 ? (
                             (() => {
-                              const containedStacks = checkContainedStacks(selectedPeptides.map(p => p.name));
+                              const containedStacks = checkContainedStacks(selectedPeptides.map(p => p.name), knownStacks);
                               if (containedStacks.length > 0) {
                                 const bestContained = containedStacks[0];
                                 const ContainedIcon = bestContained.icon;
@@ -2857,7 +2847,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                 <div className="space-y-2">
                                   {popularStacks.slice(0, 3).map((combo, i) => {
                                     const comboOverlaps = detectPathwayOverlaps(combo.peptideNames);
-                                    const comboKnownStack = checkKnownStack(combo.peptideNames);
+                                    const comboKnownStack = checkKnownStack(combo.peptideNames, knownStacks);
                                     const detailPageId = comboKnownStack?.detailPageId;
                                     return (
                                     <div key={i} className="space-y-1">
@@ -2977,8 +2967,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       <AnimatePresence>
         {selectedPeptides.length >= 2 && !cartExpanded && (() => {
           const peptideNames = selectedPeptides.map(p => p.name);
-          const synergyScore = calculateSynergyScore(peptideNames);
-          const knownStack = checkKnownStack(peptideNames);
+          const synergyScore = calculateSynergyScore(peptideNames, knownStacks);
+          const knownStack = checkKnownStack(peptideNames, knownStacks);
           const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
           const sharedPathways = findSharedPathways(peptideNames);
           return (
@@ -3230,8 +3220,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         {/* Mobile-only synergy & systems summary */}
                         {selectedPeptides.length >= 2 && (() => {
                           const peptideNames = selectedPeptides.map(p => p.name);
-                          const synergyScore = calculateSynergyScore(peptideNames);
-                          const knownStack = checkKnownStack(peptideNames);
+                          const synergyScore = calculateSynergyScore(peptideNames, knownStacks);
+                          const knownStack = checkKnownStack(peptideNames, knownStacks);
                           const sharedPathways = findSharedPathways(peptideNames);
                           const activeSystems = getActiveSystems(peptideNames);
                           const mobilePathwayOverlaps = detectPathwayOverlaps(
@@ -3385,7 +3375,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           peptideIds: selectedPeptides.map(p => p.id),
                                           peptideNames: selectedPeptides.map(p => p.name.replace(/\s*\([^)]*\)/g, '').trim()),
                                           isPublic: isPublicStack,
-                                          synergyScore: calculateSynergyScore(selectedPeptides.map(p => p.name)),
+                                          synergyScore: calculateSynergyScore(selectedPeptides.map(p => p.name), knownStacks),
                                         });
                                       }}
                                       disabled={saveStackMutation.isPending}
@@ -3510,6 +3500,44 @@ function ResearchStacks() {
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  const { data: stacksApiData } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const researchStacks: ResearchStack[] = useMemo(() => {
+    if (!stacksApiData) return [];
+    return stacksApiData
+      .filter((s: ResearchStackApiResponse) => s.showOnPage === true)
+      .map((s: ResearchStackApiResponse) => ({
+        id: s.id,
+        name: s.name,
+        subtitle: s.subtitle ?? "",
+        description: s.description,
+        peptides: Array.isArray(s.peptideIds) ? s.peptideIds : [],
+        peptideNames: Array.isArray(s.peptideDetails) ? s.peptideDetails.map((d) => d.name) : [],
+        icon: STACK_ICON_MAP[s.iconName as StackIconName] ?? FlaskConical,
+        color: s.color,
+        badge: s.badge ?? undefined,
+        badgeColor: s.badgeColor ?? undefined,
+        synergy: s.synergyCopy ?? { beginner: "", expert: "" },
+        intentionalOverlap: false,
+        category: s.category as StackCategory,
+      }));
+  }, [stacksApiData]);
+
+  const knownStacksFromApi: KnownStack[] = useMemo(() => {
+    if (!stacksApiData || stacksApiData.length === 0) return KNOWN_STACKS;
+    return stacksApiData.map((s: ResearchStackApiResponse) => ({
+      name: s.name,
+      peptides: Array.isArray(s.peptideIds) ? s.peptideIds : [],
+      icon: STACK_ICON_MAP[s.iconName as StackIconName] ?? FlaskConical,
+      color: s.color,
+      description: s.description,
+      synergyBonus: s.synergyBonus ?? 0,
+      detailPageId: s.id,
+    }));
+  }, [stacksApiData]);
 
   const { data: productsWithStock } = useQuery<any[]>({
     queryKey: ["/api/products-with-stock"],
@@ -3668,6 +3696,7 @@ function ResearchStacks() {
                 onSwitchToPreBuilt={() => setActiveTab("pre-built")}
                 templatePeptideNames={templatePeptideNames}
                 onTemplateApplied={() => setTemplatePeptideNames([])}
+                knownStacks={knownStacksFromApi}
               />
               {SOFT_GATE_ENABLED && !isAuthenticated && (
                 <div
@@ -3772,6 +3801,13 @@ function ResearchStacks() {
                   );
                 })}
               </div>
+              {!stacksApiData ? (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <Skeleton key={i} className="h-64 w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : (
               <div className="grid md:grid-cols-2 gap-6">
           {researchStacks.filter((s) => activeCategory === "All" || s.category === activeCategory).map((stack, index) => {
             const Icon = stack.icon;
@@ -3868,14 +3904,14 @@ function ResearchStacks() {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 items-center">
-                      {stack.peptides.map((peptide) => (
+                      {stack.peptides.map((peptide, pi) => (
                         <Badge
                           key={peptide}
                           variant="outline"
                           className="text-xs border-[#3a3a42] text-gray-300"
                         >
                           <FlaskConical className="h-3 w-3 mr-1" style={{ color: stack.color }} />
-                          {peptide}
+                          {stack.peptideNames[pi] ?? peptide}
                         </Badge>
                       ))}
                       {prebuiltOverlaps.length > 0 && (
@@ -4042,6 +4078,7 @@ function ResearchStacks() {
             );
           })}
               </div>
+              )}
 
               <motion.div
                 initial={{ opacity: 0, y: 16 }}

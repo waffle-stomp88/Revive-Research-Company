@@ -6,6 +6,7 @@ import {
   type GalaxyEdge,
   type GalaxyNode,
 } from "@/lib/galaxy-layout";
+import { type KnownStack } from "@/lib/synergy-data";
 import { GalaxyStars } from "./galaxy-stars";
 import { GalaxyEdges } from "./galaxy-edges";
 import { GalaxyStarfield } from "./galaxy-starfield";
@@ -42,6 +43,7 @@ interface GalaxySceneProps {
   rotationSpeed?: number;
   onHoveredScreenPos?: (pos: { x: number; y: number } | null) => void;
   onWarpStart?: (node: GalaxyNode) => void;
+  knownStacks?: KnownStack[];
 }
 
 export function GalaxyScene({
@@ -64,8 +66,9 @@ export function GalaxyScene({
   rotationSpeed = 0.45,
   onHoveredScreenPos,
   onWarpStart,
+  knownStacks,
 }: GalaxySceneProps) {
-  const layout = useMemo(() => buildGalaxyLayout(), []);
+  const layout = useMemo(() => buildGalaxyLayout(knownStacks), [knownStacks]);
   const { nodes, edges } = layout;
   const vfx = GALAXY_VFX[vfxVariant];
   const [edgeHover, setEdgeHover] = useState<{

@@ -6544,5 +6544,86 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // ── Research Stacks ────────────────────────────────────────────────────────
+  // NOTE: /count must be defined BEFORE /:id to avoid Express matching "count" as an id
+  app.get("/api/research-stacks/count", async (_req, res) => {
+    try {
+      const total = await storage.getResearchStacksCount();
+      return res.json({ count: total });
+    } catch (error) {
+      console.error("Error fetching research stacks count:", error);
+      return res.status(500).json({ error: "Failed to fetch count" });
+    }
+  });
+
+  app.get("/api/research-stacks", async (req: any, res) => {
+    try {
+      const stacks = await storage.getResearchStacks();
+      return res.json(
+        stacks.map((s) => ({
+          ...s,
+          peptides: s.peptideDetails,
+          synergy: s.synergyCopy,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching research stacks:", error);
+      return res.status(500).json({ error: "Failed to fetch research stacks" });
+    }
+  });
+
+  app.get("/api/research-stacks/:id", async (req, res) => {
+    try {
+      if (!isValidSlug(req.params.id)) {
+        return res.status(400).json({ error: "Invalid stack id" });
+      }
+      const stack = await storage.getResearchStackById(req.params.id);
+      if (!stack) return res.status(404).json({ error: "Stack not found" });
+      return res.json({
+        ...stack,
+        peptides: stack.peptideDetails,
+        synergy: stack.synergyCopy,
+      });
+    } catch (error) {
+      console.error("Error fetching research stack:", error);
+      return res.status(500).json({ error: "Failed to fetch stack" });
+    }
+  });
+
+  app.get("/api/admin/research-stacks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+      const stacks = await storage.getAllResearchStacksAdmin();
+      return res.json(stacks.map((s) => ({ ...s, peptides: s.peptideDetails, synergy: s.synergyCopy })));
+    } catch (error) {
+      console.error("Error fetching admin research stacks:", error);
+      return res.status(500).json({ error: "Failed to fetch research stacks" });
+    }
+  });
+
+  app.patch("/api/admin/research-stacks/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+      const { showOnPage, isActive } = req.body;
+      const fields: { showOnPage?: boolean; isActive?: boolean } = {};
+      if (typeof showOnPage === "boolean") fields.showOnPage = showOnPage;
+      if (typeof isActive === "boolean") fields.isActive = isActive;
+      if (Object.keys(fields).length === 0) {
+        return res.status(400).json({ error: "Provide showOnPage or isActive (boolean)" });
+      }
+      const stack = await storage.updateResearchStackVisibility(req.params.id, fields);
+      if (!stack) return res.status(404).json({ error: "Stack not found" });
+      return res.json(stack);
+    } catch (error) {
+      console.error("Error updating research stack:", error);
+      return res.status(500).json({ error: "Failed to update stack" });
+    }
+  });
+
   return httpServer;
 }

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap, Pause, Play } from "lucide-react";
@@ -11,6 +12,8 @@ import {
   buildGalaxyLayout,
   type GalaxyNode,
 } from "@/lib/galaxy-layout";
+import { type KnownStack, KNOWN_STACKS } from "@/lib/synergy-data";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 import { GalaxySvgFallback } from "@/components/galaxy/galaxy-svg-fallback";
 import { GalaxyFilterBar } from "@/components/galaxy/galaxy-filter-bar";
 import { GalaxySidePanel } from "@/components/galaxy/galaxy-side-panel";
@@ -135,12 +138,29 @@ export default function GalaxyPage() {
     setVfxVariant(resolveVfxVariant(params.get("vfx")));
   }, [location]);
 
+  const { data: stacksApiData } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const knownStacksFromApi: KnownStack[] = useMemo(() => {
+    if (!stacksApiData || stacksApiData.length === 0) return KNOWN_STACKS;
+    return stacksApiData.map((s) => ({
+      name: s.name,
+      peptides: s.peptideIds,
+      icon: Sparkles,
+      color: s.color,
+      description: s.description,
+      synergyBonus: s.synergyBonus,
+      detailPageId: s.detailPageId ?? undefined,
+    }));
+  }, [stacksApiData]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const target = params.get("peptide");
     if (!target) return;
-    const layout = buildGalaxyLayout();
+    const layout = buildGalaxyLayout(knownStacksFromApi);
     const norm = (s: string) =>
       s.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const t = norm(target);
@@ -148,9 +168,9 @@ export default function GalaxyPage() {
       (n) => n.id === target || n.slug === t || norm(n.id) === t
     );
     if (match) setSelectedId(match.id);
-  }, [location]);
+  }, [location, knownStacksFromApi]);
 
-  const layout = useMemo(() => buildGalaxyLayout(), []);
+  const layout = useMemo(() => buildGalaxyLayout(knownStacksFromApi), [knownStacksFromApi]);
   const handleNodeMeta = useCallback((nodes: GalaxyNode[]) => {
     setNodeMeta(nodes);
   }, []);
@@ -442,6 +462,7 @@ export default function GalaxyPage() {
                 ? "error"
                 : null
             }
+            knownStacks={knownStacksFromApi}
           />
         </div>
       ) : (
@@ -501,6 +522,7 @@ export default function GalaxyPage() {
                   rotationSpeed={rotationSpeed}
                   onHoveredScreenPos={handleHoveredScreenPos}
                   onWarpStart={handleWarpStart}
+                  knownStacks={knownStacksFromApi}
                 />
               </ErrorBoundary>
             </Suspense>
@@ -535,6 +557,7 @@ export default function GalaxyPage() {
                     setSelectedId(null);
                     setResetSignal((n) => n + 1);
                   }}
+                knownStacks={knownStacksFromApi}
               />
             )}
           </AnimatePresence>

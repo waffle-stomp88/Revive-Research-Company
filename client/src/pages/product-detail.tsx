@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -74,7 +74,8 @@ import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
 import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS, resolveComboSlugKey } from "@/data/pharmacokinetics";
-import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { getSynergyPartners, normalizePeptideName, KNOWN_STACKS, type KnownStack } from "@/lib/synergy-data";
+import type { ResearchStackApiResponse } from "@/lib/research-stacks-api";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
@@ -291,6 +292,23 @@ export default function ProductDetail() {
   const { data: allProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const { data: stacksApiData } = useQuery<ResearchStackApiResponse[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const knownStacksFromApi: KnownStack[] = useMemo(() => {
+    if (!stacksApiData || stacksApiData.length === 0) return KNOWN_STACKS;
+    return stacksApiData.map((s) => ({
+      name: s.name,
+      peptides: s.peptideIds,
+      icon: KNOWN_STACKS[0]?.icon,
+      color: s.color,
+      description: s.description,
+      synergyBonus: s.synergyBonus,
+      detailPageId: s.detailPageId ?? undefined,
+    }));
+  }, [stacksApiData]);
 
   const { data: voteCounts = [] } = useQuery<Array<{ productId: string; count: number }>>({
     queryKey: ["/api/products/votes"],
@@ -2080,7 +2098,7 @@ export default function ProductDetail() {
                 ) : (
                 <>{/* Research Partners content */}
                 {(() => {
-                  const synergyPartners = getSynergyPartners(product.name);
+                  const synergyPartners = getSynergyPartners(product.name, knownStacksFromApi);
                   if (synergyPartners.length === 0) return null;
                   const matchingProducts = allProducts.filter((p: Product) => {
                     if (p.category === "Research Stacks" || p.category === "Supplies" || p.category === "Research Compounds") return false;

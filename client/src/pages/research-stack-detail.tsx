@@ -16,14 +16,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { getSynergyPartners, normalizePeptideName, KNOWN_STACKS } from "@/lib/synergy-data";
+import type { KnownStack } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { detectPathwayOverlaps, resolveDatasetSlug } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
 import { Layers } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
-import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
 import { useAuth } from "@/hooks/useAuth";
 import { SoftGateBanner } from "@/components/soft-gate-banner";
 
@@ -58,6 +58,34 @@ import {
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
 
+interface StackPeptideDetail { name: string; description: string; }
+interface StackEducationLink { articleUrl: string; peptideName: string; articleTitle: string; }
+interface StackDetail {
+  id: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  longDescription: string | null;
+  peptideIds: string[];
+  peptides: StackPeptideDetail[];
+  keyBenefits: string[];
+  researchApplications: string[];
+  synergy: { beginner: string; expert: string };
+  storageGuide: string;
+  educationLinks: StackEducationLink[];
+  iconName: string;
+  color: string;
+  badge: string | null;
+  badgeColor: string | null;
+  category: string;
+  synergyBonus: number;
+  detailPageId: string | null;
+  showOnPage: boolean;
+  isActive: boolean;
+  sortOrder: number;
+  intentionalOverlap?: boolean;
+}
+
 const subscriptionOptions: { value: SubscriptionInterval; label: string; discount: number }[] = [
   { value: "weekly", label: "Weekly", discount: 15 },
   { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
@@ -84,14 +112,36 @@ export default function ResearchStackDetail() {
     setActiveResearchTab("overview");
   }, [params?.id]);
 
+  const { data: stackData, isLoading: stackLoading, isError: stackError } = useQuery<StackDetail>({
+    queryKey: ["/api/research-stacks", params?.id],
+    enabled: Boolean(match && params?.id),
+    retry: false,
+  });
+
+  const { data: allStacksData } = useQuery<StackDetail[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+
+  const knownStacksFromApi = useMemo<KnownStack[]>(() => {
+    if (!allStacksData || allStacksData.length === 0) return KNOWN_STACKS;
+    return allStacksData.map((s) => ({
+      name: s.name,
+      peptides: s.peptideIds,
+      icon: FlaskConical,
+      color: s.color,
+      description: s.description,
+      synergyBonus: s.synergyBonus,
+      detailPageId: s.id,
+    }));
+  }, [allStacksData]);
+
   useEffect(() => {
-    if (!match || !params?.id) return;
-    const stack = RESEARCH_STACKS_BY_ID[params.id];
-    if (!stack) {
+    if (!match || !params?.id || stackLoading) return;
+    if (stackError) {
       sessionStorage.setItem("stack-retired-redirect", "1");
       setLocation("/research-stacks");
     }
-  }, [match, params?.id]);
+  }, [match, params?.id, stackError, stackLoading]);
 
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -115,7 +165,15 @@ export default function ResearchStackDetail() {
     return null;
   }
 
-  const stack = RESEARCH_STACKS_BY_ID[params.id];
+  if (stackLoading) {
+    return (
+      <main className="min-h-screen pt-32 pb-24 flex items-center justify-center">
+        <div className="text-muted-foreground text-sm animate-pulse">Loading stack...</div>
+      </main>
+    );
+  }
+
+  const stack = stackData;
 
   if (!stack) {
     return null;
@@ -242,7 +300,7 @@ export default function ResearchStackDetail() {
                   <Badge
                     className="absolute top-4 right-4 z-30"
                     style={{
-                      backgroundColor: stack.badgeColor,
+                      backgroundColor: stack.badgeColor ?? undefined,
                       color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
                     }}
                     data-testid="badge-stack-type"
@@ -878,7 +936,7 @@ export default function ResearchStackDetail() {
 
           const partnerMap = new Map<string, { partner: string; stack: { name: string }; synergyBonus: number }>();
           for (const peptideName of stackPeptideNames) {
-            const partners = getSynergyPartners(peptideName);
+            const partners = getSynergyPartners(peptideName, knownStacksFromApi);
             for (const p of partners) {
               const norm = normalizePeptideName(p.partner);
               if (stackNorms.has(norm)) continue;

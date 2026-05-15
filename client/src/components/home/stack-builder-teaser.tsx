@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +48,7 @@ const synergyTiers = [
   },
 ];
 
-function SynergyBarGraph({ isInView }: { isInView: boolean }) {
+function SynergyBarGraph({ isInView, extraStacks }: { isInView: boolean; extraStacks: number }) {
   return (
     <div className="space-y-3 md:space-y-4 w-full max-w-md mx-auto" data-testid="synergy-bar-graph">
       {synergyTiers.map((tier, index) => (
@@ -130,7 +131,7 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
           Wolverine Stack = 95% Synergy
         </Badge>
         <p className="text-xs text-muted-foreground mt-3" data-testid="text-more-stacks">
-          +18 more stacks to discover
+          +{extraStacks} more stacks to discover
         </p>
       </motion.div>
     </div>
@@ -140,6 +141,11 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
 export function StackBuilderTeaser() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const { data: stacksData } = useQuery<{ id: string }[]>({
+    queryKey: ["/api/research-stacks"],
+  });
+  const knownStacksCount = stacksData?.length ?? 25;
+  const extraStacks = Math.max(0, knownStacksCount - 1);
 
   return (
     <section ref={containerRef} className="py-10 md:py-24 relative overflow-hidden" data-testid="section-stack-builder">
@@ -190,7 +196,7 @@ export function StackBuilderTeaser() {
           className="flex flex-wrap justify-center gap-2 mb-6 md:mb-10"
         >
           <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
-            <Crown className="h-3 w-3 mr-1" /> 19 Known Stacks
+            <Crown className="h-3 w-3 mr-1" /> {knownStacksCount} Known Stacks
           </Badge>
           <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">
             <Activity className="h-3 w-3 mr-1" /> Synergy Scores
@@ -214,7 +220,7 @@ export function StackBuilderTeaser() {
           <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4 md:mb-6 text-center" data-testid="text-synergy-levels-label">
             Synergy Level Scale
           </p>
-          <SynergyBarGraph isInView={isInView} />
+          <SynergyBarGraph isInView={isInView} extraStacks={extraStacks} />
         </motion.div>
 
         {/* Centered CTA Button */}
