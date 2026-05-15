@@ -199,6 +199,7 @@ export default function ProductDetail() {
   const [showStickyPurchase, setShowStickyPurchase] = useState(false);
   const [quickAddSuccess, setQuickAddSuccess] = useState<Record<string, boolean>>({});
   const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("overview");
+  const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -544,6 +545,13 @@ export default function ProductDetail() {
       setActiveResearchTab("overview");
     }
   }, [hasPkData, activeResearchTab, softGateEnabled, isAuthenticated]);
+
+  useEffect(() => {
+    const btn = tabButtonRefs.current[activeResearchTab];
+    if (btn) {
+      btn.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    }
+  }, [activeResearchTab]);
 
   // Feature 1: Sticky desktop purchase bar — scroll handler
   useEffect(() => {
@@ -1493,7 +1501,7 @@ export default function ProductDetail() {
               <nav
                 data-testid="nav-research-tabs"
                 className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
-                style={{ background: "rgba(157,78,221,0.04)" }}
+                style={{ background: "rgba(157,78,221,0.04)", WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory" }}
               >
                 <div className="flex min-w-max">
                   {(
@@ -1506,6 +1514,7 @@ export default function ProductDetail() {
                   ).map((tab) => (
                     <button
                       key={tab.key}
+                      ref={(el) => { tabButtonRefs.current[tab.key] = el; }}
                       type="button"
                       data-testid={tab.testId}
                       onClick={() => setActiveResearchTab(tab.key)}
@@ -1514,6 +1523,7 @@ export default function ProductDetail() {
                           ? "border-[#E7FB10] text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
                       }`}
+                      style={{ scrollSnapAlign: "start" }}
                     >
                       <span className="sm:hidden">{tab.mobileLabel}</span>
                       <span className="hidden sm:inline">{tab.label}</span>
