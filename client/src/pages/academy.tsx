@@ -1191,6 +1191,40 @@ export default function Academy() {
               >
                 <h2 className="text-2xl font-bold text-white mb-6">Curriculum</h2>
 
+                <div className="flex items-center justify-between lg:hidden mb-4">
+                  <button
+                    onClick={() => {
+                      const prevIndex = Math.max(activeMobileModuleIndex - 1, 0);
+                      const el = document.getElementById(`module-section-${CURRICULUM[prevIndex].id}`);
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
+                    style={{ visibility: activeMobileModuleIndex === 0 ? "hidden" : "visible" }}
+                    aria-label="Previous module"
+                    data-testid="button-curriculum-prev"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                    <span className="text-sm">Prev</span>
+                  </button>
+                  <span className="text-sm text-white/50">
+                    Module {activeMobileModuleIndex + 1} of {CURRICULUM.length}
+                  </span>
+                  <button
+                    onClick={() => {
+                      const nextIndex = Math.min(activeMobileModuleIndex + 1, CURRICULUM.length - 1);
+                      const el = document.getElementById(`module-section-${CURRICULUM[nextIndex].id}`);
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="flex items-center gap-1 text-white/60 hover:text-white transition-colors px-2 py-1"
+                    style={{ visibility: activeMobileModuleIndex === CURRICULUM.length - 1 ? "hidden" : "visible" }}
+                    aria-label="Next module"
+                    data-testid="button-curriculum-next"
+                  >
+                    <span className="text-sm">Next</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+
                 {CURRICULUM.map((module, moduleIndex) => {
                   const moduleProgress = getModuleProgress(module.id);
                   const personaConfig = getPersonaConfig();
