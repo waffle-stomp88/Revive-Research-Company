@@ -552,7 +552,7 @@ export default function Education() {
 
   // Declare articles before the effects below so they are in scope when the
   // dependency arrays are evaluated during the component function execution.
-  const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
+  const { data: articles = [], isLoading, isFetching: articlesFetching } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
 
@@ -561,12 +561,15 @@ export default function Education() {
   });
 
   // Restore last-expanded article for the active tab once articles have loaded.
+  // We wait for articlesFetching to be false so we only act on settled (fresh)
+  // data — this prevents a stale cache hit from briefly showing an article that
+  // no longer exists in the latest API response.
   // A ref prevents re-running on subsequent renders after restoration fires.
   // We skip restoration when on a direct /guides/:slug URL since that state is
   // already driven by the URL and must not be overridden by stored context.
   const articleRestoredRef = useRef(false);
   useEffect(() => {
-    if (articleRestoredRef.current || !articles.length || params.slug || expandedArticle) return;
+    if (articleRestoredRef.current || articlesFetching || !articles.length || params.slug || expandedArticle) return;
     const map = readStoredArticles();
     const savedSlug = map[activeTab];
     if (!savedSlug) return;
@@ -581,7 +584,21 @@ export default function Education() {
       // Article no longer exists; clean up stale entry
       clearStoredArticle(activeTab);
     }
-  }, [articles]);
+  }, [articles, articlesFetching]);
+
+  // Staleness guard: if articles refresh and the currently expanded article is
+  // no longer present in the latest response (including an empty response),
+  // clear the stale expanded state and remove the corresponding localStorage
+  // entry. articlesFetching already guards the "not yet loaded" case so we do
+  // not need a !articles.length check here.
+  useEffect(() => {
+    if (!expandedArticle || articlesFetching || params.slug) return;
+    const still = articles.find(a => a.id === expandedArticle);
+    if (!still) {
+      clearStoredArticle(activeTab);
+      setExpandedArticle(null);
+    }
+  }, [articles, articlesFetching]);
 
   // Persist the expanded article slug per tab whenever expandedArticle changes.
   // Only writes — explicit close (handleBackToArticles) handles clearing so that
