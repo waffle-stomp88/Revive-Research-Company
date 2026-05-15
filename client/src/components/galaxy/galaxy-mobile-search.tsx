@@ -11,6 +11,7 @@ interface GalaxyMobileSearchProps {
   open: boolean;
   onClose: () => void;
   recentIds?: string[];
+  onClearRecent?: () => void;
 }
 
 export function GalaxyMobileSearch({
@@ -19,6 +20,7 @@ export function GalaxyMobileSearch({
   open,
   onClose,
   recentIds = [],
+  onClearRecent,
 }: GalaxyMobileSearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeIdx, setActiveIdx] = useState(-1);
@@ -228,9 +230,22 @@ export function GalaxyMobileSearch({
                 >
                   <div className="flex items-center gap-2 px-4 pt-3 pb-1">
                     <Clock className="h-3 w-3 text-white/30" />
-                    <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30">
+                    <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30 flex-1">
                       Recent
                     </span>
+                    {onClearRecent && (
+                      <button
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          onClearRecent();
+                        }}
+                        className="text-xs font-mono text-white/30 hover:text-white/60 transition-colors"
+                        aria-label="Clear recent searches"
+                        data-testid="galaxy-mobile-search-clear-recent"
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
                   <ul
                     role="listbox"

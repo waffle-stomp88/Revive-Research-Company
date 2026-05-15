@@ -23,7 +23,7 @@ function writeRecent(ids: string[]): void {
   }
 }
 
-export function useRecentGalaxySearches(): [string[], (id: string) => void] {
+export function useRecentGalaxySearches(): [string[], (id: string) => void, () => void] {
   const [recent, setRecent] = useState<string[]>(() => readRecent());
 
   const addRecent = useCallback((id: string) => {
@@ -34,5 +34,14 @@ export function useRecentGalaxySearches(): [string[], (id: string) => void] {
     });
   }, []);
 
-  return [recent, addRecent];
+  const clearRecent = useCallback(() => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore storage errors
+    }
+    setRecent([]);
+  }, []);
+
+  return [recent, addRecent, clearRecent];
 }

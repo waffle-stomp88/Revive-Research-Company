@@ -77,7 +77,7 @@ export default function GalaxyPage() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Recent warp history (sessionStorage)
-  const [recentSearchIds, addRecentSearch] = useRecentGalaxySearches();
+  const [recentSearchIds, addRecentSearch, clearRecentSearches] = useRecentGalaxySearches();
 
   // Mobile / touch detection
   const [isTouch] = useState(() => isTouchDevice());
@@ -464,9 +464,20 @@ export default function GalaxyPage() {
                       <>
                         <div className="flex items-center gap-1.5 px-3 pt-2 pb-1">
                           <Clock className="h-3 w-3 text-white/30" />
-                          <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30">
+                          <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30 flex-1">
                             Recent
                           </span>
+                          <button
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              clearRecentSearches();
+                            }}
+                            className="text-xs font-mono text-white/30 hover:text-white/60 transition-colors"
+                            aria-label="Clear recent searches"
+                            data-testid="galaxy-search-clear-recent"
+                          >
+                            Clear
+                          </button>
                         </div>
                         <ul
                           ref={searchListRef}
@@ -556,6 +567,7 @@ export default function GalaxyPage() {
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
           recentIds={recentSearchIds}
+          onClearRecent={clearRecentSearches}
         />
       )}
 
