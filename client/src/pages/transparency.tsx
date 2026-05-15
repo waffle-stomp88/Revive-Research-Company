@@ -53,7 +53,7 @@ const doList = [
   "Respond to support inquiries within 24 hours",
   "Maintain transparent pricing with no hidden fees",
   "Archive all batch data for traceability",
-  "Ship with temperature-controlled packaging",
+  "Ship with discreet protective packaging",
 ];
 
 const dontList = [
@@ -215,7 +215,7 @@ export default function Transparency() {
                 </p>
                 <p>
                   <strong className="text-foreground">Fulfillment:</strong> Orders placed before 
-                  12:00 PM CT ship same day. We use temperature-controlled packaging and 
+                  12:00 PM CT ship same day. We use discreet protective packaging and 
                   provide tracking on all shipments.
                 </p>
               </div>

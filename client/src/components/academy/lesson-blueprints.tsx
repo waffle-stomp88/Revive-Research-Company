@@ -834,7 +834,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               description: "Your order is quality-checked and carefully packaged",
               icon: Package,
               color: "#21d8ff",
-              details: ["Quality verification", "Careful packaging", "Cold packs for stability"],
+              details: ["Quality verification", "Careful packaging", "Discreet dry packaging"],
             },
             {
               id: 3,

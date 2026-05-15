@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, EXPRESS_SHIPPING_COST } from "@shared/constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,14 +23,17 @@ const SHIPPING_INFO = {
   flatRate: FLAT_RATE_SHIPPING,
   processingTime: "24 hours",
   sameDayCutoff: "12:00 PM CT",
-  carrier: "USPS Priority / UPS Ground",
-  transitTime: "2–5 business days"
+  standardCarrier: "UPS Ground",
+  standardTransitTime: "3–5 business days",
+  expressCarrier: "UPS 2-Day Air",
+  expressTransitTime: "1–2 business days",
+  expressRate: EXPRESS_SHIPPING_COST,
 };
 
 export default function Shipping() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Shipping Information" description={`Free shipping over $${FREE_SHIPPING_THRESHOLD}. Same-day dispatch before 12 PM CT. Discreet packaging with temperature protection.`} canonicalPath="/peptide-shipping-and-handling" />
+      <SEOHead title="Shipping Information" description={`Free shipping over $${FREE_SHIPPING_THRESHOLD}. UPS Ground standard (3–5 days) or UPS 2-Day Air express. Same-day dispatch before 12 PM CT. Discreet dry packaging on all orders.`} canonicalPath="/peptide-shipping-and-handling" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -134,11 +137,35 @@ export default function Shipping() {
                 <div className="bg-muted/30 rounded-lg p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <Calendar className="h-5 w-5 text-[#9d4edd]" />
-                    <span className="font-semibold">Estimated Transit</span>
+                    <span className="font-semibold">Standard Transit</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    {SHIPPING_INFO.transitTime} once shipped via {SHIPPING_INFO.carrier}, 
+                    {SHIPPING_INFO.standardTransitTime} once shipped via {SHIPPING_INFO.standardCarrier}, 
                     depending on your location.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-[#21d8ff]/5 border border-[#21d8ff]/20 rounded-lg p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Truck className="h-5 w-5 text-[#21d8ff]" />
+                    <span className="font-semibold">Standard — UPS Ground</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    {SHIPPING_INFO.standardTransitTime} · Free on orders over ${SHIPPING_INFO.freeShippingThreshold}, 
+                    otherwise ${SHIPPING_INFO.flatRate} flat rate.
+                  </p>
+                </div>
+
+                <div className="bg-[#E7FB10]/5 border border-[#E7FB10]/20 rounded-lg p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="h-5 w-5 text-[#E7FB10]" />
+                    <span className="font-semibold">Express — UPS 2-Day Air</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    {SHIPPING_INFO.expressTransitTime} · ${SHIPPING_INFO.expressRate} flat rate. 
+                    Never free — express is always charged.
                   </p>
                 </div>
               </div>
@@ -165,17 +192,6 @@ export default function Shipping() {
                   <p className="text-sm text-muted-foreground">
                     All orders ship in plain, unmarked packaging with no indication of contents. 
                     Your privacy is our priority.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 pb-4 border-b border-border">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">Temperature-Controlled Packaging</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Products are packaged to maintain integrity during transit. We use insulated 
-                    materials and ice packs when necessary.
                   </p>
                 </div>
               </div>

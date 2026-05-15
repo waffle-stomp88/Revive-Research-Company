@@ -26,7 +26,7 @@ const reasons = [
   {
     icon: Truck,
     title: "Fast Shipping",
-    description: `2–5 business day delivery with same-day dispatch options. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`,
+    description: `3–5 business day delivery via UPS Ground with same-day dispatch options. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`,
     color: "#22c55e",
   },
   {

@@ -26,12 +26,12 @@ const issues = [
     icon: Thermometer,
     title: "Package Arrived Warm",
     color: "#f97316",
-    summary: "Cold pack is thawed or package feels warm",
+    summary: "Package feels warm or hot to the touch",
     content: {
       normalReasons: [
-        "Transit time exceeded cold pack duration (24-48 hours)",
         "Hot weather during summer months",
-        "Package sat in delivery vehicle",
+        "Package sat in a warm delivery vehicle or warehouse",
+        "Extended transit time during a heat wave",
       ],
       whenFine: [
         "Lyophilized (powder) peptides tolerate brief temperature excursions",

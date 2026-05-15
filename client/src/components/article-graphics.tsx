@@ -242,7 +242,7 @@ export function BatchTestingPipeline() {
     { label: "Sample Pull", icon: TestTube, color: "#f59e0b", detail: "Representative samples from batch" },
     { label: "Lab Testing", icon: Microscope, color: "#21d8ff", detail: "Independent third-party HPLC + MS analysis" },
     { label: "Approval", icon: CheckCircle2, color: "#22c55e", detail: "Batch passes quality thresholds" },
-    { label: "Ship", icon: Truck, color: "#E7FB10", detail: "Cold-chain delivery to your door" },
+    { label: "Ship", icon: Truck, color: "#E7FB10", detail: "Discreet protective packaging to your door" },
   ];
 
   return (
@@ -743,7 +743,7 @@ export function CostBreakdownChart() {
   const qualityBreakdown = [
     { label: "Synthesis", percent: 30, color: "#a855f7", icon: FlaskConical },
     { label: "Third-Party Testing", percent: 18, color: "#21d8ff", icon: Microscope },
-    { label: "Storage & Cold Chain", percent: 15, color: "#22c55e", icon: Thermometer },
+    { label: "Storage & Stability", percent: 15, color: "#22c55e", icon: Thermometer },
     { label: "Packaging & Labels", percent: 10, color: "#f59e0b", icon: PackageCheck },
     { label: "Support & Ops", percent: 12, color: "#ec4899", icon: HeadphonesIcon },
     { label: "Margin", percent: 15, color: "#64748b", icon: TrendingUp },

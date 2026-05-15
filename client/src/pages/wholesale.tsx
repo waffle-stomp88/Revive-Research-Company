@@ -660,7 +660,7 @@ export default function Wholesale() {
               <h2 className="font-display text-4xl font-bold mb-2">Apply for Wholesale Account</h2>
               <p className="text-muted-foreground">
                 Complete the form below and our team will review your application.<br />
-                Approved applicants are typically contacted within 2–5 business days.
+                Approved applicants are typically contacted within 3–5 business days.
               </p>
             </div>
 

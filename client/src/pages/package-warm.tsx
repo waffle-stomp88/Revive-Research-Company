@@ -6,20 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "wouter";
 import {
-  Thermometer,
   CheckCircle2,
   AlertTriangle,
-  Snowflake,
   Package,
   HelpCircle,
   ArrowRight,
   XCircle,
+  Thermometer,
+  FlaskConical,
 } from "lucide-react";
 
 export default function PackageWarm() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Package Arrived Warm?" description="Guide on peptide stability and temperature. Most research peptides remain stable during shipping." canonicalPath="/guides/peptide-package-arrived-warm" />
+      <SEOHead title="Package Arrived Warm?" description="Lyophilized peptides are remarkably stable at ambient temperature. Here's what to know if your package arrived warm." canonicalPath="/guides/peptide-package-arrived-warm" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -33,8 +33,8 @@ export default function PackageWarm() {
             If Your Package Arrives Warm
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A melted cold pack doesn't mean your peptides are compromised. 
-            Here's what you need to know.
+            Your peptides are almost certainly fine. Lyophilized (freeze-dried) 
+            compounds are designed to remain stable at ambient temperature during shipping.
           </p>
         </motion.div>
 
@@ -53,8 +53,8 @@ export default function PackageWarm() {
                 <h2 className="font-display text-xl font-bold mb-2 text-green-500">The Short Answer</h2>
                 <p className="text-muted-foreground">
                   In most cases, <strong className="text-foreground">your peptides are fine</strong>. 
-                  Lyophilized (freeze-dried) peptides are remarkably stable and can tolerate 
-                  short periods at ambient temperature without degradation.
+                  We ship in discreet dry packaging — no ice packs needed. Lyophilized peptides 
+                  are specifically engineered to tolerate ambient temperatures during transit.
                 </p>
               </div>
             </div>
@@ -69,52 +69,43 @@ export default function PackageWarm() {
         >
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Snowflake className="h-6 w-6 text-[#21d8ff]" />
-              <h2 className="font-display text-xl font-bold">Why Cold Packs Melt</h2>
+              <FlaskConical className="h-6 w-6 text-[#9d4edd]" />
+              <h2 className="font-display text-xl font-bold">Why Lyophilized Peptides Are Stable</h2>
             </div>
             <p className="text-muted-foreground mb-4">
-              Cold packs are available as an optional add-on and are designed to 
-              maintain temperature for 24-48 hours in transit if selected. Several factors can cause them to thaw:
-            </p>
-            <ul className="space-y-2">
-              {[
-                "Extended transit times due to carrier delays",
-                "Hot weather during summer months",
-                "Package sitting in a delivery vehicle",
-                "Warehouse temperature fluctuations",
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#21d8ff] mt-2 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Package className="h-6 w-6 text-[#9d4edd]" />
-              <h2 className="font-display text-xl font-bold">Understanding Lyophilization</h2>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              Lyophilization (freeze-drying) is specifically designed to create a stable product:
+              Lyophilization (freeze-drying) removes water from peptides under vacuum while frozen, 
+              creating a dry powder that is highly resistant to degradation:
             </p>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="p-4 rounded-lg bg-muted/50">
                 <h3 className="font-semibold mb-2">How It Works</h3>
                 <p className="text-sm text-muted-foreground">
-                  Water is removed from the peptide solution under vacuum while frozen. 
-                  This creates a dry powder that resists degradation.
+                  Water is removed from the peptide solution, creating a dry powder. 
+                  Without moisture, the chemical reactions that break down peptides cannot occur.
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-muted/50">
-                <h3 className="font-semibold mb-2">Why It's Stable</h3>
+                <h3 className="font-semibold mb-2">Why No Ice Packs Are Needed</h3>
                 <p className="text-sm text-muted-foreground">
-                  Without water, the chemical reactions that break down peptides 
-                  can't occur. The powder form is far more stable than solutions.
+                  Dry lyophilized powder is far more stable than peptide solutions. 
+                  Normal shipping temperatures — even in warm weather — do not degrade 
+                  properly lyophilized compounds.
                 </p>
               </div>
             </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Package className="h-6 w-6 text-[#21d8ff]" />
+              <h2 className="font-display text-xl font-bold">Our Packaging Approach</h2>
+            </div>
+            <p className="text-muted-foreground">
+              All orders ship in plain, discreet dry packaging with no indication of contents. 
+              Because our compounds are fully lyophilized, discreet protective dry packaging 
+              is all that's needed — no ice packs or insulated liners are required or included. 
+              Your privacy and product integrity are both protected by this approach.
+            </p>
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -125,11 +116,11 @@ export default function PackageWarm() {
               </div>
               <ul className="space-y-3">
                 {[
-                  "Cold pack is thawed but package cool to touch",
-                  "Transit time was under 72 hours",
-                  "Powder appears normal (white/off-white)",
-                  "Vial seal is intact",
+                  "Package feels warm but powder appears normal (white/off-white)",
+                  "Transit time was under 7 days",
+                  "Vial seal is fully intact",
                   "No visible moisture inside vial",
+                  "Powder is dry with no clumping from moisture",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
@@ -146,11 +137,11 @@ export default function PackageWarm() {
               </div>
               <ul className="space-y-3">
                 {[
-                  "Package was in extreme heat (hot car, direct sun)",
-                  "Transit time exceeded 5+ days",
+                  "Package was in extreme heat for an extended period (days, not hours)",
                   "Visible moisture or liquid inside vial",
                   "Powder has unusual color or texture",
-                  "Vial seal appears compromised",
+                  "Vial seal appears compromised or broken",
+                  "Package was delayed significantly beyond the estimated delivery window",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
@@ -174,7 +165,8 @@ export default function PackageWarm() {
                 <div>
                   <h4 className="font-semibold mb-1">Transfer to Storage Immediately</h4>
                   <p className="text-sm text-muted-foreground">
-                    Place vials in your freezer (-20°C) or refrigerator (2-8°C) right away.
+                    Place vials in your freezer (-20°C) or refrigerator (2–8°C) right away. 
+                    This is standard practice for all received peptides regardless of packaging temperature.
                   </p>
                 </div>
               </div>
@@ -185,7 +177,8 @@ export default function PackageWarm() {
                 <div>
                   <h4 className="font-semibold mb-1">Inspect the Vials</h4>
                   <p className="text-sm text-muted-foreground">
-                    Check for moisture, unusual color, or compromised seals.
+                    Check for moisture, unusual color, or compromised seals. In the vast 
+                    majority of cases the powder will appear perfectly normal.
                   </p>
                 </div>
               </div>
@@ -196,7 +189,8 @@ export default function PackageWarm() {
                 <div>
                   <h4 className="font-semibold mb-1">Document If Concerned</h4>
                   <p className="text-sm text-muted-foreground">
-                    Take photos and contact us within 48 hours if you notice anything unusual.
+                    Take photos and contact us within 48 hours if you notice anything unusual 
+                    about the powder, seal, or packaging condition.
                   </p>
                 </div>
               </div>

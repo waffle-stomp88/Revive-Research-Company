@@ -44,8 +44,8 @@ const pricingFactors = [
     percentage: 15,
     icon: Snowflake,
     color: "#22c55e",
-    description: "Proper lyophilization, temperature-controlled storage facilities, and cold-chain shipping requirements.",
-    details: ["Lyophilization", "Cold storage", "Climate shipping"],
+    description: "Proper lyophilization, temperature-controlled storage facilities, and discreet protective packaging for transit.",
+    details: ["Lyophilization", "Cold storage", "Dry packaging"],
   },
   {
     id: "operations",

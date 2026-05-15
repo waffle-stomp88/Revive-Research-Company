@@ -50,7 +50,7 @@ const pipelineSteps = [
     icon: Package,
     color: "#f97316",
     shortDesc: "Secure & traceable",
-    details: ["QR-coded labels", "Tamper seals", "Cold packs ready"],
+    details: ["QR-coded labels", "Tamper seals", "Discreet dry packaging"],
   },
   {
     id: 6,
@@ -58,7 +58,7 @@ const pipelineSteps = [
     icon: Truck,
     color: "#ec4899",
     shortDesc: "Fast delivery",
-    details: ["Same-day processing", "Cold chain", "Full tracking"],
+    details: ["Same-day processing", "UPS Ground", "Full tracking"],
   },
 ];
 

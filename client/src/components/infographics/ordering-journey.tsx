@@ -55,7 +55,7 @@ const journeySteps = [
     icon: Package,
     color: "#f97316",
     shortDesc: "Quality checked",
-    details: ["Products verified", "Optional cold packs added if selected", "Tamper seals applied", "QR label attached"],
+    details: ["Products verified", "Discreet dry packaging applied", "Tamper seals applied", "QR label attached"],
     timeline: "24 hours"
   },
   {
@@ -64,8 +64,8 @@ const journeySteps = [
     icon: Truck,
     color: "#ec4899",
     shortDesc: "On the way",
-    details: ["Same-day or next-day shipping", "Full cold chain maintained", "Real-time tracking"],
-    timeline: "24-48 hrs"
+    details: ["Same-day or next-day shipping", "UPS Ground or UPS 2-Day Air", "Real-time tracking"],
+    timeline: "24 hrs"
   },
   {
     id: 7,
@@ -74,7 +74,7 @@ const journeySteps = [
     color: "#06b6d4",
     shortDesc: "At your door",
     details: ["Signature may be required", "Verify packaging integrity", "Scan QR to verify analysis"],
-    timeline: "1-2 days"
+    timeline: "3–5 days"
   }
 ];
 
@@ -241,10 +241,10 @@ export function OrderingJourney() {
       >
         <h3 className="font-display font-semibold text-[#21d8ff] mb-2">Total Delivery Time</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          <span className="text-[#E7FB10] font-bold">2–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">${FREE_SHIPPING_THRESHOLD}</span>
+          <span className="text-[#E7FB10] font-bold">3–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">${FREE_SHIPPING_THRESHOLD}</span>
         </p>
         <p className="text-xs text-muted-foreground">
-          Every order includes QR-verified analysis and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.
+          Every order includes QR-verified analysis and full tracking. Shipped via UPS Ground. Your package integrity is guaranteed.
         </p>
       </motion.div>
     </div>

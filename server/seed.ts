@@ -271,7 +271,7 @@ Products are stored and handled according to established protocols:
 - Light-protected packaging
 - Humidity-controlled environments
 - First-in, first-out inventory management
-- Cold-chain shipping when required
+- Discreet dry protective packaging for all shipments
 
 ### Continuous Improvement
 
@@ -403,14 +403,15 @@ Orders placed **before 12:00 PM Central Time** on business days ship the same da
 All other orders ship within 24 business hours of placement.
 
 ### Delivery Timeframes
-- **Standard Delivery:** 2–5 business days
+- **Standard Delivery (UPS Ground):** 3–5 business days
+- **Express Delivery (UPS 2-Day Air):** 1–2 business days ($35, never free)
 
 ## Packaging & Handling
 
-### Temperature-Sensitive Products
-- Products are packaged with appropriate cold packs when required
-- Insulated containers maintain product integrity during transit
-- Shipping times are optimized to minimize exposure
+### Protective Packaging
+- All compounds are lyophilized (freeze-dried) and stable at ambient temperature
+- No ice packs required or included
+- Plain, discreet dry packaging protects product integrity during transit
 
 ### Discrete Packaging
 - All orders ship in plain, unmarked packaging
@@ -918,7 +919,7 @@ We use collected information to:
 We may share your information with:
 
 ### Service Providers
-- Payment processors (Stripe)
+- Payment processors (PayPal)
 - Shipping carriers
 - Email service providers
 - Analytics providers

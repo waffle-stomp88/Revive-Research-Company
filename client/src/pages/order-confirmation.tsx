@@ -606,7 +606,7 @@ export default function OrderConfirmation() {
                   <div>
                     <p className="font-semibold text-sm">Shipping</p>
                     <p className="text-sm text-muted-foreground">
-                      You'll receive tracking information once your order ships (2–5 business days).
+                      You'll receive tracking information once your order ships (3–5 business days via UPS Ground).
                     </p>
                   </div>
                 </div>

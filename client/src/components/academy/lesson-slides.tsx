@@ -794,7 +794,7 @@ function OrderProcessFlowVisual() {
     { icon: Search, label: "Research", desc: "Select peptide", color: "#9d4edd" },
     { icon: ShoppingCart, label: "Order", desc: "Place order", color: "#E7FB10" },
     { icon: CreditCard, label: "Payment", desc: "Secure checkout", color: "#21d8ff" },
-    { icon: Truck, label: "Ship", desc: "Cold chain", color: "#22c55e" },
+    { icon: Truck, label: "Ship", desc: "Fast & discreet", color: "#22c55e" },
     { icon: Box, label: "Receive", desc: "Inspect & store", color: "#f97316" },
   ];
 
@@ -1842,11 +1842,11 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
       title: "Shipping Considerations",
       content: (
         <SlideInfoCard
-          title="Temperature-Controlled Delivery"
+          title="Discreet Protective Packaging"
           items={[
-            { icon: Snowflake, title: "Cold Chain Shipping", description: "Peptides ship with ice packs to maintain stability", color: "#21d8ff" },
-            { icon: Timer, title: "Expedited Options", description: "Same-day or 24-hour shipping prevents degradation", color: "#E7FB10" },
-            { icon: Package, title: "Insulated Packaging", description: "Specialized containers maintain temperature during transit", color: "#22c55e" },
+            { icon: Package, title: "Dry Protective Packaging", description: "Lyophilized peptides ship in discreet dry packaging — stable without ice packs", color: "#21d8ff" },
+            { icon: Truck, title: "UPS Ground & 2-Day Air", description: "Standard 3–5 business days or express 1–2 business days via UPS", color: "#E7FB10" },
+            { icon: Snowflake, title: "Stable During Transit", description: "Freeze-dried powder form resists degradation at ambient temperature", color: "#22c55e" },
           ]}
         />
       ),
