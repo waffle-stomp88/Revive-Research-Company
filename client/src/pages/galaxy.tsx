@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } fro
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap, Pause, Play } from "lucide-react";
+import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap, Pause, Play, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import { GalaxyHoverHUD } from "@/components/galaxy/galaxy-hover-hud";
 import { WarpBanner } from "@/components/galaxy/galaxy-warp-banner";
 import { GalaxyMobileOnboarding, isTouchDevice } from "@/components/galaxy/galaxy-mobile-onboarding";
 import { GalaxyMobileSearch, GalaxyMobileSearchTrigger } from "@/components/galaxy/galaxy-mobile-search";
+import { useRecentGalaxySearches } from "@/hooks/useRecentGalaxySearches";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -74,6 +75,9 @@ export default function GalaxyPage() {
   const [hoveredScreenPos, setHoveredScreenPos] = useState<{ x: number; y: number } | null>(null);
   const prevScreenPosRef = useRef<{ x: number; y: number } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Recent warp history (sessionStorage)
+  const [recentSearchIds, addRecentSearch] = useRecentGalaxySearches();
 
   // Mobile / touch detection
   const [isTouch] = useState(() => isTouchDevice());
@@ -273,17 +277,28 @@ export default function GalaxyPage() {
             .slice(0, 8),
     [nodes, searchLower]
   );
-  const showSearchDropdown = searchOpen && searchMatches.length > 0;
+  const desktopRecentNodes = useMemo(
+    () =>
+      recentSearchIds
+        .map((id) => nodes.find((n) => n.id === id))
+        .filter((n): n is GalaxyNode => !!n),
+    [recentSearchIds, nodes]
+  );
+  const showSearchDropdown =
+    searchOpen &&
+    (searchMatches.length > 0 ||
+      (searchLower.length === 0 && desktopRecentNodes.length > 0));
 
   const handleSearchSelect = useCallback(
     (id: string) => {
+      addRecentSearch(id);
       handleWarpTo(id);
       setSearchTerm("");
       setSearchOpen(false);
       setSearchActiveIdx(-1);
       searchInputRef.current?.blur();
     },
-    [handleWarpTo]
+    [handleWarpTo, addRecentSearch]
   );
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -430,43 +445,93 @@ export default function GalaxyPage() {
                   </button>
                 )}
 
-                {/* Autocomplete dropdown */}
+                {/* Autocomplete / Recent dropdown */}
                 {showSearchDropdown && (
-                  <ul
-                    ref={searchListRef}
-                    role="listbox"
+                  <div
                     className="absolute left-0 right-0 top-[calc(100%+4px)] rounded-lg bg-black/90 backdrop-blur-xl border border-white/10 shadow-xl overflow-hidden z-30"
+                    data-testid="galaxy-search-dropdown"
                   >
-                    {searchMatches.map((node, i) => (
-                      <li
-                        key={node.id}
-                        role="option"
-                        aria-selected={i === searchActiveIdx}
-                        onMouseDown={() => handleSearchSelect(node.id)}
-                        onMouseEnter={() => setSearchActiveIdx(i)}
-                        className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
-                          i === searchActiveIdx
-                            ? "bg-white/10"
-                            : "hover:bg-white/5"
-                        }`}
-                        data-testid={`galaxy-search-result-${node.id}`}
+                    {searchLower.length === 0 && desktopRecentNodes.length > 0 ? (
+                      <>
+                        <div className="flex items-center gap-1.5 px-3 pt-2 pb-1">
+                          <Clock className="h-3 w-3 text-white/30" />
+                          <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30">
+                            Recent
+                          </span>
+                        </div>
+                        <ul
+                          ref={searchListRef}
+                          role="listbox"
+                          data-testid="galaxy-search-recent-list"
+                        >
+                          {desktopRecentNodes.map((node, i) => (
+                            <li
+                              key={node.id}
+                              role="option"
+                              aria-selected={i === searchActiveIdx}
+                              onMouseDown={() => handleSearchSelect(node.id)}
+                              onMouseEnter={() => setSearchActiveIdx(i)}
+                              className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
+                                i === searchActiveIdx
+                                  ? "bg-white/10"
+                                  : "hover:bg-white/5"
+                              }`}
+                              data-testid={`galaxy-search-recent-${node.id}`}
+                            >
+                              <span
+                                className="w-2 h-2 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: node.color }}
+                              />
+                              <span className="flex-1 min-w-0">
+                                <span className="text-sm font-mono font-medium text-white/90 truncate block">
+                                  {node.name}
+                                </span>
+                                <span className="text-xs font-mono text-white/40">
+                                  {node.systemName}
+                                </span>
+                              </span>
+                              <Zap className="h-3 w-3 flex-shrink-0 opacity-40" style={{ color: node.color }} />
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <ul
+                        ref={searchListRef}
+                        role="listbox"
                       >
-                        <span
-                          className="w-2 h-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: node.color }}
-                        />
-                        <span className="flex-1 min-w-0">
-                          <span className="text-sm font-mono font-medium text-white/90 truncate block">
-                            {node.name}
-                          </span>
-                          <span className="text-xs font-mono text-white/40">
-                            {node.systemName}
-                          </span>
-                        </span>
-                        <Zap className="h-3 w-3 flex-shrink-0 opacity-50" style={{ color: node.color }} />
-                      </li>
-                    ))}
-                  </ul>
+                        {searchMatches.map((node, i) => (
+                          <li
+                            key={node.id}
+                            role="option"
+                            aria-selected={i === searchActiveIdx}
+                            onMouseDown={() => handleSearchSelect(node.id)}
+                            onMouseEnter={() => setSearchActiveIdx(i)}
+                            className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
+                              i === searchActiveIdx
+                                ? "bg-white/10"
+                                : "hover:bg-white/5"
+                            }`}
+                            data-testid={`galaxy-search-result-${node.id}`}
+                          >
+                            <span
+                              className="w-2 h-2 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: node.color }}
+                            />
+                            <span className="flex-1 min-w-0">
+                              <span className="text-sm font-mono font-medium text-white/90 truncate block">
+                                {node.name}
+                              </span>
+                              <span className="text-xs font-mono text-white/40">
+                                {node.systemName}
+                              </span>
+                            </span>
+                            <Zap className="h-3 w-3 flex-shrink-0 opacity-50" style={{ color: node.color }} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -481,6 +546,7 @@ export default function GalaxyPage() {
           onSelect={handleSearchSelect}
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
+          recentIds={recentSearchIds}
         />
       )}
 

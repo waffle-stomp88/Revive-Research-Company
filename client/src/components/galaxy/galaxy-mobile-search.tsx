@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Zap } from "lucide-react";
+import { Search, X, Zap, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { GalaxyNode } from "@/lib/galaxy-layout";
@@ -10,6 +10,7 @@ interface GalaxyMobileSearchProps {
   onSelect: (id: string) => void;
   open: boolean;
   onClose: () => void;
+  recentIds?: string[];
 }
 
 export function GalaxyMobileSearch({
@@ -17,6 +18,7 @@ export function GalaxyMobileSearch({
   onSelect,
   open,
   onClose,
+  recentIds = [],
 }: GalaxyMobileSearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeIdx, setActiveIdx] = useState(-1);
@@ -35,6 +37,14 @@ export function GalaxyMobileSearch({
               n.systemName.toLowerCase().includes(searchLower)
           )
           .slice(0, 8);
+
+  // Nodes for the "Recent" section — resolve ids to full node objects
+  const nodeById = (id: string) => nodes.find((n) => n.id === id);
+  const recentNodes = recentIds
+    .map(nodeById)
+    .filter((n): n is GalaxyNode => !!n);
+
+  const showRecent = searchLower.length === 0 && recentNodes.length > 0;
 
   // Focus the input when the modal opens, with a small delay to let the
   // animation settle before the keyboard pops so the layout shift is smooth.
@@ -172,7 +182,7 @@ export function GalaxyMobileSearch({
               )}
             </div>
 
-            {/* Results list */}
+            {/* Results / Recent list */}
             <div className="pb-safe">
               {matches.length > 0 ? (
                 <ul
@@ -211,6 +221,50 @@ export function GalaxyMobileSearch({
                     </li>
                   ))}
                 </ul>
+              ) : showRecent ? (
+                <div
+                  className="border-t border-white/8"
+                  data-testid="galaxy-mobile-search-recent"
+                >
+                  <div className="flex items-center gap-2 px-4 pt-3 pb-1">
+                    <Clock className="h-3 w-3 text-white/30" />
+                    <span className="text-xs font-mono font-semibold uppercase tracking-widest text-white/30">
+                      Recent
+                    </span>
+                  </div>
+                  <ul
+                    role="listbox"
+                    className="divide-y divide-white/5"
+                    data-testid="galaxy-mobile-search-recent-list"
+                  >
+                    {recentNodes.map((node) => (
+                      <li
+                        key={node.id}
+                        role="option"
+                        onPointerDown={() => handleSelect(node.id)}
+                        className="flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors active:bg-white/10"
+                        data-testid={`galaxy-mobile-search-recent-${node.id}`}
+                      >
+                        <span
+                          className="w-3 h-3 rounded-full flex-shrink-0 ring-1 ring-white/10"
+                          style={{ backgroundColor: node.color }}
+                        />
+                        <span className="flex-1 min-w-0">
+                          <span className="text-sm font-mono font-semibold text-white/90 truncate block">
+                            {node.name}
+                          </span>
+                          <span className="text-xs font-mono text-white/40 truncate block">
+                            {node.systemName}
+                          </span>
+                        </span>
+                        <Zap
+                          className="h-4 w-4 flex-shrink-0 opacity-40"
+                          style={{ color: node.color }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ) : searchLower.length > 0 ? (
                 <div className="px-4 py-6 text-center text-sm font-mono text-white/30 border-t border-white/8">
                   No peptides match "{searchTerm}"
