@@ -171,6 +171,27 @@ export default function Checkout() {
   const [ruoAcknowledged, setRuoAcknowledged] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
 
+  // Lock body scroll whenever the RUO dialog is open
+  useEffect(() => {
+    if (!showRuoReminder) return;
+    const scrollY = window.scrollY;
+    const prevOverflow = document.body.style.overflow;
+    const prevPosition = document.body.style.position;
+    const prevTop = document.body.style.top;
+    const prevWidth = document.body.style.width;
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.position = prevPosition;
+      document.body.style.top = prevTop;
+      document.body.style.width = prevWidth;
+      window.scrollTo(0, scrollY);
+    };
+  }, [showRuoReminder]);
+
   // Early access email signup state
   const [notifyEmail, setNotifyEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -752,26 +773,6 @@ export default function Checkout() {
   // ─── RUO Reminder Dialog ──────────────────────────────────────────────────
 
   const RuoReminderDialog = () => {
-    useEffect(() => {
-      if (!showRuoReminder) return;
-      const scrollY = window.scrollY;
-      const prevOverflow = document.body.style.overflow;
-      const prevPosition = document.body.style.position;
-      const prevTop = document.body.style.top;
-      const prevWidth = document.body.style.width;
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-      return () => {
-        document.body.style.overflow = prevOverflow;
-        document.body.style.position = prevPosition;
-        document.body.style.top = prevTop;
-        document.body.style.width = prevWidth;
-        window.scrollTo(0, scrollY);
-      };
-    }, []);
-
     if (!showRuoReminder) return null;
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -782,7 +783,7 @@ export default function Checkout() {
               <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
               <h2 className="font-display text-base font-semibold">Before You Continue</h2>
             </div>
-            <div className="space-y-2 mb-3">
+            <div className="space-y-2 mb-4">
               <div className="bg-red-500/10 border border-red-500/30 rounded-md p-2.5 flex items-center gap-2">
                 <Beaker className="h-4 w-4 text-red-400 flex-shrink-0" />
                 <div>
@@ -798,35 +799,24 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
-            <div className="space-y-2 mb-3">
-              <div className="flex items-start gap-2 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
-                <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-red-500 border-red-500' : 'border-red-500/50'}`}>
-                  {ruoAcknowledged && (
-                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-tight" data-testid="checkbox-ruo-acknowledge">
-                  Products are for <span className="text-red-400 font-medium">research purposes only</span>, not for human use
-                </span>
+            <div
+              className="flex items-start gap-2 cursor-pointer group mb-4"
+              onClick={() => { setRuoAcknowledged(!ruoAcknowledged); setAgeConfirmed(!ruoAcknowledged); }}
+            >
+              <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-white/40'}`}>
+                {ruoAcknowledged && (
+                  <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
               </div>
-              <div className="flex items-start gap-2 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
-                <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ageConfirmed ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-[#E7FB10]/50'}`}>
-                  {ageConfirmed && (
-                    <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-tight" data-testid="checkbox-age-confirm">
-                  I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
-                </span>
-              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-snug" data-testid="checkbox-ruo-acknowledge">
+                I confirm I am <span className="text-[#E7FB10] font-medium">21+</span> and understand these products are for <span className="text-red-400 font-medium">research purposes only</span>, not for human use
+              </span>
             </div>
             <Button
               onClick={handleRuoAcknowledge}
-              disabled={!ruoAcknowledged || !ageConfirmed}
+              disabled={!ruoAcknowledged}
               className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50"
               data-testid="button-confirm-ruo"
             >
