@@ -1,20 +1,21 @@
 import { useRef, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
-import { Brain, Utensils, Activity, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Brain, Utensils, Activity, Download, Loader2, Zap, Shield, Flame, Wind, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // ─── TYPES ─────────────────────────────────────────────────────────────────────
-type CalloutIcon = "brain" | "stomach" | "pancreas" | "activity" | "utensils";
+type CalloutIconName = "brain" | "stomach" | "pancreas" | "activity" | "utensils" | "shield" | "zap" | "flame" | "wind";
 
 interface Callout {
   id: string;
-  icon: CalloutIcon;
+  icon: CalloutIconName;
   label: string;
   description: string;
   yPercent: number;
 }
 
 interface PostData {
+  key: string;
   seriesLabel: string;
   fileName: string;
   headline: string;
@@ -23,38 +24,138 @@ interface PostData {
   callouts: Callout[];
 }
 
-// ─── DEFAULT POST DATA ──────────────────────────────────────────────────────────
-const DEFAULT_POST_DATA: PostData = {
-  seriesLabel: "THE BASICS // 001",
-  fileName: "revive-basics-001-glp1.png",
-  headline: "WHAT IS\nA GLP-1?",
-  backgroundImage: "/assets/glp1-silhouette.png",
-  bodyText:
-    "GLP-1 (Glucagon-Like Peptide-1) is a naturally occurring hormone released by intestinal L-cells in response to food intake. It plays a central role in blood-sugar regulation, appetite signaling, and gastric motility — making it a key focus of modern metabolic research.",
-  callouts: [
-    {
-      id: "brain",
-      icon: "brain",
-      label: "Brain",
-      description: "Reduces appetite & food\ncravings via hypothalamus",
-      yPercent: 18,
-    },
-    {
-      id: "stomach",
-      icon: "stomach",
-      label: "Stomach",
-      description: "Slows gastric emptying,\nprolonging satiety signals",
-      yPercent: 44,
-    },
-    {
-      id: "pancreas",
-      icon: "pancreas",
-      label: "Pancreas",
-      description: "Stimulates insulin release\n& suppresses glucagon",
-      yPercent: 68,
-    },
-  ],
-};
+// ─── POST DATA CONFIGS ─────────────────────────────────────────────────────────
+// Add new entries here to grow the "THE BASICS" series.
+const ALL_POSTS: PostData[] = [
+  {
+    key: "glp1",
+    seriesLabel: "THE BASICS // 001",
+    fileName: "revive-basics-001-glp1.png",
+    headline: "WHAT IS\nA GLP-1?",
+    backgroundImage: "/assets/glp1-silhouette.png",
+    bodyText:
+      "GLP-1 (Glucagon-Like Peptide-1) is a naturally occurring hormone released by intestinal L-cells in response to food intake. It plays a central role in blood-sugar regulation, appetite signaling, and gastric motility — making it a key focus of modern metabolic research.",
+    callouts: [
+      {
+        id: "brain",
+        icon: "brain",
+        label: "Brain",
+        description: "Reduces appetite & food\ncravings via hypothalamus",
+        yPercent: 18,
+      },
+      {
+        id: "stomach",
+        icon: "utensils",
+        label: "Stomach",
+        description: "Slows gastric emptying,\nprolonging satiety signals",
+        yPercent: 44,
+      },
+      {
+        id: "pancreas",
+        icon: "activity",
+        label: "Pancreas",
+        description: "Stimulates insulin release\n& suppresses glucagon",
+        yPercent: 68,
+      },
+    ],
+  },
+  {
+    key: "bpc157",
+    seriesLabel: "THE BASICS // 002",
+    fileName: "revive-basics-002-bpc157.png",
+    headline: "WHAT IS\nBPC-157?",
+    backgroundImage: "",
+    bodyText:
+      "BPC-157 (Body Protective Compound-157) is a pentadecapeptide derived from a protective protein found in gastric juice. Researchers study its influence on tissue repair pathways, angiogenesis, and the gut-brain axis, making it one of the most widely investigated peptides in regenerative science.",
+    callouts: [
+      {
+        id: "gut",
+        icon: "shield",
+        label: "Gut Lining",
+        description: "Promotes mucosal repair\n& reduces intestinal damage",
+        yPercent: 18,
+      },
+      {
+        id: "tendons",
+        icon: "zap",
+        label: "Tendons",
+        description: "Accelerates tendon-to-bone\nhealing via growth factors",
+        yPercent: 44,
+      },
+      {
+        id: "vessels",
+        icon: "activity",
+        label: "Vasculature",
+        description: "Stimulates angiogenesis\nfor improved blood supply",
+        yPercent: 68,
+      },
+    ],
+  },
+  {
+    key: "tb500",
+    seriesLabel: "THE BASICS // 003",
+    fileName: "revive-basics-003-tb500.png",
+    headline: "WHAT IS\nTB-500?",
+    backgroundImage: "",
+    bodyText:
+      "TB-500 is a synthetic version of Thymosin Beta-4, a naturally occurring peptide found in high concentrations in blood platelets and wound fluid. Research suggests it plays a pivotal role in cell migration, differentiation, and the remodeling of actin — the protein that gives cells their shape and motility.",
+    callouts: [
+      {
+        id: "muscle",
+        icon: "flame",
+        label: "Muscle",
+        description: "Supports satellite cell\nactivation & fiber repair",
+        yPercent: 18,
+      },
+      {
+        id: "actin",
+        icon: "activity",
+        label: "Cytoskeleton",
+        description: "Regulates actin dynamics\nfor cell migration",
+        yPercent: 44,
+      },
+      {
+        id: "inflammation",
+        icon: "shield",
+        label: "Inflammation",
+        description: "Modulates inflammatory\ncascade post-injury",
+        yPercent: 68,
+      },
+    ],
+  },
+  {
+    key: "ipamorelin",
+    seriesLabel: "THE BASICS // 004",
+    fileName: "revive-basics-004-ipamorelin.png",
+    headline: "WHAT IS\nIPAMORELIN?",
+    backgroundImage: "",
+    bodyText:
+      "Ipamorelin is a selective growth hormone secretagogue and ghrelin mimetic. Unlike broader GHRPs, it is notable for its high specificity — stimulating GH release with minimal impact on cortisol or prolactin levels, making it a subject of significant interest in longevity and body-composition research.",
+    callouts: [
+      {
+        id: "pituitary",
+        icon: "brain",
+        label: "Pituitary",
+        description: "Triggers targeted GH pulse\nwithout cortisol spike",
+        yPercent: 18,
+      },
+      {
+        id: "liver",
+        icon: "activity",
+        label: "Liver",
+        description: "Drives IGF-1 production\ndownstream of GH release",
+        yPercent: 44,
+      },
+      {
+        id: "tissue",
+        icon: "zap",
+        label: "Tissue",
+        description: "Supports lean mass & recovery\nvia IGF-1 signaling",
+        yPercent: 68,
+      },
+    ],
+  },
+];
 
 // ─── CONSTANTS ─────────────────────────────────────────────────────────────────
 const CANVAS_SIZE = 1080;
@@ -65,7 +166,11 @@ const NEAR_BLACK = "#0A0A0A";
 function CalloutIcon({ icon }: { icon: string }) {
   const iconProps = { size: 18, color: "white", strokeWidth: 1.5 };
   if (icon === "brain") return <Brain {...iconProps} />;
-  if (icon === "stomach" || icon === "utensils") return <Utensils {...iconProps} />;
+  if (icon === "utensils" || icon === "stomach") return <Utensils {...iconProps} />;
+  if (icon === "shield") return <Shield {...iconProps} />;
+  if (icon === "zap") return <Zap {...iconProps} />;
+  if (icon === "flame") return <Flame {...iconProps} />;
+  if (icon === "wind") return <Wind {...iconProps} />;
   return <Activity {...iconProps} />;
 }
 
@@ -461,9 +566,11 @@ function CalloutEditor({
 function ConfigPanel({
   data,
   onChange,
+  onReset,
 }: {
   data: PostData;
   onChange: (updated: PostData) => void;
+  onReset: () => void;
 }) {
   const set = <K extends keyof PostData>(key: K, value: PostData[K]) =>
     onChange({ ...data, [key]: value });
@@ -546,7 +653,7 @@ function ConfigPanel({
       <Button
         data-testid="button-reset-defaults"
         variant="outline"
-        onClick={() => onChange(DEFAULT_POST_DATA)}
+        onClick={onReset}
         style={{
           fontSize: 12,
           fontFamily: "DM Sans, sans-serif",
@@ -567,9 +674,16 @@ export default function InfographicBuilder() {
   const canvasRef = useRef<HTMLDivElement>(null!);
   const [exporting, setExporting] = useState(false);
   const [scale, setScale] = useState(0.45);
-  const [postData, setPostData] = useState<PostData>(DEFAULT_POST_DATA);
+  const [selectedKey, setSelectedKey] = useState(ALL_POSTS[0].key);
+  const [postData, setPostData] = useState<PostData>(ALL_POSTS[0]);
 
-  // Load JetBrains Mono font
+  // When the preset selector changes, load that preset into the editable state
+  const handleSelectPost = (key: string) => {
+    setSelectedKey(key);
+    const preset = ALL_POSTS.find((p) => p.key === key) ?? ALL_POSTS[0];
+    setPostData(preset);
+  };
+
   useEffect(() => {
     const id = "jetbrains-mono-link";
     if (!document.getElementById(id)) {
@@ -694,6 +808,35 @@ export default function InfographicBuilder() {
         </Button>
       </div>
 
+      {/* ── Post selector ── */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {ALL_POSTS.map((post) => {
+          const isActive = post.key === selectedKey;
+          return (
+            <button
+              key={post.key}
+              data-testid={`button-post-${post.key}`}
+              onClick={() => handleSelectPost(post.key)}
+              style={{
+                background: isActive ? CYAN : "transparent",
+                color: isActive ? "#000" : CYAN,
+                border: `1px solid ${CYAN}`,
+                borderRadius: 6,
+                padding: "7px 16px",
+                fontSize: 11,
+                fontFamily: "'JetBrains Mono', monospace",
+                letterSpacing: "0.08em",
+                cursor: "pointer",
+                fontWeight: isActive ? 600 : 400,
+                transition: "background 0.15s, color 0.15s",
+              }}
+            >
+              {post.seriesLabel}
+            </button>
+          );
+        })}
+      </div>
+
       {/* ── Main content: panel + canvas ── */}
       <div
         style={{
@@ -704,7 +847,14 @@ export default function InfographicBuilder() {
         }}
       >
         {/* Config panel */}
-        <ConfigPanel data={postData} onChange={setPostData} />
+        <ConfigPanel
+          data={postData}
+          onChange={setPostData}
+          onReset={() => {
+            const preset = ALL_POSTS.find((p) => p.key === selectedKey) ?? ALL_POSTS[0];
+            setPostData(preset);
+          }}
+        />
 
         {/* Canvas + label */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
