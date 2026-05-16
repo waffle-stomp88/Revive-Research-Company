@@ -763,6 +763,7 @@ function DrillDownView({
   onArticleSelect,
 }: DrillDownProps) {
   const [, setLocation] = useLocation();
+  const hub = hubSlug ? BODY_SYSTEM_HUBS.find((h) => h.slug === hubSlug) : null;
 
   return (
     <div>
@@ -784,6 +785,15 @@ function DrillDownView({
           {articles.length + trustGuides.length}
         </Badge>
       </div>
+
+      {hub && (
+        <p
+          className="text-[11px] italic text-muted-foreground mb-3 ml-3 leading-relaxed"
+          data-testid={`drilldown-hub-teaser-${hub.slug}`}
+        >
+          {hub.tagline}
+        </p>
+      )}
 
       {hubSlug && (
         <button
