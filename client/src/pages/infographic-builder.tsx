@@ -9,7 +9,7 @@ const POST_DATA = {
   seriesLabel: "THE BASICS // 001",
   fileName: "revive-basics-001-glp1.png",
   headline: "WHAT IS\nA GLP-1?",
-  backgroundImage: "", // set to e.g. "/assets/glp1-silhouette.png" when available
+  backgroundImage: "/assets/glp1-silhouette.png",
   bodyText:
     "GLP-1 (Glucagon-Like Peptide-1) is a naturally occurring hormone released by intestinal L-cells in response to food intake. It plays a central role in blood-sugar regulation, appetite signaling, and gastric motility — making it a key focus of modern metabolic research.",
   callouts: [

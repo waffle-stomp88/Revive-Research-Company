@@ -24,6 +24,12 @@ uri = "file://attached_assets/generated_images/hud_ring.png"
 type = "image"
 title = "hud_ring"
 
+[[generated]]
+id = "ViLgE4fMTALSRjIL4oiAr"
+uri = "file://client/public/assets/glp1-silhouette.png"
+type = "image"
+title = "female body silhouette medical"
+
 [[outputs]]
 id = "1tkDinXVhzwJyRulXSf2h"
 uri = "file://attached_assets/invite-email-template.txt"
