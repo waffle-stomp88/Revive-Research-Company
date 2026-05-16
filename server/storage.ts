@@ -9,6 +9,7 @@ import {
   citationDismissals,
   stripePresets,
   researchStacks,
+  articleViews,
   type ResearchStack, type InsertResearchStack,
   type User, type UpsertUser,
   type Product, type InsertProduct,
@@ -413,6 +414,10 @@ export interface IStorage {
   getResearchStackByIdAdmin(id: string): Promise<ResearchStack | undefined>;
   updateResearchStackVisibility(id: string, fields: { showOnPage?: boolean; isActive?: boolean }): Promise<ResearchStack | undefined>;
   getResearchStacksCount(): Promise<number>;
+
+  // Article Views (cross-device Continue Reading)
+  saveArticleView(userId: string, articleId: string): Promise<void>;
+  getRecentArticleViews(userId: string, limit: number): Promise<string[]>;
 }
 
 export function resolveDisplayPrice(
@@ -2811,6 +2816,26 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.select({ total: count() }).from(researchStacks)
       .where(eq(researchStacks.isActive, true));
     return result?.total ?? 0;
+  }
+
+  async saveArticleView(userId: string, articleId: string): Promise<void> {
+    await db
+      .insert(articleViews)
+      .values({ userId, articleId, viewedAt: new Date() })
+      .onConflictDoUpdate({
+        target: [articleViews.userId, articleViews.articleId],
+        set: { viewedAt: new Date() },
+      });
+  }
+
+  async getRecentArticleViews(userId: string, limit: number): Promise<string[]> {
+    const rows = await db
+      .select({ articleId: articleViews.articleId })
+      .from(articleViews)
+      .where(eq(articleViews.userId, userId))
+      .orderBy(desc(articleViews.viewedAt))
+      .limit(limit);
+    return rows.map((r) => r.articleId);
   }
 }
 

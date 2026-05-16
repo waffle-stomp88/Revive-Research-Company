@@ -1039,3 +1039,20 @@ export const researchStacks = pgTable("research_stacks", {
 export const insertResearchStackSchema = createInsertSchema(researchStacks).omit({ id: true, createdAt: true });
 export type InsertResearchStack = z.infer<typeof insertResearchStackSchema>;
 export type ResearchStack = typeof researchStacks.$inferSelect;
+
+// Article Views — tracks which education articles a logged-in user has viewed, for cross-device Continue Reading
+export const articleViews = pgTable(
+  "article_views",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    articleId: varchar("article_id").notNull(),
+    viewedAt: timestamp("viewed_at").defaultNow().notNull(),
+  },
+  (table) => [
+    unique("uq_article_views_user_article").on(table.userId, table.articleId),
+    index("idx_article_views_user_viewedat").on(table.userId, table.viewedAt),
+  ],
+);
+
+export type ArticleView = typeof articleViews.$inferSelect;

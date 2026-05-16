@@ -47,6 +47,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BrowseBySystem } from "@/components/education/browse-by-system";
 import { MobileLibraryHome, trackArticleOpen } from "@/components/education/mobile-library";
+import { useAuth } from "@/hooks/useAuth";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
@@ -473,6 +474,7 @@ export default function Education() {
   const params = useParams<{ slug?: string }>();
   const [location] = useLocation();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   // Show toast when redirected from a retired guide URL
   useEffect(() => {
@@ -617,6 +619,15 @@ export default function Education() {
   
   const handleOpenArticle = (articleId: string) => {
     trackArticleOpen(articleId);
+    // Fire-and-forget server sync for authenticated users
+    if (isAuthenticated) {
+      fetch("/api/article-views", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId }),
+      }).catch(() => { /* ignore */ });
+    }
     const article = articles.find(a => a.id === articleId);
     if (article?.slug) {
       setLocation(`/guides/${article.slug}`);

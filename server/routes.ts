@@ -1579,6 +1579,35 @@ export async function registerRoutes(
     }
   });
 
+  // Article Views — save a viewed article for the authenticated user
+  app.post("/api/article-views", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { articleId } = req.body;
+      if (!articleId || typeof articleId !== "string") {
+        return res.status(400).json({ error: "articleId is required" });
+      }
+      await storage.saveArticleView(userId, articleId.slice(0, 100));
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Error saving article view:", error);
+      res.status(500).json({ error: "Failed to save article view" });
+    }
+  });
+
+  // Article Views — get recent article IDs for the authenticated user
+  app.get("/api/article-views/recent", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const limit = Math.min(parseInt(String(req.query.limit ?? "10"), 10) || 10, 20);
+      const ids = await storage.getRecentArticleViews(userId, limit);
+      res.json({ ids });
+    } catch (error) {
+      console.error("Error fetching recent article views:", error);
+      res.status(500).json({ error: "Failed to fetch recent article views" });
+    }
+  });
+
   // Get user's orders (authenticated)
   app.get("/api/orders/my-orders", isAuthenticated, async (req: any, res) => {
     try {

@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ import {
   History,
 } from "lucide-react";
 import type { EducationArticle, Product } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
 import { BODY_SYSTEM_HUBS } from "@/data/body-system-hubs";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
 import { resolvePrimarySystem } from "@/lib/peptide-systems";
@@ -1142,14 +1143,47 @@ export function MobileLibraryHome({ articles, products, onArticleSelect, article
   const [drillDownKey, setDrillDownKey] = useState<string | null>(null);
   const [recentIds, setRecentIds] = useState<string[]>(() => getRecentArticleIds());
   const searchRef = useRef<HTMLInputElement>(null);
+  const { isAuthenticated } = useAuth();
 
-  // ── Track opens → localStorage ──────────────────────────────────────────
+  // ── Fetch server-side recent IDs on mount for authenticated users ────────
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch("/api/article-views/recent?limit=5", { credentials: "include" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { ids: string[] } | null) => {
+        if (!data?.ids) return;
+        // Merge server IDs with localStorage, server order takes priority
+        const local = getRecentArticleIds();
+        const merged = [
+          ...data.ids,
+          ...local.filter((id) => !data.ids.includes(id)),
+        ].slice(0, MAX_RECENT);
+        setRecentIds(merged);
+        // Persist merged list back to localStorage
+        try {
+          localStorage.setItem(CONTINUE_READING_KEY, JSON.stringify(merged));
+        } catch { /* ignore */ }
+      })
+      .catch(() => { /* ignore */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
-  const handleArticleOpen = (id: string) => {
+  // ── Track opens → localStorage + server ─────────────────────────────────
+
+  const handleArticleOpen = useCallback((id: string) => {
     trackArticleOpen(id);
     setRecentIds(getRecentArticleIds());
+    // Fire-and-forget server sync for authenticated users
+    if (isAuthenticated) {
+      fetch("/api/article-views", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId: id }),
+      }).catch(() => { /* ignore */ });
+    }
     onArticleSelect(id);
-  };
+  }, [isAuthenticated, onArticleSelect]);
 
   // ── In-stock count per system ────────────────────────────────────────────
 
