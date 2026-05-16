@@ -46,6 +46,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BrowseBySystem } from "@/components/education/browse-by-system";
+import { MobileLibraryHome } from "@/components/education/mobile-library";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
@@ -150,7 +151,7 @@ const isAcademyArticle = (slug: string | null) => {
   return slug ? ACADEMY_ARTICLE_SLUGS.includes(slug) : false;
 };
 
-const articleVisuals: Record<string, () => JSX.Element> = {
+export const articleVisuals: Record<string, () => JSX.Element> = {
   "ordering-expectations": () => <OrderingJourney />,
   "how-to-read-coas": () => <COAAnatomyDiagram />,
   "storage-101": () => <StorageTemperatureGuide />,
@@ -945,111 +946,35 @@ export default function Education() {
 
         </motion.div>
 
-        {/* Browse by Body System — above tabs */}
+        {/* Browse by Body System — desktop only; mobile uses MobileBodySystemScroll inside MobileLibraryHome */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.08 }}
-          className="mt-10"
+          className="hidden md:block mt-10"
           id="browse-by-system"
         >
           <BrowseBySystem />
         </motion.div>
 
-        {/* Mobile Entry Screen — only on small screens */}
-        <div className="block md:hidden mt-8 space-y-4">
-          {/* Mobile search bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <input
-              type="search"
-              placeholder="Search all articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-3 rounded-lg bg-card/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff]/60 focus:ring-1 focus:ring-[#21d8ff]/40 transition-all"
-              data-testid="input-mobile-search"
+        {/* Mobile Library Home — Netflix-style, mobile only, hidden when article is open */}
+        {!expandedArticle && (
+          <div className="md:hidden mt-6">
+            <MobileLibraryHome
+              articles={articles}
+              products={products}
+              onArticleSelect={handleOpenArticle}
+              articleVisuals={articleVisuals}
             />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                data-testid="button-mobile-search-clear"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
           </div>
-
-          {/* Goal-entry cards */}
-          <div className="grid grid-cols-1 gap-3">
-            <button
-              onClick={() => {
-                const el = document.getElementById("browse-by-system");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
-              data-testid="card-entry-body-system"
-            >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#22c55e20" }}>
-                <Activity className="h-5 w-5" style={{ color: "#22c55e" }} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">Explore by Body System</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Browse peptide research by target area</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab("peptides");
-                setExpandedArticle(null);
-                setPeptideGroupFilter("all");
-                const el = document.getElementById("education-tabs");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
-              data-testid="card-entry-peptide-guides"
-            >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ec489920" }}>
-                <FlaskConical className="h-5 w-5" style={{ color: "#ec4899" }} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">Find a Peptide Guide</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Compound-specific research breakdowns</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab("general");
-                setExpandedArticle(null);
-                setPeptideGroupFilter("all");
-                const el = document.getElementById("education-tabs");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="flex items-center gap-3 p-4 rounded-lg bg-card/60 border border-border text-left hover-elevate transition-all"
-              data-testid="card-entry-general-education"
-            >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#21d8ff20" }}>
-                <BookOpen className="h-5 w-5" style={{ color: "#21d8ff" }} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">General Education</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Basics, storage, glossary & lab guides</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Main Tabbed Content Area */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-8"
+          className={`mt-8${!expandedArticle ? " hidden md:block" : ""}`}
           id="education-tabs"
         >
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setExpandedArticle(null); setPeptideGroupFilter("all"); }} className="w-full">
