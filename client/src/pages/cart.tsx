@@ -484,11 +484,11 @@ export default function CartPage() {
 
                     {/* Text + controls column */}
                     <div className="flex-1 min-w-0">
-                      {/* Row 1: name (left) · price + trash (right) */}
-                      <div className="flex items-center gap-1.5 justify-between">
-                        <div className="flex items-center gap-1 flex-wrap min-w-0">
+                      {/* Row 1: name (left) · price ONLY (right) — no icon so row = text height ~18px */}
+                      <div className="flex items-baseline gap-2 justify-between">
+                        <div className="flex items-center gap-1 flex-wrap min-w-0 leading-tight">
                           <h3
-                            className="font-display font-bold text-sm leading-tight"
+                            className="font-display font-bold text-base leading-tight"
                             data-testid={`cart-item-name-${item.productId}`}
                           >
                             {item.name}
@@ -509,35 +509,22 @@ export default function CartPage() {
                             </Badge>
                           )}
                         </div>
-                        {/* Price + trash — always on row 1 */}
-                        <div className="flex items-center gap-0.5 flex-shrink-0">
-                          {item.isFree ? (
-                            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
-                              <Gift className="h-3 w-3" />FREE
-                            </Badge>
-                          ) : (
-                            <>
-                              <span
-                                className="font-display font-bold text-base text-[#E7FB10]"
-                                data-testid={`cart-item-total-${item.productId}`}
-                              >
-                                ${Math.round(item.price * item.quantity)}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-muted-foreground hover:text-red-400 h-7 w-7"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromCart(item.productId, item.dosage, item.packSize); }}
-                                data-testid={`button-remove-${item.productId}`}
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        {/* Price only — no icon here so this row stays text-height */}
+                        {item.isFree ? (
+                          <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5 flex-shrink-0" data-testid={`badge-free-${item.productId}`}>
+                            <Gift className="h-3 w-3" />FREE
+                          </Badge>
+                        ) : (
+                          <span
+                            className="font-display font-bold text-base text-[#E7FB10] flex-shrink-0"
+                            data-testid={`cart-item-total-${item.productId}`}
+                          >
+                            ${Math.round(item.price * item.quantity)}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Row 2: dosage (left) · qty stepper (right) */}
+                      {/* Row 2: dosage (left) · stepper + trash (right) — both icons on same row = single icon-height row */}
                       <div
                         className="flex items-center justify-between mt-1"
                         onClick={(e) => e.stopPropagation()}
@@ -551,22 +538,32 @@ export default function CartPage() {
                           )}
                         </div>
                         {!item.isFree && (
-                          <div className="flex items-center border border-border rounded-md">
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex items-center border border-border rounded-md">
+                              <Button
+                                variant="ghost" size="sm" className="h-7 w-7 p-0"
+                                onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize); }}
+                                data-testid={`button-decrease-${item.productId}`}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-6 text-center font-medium text-sm">{item.quantity}</span>
+                              <Button
+                                variant="ghost" size="sm" className="h-7 w-7 p-0"
+                                onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize); }}
+                                disabled={item.quantity >= 10}
+                                data-testid={`button-increase-${item.productId}`}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
                             <Button
-                              variant="ghost" size="sm" className="h-7 w-7 p-0"
-                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize); }}
-                              data-testid={`button-decrease-${item.productId}`}
+                              variant="ghost" size="icon"
+                              className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromCart(item.productId, item.dosage, item.packSize); }}
+                              data-testid={`button-remove-${item.productId}`}
                             >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-6 text-center font-medium text-sm">{item.quantity}</span>
-                            <Button
-                              variant="ghost" size="sm" className="h-7 w-7 p-0"
-                              onClick={(e) => { e.preventDefault(); updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize); }}
-                              disabled={item.quantity >= 10}
-                              data-testid={`button-increase-${item.productId}`}
-                            >
-                              <Plus className="h-3 w-3" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         )}
