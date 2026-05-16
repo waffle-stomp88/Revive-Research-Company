@@ -747,6 +747,7 @@ interface DrillDownProps {
   articles: EducationArticle[];
   trustGuides: typeof TRUST_GUIDES;
   products: Product[];
+  hubSlug?: string;
   onBack: () => void;
   onArticleSelect: (id: string) => void;
 }
@@ -757,6 +758,7 @@ function DrillDownView({
   articles,
   trustGuides,
   products,
+  hubSlug,
   onBack,
   onArticleSelect,
 }: DrillDownProps) {
@@ -773,7 +775,7 @@ function DrillDownView({
         Back
       </button>
 
-      <div className="flex items-center gap-2 mb-5 pl-3" style={{ borderLeft: `2px solid ${color}` }}>
+      <div className="flex items-center gap-2 mb-3 pl-3" style={{ borderLeft: `2px solid ${color}` }}>
         <h2 className="text-base font-semibold text-foreground">{label}</h2>
         <Badge
           className="text-[9px]"
@@ -782,6 +784,18 @@ function DrillDownView({
           {articles.length + trustGuides.length}
         </Badge>
       </div>
+
+      {hubSlug && (
+        <button
+          className="flex items-center gap-1.5 text-xs font-medium mb-5 ml-3"
+          style={{ color }}
+          onClick={() => setLocation(`/systems/${hubSlug}`)}
+          data-testid={`drilldown-system-guide-link-${hubSlug}`}
+        >
+          View full system guide
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
+      )}
 
       <div className="space-y-2">
         {articles.map((article) => {
@@ -1271,6 +1285,7 @@ export function MobileLibraryHome({ articles, products, onArticleSelect, article
               articles={drillDownData.articles}
               trustGuides={drillDownData.trustGuides}
               products={products}
+              hubSlug={BODY_SYSTEM_HUBS.some((h) => h.slug === drillDownKey) ? drillDownKey : undefined}
               onBack={() => setDrillDownKey(null)}
               onArticleSelect={handleArticleOpen}
             />
