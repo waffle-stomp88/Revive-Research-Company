@@ -55,6 +55,7 @@ import ResourcesHub from "@/pages/resources";
 import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
 import ReconstitutionWizard from "@/pages/reconstitution-wizard";
+import InfographicBuilder from "@/pages/infographic-builder";
 const PkCatalog = lazy(() => import("@/pages/pk-catalog"));
 import ResearchStacks from "@/pages/research-stacks";
 const GalaxyPage = lazy(() => import("@/pages/galaxy"));
@@ -236,6 +237,7 @@ function Router() {
         <Route path="/about/our-transparency-commitment" component={Transparency} />
         <Route path="/coa/batch-testing-archive" component={BatchArchive} />
         <Route path="/tools/peptide-reconstitution-calculator" component={DosageCalculator} />
+        <Route path="/tools/infographic-builder" component={InfographicBuilder} />
         <Route path="/tools/peptide-pk-catalog">
           <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f]" />}>
             <PkCatalog />
