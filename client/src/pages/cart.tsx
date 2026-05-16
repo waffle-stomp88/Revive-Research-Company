@@ -488,7 +488,7 @@ export default function CartPage() {
                       <div className="flex items-baseline gap-2 justify-between">
                         <div className="flex items-center gap-1 flex-wrap min-w-0 leading-tight">
                           <h3
-                            className="font-display font-bold text-base leading-tight"
+                            className="font-display font-bold text-lg leading-tight"
                             data-testid={`cart-item-name-${item.productId}`}
                           >
                             {item.name}
@@ -516,7 +516,7 @@ export default function CartPage() {
                           </Badge>
                         ) : (
                           <span
-                            className="font-display font-bold text-base text-[#E7FB10] flex-shrink-0"
+                            className="font-display font-bold text-lg text-[#E7FB10] flex-shrink-0"
                             data-testid={`cart-item-total-${item.productId}`}
                           >
                             ${Math.round(item.price * item.quantity)}
