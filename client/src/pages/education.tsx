@@ -650,7 +650,10 @@ export default function Education() {
         setLocation("/tools/peptide-pk-catalog");
         return;
       }
-      setLocation("/guides/peptide-education-center");
+      // Return to the clean education library URL so the mobile library renders correctly
+      setLocation("/education");
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
     }
     requestAnimationFrame(() => {
       const savedPos = sessionStorage.getItem('education_scroll_pos');
