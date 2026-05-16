@@ -1,10 +1,17 @@
 import { useRef, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
-import { Brain, Utensils, Activity, Download, Loader2, Zap, Shield, Flame, Wind, ChevronDown, ChevronUp } from "lucide-react";
+import { Brain, Utensils, Activity, Download, Loader2, Zap, Shield, Flame, Wind, Heart, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ─── TYPES ─────────────────────────────────────────────────────────────────────
-type CalloutIconName = "brain" | "stomach" | "pancreas" | "activity" | "utensils" | "shield" | "zap" | "flame" | "wind";
+type CalloutIconName = "brain" | "stomach" | "pancreas" | "activity" | "utensils" | "shield" | "zap" | "flame" | "wind" | "heart";
 
 interface Callout {
   id: string;
@@ -15,7 +22,8 @@ interface Callout {
 }
 
 interface PostData {
-  key: string;
+  id: string;
+  label: string;
   seriesLabel: string;
   fileName: string;
   headline: string;
@@ -35,9 +43,10 @@ interface PostData {
 //
 // Naming convention for new custom silhouettes:
 //   infographic-silhouette-{descriptor}.{svg|png}
-const ALL_POSTS: PostData[] = [
+const POST_CONFIGS: PostData[] = [
   {
-    key: "glp1",
+    id: "glp1",
+    label: "GLP-1 Basics",
     seriesLabel: "THE BASICS // 001",
     fileName: "revive-basics-001-glp1.png",
     headline: "WHAT IS\nA GLP-1?",
@@ -69,7 +78,8 @@ const ALL_POSTS: PostData[] = [
     ],
   },
   {
-    key: "bpc157",
+    id: "bpc157",
+    label: "BPC-157",
     seriesLabel: "THE BASICS // 002",
     fileName: "revive-basics-002-bpc157.png",
     headline: "WHAT IS\nBPC-157?",
@@ -101,7 +111,8 @@ const ALL_POSTS: PostData[] = [
     ],
   },
   {
-    key: "tb500",
+    id: "tb500",
+    label: "TB-500",
     seriesLabel: "THE BASICS // 003",
     fileName: "revive-basics-003-tb500.png",
     headline: "WHAT IS\nTB-500?",
@@ -133,7 +144,8 @@ const ALL_POSTS: PostData[] = [
     ],
   },
   {
-    key: "ipamorelin",
+    id: "ipamorelin",
+    label: "Ipamorelin",
     seriesLabel: "THE BASICS // 004",
     fileName: "revive-basics-004-ipamorelin.png",
     headline: "WHAT IS\nIPAMORELIN?",
@@ -145,7 +157,7 @@ const ALL_POSTS: PostData[] = [
         id: "pituitary",
         icon: "brain",
         label: "Pituitary",
-        description: "Triggers targeted GH pulse\nwithout cortisol spike",
+        description: "Selectively stimulates GH\nrelease from somatotrophs",
         yPercent: 18,
       },
       {
@@ -160,6 +172,39 @@ const ALL_POSTS: PostData[] = [
         icon: "zap",
         label: "Tissue",
         description: "Supports lean mass & recovery\nvia IGF-1 signaling",
+        yPercent: 68,
+      },
+    ],
+  },
+  {
+    id: "igf1-lr3",
+    label: "IGF-1 LR3",
+    seriesLabel: "THE BASICS // 005",
+    fileName: "revive-basics-005-igf1-lr3.png",
+    headline: "WHAT IS\nIGF-1 LR3?",
+    backgroundImage: "",
+    bodyText:
+      "IGF-1 LR3 is a long-acting analogue of Insulin-Like Growth Factor-1 with a modified arginine-3 substitution that reduces binding to IGF-binding proteins. Research focuses on its role in muscle protein synthesis, cellular proliferation, and metabolic regulation.",
+    callouts: [
+      {
+        id: "muscle",
+        icon: "zap",
+        label: "Muscle",
+        description: "Stimulates satellite cell\nactivation & hypertrophy",
+        yPercent: 18,
+      },
+      {
+        id: "metabolism",
+        icon: "activity",
+        label: "Metabolism",
+        description: "Enhances glucose uptake\nindependent of insulin",
+        yPercent: 44,
+      },
+      {
+        id: "recovery",
+        icon: "heart",
+        label: "Recovery",
+        description: "Supports cellular repair\nvia IGF-1R signaling",
         yPercent: 68,
       },
     ],
@@ -180,6 +225,7 @@ function CalloutIcon({ icon }: { icon: string }) {
   if (icon === "zap") return <Zap {...iconProps} />;
   if (icon === "flame") return <Flame {...iconProps} />;
   if (icon === "wind") return <Wind {...iconProps} />;
+  if (icon === "heart") return <Heart {...iconProps} />;
   return <Activity {...iconProps} />;
 }
 
@@ -683,13 +729,13 @@ export default function InfographicBuilder() {
   const canvasRef = useRef<HTMLDivElement>(null!);
   const [exporting, setExporting] = useState(false);
   const [scale, setScale] = useState(0.45);
-  const [selectedKey, setSelectedKey] = useState(ALL_POSTS[0].key);
-  const [postData, setPostData] = useState<PostData>(ALL_POSTS[0]);
+  const [selectedId, setSelectedId] = useState(POST_CONFIGS[0].id);
+  const [postData, setPostData] = useState<PostData>(POST_CONFIGS[0]);
 
   // When the preset selector changes, load that preset into the editable state
-  const handleSelectPost = (key: string) => {
-    setSelectedKey(key);
-    const preset = ALL_POSTS.find((p) => p.key === key) ?? ALL_POSTS[0];
+  const handleSelectPost = (id: string) => {
+    setSelectedId(id);
+    const preset = POST_CONFIGS.find((p) => p.id === id) ?? POST_CONFIGS[0];
     setPostData(preset);
   };
 
@@ -818,33 +864,38 @@ export default function InfographicBuilder() {
       </div>
 
       {/* ── Post selector ── */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {ALL_POSTS.map((post) => {
-          const isActive = post.key === selectedKey;
-          return (
-            <button
-              key={post.key}
-              data-testid={`button-post-${post.key}`}
-              onClick={() => handleSelectPost(post.key)}
+      <Select value={selectedId} onValueChange={handleSelectPost}>
+        <SelectTrigger
+          data-testid="select-post-config"
+          style={{
+            background: "#1a1a1f",
+            border: "1px solid #333",
+            color: "#fff",
+            fontFamily: "DM Sans, sans-serif",
+            fontSize: 14,
+            width: 240,
+          }}
+        >
+          <SelectValue placeholder="Choose a post…" />
+        </SelectTrigger>
+        <SelectContent style={{ background: "#1a1a1f", border: "1px solid #333" }}>
+          {POST_CONFIGS.map((config) => (
+            <SelectItem
+              key={config.id}
+              value={config.id}
+              data-testid={`option-post-config-${config.id}`}
               style={{
-                background: isActive ? CYAN : "transparent",
-                color: isActive ? "#000" : CYAN,
-                border: `1px solid ${CYAN}`,
-                borderRadius: 6,
-                padding: "7px 16px",
-                fontSize: 11,
-                fontFamily: "'JetBrains Mono', monospace",
-                letterSpacing: "0.08em",
+                color: "#fff",
+                fontFamily: "DM Sans, sans-serif",
+                fontSize: 14,
                 cursor: "pointer",
-                fontWeight: isActive ? 600 : 400,
-                transition: "background 0.15s, color 0.15s",
               }}
             >
-              {post.seriesLabel}
-            </button>
-          );
-        })}
-      </div>
+              {config.seriesLabel} — {config.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       {/* ── Main content: panel + canvas ── */}
       <div
@@ -860,7 +911,7 @@ export default function InfographicBuilder() {
           data={postData}
           onChange={setPostData}
           onReset={() => {
-            const preset = ALL_POSTS.find((p) => p.key === selectedKey) ?? ALL_POSTS[0];
+            const preset = POST_CONFIGS.find((p) => p.id === selectedId) ?? POST_CONFIGS[0];
             setPostData(preset);
           }}
         />
