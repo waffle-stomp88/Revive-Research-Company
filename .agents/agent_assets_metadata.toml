@@ -1,5 +1,28 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "l-NXtD5X9QeqAidITE7Dd"
+uri = "file://attached_assets/generated_images/scanlines_overlay.png"
+type = "image"
+title = "scanlines_overlay"
+
+[[generated]]
+id = "VPntiUfoP7gJk3jz513fx"
+uri = "file://attached_assets/generated_images/hud_corners.png"
+type = "image"
+title = "hud_corners"
+
+[[generated]]
+id = "7MpIiZh4rIrP48UlTUgCl"
+uri = "file://attached_assets/generated_images/outro_bg.png"
+type = "image"
+title = "outro_bg"
+
+[[generated]]
+id = "QGh10t8Ou1Ow3kOqBoO1w"
+uri = "file://attached_assets/generated_images/hud_ring.png"
+type = "image"
+title = "hud_ring"
 
 [[outputs]]
 id = "1tkDinXVhzwJyRulXSf2h"
@@ -29,4 +52,4 @@ title = "synergy_reel_music"
 id = "WT1jTqg0zi8XR6qIYdZm2"
 uri = "file://client/public/videos/synergy_reel.mp4"
 type = "video"
-title = "Synergy Engine IG Reel — 28s, 1080×1920"
+title = "Synergy Engine Instagram Reel (1080×1920, 35s)"
