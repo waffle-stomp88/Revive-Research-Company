@@ -1,0 +1,200 @@
+# REPLIT TECHNICAL BRIEF: Social Media Infographic Component
+## "THE BASICS // 001 — What Is a GLP-1?"
+
+---
+
+## Overview
+
+Build a React component that renders a 1080x1080px Instagram post graphic for Revive Research's "THE BASICS" content series. This component will serve as a reusable template — future posts in this series will swap the background image, labels, and body text while keeping the layout, typography, brand elements, and footer identical.
+
+The first post in this series is "What Is a GLP-1?" featuring a female body silhouette with labeled organ callouts explaining where GLP-1 receptors are active.
+
+---
+
+## Design Specifications
+
+### Canvas
+- Exact dimensions: 1080px × 1080px
+- Background: Dark matte (#0A0A0A) with a subtle noise/grain texture overlay at very low opacity (2-4%) to prevent flat-screen appearance
+- The component should be exportable as a PNG at 1:1 ratio (screenshot or html2canvas)
+
+### Background Image
+- A pre-generated AI image of a female body silhouette (dark, translucent, X-ray style with cyan (#00D4FF) glowing organs — brain, stomach, pancreas) will be provided as a PNG asset
+- This image should be positioned center-left of the canvas, taking up approximately 40-50% of the width and 60-70% of the height
+- The image should have slight opacity reduction (~85-90%) so it integrates with the dark background rather than looking pasted on
+
+### Logo (Top-Left)
+- Revive R icon mark + "REVIVE" horizontal text lockup
+- White (#FFFFFF)
+- Positioned: top-left corner, 40px from left edge, 40px from top edge
+- Logo height: approximately 36-40px
+- Use the existing Revive logo SVG/PNG asset from the site (white version on transparent background)
+
+### Series Label
+- Text: "THE BASICS // 001"
+- Font: Monospace (JetBrains Mono, Fira Code, or similar)
+- Color: Cyan (#00D4FF)
+- Size: 13px
+- Letter-spacing: 0.15em
+- Positioned: directly below the logo with 12px gap
+- Uppercase
+
+### Headline
+- Text: "WHAT IS A GLP-1?"
+- Font: Primary brand font — Oswald, Bebas Neue, or whatever bold condensed sans-serif the site uses
+- Color: White (#FFFFFF)
+- Size: 72-80px
+- Font-weight: 700
+- Letter-spacing: -0.01em
+- Positioned: below series label with 24px gap, left-aligned at 40px from left edge
+- This should be the largest text element on the canvas
+
+### Organ Callout Labels
+Three callout labels positioned on the right side of the canvas, each connected to the corresponding glowing organ on the body silhouette by a thin horizontal line.
+
+Each callout consists of:
+- A thin horizontal connector line (1px, cyan #00D4FF at 60% opacity) extending from the organ area to the label
+- A small circular icon (36px diameter, thin cyan border, white icon inside) — brain icon, stomach icon, pancreas icon
+- Bold label text (organ name)
+- Smaller description text beneath
+
+**Callout 1 — Brain (top-right area):**
+- Icon: Brain outline icon
+- Label: "BRAIN" — White, bold, 20px, uppercase
+- Description: "APPETITE REGULATION" — Gray (#999999), 12px, uppercase, letter-spacing 0.1em
+- Vertical position: approximately 25% from top of canvas
+
+**Callout 2 — Stomach (middle-right area):**
+- Icon: Stomach outline icon
+- Label: "STOMACH" — White, bold, 20px, uppercase
+- Description: "SLOWS GASTRIC EMPTYING" — Gray (#999999), 12px, uppercase, letter-spacing 0.1em
+- Vertical position: approximately 50% from top of canvas
+
+**Callout 3 — Pancreas (lower-right area):**
+- Icon: Pancreas outline icon
+- Label: "PANCREAS" — White, bold, 20px, uppercase
+- Description: "INSULIN RESPONSE" — Gray (#999999), 12px, uppercase, letter-spacing 0.1em
+- Vertical position: approximately 68% from top of canvas
+
+All three callouts should be right-aligned to a consistent left edge (approximately 580px from canvas left) so they form a clean vertical column.
+
+The connector lines should originate from small dots (4px, cyan) placed on or near the corresponding organ areas of the background silhouette image.
+
+### Body Text Block
+- Positioned: bottom area of canvas, above the footer, centered horizontally
+- Max-width: 680px
+- Text: "GLP-1 (glucagon-like peptide-1) is a naturally occurring hormone that regulates appetite, blood sugar, and gastric motility. Research compounds targeting GLP-1 receptors are among the most studied molecules in metabolic science."
+- Font: Inter, system sans-serif, or whatever body font the site uses
+- Color: Light gray (#CCCCCC)
+- Size: 15px
+- Line-height: 1.6
+- Text-align: center
+- A thin horizontal divider line (1px, cyan at 30% opacity, 200px wide, centered) should sit above this text block with 16px spacing
+
+### Footer
+- Positioned: very bottom of canvas, 32px from bottom edge
+- Two elements on one line, centered:
+  - "REVIVERESEARCH.CO" — Monospace font, gray (#666666), 11px, letter-spacing 0.15em, uppercase
+  - " | " — Gray (#444444)
+  - "FOR RESEARCH USE ONLY" — Monospace font, gray (#666666), 11px, letter-spacing 0.15em, uppercase
+
+---
+
+## Color Palette
+
+| Element | Color | Hex |
+|---|---|---|
+| Background | Near-black | #0A0A0A |
+| Primary accent | Cyan | #00D4FF |
+| Headline text | White | #FFFFFF |
+| Callout labels | White | #FFFFFF |
+| Callout descriptions | Mid-gray | #999999 |
+| Body text | Light gray | #CCCCCC |
+| Footer text | Dark gray | #666666 |
+| Connector lines | Cyan at 60% | #00D4FF99 |
+| Divider lines | Cyan at 30% | #00D4FF4D |
+| Noise overlay | White at 3% | #FFFFFF08 |
+
+---
+
+## Typography
+
+| Element | Font | Weight | Size | Spacing |
+|---|---|---|---|---|
+| Logo text | Brand font (match site) | 700 | 18px | 0.15em |
+| Series label | JetBrains Mono / monospace | 500 | 13px | 0.15em |
+| Headline | Oswald / Bebas Neue / bold condensed | 700 | 72-80px | -0.01em |
+| Callout labels | Inter / system sans | 700 | 20px | 0.05em |
+| Callout descriptions | Inter / system sans | 400 | 12px | 0.1em |
+| Body text | Inter / system sans | 400 | 15px | normal |
+| Footer | JetBrains Mono / monospace | 400 | 11px | 0.15em |
+
+---
+
+## Visual Tone
+
+This is the "THE BASICS" series — designed for beginners, not experts. The visual tone should be:
+
+- **Clean and premium** — think Apple product page or high-end pharma infographic
+- **NOT aggressive** — no distressed textures, no lightning, no smoke, no glitch effects, no grunge
+- **NOT clinical/sterile** — it should feel warm and inviting while still being authoritative
+- The dark background with subtle cyan accents creates a premium medical feel without being cold
+- Plenty of negative space — let the layout breathe
+
+---
+
+## Reusability Requirements
+
+This component should be built so that future "THE BASICS" posts can be created by swapping:
+
+1. **Background image** — different silhouette/visual for each topic
+2. **Series number** — "THE BASICS // 002", "THE BASICS // 003", etc.
+3. **Headline text** — "WHAT IS A GLP-1?", "WHAT IS A COA?", "WHAT IS HPLC?", etc.
+4. **Callout labels and descriptions** — different number of callouts (2-5), different text
+5. **Body text** — different explanation paragraph for each topic
+6. **Callout positions** — adjustable Y-positions for connector lines and labels
+
+Consider making these configurable via props or a simple data object at the top of the component:
+
+```javascript
+const postData = {
+  seriesNumber: "001",
+  headline: "WHAT IS A GLP-1?",
+  backgroundImage: "/assets/glp1-silhouette.png",
+  callouts: [
+    { label: "BRAIN", description: "APPETITE REGULATION", icon: "brain", yPosition: 25 },
+    { label: "STOMACH", description: "SLOWS GASTRIC EMPTYING", icon: "stomach", yPosition: 50 },
+    { label: "PANCREAS", description: "INSULIN RESPONSE", icon: "pancreas", yPosition: 68 },
+  ],
+  bodyText: "GLP-1 (glucagon-like peptide-1) is a naturally occurring hormone...",
+};
+```
+
+---
+
+## Export / Screenshot
+
+The component needs to render at exactly 1080x1080px in the browser so it can be screenshotted or exported as a PNG for Instagram posting. Options:
+
+1. **Simple approach:** Render the component in a fixed 1080x1080 container and use browser screenshot
+2. **Better approach:** Integrate html2canvas or dom-to-image library to add an "Export as PNG" button that downloads the graphic at full resolution
+
+---
+
+## Assets Needed
+
+1. **Revive logo** — white version, SVG or high-res PNG with transparent background (should already exist in the site assets)
+2. **Background silhouette image** — AI-generated female body silhouette with cyan glowing organs. This will be provided as a PNG. Grayson will generate this in ChatGPT and upload it.
+3. **Icons** — Brain, stomach, pancreas outline icons. Use Lucide React icons if available, or simple SVG outlines. White stroke, no fill.
+
+---
+
+## Priority
+
+This is a content-creation tool, not a customer-facing feature. Build it clean but don't over-engineer it. The main goal is pixel-perfect visual output at 1080x1080 that matches the specifications above. If something needs to be hardcoded for the first version, that's fine — reusability improvements can come in v2.
+
+---
+
+## Reference
+
+Attached: ChatGPT-generated mockup showing the approximate layout and visual direction. The Replit component should match this layout but with precise brand typography, exact logo placement, and clean text rendering that AI image generation can't achieve.
