@@ -571,6 +571,16 @@ export default function Education() {
   // We skip restoration when on a direct /guides/:slug URL since that state is
   // already driven by the URL and must not be overridden by stored context.
   const articleRestoredRef = useRef(false);
+  // When the URL loses its slug (user navigated back to the education home), always
+  // clear the expanded article so the mobile library appears instead of a stale article.
+  // This handles the case where Wouter reuses the same component instance across the
+  // /guides/peptide-education-center (static) and /guides/:slug (dynamic) routes.
+  useEffect(() => {
+    if (!params.slug) {
+      setExpandedArticle(null);
+    }
+  }, [params.slug]);
+
   useEffect(() => {
     // Mobile library manages its own navigation via Continue Reading — skip restoration on mobile
     if (typeof window !== "undefined" && window.innerWidth < 768) return;
