@@ -572,6 +572,8 @@ export default function Education() {
   // already driven by the URL and must not be overridden by stored context.
   const articleRestoredRef = useRef(false);
   useEffect(() => {
+    // Mobile library manages its own navigation via Continue Reading — skip restoration on mobile
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
     if (articleRestoredRef.current || articlesFetching || !articles.length || params.slug || expandedArticle) return;
     const map = readStoredArticles();
     const savedSlug = map[activeTab];
@@ -650,8 +652,7 @@ export default function Education() {
         setLocation("/tools/peptide-pk-catalog");
         return;
       }
-      // Return to the clean education library URL so the mobile library renders correctly
-      setLocation("/education");
+      setLocation("/guides/peptide-education-center");
       window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
