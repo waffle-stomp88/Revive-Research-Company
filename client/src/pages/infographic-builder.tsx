@@ -1,11 +1,30 @@
 import { useRef, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
-import { Brain, Utensils, Activity, Download, Loader2 } from "lucide-react";
+import { Brain, Utensils, Activity, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// ─── POST DATA CONFIG ──────────────────────────────────────────────────────────
-// Swap this object to produce a new post — no layout changes required.
-const POST_DATA = {
+// ─── TYPES ─────────────────────────────────────────────────────────────────────
+type CalloutIcon = "brain" | "stomach" | "pancreas" | "activity" | "utensils";
+
+interface Callout {
+  id: string;
+  icon: CalloutIcon;
+  label: string;
+  description: string;
+  yPercent: number;
+}
+
+interface PostData {
+  seriesLabel: string;
+  fileName: string;
+  headline: string;
+  backgroundImage: string;
+  bodyText: string;
+  callouts: Callout[];
+}
+
+// ─── DEFAULT POST DATA ──────────────────────────────────────────────────────────
+const DEFAULT_POST_DATA: PostData = {
   seriesLabel: "THE BASICS // 001",
   fileName: "revive-basics-001-glp1.png",
   headline: "WHAT IS\nA GLP-1?",
@@ -43,7 +62,6 @@ const CYAN = "#00D4FF";
 const NEAR_BLACK = "#0A0A0A";
 
 // ─── CALLOUT ICON COMPONENT ────────────────────────────────────────────────────
-// icon values: "brain" | "stomach" | "pancreas" | "activity" | "utensils"
 function CalloutIcon({ icon }: { icon: string }) {
   const iconProps = { size: 18, color: "white", strokeWidth: 1.5 };
   if (icon === "brain") return <Brain {...iconProps} />;
@@ -52,7 +70,6 @@ function CalloutIcon({ icon }: { icon: string }) {
 }
 
 // ─── NOISE OVERLAY ─────────────────────────────────────────────────────────────
-// SVG-based pseudo-noise at very low opacity
 function NoiseOverlay() {
   return (
     <svg
@@ -82,10 +99,15 @@ function NoiseOverlay() {
 }
 
 // ─── CANVAS COMPONENT ──────────────────────────────────────────────────────────
-function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivElement> }) {
-  const { seriesLabel, headline, backgroundImage, callouts, bodyText } = POST_DATA;
+function InfographicCanvas({
+  canvasRef,
+  data,
+}: {
+  canvasRef: React.RefObject<HTMLDivElement>;
+  data: PostData;
+}) {
+  const { seriesLabel, headline, backgroundImage, callouts, bodyText } = data;
 
-  // Right column starts at 52% of canvas width
   const rightColLeft = CANVAS_SIZE * 0.52;
   const rightColWidth = CANVAS_SIZE - rightColLeft - 56;
 
@@ -102,10 +124,9 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         flexShrink: 0,
       }}
     >
-      {/* ── Noise texture overlay ── */}
       <NoiseOverlay />
 
-      {/* ── Subtle ambient gradient (top-left warm glow) ── */}
+      {/* Ambient gradient */}
       <div
         style={{
           position: "absolute",
@@ -117,7 +138,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         }}
       />
 
-      {/* ── Body silhouette image (centered-left, behind callouts) ── */}
+      {/* Body silhouette image */}
       <div
         style={{
           position: "absolute",
@@ -135,15 +156,9 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
           <img
             src={backgroundImage}
             alt="Body silhouette"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              opacity: 0.87,
-            }}
+            style={{ width: "100%", height: "100%", objectFit: "contain", opacity: 0.87 }}
           />
         ) : (
-          // Placeholder when no image is set
           <div
             style={{
               width: "62%",
@@ -174,15 +189,8 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         )}
       </div>
 
-      {/* ── Logo (top-left) ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: 52,
-          left: 56,
-          zIndex: 20,
-        }}
-      >
+      {/* Logo */}
+      <div style={{ position: "absolute", top: 52, left: 56, zIndex: 20 }}>
         <img
           src="/assets/logo.png"
           alt="Revive Research"
@@ -191,7 +199,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         />
       </div>
 
-      {/* ── Series label ── */}
+      {/* Series label */}
       <div
         style={{
           position: "absolute",
@@ -208,7 +216,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         {seriesLabel}
       </div>
 
-      {/* ── Headline ── */}
+      {/* Headline */}
       <div
         style={{
           position: "absolute",
@@ -226,7 +234,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         {headline}
       </div>
 
-      {/* ── Right column: organ callouts ── */}
+      {/* Right column callouts */}
       {callouts.map((callout) => {
         const yPx = (callout.yPercent / 100) * CANVAS_SIZE;
         return (
@@ -240,7 +248,6 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
               zIndex: 20,
             }}
           >
-            {/* Horizontal connector line */}
             <div
               style={{
                 position: "absolute",
@@ -252,8 +259,6 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
                 opacity: 0.6,
               }}
             />
-
-            {/* Icon circle */}
             <div
               style={{
                 width: 38,
@@ -269,8 +274,6 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
             >
               <CalloutIcon icon={callout.icon} />
             </div>
-
-            {/* Label */}
             <div
               style={{
                 color: "#FFFFFF",
@@ -284,8 +287,6 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
             >
               {callout.label}
             </div>
-
-            {/* Description */}
             <div
               style={{
                 color: "#888888",
@@ -301,7 +302,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         );
       })}
 
-      {/* ── Body text block (lower third) ── */}
+      {/* Body text block */}
       <div
         style={{
           position: "absolute",
@@ -316,16 +317,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
           gap: 18,
         }}
       >
-        {/* Cyan divider */}
-        <div
-          style={{
-            width: 200,
-            height: 1,
-            background: `rgba(0,212,255,0.30)`,
-          }}
-        />
-
-        {/* Body text */}
+        <div style={{ width: 200, height: 1, background: `rgba(0,212,255,0.30)` }} />
         <p
           style={{
             color: "#CCCCCC",
@@ -341,7 +333,7 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
         </p>
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <div
         style={{
           position: "absolute",
@@ -362,11 +354,220 @@ function InfographicCanvas({ canvasRef }: { canvasRef: React.RefObject<HTMLDivEl
   );
 }
 
+// ─── FIELD STYLES ───────────────────────────────────────────────────────────────
+const fieldLabel: React.CSSProperties = {
+  display: "block",
+  color: "#888",
+  fontSize: 11,
+  fontFamily: "'JetBrains Mono', monospace",
+  letterSpacing: "0.08em",
+  marginBottom: 5,
+  textTransform: "uppercase",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: 6,
+  color: "#e8e8e8",
+  fontSize: 13,
+  fontFamily: "DM Sans, sans-serif",
+  padding: "7px 10px",
+  outline: "none",
+  resize: "vertical",
+  boxSizing: "border-box",
+};
+
+const sectionHeading: React.CSSProperties = {
+  color: CYAN,
+  fontSize: 11,
+  fontFamily: "'JetBrains Mono', monospace",
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  margin: "0 0 12px",
+};
+
+// ─── COLLAPSIBLE CALLOUT EDITOR ─────────────────────────────────────────────────
+function CalloutEditor({
+  callout,
+  index,
+  onChange,
+}: {
+  callout: Callout;
+  index: number;
+  onChange: (index: number, field: "label" | "description", value: string) => void;
+}) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div
+      style={{
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 8,
+        overflow: "hidden",
+        marginBottom: 8,
+      }}
+    >
+      <button
+        data-testid={`button-callout-toggle-${index}`}
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          width: "100%",
+          background: "rgba(255,255,255,0.04)",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "9px 12px",
+          color: "#ccc",
+          fontSize: 13,
+          fontFamily: "DM Sans, sans-serif",
+          fontWeight: 600,
+        }}
+      >
+        <span>Callout {index + 1}: {callout.label || "(no label)"}</span>
+        {open ? <ChevronUp size={14} color="#888" /> : <ChevronDown size={14} color="#888" />}
+      </button>
+
+      {open && (
+        <div style={{ padding: "12px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div>
+            <label style={fieldLabel}>Label</label>
+            <input
+              data-testid={`input-callout-label-${index}`}
+              style={inputStyle}
+              value={callout.label}
+              onChange={(e) => onChange(index, "label", e.target.value)}
+            />
+          </div>
+          <div>
+            <label style={fieldLabel}>Description (use \n for line break)</label>
+            <textarea
+              data-testid={`input-callout-description-${index}`}
+              style={{ ...inputStyle, minHeight: 64 }}
+              value={callout.description}
+              onChange={(e) => onChange(index, "description", e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── CONFIG PANEL ───────────────────────────────────────────────────────────────
+function ConfigPanel({
+  data,
+  onChange,
+}: {
+  data: PostData;
+  onChange: (updated: PostData) => void;
+}) {
+  const set = <K extends keyof PostData>(key: K, value: PostData[K]) =>
+    onChange({ ...data, [key]: value });
+
+  const handleCalloutChange = (index: number, field: "label" | "description", value: string) => {
+    const updated = data.callouts.map((c, i) => (i === index ? { ...c, [field]: value } : c));
+    onChange({ ...data, callouts: updated });
+  };
+
+  return (
+    <div
+      style={{
+        width: 280,
+        flexShrink: 0,
+        background: "#18181c",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 10,
+        padding: "20px 16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 20,
+        overflowY: "auto",
+        maxHeight: "calc(100vh - 160px)",
+      }}
+    >
+      {/* General */}
+      <div>
+        <p style={sectionHeading}>General</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={fieldLabel}>Series label</label>
+            <input
+              data-testid="input-series-label"
+              style={inputStyle}
+              value={data.seriesLabel}
+              onChange={(e) => set("seriesLabel", e.target.value)}
+            />
+          </div>
+          <div>
+            <label style={fieldLabel}>Headline (use \n for line break)</label>
+            <textarea
+              data-testid="input-headline"
+              style={{ ...inputStyle, minHeight: 64 }}
+              value={data.headline}
+              onChange={(e) => set("headline", e.target.value)}
+            />
+          </div>
+          <div>
+            <label style={fieldLabel}>Export filename</label>
+            <input
+              data-testid="input-filename"
+              style={inputStyle}
+              value={data.fileName}
+              onChange={(e) => set("fileName", e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Body text */}
+      <div>
+        <p style={sectionHeading}>Body text</p>
+        <textarea
+          data-testid="input-body-text"
+          style={{ ...inputStyle, minHeight: 100 }}
+          value={data.bodyText}
+          onChange={(e) => set("bodyText", e.target.value)}
+        />
+      </div>
+
+      {/* Callouts */}
+      <div>
+        <p style={sectionHeading}>Callouts</p>
+        {data.callouts.map((callout, i) => (
+          <CalloutEditor key={callout.id} callout={callout} index={i} onChange={handleCalloutChange} />
+        ))}
+      </div>
+
+      {/* Reset */}
+      <Button
+        data-testid="button-reset-defaults"
+        variant="outline"
+        onClick={() => onChange(DEFAULT_POST_DATA)}
+        style={{
+          fontSize: 12,
+          fontFamily: "DM Sans, sans-serif",
+          letterSpacing: "0.04em",
+          borderColor: "rgba(255,255,255,0.15)",
+          color: "#888",
+          background: "transparent",
+        }}
+      >
+        Reset to defaults
+      </Button>
+    </div>
+  );
+}
+
 // ─── PAGE COMPONENT ────────────────────────────────────────────────────────────
 export default function InfographicBuilder() {
   const canvasRef = useRef<HTMLDivElement>(null!);
   const [exporting, setExporting] = useState(false);
-  const [scale, setScale] = useState(0.5);
+  const [scale, setScale] = useState(0.45);
+  const [postData, setPostData] = useState<PostData>(DEFAULT_POST_DATA);
 
   // Load JetBrains Mono font
   useEffect(() => {
@@ -381,11 +582,13 @@ export default function InfographicBuilder() {
     }
   }, []);
 
-  // Compute scale so the 1080×1080 canvas fits inside the viewport with padding
+  // Compute scale so the canvas fits alongside the config panel
   useEffect(() => {
     const compute = () => {
-      const available = Math.min(window.innerWidth - 64, window.innerHeight - 180);
-      setScale(Math.min(available / CANVAS_SIZE, 1));
+      const panelWidth = 280 + 16 + 48; // panel + gap + outer padding
+      const availableW = Math.max(window.innerWidth - panelWidth - 64, 200);
+      const availableH = Math.max(window.innerHeight - 180, 200);
+      setScale(Math.max(Math.min(availableW / CANVAS_SIZE, availableH / CANVAS_SIZE, 1), 0.1));
     };
     compute();
     window.addEventListener("resize", compute);
@@ -395,7 +598,6 @@ export default function InfographicBuilder() {
   const handleExport = async () => {
     if (!canvasRef.current) return;
     setExporting(true);
-    // Let the loading state paint before the synchronous html2canvas work begins
     await new Promise((resolve) => setTimeout(resolve, 80));
     try {
       const canvas = await html2canvas(canvasRef.current, {
@@ -406,9 +608,8 @@ export default function InfographicBuilder() {
         width: CANVAS_SIZE,
         height: CANVAS_SIZE,
       });
-
       const link = document.createElement("a");
-      link.download = POST_DATA.fileName;
+      link.download = postData.fileName;
       link.href = canvas.toDataURL("image/png");
       link.click();
     } catch (err) {
@@ -425,101 +626,122 @@ export default function InfographicBuilder() {
         background: "#111114",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        padding: "32px 24px",
-        gap: 28,
+        padding: "28px 24px 40px",
+        gap: 24,
       }}
     >
-      {/* ── Header ── */}
-      <div style={{ textAlign: "center" }}>
-        <h1
-          style={{
-            color: "#FFFFFF",
-            fontSize: 22,
-            fontFamily: "'Bebas Neue', sans-serif",
-            letterSpacing: "0.08em",
-            margin: 0,
-          }}
-        >
-          INFOGRAPHIC BUILDER
-        </h1>
-        <p
-          style={{
-            color: "#666",
-            fontSize: 13,
-            fontFamily: "DM Sans, sans-serif",
-            margin: "6px 0 0",
-          }}
-        >
-          "THE BASICS" series — 1080 × 1080 px Instagram post
-        </p>
-      </div>
-
-      {/* ── Export button ── */}
-      <Button
-        onClick={handleExport}
-        disabled={exporting}
-        data-testid="button-export-png"
-        style={{
-          background: CYAN,
-          color: "#000",
-          fontFamily: "DM Sans, sans-serif",
-          fontWeight: 600,
-          fontSize: 14,
-          letterSpacing: "0.04em",
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-        }}
-      >
-        {exporting ? (
-          <>
-            <Loader2 size={15} style={{ animation: "spin 1s linear infinite" }} />
-            Exporting…
-          </>
-        ) : (
-          <>
-            <Download size={15} />
-            Export PNG
-          </>
-        )}
-      </Button>
-
-      {/* ── Canvas preview (scaled to viewport) ── */}
+      {/* ── Header row ── */}
       <div
         style={{
-          width: CANVAS_SIZE * scale,
-          height: CANVAS_SIZE * scale,
-          flexShrink: 0,
-          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12,
         }}
       >
-        <div
+        <div>
+          <h1
+            style={{
+              color: "#FFFFFF",
+              fontSize: 22,
+              fontFamily: "'Bebas Neue', sans-serif",
+              letterSpacing: "0.08em",
+              margin: 0,
+            }}
+          >
+            INFOGRAPHIC BUILDER
+          </h1>
+          <p
+            style={{
+              color: "#666",
+              fontSize: 13,
+              fontFamily: "DM Sans, sans-serif",
+              margin: "4px 0 0",
+            }}
+          >
+            "THE BASICS" series — 1080 × 1080 px Instagram post
+          </p>
+        </div>
+
+        <Button
+          onClick={handleExport}
+          disabled={exporting}
+          data-testid="button-export-png"
           style={{
-            transformOrigin: "top left",
-            transform: `scale(${scale})`,
-            position: "absolute",
-            top: 0,
-            left: 0,
+            background: CYAN,
+            color: "#000",
+            fontFamily: "DM Sans, sans-serif",
+            fontWeight: 600,
+            fontSize: 14,
+            letterSpacing: "0.04em",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          <InfographicCanvas canvasRef={canvasRef} />
+          {exporting ? (
+            <>
+              <Loader2 size={15} style={{ animation: "spin 1s linear infinite" }} />
+              Exporting…
+            </>
+          ) : (
+            <>
+              <Download size={15} />
+              Export PNG
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* ── Main content: panel + canvas ── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 24,
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Config panel */}
+        <ConfigPanel data={postData} onChange={setPostData} />
+
+        {/* Canvas + label */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
+          <div
+            style={{
+              width: CANVAS_SIZE * scale,
+              height: CANVAS_SIZE * scale,
+              flexShrink: 0,
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                transformOrigin: "top left",
+                transform: `scale(${scale})`,
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            >
+              <InfographicCanvas canvasRef={canvasRef} data={postData} />
+            </div>
+          </div>
+
+          <p
+            style={{
+              color: "#444",
+              fontSize: 11,
+              fontFamily: "'JetBrains Mono', monospace",
+              margin: 0,
+            }}
+          >
+            {CANVAS_SIZE} × {CANVAS_SIZE} px · preview at {Math.round(scale * 100)}%
+          </p>
         </div>
       </div>
 
-      {/* ── Dimension label ── */}
-      <p
-        style={{
-          color: "#444",
-          fontSize: 11,
-          fontFamily: "'JetBrains Mono', monospace",
-          margin: 0,
-        }}
-      >
-        {CANVAS_SIZE} × {CANVAS_SIZE} px · preview at {Math.round(scale * 100)}%
-      </p>
-
-      {/* Spin keyframe for loader */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
