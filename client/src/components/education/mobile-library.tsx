@@ -167,9 +167,9 @@ const POPULAR_SEARCHES = ["BPC-157", "TB-500", "Ipamorelin", "Semax"];
 // ─── Continue Reading — localStorage helpers ──────────────────────────────────
 
 const CONTINUE_READING_KEY = "revive-edu-recent";
-const MAX_RECENT = 6;
+const MAX_RECENT = 5;
 
-function trackArticleOpen(articleId: string) {
+export function trackArticleOpen(articleId: string) {
   try {
     const raw = localStorage.getItem(CONTINUE_READING_KEY);
     const recent: string[] = raw ? JSON.parse(raw) : [];
@@ -1014,14 +1014,24 @@ function ContinueReadingShelf({ articles, products, recentIds, onArticleSelect, 
           const color = hub?.color ?? "#21d8ff";
           const inStock = isArticleInStock(article, products);
           return (
-            <ArticlePosterCard
-              key={article.id}
-              article={article}
-              systemColor={color}
-              inStock={inStock}
-              onSelect={onArticleSelect}
-              reducedMotion={reducedMotion}
-            />
+            <div key={article.id} className="flex flex-col flex-shrink-0" style={{ width: 140 }}>
+              <ArticlePosterCard
+                article={article}
+                systemColor={color}
+                inStock={inStock}
+                onSelect={onArticleSelect}
+                reducedMotion={reducedMotion}
+              />
+              <div
+                style={{
+                  height: 2,
+                  marginTop: 3,
+                  borderRadius: 2,
+                  background: `linear-gradient(to right, ${color}, ${color}50)`,
+                  boxShadow: `0 0 6px ${color}80`,
+                }}
+              />
+            </div>
           );
         })}
       </div>
@@ -1268,7 +1278,7 @@ export function MobileLibraryHome({ articles, products, onArticleSelect, article
               query={searchQuery}
               articles={articles}
               products={products}
-              onArticleSelect={onArticleSelect}
+              onArticleSelect={handleArticleOpen}
             />
           </motion.div>
         ) : drillDownKey && drillDownData ? (
@@ -1298,6 +1308,13 @@ export function MobileLibraryHome({ articles, products, onArticleSelect, article
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
+            {/* Hero banner — rotating, at the very top */}
+            <MobileLibraryHero
+              articles={articles}
+              articleVisuals={articleVisuals}
+              onArticleSelect={handleArticleOpen}
+            />
+
             {/* Continue Reading — only shown after at least one article opened */}
             <ContinueReadingShelf
               articles={articles}
@@ -1305,13 +1322,6 @@ export function MobileLibraryHome({ articles, products, onArticleSelect, article
               recentIds={recentIds}
               onArticleSelect={handleArticleOpen}
               reducedMotion={reducedMotion}
-            />
-
-            {/* Hero banner — rotating, at the very top */}
-            <MobileLibraryHero
-              articles={articles}
-              articleVisuals={articleVisuals}
-              onArticleSelect={handleArticleOpen}
             />
 
             {/* Body Systems — 2-col grid navigating to /systems/:slug */}

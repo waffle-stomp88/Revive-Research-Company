@@ -46,7 +46,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BrowseBySystem } from "@/components/education/browse-by-system";
-import { MobileLibraryHome } from "@/components/education/mobile-library";
+import { MobileLibraryHome, trackArticleOpen } from "@/components/education/mobile-library";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
@@ -616,6 +616,7 @@ export default function Education() {
   const [, setLocation] = useLocation();
   
   const handleOpenArticle = (articleId: string) => {
+    trackArticleOpen(articleId);
     const article = articles.find(a => a.id === articleId);
     if (article?.slug) {
       setLocation(`/guides/${article.slug}`);
