@@ -260,7 +260,7 @@ function ArticlePosterCard({ article, systemColor, inStock, onSelect, reducedMot
 
       {/* Bottom content */}
       <div className="absolute bottom-0 left-0 right-0 p-2.5">
-        <p className="text-[10px] font-semibold text-white leading-tight line-clamp-2 mb-1">
+        <p className="text-xs font-semibold text-white leading-tight line-clamp-2 mb-1">
           {article.title}
         </p>
         {isPeptide && (
@@ -356,7 +356,7 @@ function NonPeptidePosterCard({ article, sectionColor, sectionIcon: SectionIcon,
       />
 
       <div className="absolute bottom-0 left-0 right-0 p-2.5">
-        <p className="text-[10px] font-semibold text-white leading-tight line-clamp-2 mb-1">
+        <p className="text-xs font-semibold text-white leading-tight line-clamp-2 mb-1">
           {article.title}
         </p>
         <span
@@ -484,7 +484,7 @@ function MobileLibraryShelf({
 
 // ─── MobileLibraryHero ────────────────────────────────────────────────────────
 
-const HERO_ROTATE_MS = 5500;
+const HERO_ROTATE_MS = 8000;
 
 const HERO_PRIORITY_SLUGS = [
   "what-is-bpc-157-peptide",
@@ -1070,7 +1070,7 @@ function MobileBodySystemScroll({ inStockCountPerSystem }: { inStockCountPerSyst
       data-testid="mobile-body-system-scroll"
     >
       {/* Section header */}
-      <div className="mb-4">
+      <div className="mb-4 pl-3" style={{ borderLeft: "2px solid #E7FB10" }}>
         <h2 className="text-xl font-bold mb-0.5">Browse by Body System</h2>
         <p className="text-xs text-muted-foreground">
           Explore all {Object.keys(PEPTIDE_PATHWAYS).length} compounds organized by research application
