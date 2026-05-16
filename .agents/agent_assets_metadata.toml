@@ -18,3 +18,15 @@ id = "jW_1Wqt86Tj9bzn2uULTi"
 uri = "file://attached_assets/reset-password-template.txt"
 type = "text"
 title = "reset-password-template.html"
+
+[[outputs]]
+id = "E06ECZUHkB2mOWIoah5I7"
+uri = "file://attached_assets/generated_audio/music_synergy_reel_music.mp3"
+type = "audio"
+title = "synergy_reel_music"
+
+[[outputs]]
+id = "WT1jTqg0zi8XR6qIYdZm2"
+uri = "file://client/public/videos/synergy_reel.mp4"
+type = "video"
+title = "Synergy Engine IG Reel — 28s, 1080×1920"
