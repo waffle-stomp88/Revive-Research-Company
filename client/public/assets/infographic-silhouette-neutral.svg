@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 920" fill="none">
+  <defs>
+    <linearGradient id="bodyGrad" x1="200" y1="0" x2="200" y2="920" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#00D4FF" stop-opacity="0.22"/>
+      <stop offset="55%"  stop-color="#0099CC" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#005588" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#bodyGrad)" stroke="#00D4FF" stroke-width="1.8" stroke-linejoin="round">
+    <!-- Head -->
+    <ellipse cx="200" cy="68" rx="54" ry="62"/>
+    <!-- Neck -->
+    <polygon points="182,128 218,128 214,172 186,172"/>
+    <!-- Torso — balanced shoulders and waist -->
+    <polygon points="68,174 332,174 300,360 290,440 110,440 100,360"/>
+    <!-- Hips — moderate width -->
+    <polygon points="110,440 290,440 308,504 92,504"/>
+    <!-- Left arm — outer then inner edge, hang naturally -->
+    <polygon points="68,174 84,174 78,296 46,402 14,390 32,182"/>
+    <!-- Left hand -->
+    <ellipse cx="30" cy="418" rx="20" ry="16"/>
+    <!-- Right arm -->
+    <polygon points="316,174 332,174 368,182 386,390 354,402 322,296"/>
+    <!-- Right hand -->
+    <ellipse cx="370" cy="418" rx="20" ry="16"/>
+    <!-- Left leg — moderate width, slight taper -->
+    <polygon points="92,504 192,504 178,726 166,920 64,920 76,726"/>
+    <!-- Right leg -->
+    <polygon points="208,504 308,504 324,726 336,920 222,920 222,726"/>
+  </g>
+</svg>

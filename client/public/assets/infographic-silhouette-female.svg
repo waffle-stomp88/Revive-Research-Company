@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 920" fill="none">
+  <defs>
+    <linearGradient id="bodyGrad" x1="200" y1="0" x2="200" y2="920" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#00D4FF" stop-opacity="0.22"/>
+      <stop offset="55%"  stop-color="#0099CC" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#005588" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#bodyGrad)" stroke="#00D4FF" stroke-width="1.8" stroke-linejoin="round">
+    <!-- Head — slightly rounder -->
+    <ellipse cx="200" cy="66" rx="52" ry="60"/>
+    <!-- Neck — slimmer -->
+    <polygon points="184,124 216,124 212,170 188,170"/>
+    <!-- Torso — narrower shoulders, defined hourglass waist -->
+    <polygon points="80,174 320,174 296,330 276,440 124,440 104,330"/>
+    <!-- Hips — wider than shoulders for hourglass -->
+    <polygon points="124,440 276,440 314,510 86,510"/>
+    <!-- Left arm — slimmer -->
+    <polygon points="80,174 94,174 90,298 58,400 28,388 46,182"/>
+    <!-- Left hand -->
+    <ellipse cx="43" cy="415" rx="18" ry="14"/>
+    <!-- Right arm -->
+    <polygon points="306,174 320,174 354,182 372,388 342,400 310,298"/>
+    <!-- Right hand -->
+    <ellipse cx="357" cy="415" rx="18" ry="14"/>
+    <!-- Left leg — slimmer, slight curve -->
+    <polygon points="86,510 190,510 174,726 162,920 68,920 82,726"/>
+    <!-- Right leg -->
+    <polygon points="210,510 314,510 318,726 332,920 226,920 226,726"/>
+  </g>
+</svg>

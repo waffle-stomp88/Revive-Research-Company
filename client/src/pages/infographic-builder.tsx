@@ -26,6 +26,15 @@ interface PostData {
 
 // ─── POST DATA CONFIGS ─────────────────────────────────────────────────────────
 // Add new entries here to grow the "THE BASICS" series.
+//
+// Available silhouette assets (client/public/assets/):
+//   • /assets/glp1-silhouette.png               — GLP-1 specific (original)
+//   • /assets/infographic-silhouette-neutral.svg — gender-neutral full body (default for new posts)
+//   • /assets/infographic-silhouette-male.svg    — broader shoulders, narrower hips
+//   • /assets/infographic-silhouette-female.svg  — narrower shoulders, defined waist/hips
+//
+// Naming convention for new custom silhouettes:
+//   infographic-silhouette-{descriptor}.{svg|png}
 const ALL_POSTS: PostData[] = [
   {
     key: "glp1",
@@ -64,7 +73,7 @@ const ALL_POSTS: PostData[] = [
     seriesLabel: "THE BASICS // 002",
     fileName: "revive-basics-002-bpc157.png",
     headline: "WHAT IS\nBPC-157?",
-    backgroundImage: "",
+    backgroundImage: "/assets/infographic-silhouette-neutral.svg",
     bodyText:
       "BPC-157 (Body Protective Compound-157) is a pentadecapeptide derived from a protective protein found in gastric juice. Researchers study its influence on tissue repair pathways, angiogenesis, and the gut-brain axis, making it one of the most widely investigated peptides in regenerative science.",
     callouts: [
@@ -96,7 +105,7 @@ const ALL_POSTS: PostData[] = [
     seriesLabel: "THE BASICS // 003",
     fileName: "revive-basics-003-tb500.png",
     headline: "WHAT IS\nTB-500?",
-    backgroundImage: "",
+    backgroundImage: "/assets/infographic-silhouette-neutral.svg",
     bodyText:
       "TB-500 is a synthetic version of Thymosin Beta-4, a naturally occurring peptide found in high concentrations in blood platelets and wound fluid. Research suggests it plays a pivotal role in cell migration, differentiation, and the remodeling of actin — the protein that gives cells their shape and motility.",
     callouts: [
@@ -128,7 +137,7 @@ const ALL_POSTS: PostData[] = [
     seriesLabel: "THE BASICS // 004",
     fileName: "revive-basics-004-ipamorelin.png",
     headline: "WHAT IS\nIPAMORELIN?",
-    backgroundImage: "",
+    backgroundImage: "/assets/infographic-silhouette-neutral.svg",
     bodyText:
       "Ipamorelin is a selective growth hormone secretagogue and ghrelin mimetic. Unlike broader GHRPs, it is notable for its high specificity — stimulating GH release with minimal impact on cortisol or prolactin levels, making it a subject of significant interest in longevity and body-composition research.",
     callouts: [

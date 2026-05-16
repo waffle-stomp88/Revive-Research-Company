@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 920" fill="none">
+  <defs>
+    <linearGradient id="bodyGrad" x1="200" y1="0" x2="200" y2="920" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#00D4FF" stop-opacity="0.22"/>
+      <stop offset="55%"  stop-color="#0099CC" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#005588" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#bodyGrad)" stroke="#00D4FF" stroke-width="1.8" stroke-linejoin="round">
+    <!-- Head — slightly squarer -->
+    <ellipse cx="200" cy="68" rx="52" ry="60"/>
+    <!-- Neck — wider -->
+    <polygon points="178,126 222,126 220,172 180,172"/>
+    <!-- Torso — broad shoulders, narrower waist, more rectangular -->
+    <polygon points="50,174 350,174 314,350 298,440 102,440 86,350"/>
+    <!-- Hips — narrower than shoulders -->
+    <polygon points="102,440 298,440 308,506 92,506"/>
+    <!-- Left arm — wider, more muscular -->
+    <polygon points="50,174 66,174 60,304 26,412 -4,398 16,180"/>
+    <!-- Left hand -->
+    <ellipse cx="11" cy="430" rx="22" ry="18"/>
+    <!-- Right arm -->
+    <polygon points="334,174 350,174 384,180 404,398 374,412 340,304"/>
+    <!-- Right hand -->
+    <ellipse cx="389" cy="430" rx="22" ry="18"/>
+    <!-- Left leg — wider thighs -->
+    <polygon points="92,506 196,506 182,724 168,920 60,920 74,724"/>
+    <!-- Right leg -->
+    <polygon points="204,506 308,506 326,724 340,920 218,920 218,724"/>
+  </g>
+</svg>
