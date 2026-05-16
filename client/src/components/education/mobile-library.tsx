@@ -1077,8 +1077,12 @@ function MobileBodySystemScroll({ inStockCountPerSystem }: { inStockCountPerSyst
         </p>
       </div>
 
-      {/* 2-column card grid */}
-      <div className="grid grid-cols-2 gap-3" data-testid="body-system-card-list">
+      {/* Horizontal side-scroll row — ~2.3 cards visible to signal more */}
+      <div
+        className="flex gap-3 overflow-x-auto pb-1"
+        data-testid="body-system-card-list"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+      >
         {visibleHubs.map((hub, i) => {
           const Icon = hub.icon;
           const count = SYSTEM_PEPTIDE_COUNTS[hub.slug] ?? 0;
@@ -1090,10 +1094,12 @@ function MobileBodySystemScroll({ inStockCountPerSystem }: { inStockCountPerSyst
               initial={reducedMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: i * 0.05, ease: "easeOut" }}
+              className="shrink-0"
+              style={{ width: "42vw", maxWidth: 170 }}
             >
               <Link href={`/systems/${hub.slug}`}>
                 <div
-                  className="hover-elevate rounded-lg border border-border bg-card p-3 cursor-pointer flex flex-col gap-2.5"
+                  className="hover-elevate rounded-lg border border-border bg-card p-3 cursor-pointer flex flex-col gap-2.5 h-full"
                   data-testid={`body-system-card-${hub.slug}`}
                 >
                   <div className="flex items-start justify-between gap-1.5">
@@ -1109,7 +1115,7 @@ function MobileBodySystemScroll({ inStockCountPerSystem }: { inStockCountPerSyst
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="font-semibold text-xs leading-snug">{hub.name}</span>
-                    <span className="text-[10px] text-muted-foreground line-clamp-1 leading-snug">{hub.tagline}</span>
+                    <span className="text-[10px] text-muted-foreground line-clamp-2 leading-snug">{hub.tagline}</span>
                   </div>
                   {inStockCount > 0 && (
                     <div className="flex items-center gap-1">
