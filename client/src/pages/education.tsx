@@ -652,8 +652,10 @@ export default function Education() {
         setLocation("/tools/peptide-pk-catalog");
         return;
       }
-      setLocation("/guides/peptide-education-center");
-      window.scrollTo({ top: 0, behavior: "instant" });
+      // Use browser back so the in-page ← button and the system back button
+      // both pop the same history entry — prevents the double-push problem where
+      // setLocation would add a new entry and system back would just revisit the article.
+      window.history.back();
       return;
     }
     requestAnimationFrame(() => {
