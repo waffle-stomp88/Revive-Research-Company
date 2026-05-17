@@ -48,7 +48,7 @@ import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article
 import { BrowseBySystem } from "@/components/education/browse-by-system";
 import { MobileLibraryHome, trackArticleOpen } from "@/components/education/mobile-library";
 import { useAuth } from "@/hooks/useAuth";
-import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
+import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown, getArticleIconColor, getArticleIcon } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -1718,34 +1718,41 @@ export default function Education() {
                         {SYSTEM_GUIDES.map((guide) => (
                           <Link key={guide.slug} href={guide.href}>
                             <Card
-                              className="p-4 cursor-pointer hover:bg-muted/30 transition-all group h-full"
-                              style={{ borderColor: `${guide.color}25` }}
+                              className="p-4 cursor-pointer hover-elevate transition-all group h-full"
+                              style={{ borderColor: `${guide.color}35` }}
                               data-testid={`card-system-guide-${guide.slug}`}
                             >
-                              <div className="flex flex-col gap-2 h-full">
-                                <div className="flex items-start justify-between gap-2">
-                                  <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
-                                    {guide.title}
-                                  </h4>
-                                  <ChevronRight
-                                    className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5"
-                                    style={{ color: guide.color }}
-                                  />
+                              <div className="flex items-start gap-3 h-full">
+                                <div
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${guide.color}18` }}
+                                >
+                                  <Activity className="h-4 w-4" style={{ color: guide.color }} />
                                 </div>
-                                <p className="text-xs text-muted-foreground line-clamp-2 flex-1">
-                                  {guide.description}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <Badge
-                                    variant="outline"
-                                    className="text-xs"
-                                    style={{ borderColor: `${guide.color}50`, color: guide.color }}
-                                  >
-                                    {guide.badgeLabel}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground ml-auto">
-                                    {guide.readTime} min
-                                  </span>
+                                <div className="flex-1 min-w-0 flex flex-col gap-1">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                      {guide.title}
+                                    </h4>
+                                    <ChevronRight
+                                      className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-0.5"
+                                      style={{ color: guide.color }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-2 flex-1">
+                                    {guide.description}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge
+                                      className="text-[10px] border-0"
+                                      style={{ backgroundColor: `${guide.color}18`, color: guide.color }}
+                                    >
+                                      {guide.badgeLabel}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground ml-auto">
+                                      {guide.readTime} min
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </Card>
@@ -1835,38 +1842,47 @@ export default function Education() {
                         {filteredArticles.length > 0 ? (
                           filteredArticles.map((article) => {
                             const groupColor = peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || "#ec4899";
+                            const articleColor = getArticleIconColor(article.slug) || groupColor;
+                            const ArticleIcon = getArticleIcon(article.slug) || getCategoryIcon(article.category);
                             return (
                               <Card
                                 key={article.id}
-                                className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
-                                style={{ borderColor: `${groupColor}20` }}
+                                className="p-4 cursor-pointer hover-elevate transition-all group"
+                                style={{ borderColor: `${articleColor}30` }}
                                 onClick={() => handleOpenArticle(article.id)}
                                 data-testid={`card-article-${article.slug || article.id}`}
                               >
-                                <div className="flex flex-col gap-2">
-                                  <div className="flex items-start justify-between gap-2">
-                                    <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
-                                      {article.title}
-                                    </h4>
-                                    <ChevronRight 
-                                      className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5" 
-                                      style={{ color: groupColor }}
-                                    />
+                                <div className="flex items-start gap-3">
+                                  <div
+                                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: `${articleColor}18` }}
+                                  >
+                                    <ArticleIcon className="h-4 w-4" style={{ color: articleColor }} />
                                   </div>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {article.summary}
-                                  </p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Badge 
-                                      variant="outline" 
-                                      className="text-xs"
-                                      style={{ borderColor: `${groupColor}50`, color: groupColor }}
-                                    >
-                                      {peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.label || "Other"}
-                                    </Badge>
-                                    <span className="text-xs text-muted-foreground ml-auto">
-                                      {article.readTimeMinutes} min
-                                    </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                        {article.title}
+                                      </h4>
+                                      <ChevronRight
+                                        className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-0.5"
+                                        style={{ color: articleColor }}
+                                      />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                      {article.summary}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <Badge
+                                        className="text-[10px] border-0"
+                                        style={{ backgroundColor: `${articleColor}18`, color: articleColor }}
+                                      >
+                                        {peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.label || "Other"}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground ml-auto">
+                                        {article.readTimeMinutes} min
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </Card>
@@ -1950,38 +1966,47 @@ export default function Education() {
                         {filteredArticles.length > 0 ? (
                           filteredArticles.map((article) => {
                             const catColor = getCategoryColor(article.category);
+                            const articleColor = getArticleIconColor(article.slug) || catColor;
+                            const ArticleIcon = getArticleIcon(article.slug) || getCategoryIcon(article.category);
                             return (
                               <Card
                                 key={article.id}
-                                className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
-                                style={{ borderColor: `${catColor}20` }}
+                                className="p-4 cursor-pointer hover-elevate transition-all group"
+                                style={{ borderColor: `${articleColor}30` }}
                                 onClick={() => handleOpenArticle(article.id)}
                                 data-testid={`card-article-${article.slug || article.id}`}
                               >
-                                <div className="flex flex-col gap-2">
-                                  <div className="flex items-start justify-between gap-2">
-                                    <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
-                                      {article.title}
-                                    </h4>
-                                    <ChevronRight 
-                                      className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5" 
-                                      style={{ color: catColor }}
-                                    />
+                                <div className="flex items-start gap-3">
+                                  <div
+                                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: `${articleColor}18` }}
+                                  >
+                                    <ArticleIcon className="h-4 w-4" style={{ color: articleColor }} />
                                   </div>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {article.summary}
-                                  </p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Badge 
-                                      variant="outline" 
-                                      className="text-xs"
-                                      style={{ borderColor: `${catColor}50`, color: catColor }}
-                                    >
-                                      {getCategoryLabel(article.category)}
-                                    </Badge>
-                                    <span className="text-xs text-muted-foreground ml-auto">
-                                      {article.readTimeMinutes} min
-                                    </span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                        {article.title}
+                                      </h4>
+                                      <ChevronRight
+                                        className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-0.5"
+                                        style={{ color: articleColor }}
+                                      />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                      {article.summary}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <Badge
+                                        className="text-[10px] border-0"
+                                        style={{ backgroundColor: `${articleColor}18`, color: articleColor }}
+                                      >
+                                        {getCategoryLabel(article.category)}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground ml-auto">
+                                        {article.readTimeMinutes} min
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </Card>
@@ -2086,30 +2111,41 @@ export default function Education() {
                       {filteredArticles.length > 0 ? (
                         filteredArticles.map((article) => {
                           const catColor = getCategoryColor(article.category);
+                          const articleColor = getArticleIconColor(article.slug) || catColor;
+                          const ArticleIcon = getArticleIcon(article.slug) || getCategoryIcon(article.category);
                           return (
                             <Card
                               key={article.id}
-                              className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
-                              style={{ borderColor: `${catColor}20` }}
+                              className="p-4 cursor-pointer hover-elevate transition-all group"
+                              style={{ borderColor: `${articleColor}30` }}
                               onClick={() => handleOpenArticle(article.id)}
                               data-testid={`card-article-${article.slug || article.id}`}
                             >
-                              <div className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${articleColor}18` }}
+                                >
+                                  <ArticleIcon className="h-4 w-4" style={{ color: articleColor }} />
+                                </div>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium group-hover:text-foreground transition-colors">
+                                  <h4 className="font-medium text-sm group-hover:text-foreground transition-colors">
                                     {article.title}
                                   </h4>
-                                  <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+                                  <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
                                     {article.summary}
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
-                                  <span className="text-xs text-muted-foreground">
+                                  <Badge
+                                    className="text-[10px] border-0"
+                                    style={{ backgroundColor: `${articleColor}18`, color: articleColor }}
+                                  >
                                     {article.readTimeMinutes} min
-                                  </span>
-                                  <ChevronRight 
-                                    className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" 
-                                    style={{ color: catColor }}
+                                  </Badge>
+                                  <ChevronRight
+                                    className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"
+                                    style={{ color: articleColor }}
                                   />
                                 </div>
                               </div>

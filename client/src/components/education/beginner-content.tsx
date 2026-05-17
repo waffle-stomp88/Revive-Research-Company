@@ -2258,6 +2258,16 @@ export function hasQuickBreakdown(slug: string | null): boolean {
   return slug ? SLUGS_WITH_QUICK_BREAKDOWN.includes(slug) : false;
 }
 
+export function getArticleIconColor(slug: string | null | undefined): string | null {
+  if (!slug) return null;
+  return beginnerArticles[slug]?.iconColor ?? null;
+}
+
+export function getArticleIcon(slug: string | null | undefined): typeof Lightbulb | null {
+  if (!slug) return null;
+  return beginnerArticles[slug]?.icon ?? null;
+}
+
 // ─── Scroll progress hook ─────────────────────────────────────────────────────
 
 function useScrollProgress(ref: React.RefObject<HTMLDivElement>) {
