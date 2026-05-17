@@ -35,6 +35,8 @@ import {
   ArrowRight,
   Layers,
   Activity,
+  Heart,
+  Brain,
 } from "lucide-react";
 import {
   Select,
@@ -249,6 +251,7 @@ const SYSTEM_GUIDES = [
     color: "#22c55e",
     badgeLabel: "Healing",
     readTime: 18,
+    icon: Heart,
   },
   {
     slug: "hormonal-peptides",
@@ -259,6 +262,7 @@ const SYSTEM_GUIDES = [
     color: "#21d8ff",
     badgeLabel: "Hormonal",
     readTime: 20,
+    icon: Activity,
   },
   {
     slug: "cognitive-peptides",
@@ -269,6 +273,7 @@ const SYSTEM_GUIDES = [
     color: "#f97316",
     badgeLabel: "Cognitive",
     readTime: 22,
+    icon: Brain,
   },
   {
     slug: "growth-hormone-peptides",
@@ -279,6 +284,7 @@ const SYSTEM_GUIDES = [
     color: "#f59e0b",
     badgeLabel: "Growth Hormone",
     readTime: 24,
+    icon: Zap,
   },
 ];
 
@@ -1727,7 +1733,7 @@ export default function Education() {
                                   className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                                   style={{ backgroundColor: `${guide.color}18` }}
                                 >
-                                  <Activity className="h-4 w-4" style={{ color: guide.color }} />
+                                  <guide.icon className="h-4 w-4" style={{ color: guide.color }} />
                                 </div>
                                 <div className="flex-1 min-w-0 flex flex-col gap-1">
                                   <div className="flex items-start justify-between gap-2">
