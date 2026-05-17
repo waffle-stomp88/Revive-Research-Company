@@ -204,6 +204,7 @@ export default function ProductDetail() {
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
     refetchInterval: 30000,
+    enabled: !!params.id,
   });
 
   const productId = product?.id;
@@ -510,7 +511,8 @@ export default function ProductDetail() {
   // Triggers immediately for known retired slugs, or after the query settles
   // for a genuine 404 response. Transient network errors are not treated as retirement.
   useEffect(() => {
-    if (params.id && RETIRED_PRODUCT_SLUGS.includes(params.id)) {
+    if (!params.id) return;
+    if (RETIRED_PRODUCT_SLUGS.includes(params.id)) {
       flagRetiredContent("product", params.id);
       setLocation("/peptides");
       return;
