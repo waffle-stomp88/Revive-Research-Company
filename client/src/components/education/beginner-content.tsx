@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { 
   Lightbulb, 
   Beaker,
@@ -17,7 +18,9 @@ import {
   Dna,
   Droplets,
   Moon,
-  Shield
+  Shield,
+  ArrowRight,
+  Timer
 } from "lucide-react";
 import { 
   COASimplified, 
@@ -28,6 +31,22 @@ import {
 interface BeginnerContentProps {
   slug: string;
   title: string;
+}
+
+interface ArticleStat {
+  icon: typeof Target;
+  value: string;
+  label: string;
+}
+
+interface ArticleMetadata {
+  category: string;
+  facts: ArticleStat[];
+}
+
+interface FlowStep {
+  label: string;
+  sublabel: string;
 }
 
 interface BeginnerArticle {
@@ -1783,15 +1802,782 @@ Think of it like a radio station that broadcasts on two frequencies at once — 
   }
 };
 
+// ─── Per-article metadata (stats + category) ─────────────────────────────────
+
+const ARTICLE_METADATA: Record<string, ArticleMetadata> = {
+  "what-is-bpc-157-peptide": {
+    category: "Tissue Repair",
+    facts: [
+      { icon: Dna, value: "15", label: "Amino acids" },
+      { icon: FlaskConical, value: "Gastric juice", label: "Natural source" },
+      { icon: Zap, value: "VEGF / NO", label: "Pathways studied" },
+      { icon: Target, value: "Tissue repair", label: "Research area" },
+    ],
+  },
+  "what-is-tb-500-peptide": {
+    category: "Tissue Repair",
+    facts: [
+      { icon: Dna, value: "43", label: "Amino acids" },
+      { icon: Activity, value: "Every cell", label: "Found in" },
+      { icon: Zap, value: "Actin protein", label: "Main target" },
+      { icon: Target, value: "Cell migration", label: "Key mechanism" },
+    ],
+  },
+  "what-is-rr-a1-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Target, value: "GLP-1R", label: "Receptor" },
+      { icon: Clock, value: "~1 week", label: "Half-life" },
+      { icon: Activity, value: "Weekly", label: "Research dosing" },
+      { icon: Zap, value: "Insulin + satiety", label: "Key effects" },
+    ],
+  },
+  "what-is-rr-a2-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Target, value: "GLP-1R + GIPR", label: "Receptors" },
+      { icon: Clock, value: "~5 days", label: "Half-life" },
+      { icon: Zap, value: "Dual agonist", label: "Type" },
+      { icon: Activity, value: "Twincretin", label: "Also called" },
+    ],
+  },
+  "what-is-rr-a3-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Target, value: "3 receptors", label: "Targets" },
+      { icon: Zap, value: "Triple agonist", label: "Type" },
+      { icon: Flame, value: "Glucagon added", label: "3rd pathway" },
+      { icon: Activity, value: "Newest gen.", label: "Generation" },
+    ],
+  },
+  "what-is-cjc-1295-peptide": {
+    category: "Growth Hormone",
+    facts: [
+      { icon: Dna, value: "GHRH analog", label: "Type" },
+      { icon: Clock, value: "Natural: 2 min", label: "GHRH half-life" },
+      { icon: Activity, value: "Hours–weeks", label: "CJC-1295 duration" },
+      { icon: Target, value: "GH → IGF-1", label: "Axis" },
+    ],
+  },
+  "what-is-ipamorelin-peptide": {
+    category: "Growth Hormone",
+    facts: [
+      { icon: Dna, value: "5", label: "Amino acids" },
+      { icon: Target, value: "GHS-R", label: "Receptor" },
+      { icon: Zap, value: "Ghrelin mimic", label: "Mechanism" },
+      { icon: Activity, value: "High", label: "Selectivity" },
+    ],
+  },
+  "what-is-tesamorelin-peptide": {
+    category: "Growth Hormone",
+    facts: [
+      { icon: Dna, value: "44", label: "Amino acids" },
+      { icon: Target, value: "GHRH analog", label: "Type" },
+      { icon: Zap, value: "Trans-3-hexenoic", label: "Modification" },
+      { icon: Activity, value: "Body composition", label: "Research focus" },
+    ],
+  },
+  "what-is-epithalon-peptide": {
+    category: "Longevity",
+    facts: [
+      { icon: Dna, value: "4", label: "Amino acids" },
+      { icon: Target, value: "Pineal gland", label: "Origin" },
+      { icon: Zap, value: "Telomerase", label: "Target enzyme" },
+      { icon: Clock, value: "Longevity", label: "Research field" },
+    ],
+  },
+  "what-is-semax-peptide": {
+    category: "Cognitive",
+    facts: [
+      { icon: Dna, value: "7", label: "Amino acids" },
+      { icon: Target, value: "ACTH (4–7)", label: "Derived from" },
+      { icon: Clock, value: "~24 hours", label: "Half-life" },
+      { icon: Zap, value: "Intranasal", label: "Administration" },
+    ],
+  },
+  "what-is-ghk-cu-peptide": {
+    category: "Skin & Repair",
+    facts: [
+      { icon: Dna, value: "3 AA + Cu²⁺", label: "Structure" },
+      { icon: Activity, value: "200→80 ng/mL", label: "Age 20→60 levels" },
+      { icon: Zap, value: ">4,000 genes", label: "Gene responses" },
+      { icon: Target, value: "Skin & wound", label: "Research focus" },
+    ],
+  },
+  "what-is-glow-peptide-complex": {
+    category: "Skin & Repair",
+    facts: [
+      { icon: Dna, value: "Multi-peptide", label: "Type" },
+      { icon: Target, value: "4 peptide classes", label: "Components" },
+      { icon: Zap, value: "Synergistic", label: "Approach" },
+      { icon: Activity, value: "Skin health", label: "Research focus" },
+    ],
+  },
+  "what-is-klow-peptide-complex": {
+    category: "Tissue Repair",
+    facts: [
+      { icon: Dna, value: "4 peptides", label: "Combined" },
+      { icon: Target, value: "NF-κB", label: "Key pathway" },
+      { icon: Zap, value: "KPV", label: "Anti-inflam. agent" },
+      { icon: Activity, value: "PepT1", label: "Smart delivery" },
+    ],
+  },
+  "what-is-igf-1-lr3-peptide": {
+    category: "Growth Factor",
+    facts: [
+      { icon: Dna, value: "83", label: "Amino acids" },
+      { icon: Zap, value: "+13 AA added", label: "Modification" },
+      { icon: Clock, value: "~20–30 hrs", label: "Half-life" },
+      { icon: Target, value: "↓ IGFBP binding", label: "Key effect" },
+    ],
+  },
+  "what-is-igf-des-peptide": {
+    category: "Growth Factor",
+    facts: [
+      { icon: Dna, value: "67", label: "Amino acids" },
+      { icon: Zap, value: "−3 AA (N-term)", label: "Truncation" },
+      { icon: Target, value: "Higher IGF-1R", label: "Receptor affinity" },
+      { icon: Activity, value: "Brain & gut", label: "Naturally found" },
+    ],
+  },
+  "what-is-mots-c-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Dna, value: "16", label: "Amino acids" },
+      { icon: Target, value: "Mitochondrial DNA", label: "Encoded by" },
+      { icon: Zap, value: "AMPK", label: "Key target" },
+      { icon: Activity, value: "Exercise mimic", label: "Effect type" },
+    ],
+  },
+  "what-is-nad-precursor": {
+    category: "Longevity",
+    facts: [
+      { icon: Activity, value: "Every cell", label: "Found in" },
+      { icon: Zap, value: "~50% decline", label: "With age" },
+      { icon: Target, value: "Sirtuins + PARPs", label: "Activates" },
+      { icon: Dna, value: "NMN / NR", label: "Key precursors" },
+    ],
+  },
+  "what-is-hcg-peptide": {
+    category: "Reproductive",
+    facts: [
+      { icon: Dna, value: "237", label: "Amino acids" },
+      { icon: Activity, value: "α + β subunits", label: "Structure" },
+      { icon: Zap, value: "LH receptor", label: "Target" },
+      { icon: Target, value: "LH mimic", label: "Mechanism" },
+    ],
+  },
+  "reconstitution-101": {
+    category: "Research Guide",
+    facts: [
+      { icon: FlaskConical, value: "BAC water", label: "Diluent used" },
+      { icon: Zap, value: "Slow drip", label: "Key technique" },
+      { icon: Activity, value: "4–6 weeks", label: "Once reconstituted" },
+      { icon: Target, value: "Refrigerate", label: "After mixing" },
+    ],
+  },
+  "storage-101": {
+    category: "Research Guide",
+    facts: [
+      { icon: Target, value: "−20°C", label: "Powder storage" },
+      { icon: Activity, value: "2–8°C", label: "Reconstituted" },
+      { icon: Clock, value: "4–6 weeks", label: "Reconstituted life" },
+      { icon: Zap, value: "Dark + dry", label: "Key conditions" },
+    ],
+  },
+  "how-to-read-coas": {
+    category: "Research Guide",
+    facts: [
+      { icon: Target, value: "≥95%", label: "Purity threshold" },
+      { icon: Zap, value: "HPLC", label: "Purity test method" },
+      { icon: Activity, value: "Mass spectrometry", label: "Identity test" },
+      { icon: FlaskConical, value: "3rd-party lab", label: "Required source" },
+    ],
+  },
+  "what-is-kisspeptin-peptide": {
+    category: "Reproductive",
+    facts: [
+      { icon: Target, value: "KISS1R", label: "Receptor" },
+      { icon: Zap, value: "GnRH trigger", label: "Effect" },
+      { icon: Activity, value: "Puberty trigger", label: "Key role" },
+      { icon: Dna, value: "Kp-10/13/14/54", label: "Multiple forms" },
+    ],
+  },
+  "what-is-kisspeptin-54-peptide": {
+    category: "Reproductive",
+    facts: [
+      { icon: Dna, value: "54", label: "Amino acids" },
+      { icon: Clock, value: "28–35 min", label: "Half-life" },
+      { icon: Target, value: "KISS1R", label: "Receptor" },
+      { icon: Zap, value: "Larger LH pulse", label: "vs Kp-10" },
+    ],
+  },
+  "what-is-pt-141-bremelanotide-peptide": {
+    category: "Cognitive",
+    facts: [
+      { icon: Target, value: "MC3R + MC4R", label: "Receptors" },
+      { icon: Zap, value: "CNS pathway", label: "Mechanism" },
+      { icon: Activity, value: "Melanotan II", label: "Derived from" },
+      { icon: Dna, value: "Cyclic structure", label: "Molecular form" },
+    ],
+  },
+  "what-is-thymosin-alpha-1-peptide": {
+    category: "Immune",
+    facts: [
+      { icon: Dna, value: "28", label: "Amino acids" },
+      { icon: Target, value: "Thymus gland", label: "Origin" },
+      { icon: Zap, value: "TLR9", label: "Signaling path" },
+      { icon: Activity, value: "T-cell maturation", label: "Key role" },
+    ],
+  },
+  "what-is-dsip-peptide": {
+    category: "Cognitive",
+    facts: [
+      { icon: Dna, value: "9", label: "Amino acids" },
+      { icon: Target, value: "Delta-wave sleep", label: "Named effect" },
+      { icon: Zap, value: "HPA axis", label: "Stress pathway" },
+      { icon: Activity, value: "Crosses BBB", label: "Notable property" },
+    ],
+  },
+  "what-is-selank-peptide": {
+    category: "Cognitive",
+    facts: [
+      { icon: Dna, value: "Tuftsin base", label: "Foundation" },
+      { icon: Target, value: "GABA system", label: "CNS pathway" },
+      { icon: Zap, value: "BDNF", label: "Growth factor effect" },
+      { icon: Activity, value: "Intranasal", label: "Administration" },
+    ],
+  },
+  "what-is-aod-9604-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Dna, value: "AA 177–191 + Tyr", label: "HGH fragment" },
+      { icon: Target, value: "Lipolysis", label: "Research focus" },
+      { icon: Zap, value: "No IGF-1 rise", label: "Key difference vs GH" },
+      { icon: Activity, value: "Fat metabolism", label: "Primary interest" },
+    ],
+  },
+  "what-is-thymulin-peptide": {
+    category: "Immune",
+    facts: [
+      { icon: Dna, value: "9", label: "Amino acids" },
+      { icon: Target, value: "Requires zinc", label: "Activation" },
+      { icon: Zap, value: "Thymus only", label: "Produced by" },
+      { icon: Activity, value: "T-cell maturation", label: "Key role" },
+    ],
+  },
+  "what-is-5-amino-1mq-peptide": {
+    category: "Metabolic",
+    facts: [
+      { icon: Target, value: "NNMT enzyme", label: "Inhibits" },
+      { icon: Zap, value: "NAD+ support", label: "Effect" },
+      { icon: Activity, value: "Adipose tissue", label: "High NNMT expr." },
+      { icon: Dna, value: "Small molecule", label: "Type" },
+    ],
+  },
+  "what-is-dihexa-peptide": {
+    category: "Cognitive",
+    facts: [
+      { icon: Target, value: "HGF/c-Met", label: "Pathway" },
+      { icon: Zap, value: "7× BDNF", label: "Synapse potency" },
+      { icon: Activity, value: "Oral", label: "Bioavailability" },
+      { icon: Dna, value: "Angiotensin IV", label: "Derived from" },
+    ],
+  },
+  "what-is-glutathione": {
+    category: "Longevity",
+    facts: [
+      { icon: Dna, value: "3 AA", label: "Size" },
+      { icon: Target, value: "Every cell", label: "Found in" },
+      { icon: Zap, value: "GSH ↔ GSSG", label: "Redox cycle" },
+      { icon: Activity, value: "Master antioxidant", label: "Role" },
+    ],
+  },
+  "what-is-vitamin-b12": {
+    category: "Research Guide",
+    facts: [
+      { icon: Target, value: "Cobalt atom", label: "Contains metal" },
+      { icon: Zap, value: "Methylation", label: "Key role" },
+      { icon: Activity, value: "Intrinsic factor", label: "Required for abs." },
+      { icon: Clock, value: "Years stored", label: "Liver storage" },
+    ],
+  },
+  "what-is-melanotan-peptide": {
+    category: "Skin & Repair",
+    facts: [
+      { icon: Target, value: "MC1R (+ more)", label: "Receptors" },
+      { icon: Zap, value: "α-MSH mimic", label: "Mimics" },
+      { icon: Activity, value: "MT-I / MT-II", label: "Two variants" },
+      { icon: Dna, value: "Melanin pigment", label: "Production target" },
+    ],
+  },
+  "what-is-gonadorelin-peptide": {
+    category: "Reproductive",
+    facts: [
+      { icon: Dna, value: "10", label: "Amino acids" },
+      { icon: Target, value: "Exact GnRH copy", label: "Type" },
+      { icon: Zap, value: "Pulsatile only", label: "Required pattern" },
+      { icon: Activity, value: "HPG axis", label: "Controls" },
+    ],
+  },
+  "what-is-slu-pp-332": {
+    category: "Metabolic",
+    facts: [
+      { icon: Target, value: "ERRα / ERRβ / ERRγ", label: "Receptors" },
+      { icon: Zap, value: "Endurance mimic", label: "Effect type" },
+      { icon: Activity, value: "Mitochondria", label: "Key organelle" },
+      { icon: Flame, value: "Fat oxidation", label: "Metabolic effect" },
+    ],
+  },
+};
+
+// ─── Peptide size scale data (amino acid counts) ──────────────────────────────
+
+const ARTICLE_SIZE_AA: Record<string, number> = {
+  "what-is-glutathione": 3,
+  "what-is-epithalon-peptide": 4,
+  "what-is-ipamorelin-peptide": 5,
+  "what-is-semax-peptide": 7,
+  "what-is-dsip-peptide": 9,
+  "what-is-thymulin-peptide": 9,
+  "what-is-gonadorelin-peptide": 10,
+  "what-is-bpc-157-peptide": 15,
+  "what-is-mots-c-peptide": 16,
+  "what-is-thymosin-alpha-1-peptide": 28,
+  "what-is-tb-500-peptide": 43,
+  "what-is-tesamorelin-peptide": 44,
+  "what-is-kisspeptin-54-peptide": 54,
+  "what-is-igf-des-peptide": 67,
+  "what-is-igf-1-lr3-peptide": 83,
+  "what-is-hcg-peptide": 237,
+};
+
+// ─── Mechanism flow data ──────────────────────────────────────────────────────
+
+const ARTICLE_FLOW: Record<string, FlowStep[]> = {
+  "what-is-gonadorelin-peptide": [
+    { label: "Hypothalamus", sublabel: "GnRH signal sent" },
+    { label: "Pituitary Gland", sublabel: "LH & FSH released" },
+    { label: "Gonads", sublabel: "Sex hormones made" },
+  ],
+  "what-is-kisspeptin-peptide": [
+    { label: "Kisspeptin", sublabel: "Binds KISS1R" },
+    { label: "GnRH neurons", sublabel: "Fire in hypothalamus" },
+    { label: "Pituitary", sublabel: "LH & FSH surge" },
+    { label: "Sex hormones", sublabel: "Produced in gonads" },
+  ],
+  "what-is-kisspeptin-54-peptide": [
+    { label: "Kisspeptin-54", sublabel: "Binds KISS1R" },
+    { label: "GnRH pulse", sublabel: "Triggered" },
+    { label: "LH surge", sublabel: "Larger than Kp-10" },
+    { label: "Sex hormones", sublabel: "Downstream effect" },
+  ],
+  "what-is-cjc-1295-peptide": [
+    { label: "CJC-1295", sublabel: "GHRH analog signal" },
+    { label: "Pituitary", sublabel: "GHRH-R activated" },
+    { label: "Growth Hormone", sublabel: "GH pulse released" },
+    { label: "IGF-1", sublabel: "Liver converts GH" },
+  ],
+  "what-is-ipamorelin-peptide": [
+    { label: "Ipamorelin", sublabel: "Ghrelin mimic" },
+    { label: "GHS-R", sublabel: "Receptor activated" },
+    { label: "Pituitary", sublabel: "GH released selectively" },
+    { label: "IGF-1", sublabel: "Downstream effect" },
+  ],
+  "what-is-epithalon-peptide": [
+    { label: "Epithalon", sublabel: "4-amino acid signal" },
+    { label: "Telomerase", sublabel: "Enzyme activated" },
+    { label: "Telomeres", sublabel: "Protected / maintained" },
+    { label: "Cell longevity", sublabel: "Research interest" },
+  ],
+  "what-is-mots-c-peptide": [
+    { label: "MOTS-c", sublabel: "From mitochondrial DNA" },
+    { label: "AMPK", sublabel: "Key sensor activated" },
+    { label: "Mitochondria", sublabel: "Biogenesis increases" },
+    { label: "Energy output", sublabel: "Enhanced capacity" },
+  ],
+  "what-is-nad-precursor": [
+    { label: "NMN / NR", sublabel: "NAD+ precursor" },
+    { label: "NAD+", sublabel: "Coenzyme produced" },
+    { label: "Sirtuins / PARPs", sublabel: "Repair enzymes fire" },
+    { label: "DNA repair", sublabel: "Cellular health restored" },
+  ],
+  "what-is-bpc-157-peptide": [
+    { label: "BPC-157", sublabel: "From gastric juice" },
+    { label: "VEGF pathway", sublabel: "Blood vessel growth" },
+    { label: "Fibroblasts", sublabel: "Migrate to wound" },
+    { label: "Tissue healed", sublabel: "Repair complete" },
+  ],
+  "what-is-5-amino-1mq-peptide": [
+    { label: "5-Amino-1MQ", sublabel: "Blocks NNMT enzyme" },
+    { label: "Nicotinamide", sublabel: "Not depleted" },
+    { label: "NAD+ salvage", sublabel: "Pathway preserved" },
+    { label: "NAD+ levels", sublabel: "Maintained in cells" },
+  ],
+  "what-is-ghk-cu-peptide": [
+    { label: "GHK-Cu", sublabel: "Wound signal detected" },
+    { label: ">4,000 genes", sublabel: "Respond" },
+    { label: "Collagen / elastin", sublabel: "Synthesized" },
+    { label: "Tissue renewal", sublabel: "Research outcome" },
+  ],
+  "what-is-igf-1-lr3-peptide": [
+    { label: "IGF-1 LR3", sublabel: "83-amino acid signal" },
+    { label: "IGFBP bypass", sublabel: "Binds less to carrier" },
+    { label: "IGF-1R activated", sublabel: "Longer duration" },
+    { label: "Anabolic signal", sublabel: "Cell response" },
+  ],
+  "what-is-semax-peptide": [
+    { label: "Semax", sublabel: "7-amino acid peptide" },
+    { label: "BDNF increase", sublabel: "Growth factor rises" },
+    { label: "Neural signaling", sublabel: "Enhanced" },
+    { label: "Plasticity", sublabel: "Research interest" },
+  ],
+  "what-is-dihexa-peptide": [
+    { label: "Dihexa", sublabel: "HGF/c-Met agonist" },
+    { label: "c-Met receptor", sublabel: "Activated" },
+    { label: "Synaptogenesis", sublabel: "7× BDNF potency" },
+    { label: "New connections", sublabel: "Neurons linked" },
+  ],
+  "what-is-tb-500-peptide": [
+    { label: "TB-500", sublabel: "Binds actin protein" },
+    { label: "Actin sequestered", sublabel: "Available for movement" },
+    { label: "Cell migration", sublabel: "Cells move to site" },
+    { label: "Tissue repair", sublabel: "Healing response" },
+  ],
+  "what-is-glutathione": [
+    { label: "GSH (active)", sublabel: "Neutralizes free radicals" },
+    { label: "GSSG (oxidized)", sublabel: "After donating electrons" },
+    { label: "Glutathione reductase", sublabel: "Recycles GSSG → GSH" },
+    { label: "GSH restored", sublabel: "Ready to protect again" },
+  ],
+};
+
 export const SLUGS_WITH_QUICK_BREAKDOWN = Object.keys(beginnerArticles);
 
 export function hasQuickBreakdown(slug: string | null): boolean {
   return slug ? SLUGS_WITH_QUICK_BREAKDOWN.includes(slug) : false;
 }
 
+// ─── Scroll progress hook ─────────────────────────────────────────────────────
+
+function useScrollProgress(ref: React.RefObject<HTMLDivElement>) {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const calculate = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      setProgress(Math.min(1, Math.max(0, scrolled / total)));
+    };
+    window.addEventListener('scroll', calculate, { passive: true });
+    calculate();
+    return () => window.removeEventListener('scroll', calculate);
+  }, [ref]);
+  return progress;
+}
+
+// ─── Section type icon ────────────────────────────────────────────────────────
+
+function getSectionIcon(title: string): typeof Target {
+  const t = title.toLowerCase();
+  if (t.includes('how') || t.includes('work') || t.includes('mechanism') || t.includes('design') || t.includes('pulsed')) return Zap;
+  if (t.includes('research') || t.includes('application') || t.includes('focus') || t.includes('direction') || t.includes('use')) return Beaker;
+  if (t.includes('why') || t.includes('unique') || t.includes('special') || t.includes('differ') || t.includes('matter') || t.includes('interest')) return Sparkles;
+  if (t.includes('discover') || t.includes('origin') || t.includes('history') || t.includes('connection') || t.includes('tuftsin')) return Clock;
+  if (t.includes('relay') || t.includes('axis') || t.includes('cascade') || t.includes('system') || t.includes('zinc')) return Activity;
+  return Brain;
+}
+
+// ─── Quick stats strip ────────────────────────────────────────────────────────
+
+function QuickStatStrip({ facts, iconColor }: { facts: ArticleStat[]; iconColor: string }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {facts.map((fact, i) => {
+        const StatIcon = fact.icon;
+        return (
+          <div
+            key={i}
+            className="flex flex-col gap-1.5 px-4 py-3 rounded-xl"
+            style={{ backgroundColor: `${iconColor}0e`, border: `1px solid ${iconColor}22` }}
+          >
+            <StatIcon className="h-3.5 w-3.5" style={{ color: iconColor }} />
+            <span className="text-sm font-bold text-foreground leading-tight">{fact.value}</span>
+            <span className="text-[11px] text-muted-foreground leading-tight">{fact.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Content parser ───────────────────────────────────────────────────────────
+
+interface MechanismCard { term: string; description: string; }
+interface ParsedBlock { type: "prose" | "cards" | "analogy"; prose?: string; cards?: MechanismCard[]; }
+
+const ANALOGY_TRIGGERS = [
+  /^think of it/i, /^think of /i, /^imagine /i,
+  /^it's like /i, /^it is like /i,
+  /^picture /i, /^just like /i,
+];
+
+function isAnalogyParagraph(text: string): boolean {
+  return ANALOGY_TRIGGERS.some(re => re.test(text.trim()));
+}
+
+const CARD_LINE = /^\*\*([^*]+)\*\*\s*[-–]\s*(.+)/;
+
+function parseSectionContent(content: string): ParsedBlock[] {
+  const blocks: ParsedBlock[] = [];
+  for (const paragraph of content.split('\n\n')) {
+    const lines = paragraph.split('\n').filter(l => l.trim() !== '');
+    const cards: MechanismCard[] = [];
+    const proseLines: string[] = [];
+    for (const line of lines) {
+      const m = line.trim().match(CARD_LINE);
+      if (m) {
+        cards.push({ term: m[1], description: m[2] });
+      } else {
+        proseLines.push(line);
+      }
+    }
+    if (proseLines.length > 0) {
+      const joined = proseLines.join(' ');
+      blocks.push({ type: isAnalogyParagraph(joined) ? 'analogy' : 'prose', prose: joined });
+    }
+    if (cards.length > 0) {
+      blocks.push({ type: 'cards', cards });
+    }
+  }
+  return blocks;
+}
+
+function renderInline(text: string): React.ReactNode {
+  return text.split('**').map((part, i) =>
+    i % 2 === 1 ? (
+      <strong key={i} className="text-foreground font-semibold">{part}</strong>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
+
+function MechanismCardRow({
+  term, description, iconColor, index,
+}: {
+  term: string; description: string; iconColor: string; index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.05 * index }}
+      className="flex items-start gap-3 px-4 py-3"
+    >
+      <div className="flex-shrink-0 mt-[6px]">
+        <div
+          className="w-2 h-2 rounded-full"
+          style={{ backgroundColor: iconColor, boxShadow: `0 0 0 3px ${iconColor}30` }}
+        />
+      </div>
+      <div className="min-w-0 text-[15px]">
+        <span className="font-semibold text-foreground">{term}</span>
+        <span className="text-muted-foreground"> — {description}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Analogy callout ──────────────────────────────────────────────────────────
+
+function AnalogyCue({ text, iconColor }: { text: string; iconColor: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex gap-3 py-4 px-5 rounded-xl my-2"
+      style={{ backgroundColor: `${iconColor}12`, border: `1px solid ${iconColor}28` }}
+    >
+      <Lightbulb className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: iconColor }} />
+      <p className="text-[15px] leading-relaxed text-foreground/90 italic">
+        {renderInline(text)}
+      </p>
+    </motion.div>
+  );
+}
+
+// ─── Mechanism flow diagram ───────────────────────────────────────────────────
+
+function FlowDiagram({ steps, iconColor }: { steps: FlowStep[]; iconColor: string }) {
+  return (
+    <div className="overflow-x-auto pb-1">
+      <div className="flex items-stretch gap-0 min-w-max">
+        {steps.flatMap((step, i) => {
+          const items = [
+            <div
+              key={`step-${i}`}
+              className="flex flex-col items-center text-center px-4 py-3 rounded-xl flex-shrink-0"
+              style={{
+                backgroundColor: `${iconColor}12`,
+                border: `1px solid ${iconColor}28`,
+                minWidth: 100,
+              }}
+            >
+              <span className="text-[12px] font-bold text-foreground leading-tight">{step.label}</span>
+              <span className="text-[10px] text-muted-foreground mt-1 leading-tight">{step.sublabel}</span>
+            </div>,
+          ];
+          if (i < steps.length - 1) {
+            items.push(
+              <div key={`arrow-${i}`} className="flex items-center flex-shrink-0 px-1.5">
+                <ArrowRight className="h-3.5 w-3.5" style={{ color: `${iconColor}70` }} />
+              </div>
+            );
+          }
+          return items;
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Peptide size scale ───────────────────────────────────────────────────────
+
+const SIZE_SCALE_MIN = 3;
+const SIZE_SCALE_MAX = 237;
+
+function PeptideSizeScale({ sizeAA, iconColor }: { sizeAA: number; iconColor: string }) {
+  const pct = Math.max(0, Math.min(100, ((sizeAA - SIZE_SCALE_MIN) / (SIZE_SCALE_MAX - SIZE_SCALE_MIN)) * 100));
+  return (
+    <div className="px-1">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[10px] text-muted-foreground">3 AA</span>
+        <span className="text-[11px] font-semibold" style={{ color: iconColor }}>
+          {sizeAA} amino acids
+        </span>
+        <span className="text-[10px] text-muted-foreground">237 AA</span>
+      </div>
+      <div className="relative h-1.5 rounded-full" style={{ backgroundColor: `${iconColor}18` }}>
+        <div
+          className="absolute left-0 top-0 h-full rounded-full"
+          style={{ width: `${pct}%`, backgroundColor: `${iconColor}50` }}
+        />
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2"
+          style={{
+            left: `${pct}%`,
+            backgroundColor: iconColor,
+            borderColor: 'hsl(var(--background))',
+            boxShadow: `0 0 10px ${iconColor}90`,
+          }}
+        />
+      </div>
+      <div className="flex items-center justify-between mt-1.5">
+        <span className="text-[9px] text-muted-foreground/50">Epithalon</span>
+        <span className="text-[9px] text-muted-foreground/50">← molecular size →</span>
+        <span className="text-[9px] text-muted-foreground/50">HCG</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Section dot timeline ─────────────────────────────────────────────────────
+
+function SectionDotTimeline({
+  sections,
+  iconColor,
+  passedSections,
+}: {
+  sections: { title: string }[];
+  iconColor: string;
+  passedSections: Set<number>;
+}) {
+  return (
+    <div className="flex items-start gap-0">
+      {sections.flatMap((section, i) => {
+        const isPassed = passedSections.has(i);
+        const lineIsPassed = isPassed && passedSections.has(i + 1);
+        const items = [
+          <div key={`dot-${i}`} className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+            <div
+              className="w-3 h-3 rounded-full border-2 transition-all duration-500 flex-shrink-0"
+              style={{
+                backgroundColor: isPassed ? iconColor : 'transparent',
+                borderColor: isPassed ? iconColor : `${iconColor}40`,
+                boxShadow: isPassed ? `0 0 8px ${iconColor}70` : 'none',
+              }}
+            />
+            <span
+              className="text-[9px] text-center leading-tight line-clamp-2 px-1 transition-colors duration-500"
+              style={{ color: isPassed ? iconColor : undefined }}
+            >
+              {section.title.split(' ').slice(0, 3).join(' ')}
+            </span>
+          </div>,
+        ];
+        if (i < sections.length - 1) {
+          items.push(
+            <div
+              key={`line-${i}`}
+              className="h-px self-start mt-1.5 flex-1 transition-all duration-500"
+              style={{ backgroundColor: lineIsPassed ? `${iconColor}80` : `${iconColor}20` }}
+            />
+          );
+        }
+        return items;
+      })}
+    </div>
+  );
+}
+
+// ─── Read time estimator ──────────────────────────────────────────────────────
+
+function estimateReadTime(article: BeginnerArticle): number {
+  const text = [
+    article.intro,
+    ...article.sections.map(s => s.content),
+    article.takeaway,
+  ].join(' ');
+  const words = text.trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+// ─── Renderer ─────────────────────────────────────────────────────────────────
+
 export function BeginnerContent({ slug, title }: BeginnerContentProps) {
   const article = beginnerArticles[slug];
-  
+  const meta = ARTICLE_METADATA[slug];
+  const articleRef = useRef<HTMLDivElement>(null);
+  const progress = useScrollProgress(articleRef);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [passedSections, setPassedSections] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!article) return;
+    const observers: IntersectionObserver[] = [];
+    sectionRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setPassedSections(prev => {
+              const next = new Set(prev);
+              next.add(i);
+              return next;
+            });
+          }
+        },
+        { threshold: 0.2 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, [article?.sections.length]);
+
   if (!article) {
     return (
       <div className="p-6 bg-muted/30 rounded-lg border border-border">
@@ -1803,72 +2589,236 @@ export function BeginnerContent({ slug, title }: BeginnerContentProps) {
   }
 
   const Icon = article.icon;
+  const { iconColor } = article;
+  const facts = meta?.facts ?? [];
+  const category = meta?.category ?? "";
+  const sizeAA = ARTICLE_SIZE_AA[slug];
+  const flow = ARTICLE_FLOW[slug];
+  const readTime = estimateReadTime(article);
+
+  const dividerRow = (label: string) => (
+    <div className="flex items-center gap-2 mb-3">
+      <div className="h-px flex-1" style={{ backgroundColor: `${iconColor}25` }} />
+      <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: `${iconColor}90` }}>
+        {label}
+      </span>
+      <div className="h-px flex-1" style={{ backgroundColor: `${iconColor}25` }} />
+    </div>
+  );
 
   return (
-    <div className="space-y-8" data-testid="beginner-article-content">
+    <div ref={articleRef} className="space-y-8" data-testid="beginner-article-content">
+
+      {/* ── Article hero header ── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex gap-4 items-start"
+        className="rounded-xl overflow-hidden relative"
+        style={{ backgroundColor: `${iconColor}12`, border: `1px solid ${iconColor}25` }}
       >
-        <div 
-          className="p-3 rounded-lg flex-shrink-0"
-          style={{ backgroundColor: `${article.iconColor}20` }}
-        >
-          <Icon className="h-6 w-6" style={{ color: article.iconColor }} />
+        {/* Solid top accent stripe */}
+        <div className="h-1 w-full" style={{ backgroundColor: iconColor }} />
+
+        {/* Ambient glow behind icon */}
+        <div
+          className="absolute top-0 left-0 w-64 h-full pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse at 0% 50%, ${iconColor}22 0%, transparent 70%)`,
+          }}
+        />
+
+        {/* Reading progress bar fills the bottom of the hero as you scroll */}
+        <motion.div
+          className="absolute bottom-0 left-0 h-0.5"
+          style={{ backgroundColor: iconColor }}
+          animate={{ width: `${progress * 100}%` }}
+          transition={{ duration: 0.08, ease: "linear" }}
+        />
+
+        <div className="relative p-6 flex gap-5 items-start">
+          {/* Large icon in solid colored square */}
+          <div
+            className="flex-shrink-0 rounded-xl p-4 mt-0.5"
+            style={{ backgroundColor: iconColor }}
+          >
+            <Icon className="h-8 w-8" style={{ color: "#0f0f12" }} />
+          </div>
+
+          <div className="min-w-0">
+            {/* Category badge + read time */}
+            <div className="mb-2 flex items-center gap-2 flex-wrap">
+              {category && (
+                <span
+                  className="inline-block text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded"
+                  style={{ backgroundColor: `${iconColor}22`, color: iconColor }}
+                >
+                  {category}
+                </span>
+              )}
+              <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <Timer className="h-3 w-3" />
+                {readTime} min read
+              </span>
+            </div>
+            <h1 className="font-display text-3xl md:text-4xl font-bold tracking-wide text-foreground mb-2 leading-tight">
+              {title}
+            </h1>
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
+              {article.intro}
+            </p>
+          </div>
         </div>
-        <p className="text-muted-foreground leading-relaxed">
-          {article.intro}
-        </p>
       </motion.div>
 
-      {article.sections.map((section, index) => (
+      {/* ── Quick stats strip ── */}
+      {facts.length > 0 && (
         <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 * (index + 1) }}
-          className="space-y-4"
+          transition={{ delay: 0.05 }}
         >
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
-            <div className="w-1 h-6 rounded-full" style={{ backgroundColor: article.iconColor }} />
-            {section.title}
-          </h2>
-          
-          {section.visual && (
-            <div className="my-6">
-              {section.visual()}
-            </div>
-          )}
-          
-          <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
-            {section.content.split('\n\n').map((paragraph, pIndex) => (
-              <p key={pIndex} className="mb-4">
-                {paragraph.split('**').map((part, partIndex) => 
-                  partIndex % 2 === 1 ? (
-                    <strong key={partIndex} className="text-foreground font-semibold">{part}</strong>
-                  ) : (
-                    part
-                  )
-                )}
-              </p>
-            ))}
-          </div>
+          {dividerRow("At a Glance")}
+          <QuickStatStrip facts={facts} iconColor={iconColor} />
         </motion.div>
-      ))}
+      )}
 
+      {/* ── Peptide size scale ── */}
+      {sizeAA !== undefined && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+        >
+          {dividerRow("Molecular Size")}
+          <PeptideSizeScale sizeAA={sizeAA} iconColor={iconColor} />
+        </motion.div>
+      )}
+
+      {/* ── Mechanism flow diagram ── */}
+      {flow && flow.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          {dividerRow("Mechanism")}
+          <FlowDiagram steps={flow} iconColor={iconColor} />
+        </motion.div>
+      )}
+
+      {/* ── Section dot timeline ── */}
+      {article.sections.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+        >
+          {dividerRow("Sections")}
+          <SectionDotTimeline
+            sections={article.sections}
+            iconColor={iconColor}
+            passedSections={passedSections}
+          />
+        </motion.div>
+      )}
+
+      {/* ── Sections ── */}
+      {article.sections.map((section, index) => {
+        const SectionIcon = getSectionIcon(section.title);
+        return (
+          <motion.div
+            key={index}
+            ref={el => { sectionRefs.current[index] = el; }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * (index + 1) }}
+            className="space-y-4"
+          >
+            {/* Numbered header with section type icon */}
+            <div className="flex items-center gap-3">
+              <span
+                className="font-mono text-xs font-bold px-2.5 py-1.5 rounded-lg flex-shrink-0 leading-none tabular-nums"
+                style={{ backgroundColor: iconColor, color: "#0f0f12" }}
+              >
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <SectionIcon
+                className="h-4 w-4 flex-shrink-0"
+                style={{ color: `${iconColor}70` }}
+              />
+              <h2 className="font-display text-2xl md:text-3xl font-bold tracking-wide text-foreground">
+                {section.title}
+              </h2>
+            </div>
+
+            {/* Visual (where present) */}
+            {section.visual && (
+              <div className="my-6 rounded-xl overflow-hidden">
+                {section.visual()}
+              </div>
+            )}
+
+            {/* Content blocks */}
+            <div className="space-y-3">
+              {parseSectionContent(section.content).map((block, bIndex) =>
+                block.type === 'analogy' ? (
+                  <AnalogyCue key={bIndex} text={block.prose!} iconColor={iconColor} />
+                ) : block.type === 'cards' ? (
+                  <div
+                    key={bIndex}
+                    className="rounded-xl border divide-y divide-border/50"
+                    style={{
+                      borderColor: `${iconColor}30`,
+                      backgroundColor: `${iconColor}0d`,
+                    }}
+                  >
+                    {block.cards!.map((card, cIndex) => (
+                      <MechanismCardRow
+                        key={cIndex}
+                        term={card.term}
+                        description={card.description}
+                        iconColor={iconColor}
+                        index={cIndex}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p key={bIndex} className="text-[15px] leading-relaxed text-muted-foreground">
+                    {renderInline(block.prose!)}
+                  </p>
+                )
+              )}
+            </div>
+          </motion.div>
+        );
+      })}
+
+      {/* ── Key Takeaway — pull-quote ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="p-4 rounded-xl bg-[#21d8ff]/10 border border-[#21d8ff]/30"
+        className="rounded-xl overflow-hidden relative"
+        style={{ backgroundColor: `${iconColor}10`, border: `1px solid ${iconColor}35` }}
       >
-        <div className="flex items-start gap-3">
-          <Target className="h-5 w-5 text-[#21d8ff] mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="font-semibold text-[#21d8ff] mb-1">Key Takeaway</h3>
-            <p className="text-sm text-muted-foreground">{article.takeaway}</p>
+        {/* Left accent bar */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1"
+          style={{ backgroundColor: iconColor }}
+        />
+        <div className="relative pl-8 pr-6 py-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Target className="h-4 w-4 flex-shrink-0" style={{ color: iconColor }} />
+            <span
+              className="text-xs tracking-widest uppercase font-bold"
+              style={{ color: iconColor }}
+            >
+              Key Takeaway
+            </span>
           </div>
+          <p className="text-lg md:text-xl font-semibold text-foreground leading-snug">
+            {article.takeaway}
+          </p>
         </div>
       </motion.div>
 
