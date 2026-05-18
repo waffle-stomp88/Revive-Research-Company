@@ -1,0 +1,82 @@
+# REPLIT TECHNICAL BRIEF: Hero Section Redesign
+
+## Overview
+
+Redesign the homepage hero section copy, CTAs, and badge. The visual layout, background image (vial), and overall structure remain the same. This is a copy and button swap only — no layout or styling changes unless specified.
+
+---
+
+## Changes
+
+### 1. REMOVE — "Research Grade Compounds" badge
+- Kill the yellow/green badge pill at the top of the hero that says "Research Grade Compounds"
+- Do not replace it with anything. Remove it entirely. Let the hero breathe.
+
+### 2. REPLACE — Main headline
+- **Old:** "THE FUTURE OF RESEARCH COMPOUNDS"
+- **New:** "Everyone sells peptides. Nobody teaches them."
+- Keep the same font, size, weight, and positioning as the current headline
+- Line break after "peptides." so it reads as two lines:
+  - Line 1: "Everyone sells peptides."
+  - Line 2: "Nobody teaches them."
+
+### 3. REPLACE — Subtext
+- **Old:** "Third-party tested. QR-verifiable. Built for researchers who demand transparency."
+- **New:** "Know what you're researching. Know what works together. Know what's in the vial. Before you spend a dollar."
+- Keep the same font, size, color, and positioning as the current subtext
+- Each "Know" statement can be on its own line or flow as a paragraph — match whatever reads best at the current text size on both mobile and desktop
+
+### 4. REPLACE — CTA buttons
+- **Old button 1:** "SHOP PEPTIDES →"
+- **New button 1:** "SHOP PEPTIDES →" (no change — keep exactly as is, same styling, same link)
+
+- **Old button 2:** "VERIFY COA"
+- **New button 2:** Remove from hero entirely (see step 5 below)
+
+- **Old button 3:** "NEW TO PEPTIDES? START HERE →"
+- **New button 3:** "LEARN FIRST →"
+  - Same link destination (Education Center)
+  - Same positioning (below Shop Peptides)
+  - Styling: secondary button treatment (outlined or lighter weight than Shop Peptides) to establish clear visual hierarchy — Shop Peptides is primary, Learn First is secondary
+
+### 5. MOVE — Verify COA button
+- Remove "VERIFY COA" from the hero section
+- Add a "Verify COA" link to the main navigation bar instead
+- It should appear as a nav item (not a button) in the header navigation, accessible from every page
+- If the nav is already crowded, it can go under a "More" dropdown or as a utility link in the top bar near the cart icon
+- The link destination remains the same as the current Verify COA button
+
+### 6. KEEP — Everything else
+- Background vial image — no change
+- Logo and nav bar — no change (except adding Verify COA link per step 5)
+- "FREE SHIPPING on orders over $250" banner — no change
+- Mobile bottom nav (Home, Shop, Cart, Education, Account) — no change
+- Overall hero layout, padding, spacing — no change unless needed to accommodate the new text length
+
+---
+
+## Visual Hierarchy (top to bottom)
+
+1. Logo + nav bar (unchanged)
+2. Free shipping banner (unchanged)
+3. Hero section:
+   - Headline: "Everyone sells peptides. Nobody teaches them." (large, bold, primary)
+   - Subtext: "Know what you're researching. Know what works together. Know what's in the vial. Before you spend a dollar." (medium, lighter weight)
+   - CTA 1: "SHOP PEPTIDES →" (primary button — filled, prominent)
+   - CTA 2: "LEARN FIRST →" (secondary button — outlined or lighter)
+4. Background: existing vial image (unchanged)
+
+---
+
+## Relevant Files
+- Homepage hero component (likely in client/src/pages/home.tsx or similar)
+- Navigation component (for adding Verify COA link)
+- Any hero-specific CSS/styled-components
+
+---
+
+## Notes
+- This is a copy-only change. Do not redesign the hero layout, change the background image, or modify the overall page structure.
+- The two-button hero is intentional. Research shows pages with fewer competing CTAs convert significantly better. Do not add additional buttons.
+- Test on both mobile and desktop to confirm the new headline and subtext read well at the current font sizes. If the new text is longer than the old text and causes layout issues on mobile, reduce subtext font size slightly rather than truncating the copy.
+- "Learn First" should link to the same destination as the current "NEW TO PEPTIDES? START HERE" button (Education Center).

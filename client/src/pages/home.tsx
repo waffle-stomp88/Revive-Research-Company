@@ -85,29 +85,17 @@ function HeroSection() {
         className="relative z-[10] max-w-6xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center h-full"
       >
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="mb-8 md:mb-20"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#E7FB10]/30 text-sm font-medium tracking-wide text-[#e7fb10]">
-            <FlaskConical className="h-4 w-4" />
-            Research Grade Compounds
-          </span>
-        </motion.div>
-
-        <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
         >
-          <h1 
+          <h1
             className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white drop-shadow-2xl leading-tight"
             data-testid="text-hero-headline"
           >
-            The Future of
+            Everyone sells peptides.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">Research Compounds</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff]">Nobody teaches them.</span>
           </h1>
         </motion.div>
 
@@ -118,14 +106,14 @@ function HeroSection() {
           className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
-          Third-party tested. QR-verifiable. Built for researchers who demand transparency.
+          Know what you're researching. Know what works together. Know what's in the vial. Before you spend a dollar.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.7 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col items-center justify-center gap-4"
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
             <div className="relative inline-block">
@@ -136,22 +124,9 @@ function HeroSection() {
               </Button>
             </div>
           </Link>
-          <Link href="/coa/verify-certificate-of-analysis">
-            <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
-              Verify COA
-            </Button>
-          </Link>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-8"
-        >
           <Link href="/guides/peptide-education-center" onClick={() => trackEvent('hero_cta_click', 'engagement', 'learn_peptides')}>
             <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
-              New to Peptides? Start Here
+              Learn First
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
