@@ -1115,36 +1115,35 @@ export default function ProductDetail() {
               )}
 
               {/* Quantity box — stepper for single-vial, read-only count for packs */}
-              {!isOutOfStock && (
-                <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
-                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
-                  <div className="flex items-center min-h-[44px]">
-                    <button
-                      type="button"
-                      onClick={() => handleQtyChange(singleVialQty - 1)}
-                      disabled={singleVialQty <= 1}
-                      data-testid="button-qty-minus"
-                      className="min-w-[44px] min-h-[44px] rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
-                    >
-                      <span className="text-sm leading-none select-none">−</span>
-                    </button>
-                    <span
-                      data-testid="text-qty-value"
-                      className="w-10 self-stretch border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
-                    >
-                      {singleVialQty}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleQtyChange(singleVialQty + 1)}
-                      data-testid="button-qty-plus"
-                      className="min-w-[44px] min-h-[44px] rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-background"
-                    >
-                      <span className="text-sm leading-none select-none">+</span>
-                    </button>
-                  </div>
+              <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
+                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
+                <div className="flex items-center min-h-[44px]">
+                  <button
+                    type="button"
+                    onClick={() => handleQtyChange(singleVialQty - 1)}
+                    disabled={singleVialQty <= 1 || isOutOfStock}
+                    data-testid="button-qty-minus"
+                    className="min-w-[44px] min-h-[44px] rounded-l-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
+                  >
+                    <span className="text-sm leading-none select-none">−</span>
+                  </button>
+                  <span
+                    data-testid="text-qty-value"
+                    className="w-10 self-stretch border-y border-input flex items-center justify-center text-sm font-medium text-foreground bg-background"
+                  >
+                    {singleVialQty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleQtyChange(singleVialQty + 1)}
+                    disabled={isOutOfStock}
+                    data-testid="button-qty-plus"
+                    className="min-w-[44px] min-h-[44px] rounded-r-md border border-input flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40 transition-colors bg-background"
+                  >
+                    <span className="text-sm leading-none select-none">+</span>
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Pack Size Selector */}
