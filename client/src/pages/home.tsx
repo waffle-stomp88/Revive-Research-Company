@@ -61,7 +61,8 @@ function HeroSection() {
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
-      <div className="absolute inset-0 z-[2] pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.35) 55%, transparent 100%)" }} />
+      <div className="absolute inset-0 z-[2] pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(10,10,15,0.88) 0%, rgba(10,10,15,0.55) 55%, transparent 100%)" }} />
+      <div className="absolute inset-0 z-[2] pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 35% at 50% 62%, rgba(10,10,15,0.70) 0%, rgba(10,10,15,0.30) 60%, transparent 100%)" }} />
       {/* Glow effects - smaller on mobile, full on desktop */}
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
         <motion.div 
