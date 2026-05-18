@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,12 @@ function HeroSection() {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
   const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
+
+  const { data: products } = useQuery<{ id: number }[]>({
+    queryKey: ["/api/products"],
+    staleTime: 5 * 60 * 1000,
+  });
+  const compoundCount = products?.length ?? null;
 
   const handleScrollClick = () => {
     const nextSection = document.getElementById('why-researchers');
@@ -142,9 +149,9 @@ function HeroSection() {
           className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
           data-testid="div-hero-trust-strip"
         >
-          <span className="flex items-center gap-1.5 text-xs text-white/50">
+          <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-compound-count">
             <Beaker className="h-3.5 w-3.5 text-[#E7FB10]/60 flex-shrink-0" />
-            47 Compounds
+            {compoundCount !== null ? `${compoundCount} Compounds` : "Compounds"}
           </span>
           <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
           <span className="flex items-center gap-1.5 text-xs text-white/50">
