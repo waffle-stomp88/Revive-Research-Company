@@ -16,6 +16,7 @@ import {
   FileCheck,
   Beaker,
   Thermometer,
+  ShieldCheck,
 } from "lucide-react";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import { trackEvent } from "@/lib/analytics";
@@ -108,7 +109,7 @@ function HeroSection() {
           className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
-          Know what you're researching. Know what works together. Know what's in the vial. Before you spend a dollar.
+          Know what you're researching. Know what works together. Know what's in the vial. <span className="whitespace-nowrap">Before you spend a dollar.</span>
         </motion.p>
 
         <motion.div
@@ -132,6 +133,29 @@ function HeroSection() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.9 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
+          data-testid="div-hero-trust-strip"
+        >
+          <span className="flex items-center gap-1.5 text-xs text-white/50">
+            <Beaker className="h-3.5 w-3.5 text-[#E7FB10]/60 flex-shrink-0" />
+            47 Compounds
+          </span>
+          <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
+          <span className="flex items-center gap-1.5 text-xs text-white/50">
+            <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff]/60 flex-shrink-0" />
+            98.5% Purity
+          </span>
+          <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
+          <span className="flex items-center gap-1.5 text-xs text-white/50">
+            <ShieldCheck className="h-3.5 w-3.5 text-[#9d4edd]/60 flex-shrink-0" />
+            100% Tested
+          </span>
         </motion.div>
       </motion.div>
       <motion.div
