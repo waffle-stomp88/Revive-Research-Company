@@ -146,7 +146,7 @@ export function StackBuilderTeaser() {
   const { data: stacksData } = useQuery<{ id: string }[]>({
     queryKey: ["/api/research-stacks"],
   });
-  const knownStacksCount = stacksData?.length ?? 25;
+  const knownStacksCount = stacksData?.length || 25;
   const extraStacks = Math.max(0, knownStacksCount - 1);
 
   return (
