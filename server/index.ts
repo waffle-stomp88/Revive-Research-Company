@@ -4,7 +4,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
-import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty } from "./storage";
+import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty, seedResearchStacksIfEmpty } from "./storage";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -130,6 +130,9 @@ export function log(message: string, source = "express") {
     }))
     .then(() => seedLabNotesIfEmpty().catch((err) => {
       console.warn("[startup] seedLabNotesIfEmpty failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => seedResearchStacksIfEmpty().catch((err) => {
+      console.warn("[startup] seedResearchStacksIfEmpty failed (non-fatal):", err?.message ?? err);
     }));
 
   await registerRoutes(httpServer, app);
