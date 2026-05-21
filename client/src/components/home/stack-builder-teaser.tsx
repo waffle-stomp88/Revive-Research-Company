@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { KNOWN_STACKS } from "@/lib/synergy-data";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -146,7 +147,7 @@ export function StackBuilderTeaser() {
   const { data: stacksData } = useQuery<{ id: string }[]>({
     queryKey: ["/api/research-stacks"],
   });
-  const knownStacksCount = stacksData?.length || 25;
+  const knownStacksCount = KNOWN_STACKS.length;
   const extraStacks = Math.max(0, knownStacksCount - 1);
 
   return (
