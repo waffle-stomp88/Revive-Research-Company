@@ -794,6 +794,27 @@ export async function registerRoutes(
     }
   });
 
+  // Public: average purity across active COAs for hero trust strip
+  app.get("/api/stats/purity", async (_req, res) => {
+    try {
+      const allCoas = await storage.getAllCoas(false);
+      const visible = allCoas.filter((c) => c.publiclyVisible !== false);
+      const values: number[] = [];
+      for (const coa of visible) {
+        const numeric = parseFloat(coa.purity.replace("%", "").trim());
+        if (!isNaN(numeric)) values.push(numeric);
+      }
+      if (values.length === 0) {
+        return res.json({ purity: null });
+      }
+      const avg = values.reduce((a, b) => a + b, 0) / values.length;
+      res.json({ purity: parseFloat(avg.toFixed(1)) });
+    } catch (error) {
+      console.error("Error computing purity stat:", error);
+      res.status(500).json({ error: "Failed to compute purity stat" });
+    }
+  });
+
   // Validate stock availability before checkout
   app.post("/api/stock/validate", async (req, res) => {
     try {

@@ -43,6 +43,12 @@ function HeroSection() {
   });
   const compoundCount = products?.length ?? null;
 
+  const { data: purityData } = useQuery<{ purity: number | null }>({
+    queryKey: ["/api/stats/purity"],
+    staleTime: 10 * 60 * 1000,
+  });
+  const purityLabel = purityData?.purity != null ? `${purityData.purity}% Purity` : "98.5% Purity";
+
   const handleScrollClick = () => {
     const nextSection = document.getElementById('why-researchers');
     if (nextSection) {
@@ -154,9 +160,9 @@ function HeroSection() {
             {compoundCount !== null ? `${compoundCount} Compounds` : "Compounds"}
           </span>
           <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
-          <span className="flex items-center gap-1.5 text-xs text-white/50">
+          <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-purity">
             <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff]/60 flex-shrink-0" />
-            98.5% Purity
+            {purityLabel}
           </span>
           <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
           <span className="flex items-center gap-1.5 text-xs text-white/50">
