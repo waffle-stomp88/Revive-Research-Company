@@ -22,13 +22,9 @@ import {
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import { trackEvent } from "@/lib/analytics";
 import { SEOHead } from "@/components/seo-head";
-import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
-import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
 import MistBackground from "@/components/home/mist-background";
-import { MobilePipelineStrip } from "@/components/home/mobile-pipeline-strip";
-import { MobileScienceStats } from "@/components/home/mobile-science-stats";
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -466,30 +462,6 @@ export default function Home() {
     <main>
       <SEOHead title="Home" description={`Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`} canonicalPath="/" />
       <HeroSection />
-      {/* MolecularDNAVisual - hidden on mobile; MobileScienceStats shown instead */}
-      <div className="hidden md:block">
-        <MolecularDNAVisual />
-      </div>
-      <div className="block md:hidden py-10 px-4">
-        <div className="max-w-sm mx-auto">
-          <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-widest mb-5">
-            Precision Engineered Peptides
-          </p>
-          <MobileScienceStats />
-        </div>
-      </div>
-      {/* TestingPipelineVisual - hidden on mobile; MobilePipelineStrip shown instead */}
-      <div className="hidden md:block">
-        <TestingPipelineVisual />
-      </div>
-      <div className="block md:hidden py-10 px-4">
-        <div className="max-w-sm mx-auto">
-          <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-widest mb-5">
-            Quality Assurance Pipeline
-          </p>
-          <MobilePipelineStrip />
-        </div>
-      </div>
       <EducationTeaser />
       <StackBuilderTeaser />
       <div id="why-researchers">
