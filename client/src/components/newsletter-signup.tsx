@@ -9,9 +9,12 @@ import { trackEvent } from "@/lib/analytics";
 interface NewsletterSignupProps {
   compact?: boolean;
   source?: string;
+  placeholder?: string;
+  buttonLabel?: string;
+  onSuccess?: () => void;
 }
 
-export function NewsletterSignup({ compact = false, source = "footer" }: NewsletterSignupProps) {
+export function NewsletterSignup({ compact = false, source = "footer", placeholder = "Your email", buttonLabel = "Join", onSuccess }: NewsletterSignupProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -41,6 +44,7 @@ export function NewsletterSignup({ compact = false, source = "footer" }: Newslet
 
       setIsSubmitted(true);
       trackEvent('newsletter_signup', 'conversion', email);
+      if (onSuccess) onSuccess();
       toast({
         title: "Success!",
         description: data.message || "You've been added to our mailing list",
@@ -78,7 +82,7 @@ export function NewsletterSignup({ compact = false, source = "footer" }: Newslet
                 <Mail className="absolute left-3 top-3 h-5 w-5 text-[#E7FB10] opacity-50" />
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={placeholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 h-11 bg-black/40 backdrop-blur-sm border-[#E7FB10]/30 text-white placeholder:text-gray-400 focus:border-[#E7FB10] focus:ring-[#E7FB10]/20"
@@ -92,7 +96,7 @@ export function NewsletterSignup({ compact = false, source = "footer" }: Newslet
                 className="h-11 px-6 bg-[#E7FB10] text-black font-bold border-0 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300"
                 data-testid="button-newsletter-subscribe"
               >
-                {isLoading ? "Subscribing..." : "Subscribe"}
+                {isLoading ? "Joining..." : buttonLabel}
               </Button>
             </div>
             {!compact && (

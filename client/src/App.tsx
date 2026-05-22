@@ -9,6 +9,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { MobileStickyEmailBar } from "@/components/mobile-sticky-email-bar";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { RuoAttestationModal } from "@/components/ruo-attestation-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
@@ -347,6 +348,7 @@ function AppShell() {
         </div>
         <Footer className="hidden md:block" />
       </div>
+      <MobileStickyEmailBar />
       <MobileBottomNav />
       <Suspense fallback={null}>
         <ChatBot />

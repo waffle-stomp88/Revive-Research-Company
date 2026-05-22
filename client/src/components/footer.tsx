@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import logoImage from "@assets/Revive_PNG_1766012118069.png";
 import { useEffect, useState } from "react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
+import { trackEvent } from "@/lib/analytics";
 
 function getResponseTimeByTimeZone(): string {
   const now = new Date();
@@ -67,11 +68,15 @@ export function Footer({ className }: FooterProps) {
                 <Mail className="h-3 w-3 text-[#21d8ff]" />
                 <span className="text-xs font-medium text-[#21d8ff] uppercase tracking-wider">Newsletter</span>
               </div>
-              <h4 className="font-display font-bold text-lg mb-1">Stay in the Loop</h4>
-              <p className="text-muted-foreground text-xs max-w-md">Get exclusive updates and educational content delivered to your inbox.</p>
+              <h4 className="font-display font-bold text-lg mb-1">JOIN THE RESEARCH LIST</h4>
+              <p className="text-muted-foreground text-xs max-w-md">New batch COAs, compound deep-dives, and early restock alerts.</p>
             </div>
             <div className="w-full lg:w-auto lg:min-w-[360px]">
-              <NewsletterSignup compact source="footer" />
+              <NewsletterSignup
+                compact
+                source="footer"
+                onSuccess={() => trackEvent("email_footer_submitted")}
+              />
             </div>
           </div>
         </div>

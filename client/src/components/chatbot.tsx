@@ -110,7 +110,7 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-32 md:bottom-24 right-3 md:right-6 z-50 w-[90%] sm:w-[380px] md:w-[400px] max-w-[400px]"
+            className="fixed bottom-44 md:bottom-24 right-3 md:right-6 z-50 w-[90%] sm:w-[380px] md:w-[400px] max-w-[400px]"
           >
             <Card 
               className="border-2 overflow-hidden"
@@ -269,7 +269,8 @@ export function ChatBot() {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1, type: "spring", stiffness: 200 }}
-        className="fixed bottom-20 md:bottom-4 right-3 md:right-6 z-50"
+        className="fixed bottom-44 md:bottom-4 right-3 md:right-6 z-50"
+        data-testid="chatbot-toggle-wrapper"
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
