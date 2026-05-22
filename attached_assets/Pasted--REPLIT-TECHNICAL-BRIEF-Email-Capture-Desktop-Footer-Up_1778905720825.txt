@@ -1,0 +1,142 @@
+# REPLIT TECHNICAL BRIEF: Email Capture — Desktop Footer Update + Mobile Sticky Bar
+
+## Overview
+
+Two changes to the email capture system: (1) update the existing desktop footer newsletter section with better copy and CTA, and (2) add a persistent sticky bottom bar on mobile for email capture. Both connect to the existing Zoho Campaigns email list.
+
+---
+
+## Part 1: Desktop Footer Newsletter Update (Copy Only)
+
+### Current state
+The footer has a newsletter section with:
+- Badge: "NEWSLETTER"
+- Heading: "STAY IN THE LOOP"
+- Subtext: "Get exclusive updates and educational content delivered to your inbox."
+- Email field placeholder: "Enter your email"
+- Button: "Subscribe"
+
+### Changes
+
+**Badge:** Keep "NEWSLETTER" — no change.
+
+**Heading:** Change from "STAY IN THE LOOP" to "JOIN THE RESEARCH LIST"
+
+**Subtext:** Change from "Get exclusive updates and educational content delivered to your inbox." to "New batch COAs, compound deep-dives, and early restock alerts."
+
+**Email field placeholder:** Change from "Enter your email" to "Your email"
+
+**Button text:** Change from "Subscribe" to "Join"
+
+**No layout, styling, or structural changes.** This is a copy-only update to the existing footer component.
+
+---
+
+## Part 2: Mobile Sticky Bottom Bar (New Component)
+
+### What & Why
+Mobile visitors currently have no email capture surface until they scroll to the very bottom of the page. Most never get there. Add a persistent slim sticky bar at the bottom of the screen on mobile viewports that captures email addresses without being intrusive. This bar sits above the existing mobile bottom nav (Home / Shop / Cart / Education / Account).
+
+### Visibility Rules
+- **Show only on mobile** — defined as viewport width ≤ 768px
+- **Show only after the user has scrolled past the hero section** — approximately 80vh or when the hero section leaves the viewport. Do NOT show immediately on page load.
+- **Hide if the user has already submitted their email** — set a `localStorage` flag `revive_email_captured` and suppress the bar when it's true
+- **Hide if the user has dismissed the bar** — set a `localStorage` flag `revive_sticky_dismissed` with a 7-day expiry. After 7 days, show the bar again.
+- **Do NOT show on the cart page or checkout page** — these pages need maximum screen space for conversion. Only show on homepage, shop/catalog pages, product pages, and education pages.
+- **Do NOT show if user is already logged in** — logged-in users are already in the system
+
+### Layout & Design
+
+The bar should be a slim, fixed-position element at the bottom of the screen, sitting directly ABOVE the existing mobile bottom navigation bar.
+
+**Dimensions:**
+- Height: 48–56px (compact enough to not feel intrusive)
+- Width: 100% viewport width
+- Position: fixed, bottom value = height of existing mobile nav bar (so it stacks above, not overlaps)
+- z-index: one level below the mobile nav but above page content
+
+**Collapsed state (default):**
+- Background: dark (#1A1A1A) with a subtle top border (1px, cyan #00D4FF at 30% opacity)
+- Left side: Text "Join the Research List" in white, 13px, bold
+- Right side: A "Join →" button in the brand yellow-green (#C8FF00), 13px, bold, black text
+- A small "×" dismiss icon on the far right edge, 12px, gray (#666)
+
+**Expanded state (after tapping "Join →"):**
+- The bar expands to ~96px height
+- Shows a single email input field (full width minus padding, `type="email"`, placeholder "Your email", auto-focuses and triggers mobile email keyboard)
+- Below the field: a single "Join the Research List →" submit button in yellow-green
+- The "×" dismiss icon remains visible
+- Tap targets must be ≥48px for mobile accessibility
+
+**Submitted state:**
+- Bar briefly shows "You're in. Welcome to Revive." in cyan for 2 seconds
+- Then the bar disappears and sets the `localStorage` flag
+- Triggers the Zoho Campaigns signup API (same endpoint the desktop footer uses)
+
+### Styling
+
+- Match the existing site dark theme
+- No shadows or heavy borders — keep it clean and subtle
+- The bar should feel like a natural extension of the interface, not an overlay or popup
+- Smooth expand/collapse animation (150ms ease-out)
+- On scroll-down, the bar can optionally slide down slightly to be less visible; on scroll-up (user exploring), slide back into full view
+
+### Integration
+
+- The email submission should use the same API endpoint and Zoho Campaigns list as the existing desktop footer newsletter form
+- Include the 21+ / RUO attestation as implicit (the user has already passed the age gate modal on site entry, so no need to re-verify here — but do include a small disclaimer line in the expanded state: "For 21+ researchers only" in 10px gray text below the submit button)
+- On successful submission, also set `revive_email_captured = true` in localStorage
+
+---
+
+## Part 3: Shared Requirements
+
+### Error handling
+- If email submission fails (network error, invalid email), show inline error text in red below the field: "Something went wrong. Try again." — do NOT use an alert popup
+- Validate email format client-side before submission (basic regex check)
+- Disable the submit button during the API call to prevent double-submission
+
+### Analytics
+- Track these events in Google Analytics (or whatever analytics is currently active):
+  - `email_sticky_bar_shown` — bar appears on screen
+  - `email_sticky_bar_expanded` — user taps "Join"
+  - `email_sticky_bar_submitted` — email successfully submitted
+  - `email_sticky_bar_dismissed` — user taps "×"
+  - `email_footer_submitted` — email submitted via desktop footer
+
+### Accessibility
+- Email field must have an associated `<label>` (can be visually hidden)
+- All interactive elements must be keyboard-navigable
+- Tap targets ≥48px on mobile
+- Sufficient color contrast (white text on #1A1A1A passes WCAG AA)
+
+---
+
+## Relevant Files
+- Desktop footer component (wherever the current newsletter signup lives)
+- Mobile bottom nav component (need to know its height for sticky bar positioning)
+- Zoho Campaigns API integration (existing signup endpoint)
+- App-level route config (for page-specific show/hide logic)
+
+---
+
+## Out of Scope
+- Email welcome sequence content (handled separately in Zoho Campaigns)
+- Desktop popup / modal email capture
+- Exit-intent triggers
+- A/B testing infrastructure
+- Changes to the age-gate modal
+
+---
+
+## Priority
+This is a high-priority conversion infrastructure item. The mobile sticky bar is the single most impactful change for capturing visitors who currently leave without providing an email. Ship the desktop copy update immediately (5 minutes). Ship the mobile sticky bar within the current sprint.
+
+---
+
+## Reference Data
+- Sticky bottom bars convert at ~12% on mobile-heavy traffic (Unbounce)
+- Single-field email forms convert ~25% on welcome forms (HubSpot)
+- "Subscribe" as CTA text underperforms outcome-specific copy by 38-90% (ContentVerve, Unbounce)
+- Mobile popups convert at 4.98% vs 3.67% desktop (Wisepops 2026, 1B+ displays)
+- Google exempts slim sticky bars from the intrusive-interstitial penalty
