@@ -5005,13 +5005,15 @@ Return ONLY valid JSON in this exact format:
         zc_formIx: "3zdab2956038849aa36b47c12c2c5f75da1e9fdac8f7047c0dc5431cf360b83bb7",
         viewFrom: "URL_ACTION",
         scriptless: "yes",
+        zc_spmSubmit: "ZCSPMSUBMIT",
       });
       fetch("https://zgnp-zngp.maillist-manage.com/weboptin.zc", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: zohoParams.toString(),
-      }).then(r => {
-        console.log(`[Zoho] Subscriber pushed: ${email} — status ${r.status}`);
+      }).then(async r => {
+        const body = await r.text();
+        console.log(`[Zoho] Subscriber pushed: ${email} — status ${r.status} — body: ${body.slice(0, 500)}`);
       }).catch(err => {
         console.error("[Zoho] Failed to push subscriber:", err);
       });
