@@ -4984,12 +4984,38 @@ Return ONLY valid JSON in this exact format:
       }
 
       const subscriber = await storage.subscribeToNewsletter(parsed.data);
-      
-      // Send welcome email (don't block on failure)
-      sendNewsletterWelcomeEmail(email).catch(err => {
-        console.error("Failed to send newsletter welcome email:", err);
+
+      // Push to Zoho Campaigns Research List (fire-and-forget)
+      const zohoParams = new URLSearchParams({
+        CONTACT_EMAIL: email,
+        submitType: "optinCustomView",
+        emailReportId: "",
+        formType: "QuickForm",
+        zx: "1362ec729",
+        zcvers: "3.0",
+        oldListIds: "",
+        mode: "OptinCreateView",
+        zcld: "116f2aaf916892a61",
+        zctd: "116f2aaf91688fb89",
+        document_domain: "",
+        zc_Url: "zgnp-zngp.maillist-manage.com",
+        new_optin_response_in: "0",
+        duplicate_optin_response_in: "0",
+        zc_trackCode: "ZCFORMVIEW",
+        zc_formIx: "3zdab2956038849aa36b47c12c2c5f75da1e9fdac8f7047c0dc5431cf360b83bb7",
+        viewFrom: "URL_ACTION",
+        scriptless: "yes",
       });
-      
+      fetch("https://zgnp-zngp.maillist-manage.com/weboptin.zc", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: zohoParams.toString(),
+      }).then(r => {
+        console.log(`[Zoho] Subscriber pushed: ${email} — status ${r.status}`);
+      }).catch(err => {
+        console.error("[Zoho] Failed to push subscriber:", err);
+      });
+
       res.status(201).json({ success: true, message: "Successfully subscribed to newsletter!", subscriber });
     } catch (error: any) {
       if (error.code === "23505") {
