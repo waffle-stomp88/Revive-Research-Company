@@ -71,3 +71,9 @@ id = "TnFqHRT_s7XNHEK20O3sd"
 uri = "file://exports/email2-edu-stats.gif"
 type = "image"
 title = "Email 2 — Education Center Stat Reveal"
+
+[[outputs]]
+id = "Z65yg0bpmzczt8beU0lQO"
+uri = "file://exports/email2-edu-ui-preview.gif"
+type = "image"
+title = "Email 2 — Education Center UI Preview"
