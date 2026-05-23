@@ -58,19 +58,24 @@
   }
   .stat-bar strong { color: #E7FB10; }
   .bottom {
-    margin-top: 20px; display: flex; align-items: center; justify-content: space-between;
+    margin-top: 20px; display: flex; align-items: center; justify-content: center;
     padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.06);
   }
-  .brand { display: flex; align-items: center; gap: 8px; }
-  .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: #E7FB10; }
-  .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 0.1em; color: #ffffff; }
-  .brand-tag  { font-size: 9.5px; color: #4a4a56; letter-spacing: 0.1em; text-transform: uppercase; }
-  .cta-btn {
-    background: #E7FB10; color: #1a1a1f;
-    font-family: 'DM Sans', sans-serif; font-size: 11.5px; font-weight: 700;
-    letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 10px 18px; border-radius: 6px; text-decoration: none; display: inline-block;
+  /* Logo at top */
+  .logo-wrap {
+    text-align: center; margin-bottom: 18px;
   }
+  .logo-img {
+    height: 32px; width: auto;
+    mix-blend-mode: screen;
+    display: inline-block;
+  }
+
+  /* Bottom brand strip (no button) */
+  .brand { display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .brand-dot { width: 6px; height: 6px; border-radius: 50%; background: #E7FB10; flex-shrink: 0; }
+  .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 0.1em; color: #ffffff; }
+  .brand-tag  { font-size: 9px; color: #4a4a56; letter-spacing: 0.1em; text-transform: uppercase; }
   /* SVG check / X path styling */
   .check-path, .x-path {
     stroke-linecap: round; stroke-linejoin: round; fill: none;
@@ -83,6 +88,9 @@
 <body>
 <div class="wrap">
 
+  <div class="logo-wrap" id="logo-wrap">
+    <img src="revive-logo.png" class="logo-img" alt="Revive Research"/>
+  </div>
   <div class="eyebrow" id="eyebrow">Certificate of Analysis</div>
   <div class="main-title" id="title">The <span>COA</span> Transparency Gap</div>
   <div class="subtitle"  id="subtitle">What most vendors won't tell you about lab verification</div>
@@ -176,12 +184,10 @@
   <div class="bottom" id="bottom">
     <div class="brand">
       <div class="brand-dot"></div>
-      <div>
-        <div class="brand-name">REVIVE RESEARCH</div>
-        <div class="brand-tag">Premium Research Compounds</div>
-      </div>
+      <div class="brand-name">REVIVE RESEARCH</div>
+      <div class="brand-dot"></div>
+      <div class="brand-tag">reviveresearch.co</div>
     </div>
-    <div class="cta-btn">Read the COA Guide &rarr;</div>
   </div>
 
 </div>
@@ -233,8 +239,9 @@ function drawPath(el, t, start, end) {
 // ── Animation timeline (all times in ms) ───────────────────────────────────
 // Total animation: 3600ms, then hold
 const TIMELINE = {
-  eyebrow:    [100,  500],
-  title:      [250,  650],
+  logo:       [0,    350],
+  eyebrow:    [200,  580],
+  title:      [350,  730],
   subtitle:   [380,  780],
   colHeaders: [550,  900],
   row1:       [750, 1100],
@@ -255,6 +262,7 @@ const TIMELINE = {
 
 // ── setFrame: the only exported API ─────────────────────────────────────────
 window.setFrame = function(t) {
+  fadeUp( document.getElementById('logo-wrap'),  t, ...TIMELINE.logo, 10);
   fadeUp( document.getElementById('eyebrow'),    t, ...TIMELINE.eyebrow);
   fadeUp( document.getElementById('title'),      t, ...TIMELINE.title);
   fadeUp( document.getElementById('subtitle'),   t, ...TIMELINE.subtitle);
