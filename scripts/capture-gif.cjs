@@ -35,9 +35,10 @@ async function main() {
     executablePath: "/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium",
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   });
+  // Capture at 2x so supersampling gives clean text edges when scaled down
   const context = await browser.newContext({
     viewport: { width: WIDTH, height: HEIGHT },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: 2,
   });
   const page = await context.newPage();
 
@@ -74,7 +75,7 @@ async function main() {
     "-y",
     "-framerate", String(FPS),
     "-i", path.join(FRAMES_DIR, "frame%04d.png"),
-    "-vf", "palettegen=max_colors=256:stats_mode=full",
+    "-vf", `scale=${WIDTH}:${HEIGHT}:flags=lanczos,palettegen=max_colors=256:stats_mode=full`,
     palette,
   ], { encoding: "utf8" });
 
@@ -89,7 +90,7 @@ async function main() {
     "-framerate", String(FPS),
     "-i", path.join(FRAMES_DIR, "frame%04d.png"),
     "-i", palette,
-    "-lavfi", "paletteuse=dither=none:diff_mode=rectangle",
+    "-lavfi", `scale=${WIDTH}:${HEIGHT}:flags=lanczos[x];[x][1:v]paletteuse=dither=none:diff_mode=rectangle`,
     "-loop", "0",   // 0 = loop forever
     OUTPUT,
   ], { encoding: "utf8" });
