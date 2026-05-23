@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>COA Transparency Gap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 600px; background: #1a1a1f; }
+
+  .wrap {
+    width: 600px;
+    background: #1a1a1f;
+    padding: 36px 32px 32px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Header */
+  .eyebrow {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: #21d8ff;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .main-title {
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .main-title span { color: #E7FB10; }
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #8a8a96;
+    margin-bottom: 28px;
+  }
+
+  /* Column headers */
+  .cols {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .col-label {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .col-bad {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #f87171;
+  }
+  .col-good {
+    background: rgba(33,216,255,0.10);
+    border: 1px solid rgba(33,216,255,0.3);
+    color: #21d8ff;
+  }
+  .col-spacer { width: 28px; flex-shrink: 0; }
+
+  /* Row */
+  .row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 10px;
+  }
+  .cell {
+    flex: 1;
+    border-radius: 8px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .cell-bad {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.15);
+  }
+  .cell-good {
+    background: rgba(33,216,255,0.06);
+    border: 1px solid rgba(33,216,255,0.18);
+  }
+  .icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .cell-text {}
+  .cell-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .bad .cell-label { color: #f87171; }
+  .good .cell-label { color: #21d8ff; }
+  .cell-desc {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #c4c4cc;
+  }
+
+  /* Middle divider with label */
+  .mid {
+    width: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .vs-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3a3a44;
+  }
+
+  /* Divider line between rows */
+  .divider-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* Bottom CTA */
+  .bottom {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #E7FB10;
+  }
+  .brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+  }
+  .brand-tag {
+    font-size: 10px;
+    color: #5a5a66;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: -2px;
+  }
+  .cta-btn {
+    background: #E7FB10;
+    color: #1a1a1f;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  /* Stat bar */
+  .stat-bar {
+    margin-top: 20px;
+    background: rgba(231,251,16,0.06);
+    border: 1px solid rgba(231,251,16,0.18);
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .stat-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .stat-text {
+    font-size: 12.5px;
+    color: #d4d4dc;
+    line-height: 1.5;
+  }
+  .stat-text strong {
+    color: #E7FB10;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Certificate of Analysis</div>
+  <div class="main-title">The <span>COA</span> Transparency Gap</div>
+  <div class="subtitle">What most vendors won't tell you about lab verification</div>
+
+  <!-- Column headers -->
+  <div class="cols">
+    <div class="col-label col-bad">Most Vendors</div>
+    <div class="col-spacer"></div>
+    <div class="col-label col-good">Revive Research</div>
+  </div>
+
+  <!-- Row 1: Lab -->
+  <div class="row">
+    <div class="cell cell-bad bad">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#f87171" stroke-width="1.4"/>
+        <path d="M6 6l6 6M12 6l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Lab Identity</div>
+        <div class="cell-desc">Unknown or unnamed lab — no accreditation details provided</div>
+      </div>
+    </div>
+    <div class="mid"><div class="vs-dot"></div></div>
+    <div class="cell cell-good good">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#21d8ff" stroke-width="1.4"/>
+        <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#21d8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Third-Party Lab</div>
+        <div class="cell-desc">Freedom Diagnostics — independent, accredited, named</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Batch -->
+  <div class="row">
+    <div class="cell cell-bad bad">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#f87171" stroke-width="1.4"/>
+        <path d="M6 6l6 6M12 6l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Batch Freshness</div>
+        <div class="cell-desc">COA recycled from a previous lot — not specific to your shipment</div>
+      </div>
+    </div>
+    <div class="mid"><div class="vs-dot"></div></div>
+    <div class="cell cell-good good">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#21d8ff" stroke-width="1.4"/>
+        <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#21d8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Every Batch Tested</div>
+        <div class="cell-desc">Fresh COA issued for each production run — specific to your lot</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: QR -->
+  <div class="row">
+    <div class="cell cell-bad bad">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#f87171" stroke-width="1.4"/>
+        <path d="M6 6l6 6M12 6l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Authenticity Check</div>
+        <div class="cell-desc">No way to confirm the COA matches what's in your vial</div>
+      </div>
+    </div>
+    <div class="mid"><div class="vs-dot"></div></div>
+    <div class="cell cell-good good">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#21d8ff" stroke-width="1.4"/>
+        <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#21d8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">QR-Verified</div>
+        <div class="cell-desc">QR code on every vial links to its specific COA — scan to confirm</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Public records -->
+  <div class="row">
+    <div class="cell cell-bad bad">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#f87171" stroke-width="1.4"/>
+        <path d="M6 6l6 6M12 6l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Public Records</div>
+        <div class="cell-desc">COAs kept internal — no public access or searchability</div>
+      </div>
+    </div>
+    <div class="mid"><div class="vs-dot"></div></div>
+    <div class="cell cell-good good">
+      <svg class="icon" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#21d8ff" stroke-width="1.4"/>
+        <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#21d8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="cell-text">
+        <div class="cell-label">Publicly Searchable</div>
+        <div class="cell-desc">All COAs live in our public database — searchable by batch number</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat callout -->
+  <div class="stat-bar">
+    <div class="stat-text">
+      <strong>Why it matters:</strong> A COA is only as good as the lab that issued it. HPLC + MS testing by a named, independent lab is the only standard that holds up — everything else is trust without verification.
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-name">REVIVE RESEARCH</div>
+        <div class="brand-tag">Premium Research Compounds</div>
+      </div>
+    </div>
+    <div class="cta-btn">Read the COA Guide &rarr;</div>
+  </div>
+
+</div>
+</body>
+</html>

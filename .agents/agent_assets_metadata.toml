@@ -59,3 +59,9 @@ id = "WT1jTqg0zi8XR6qIYdZm2"
 uri = "file://client/public/videos/synergy_reel.mp4"
 type = "video"
 title = "Synergy Engine Instagram Reel (1080×1920, 35s)"
+
+[[outputs]]
+id = "RxQRCFHr0G8tal_XPkAXZ"
+uri = "file://exports/email1-coa-animated.gif"
+type = "image"
+title = "Email 1 — COA Transparency Animated GIF"
