@@ -77,3 +77,9 @@ id = "Z65yg0bpmzczt8beU0lQO"
 uri = "file://exports/email2-edu-ui-preview.gif"
 type = "image"
 title = "Email 2 — Education Center UI Preview"
+
+[[outputs]]
+id = "LBu1YRiBcI1XqZQ0Q4eLb"
+uri = "file://exports/email2-edu-overview.gif"
+type = "image"
+title = "Email 2 — Platform Overview GIF (12.5s)"
