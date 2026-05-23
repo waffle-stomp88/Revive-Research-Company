@@ -14,9 +14,9 @@ const URL        = "http://localhost:23419/preview/GalaxyVfxComparison/email-ass
 const FRAMES_DIR = "/tmp/gif-frames";
 const OUTPUT     = path.resolve(__dirname, "../exports/email1-coa-animated.gif");
 const WIDTH      = 600;
-const HEIGHT     = 580;   // just enough to capture full card height
+const HEIGHT     = 700;   // tall enough to include stat bar + bottom CTA
 const FPS        = 15;    // frames per second in final GIF
-const DURATION_S = 3.6;   // total seconds to capture (animation completes ~3050ms + hold)
+const DURATION_S = 7.5;   // animation builds to ~3050ms, then holds ~4.5s for reading
 const TOTAL_FRAMES = Math.ceil(FPS * DURATION_S);  // ~57 frames
 const INTERVAL_MS  = Math.round(1000 / FPS);       // ~67ms between frames
 
