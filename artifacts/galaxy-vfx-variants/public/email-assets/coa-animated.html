@@ -8,11 +8,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 680px; background: #1a1a1f; }
+  html, body {
+    width: 680px; background: #1a1a1f;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   .wrap {
     width: 680px; background: #1a1a1f;
     padding: 42px 36px 34px;
     font-family: 'DM Sans', sans-serif; overflow: hidden;
+    position: relative;
+  }
+  /* Top-right icon watermark */
+  .brand-icon-top {
+    position: absolute; top: 34px; right: 36px;
+    height: 26px; width: auto;
+    mix-blend-mode: screen; display: block;
+    opacity: 0.55;
   }
   .eyebrow {
     text-align: center; font-size: 14px; font-weight: 600;
@@ -63,7 +75,6 @@
   }
   /* Bottom brand strip */
   .brand-url  { font-size: 12px; color: #3a3a46; letter-spacing: 0.08em; text-transform: lowercase; }
-  .brand-icon { height: 26px; width: auto; mix-blend-mode: screen; display: block; }
   /* SVG check / X path styling */
   .check-path, .x-path {
     stroke-linecap: round; stroke-linejoin: round; fill: none;
@@ -76,6 +87,7 @@
 <body>
 <div class="wrap">
 
+  <img src="revive-icon.png" class="brand-icon-top" alt="Revive Research"/>
   <div class="eyebrow" id="eyebrow">Certificate of Analysis</div>
   <div class="main-title" id="title">The <span>COA</span> Transparency Gap</div>
   <div class="subtitle"  id="subtitle">What most vendors won't tell you about lab verification</div>
@@ -168,7 +180,6 @@
 
   <div class="bottom" id="bottom">
     <div class="brand-url">reviveresearch.co</div>
-    <img src="revive-icon.png" class="brand-icon" alt="Revive Research"/>
   </div>
 
 </div>
