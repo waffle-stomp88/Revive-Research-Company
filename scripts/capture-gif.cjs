@@ -89,7 +89,7 @@ async function main() {
     "-framerate", String(FPS),
     "-i", path.join(FRAMES_DIR, "frame%04d.png"),
     "-i", palette,
-    "-lavfi", "paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+    "-lavfi", "paletteuse=dither=none:diff_mode=rectangle",
     "-loop", "0",   // 0 = loop forever
     OUTPUT,
   ], { encoding: "utf8" });
