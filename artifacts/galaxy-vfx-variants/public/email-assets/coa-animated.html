@@ -11,7 +11,7 @@
   html, body { width: 600px; background: #1a1a1f; }
   .wrap {
     width: 600px; background: #1a1a1f;
-    padding: 34px 30px 28px;
+    padding: 30px 30px 24px;
     font-family: 'DM Sans', sans-serif; overflow: hidden;
   }
   .eyebrow {
@@ -36,8 +36,8 @@
   .col-spacer { width: 24px; flex-shrink: 0; }
   .row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 9px; }
   .cell {
-    flex: 1; border-radius: 7px; padding: 12px 13px;
-    display: flex; align-items: flex-start; gap: 9px;
+    flex: 1; border-radius: 7px; padding: 9px 11px;
+    display: flex; align-items: flex-start; gap: 8px;
   }
   .cell-bad  { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.15);  }
   .cell-good { background: rgba(33,216,255,0.06); border: 1px solid rgba(33,216,255,0.18); }
@@ -58,24 +58,12 @@
   }
   .stat-bar strong { color: #E7FB10; }
   .bottom {
-    margin-top: 20px; display: flex; align-items: center; justify-content: center;
-    padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 16px; display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);
   }
-  /* Logo at top */
-  .logo-wrap {
-    text-align: center; margin-bottom: 18px;
-  }
-  .logo-img {
-    height: 32px; width: auto;
-    mix-blend-mode: screen;
-    display: inline-block;
-  }
-
-  /* Bottom brand strip (no button) */
-  .brand { display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .brand-dot { width: 6px; height: 6px; border-radius: 50%; background: #E7FB10; flex-shrink: 0; }
-  .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 0.1em; color: #ffffff; }
-  .brand-tag  { font-size: 9px; color: #4a4a56; letter-spacing: 0.1em; text-transform: uppercase; }
+  /* Bottom brand strip */
+  .brand-url  { font-size: 10px; color: #3a3a46; letter-spacing: 0.08em; text-transform: lowercase; }
+  .brand-icon { height: 22px; width: auto; mix-blend-mode: screen; display: block; }
   /* SVG check / X path styling */
   .check-path, .x-path {
     stroke-linecap: round; stroke-linejoin: round; fill: none;
@@ -88,9 +76,6 @@
 <body>
 <div class="wrap">
 
-  <div class="logo-wrap" id="logo-wrap">
-    <img src="revive-logo.png" class="logo-img" alt="Revive Research"/>
-  </div>
   <div class="eyebrow" id="eyebrow">Certificate of Analysis</div>
   <div class="main-title" id="title">The <span>COA</span> Transparency Gap</div>
   <div class="subtitle"  id="subtitle">What most vendors won't tell you about lab verification</div>
@@ -182,12 +167,8 @@
   </div>
 
   <div class="bottom" id="bottom">
-    <div class="brand">
-      <div class="brand-dot"></div>
-      <div class="brand-name">REVIVE RESEARCH</div>
-      <div class="brand-dot"></div>
-      <div class="brand-tag">reviveresearch.co</div>
-    </div>
+    <div class="brand-url">reviveresearch.co</div>
+    <img src="revive-icon.png" class="brand-icon" alt="Revive Research"/>
   </div>
 
 </div>
@@ -239,10 +220,9 @@ function drawPath(el, t, start, end) {
 // ── Animation timeline (all times in ms) ───────────────────────────────────
 // Total animation: 3600ms, then hold
 const TIMELINE = {
-  logo:       [0,    350],
-  eyebrow:    [200,  580],
-  title:      [350,  730],
-  subtitle:   [380,  780],
+  eyebrow:    [0,    380],
+  title:      [150,  530],
+  subtitle:   [180,  580],
   colHeaders: [550,  900],
   row1:       [750, 1100],
   x1:         [950, 1200],
@@ -262,7 +242,6 @@ const TIMELINE = {
 
 // ── setFrame: the only exported API ─────────────────────────────────────────
 window.setFrame = function(t) {
-  fadeUp( document.getElementById('logo-wrap'),  t, ...TIMELINE.logo, 10);
   fadeUp( document.getElementById('eyebrow'),    t, ...TIMELINE.eyebrow);
   fadeUp( document.getElementById('title'),      t, ...TIMELINE.title);
   fadeUp( document.getElementById('subtitle'),   t, ...TIMELINE.subtitle);
