@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Education Center Stats – Animated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 680px; background: #1a1a1f;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .wrap {
+    width: 680px; background: #1a1a1f;
+    padding: 40px 36px 38px;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+  }
+
+  .brand-icon-top {
+    position: absolute; top: 32px; right: 36px;
+    height: 26px; width: auto;
+    mix-blend-mode: screen; display: block; opacity: 0.5;
+  }
+
+  .eyebrow {
+    text-align: center; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.18em; color: #21d8ff; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .main-title {
+    text-align: center; font-family: 'Bebas Neue', sans-serif;
+    font-size: 58px; letter-spacing: 0.04em; color: #ffffff; line-height: 1; margin-bottom: 8px;
+  }
+  .main-title span { color: #E7FB10; }
+  .subtitle {
+    text-align: center; font-size: 14px; color: #6a6a76; margin-bottom: 30px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .stat-card {
+    border-radius: 12px;
+    padding: 26px 20px 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 12px;
+  }
+  .card-cyan {
+    background: rgba(33,216,255,0.05);
+    border: 1px solid rgba(33,216,255,0.18);
+  }
+  .card-cyan::before {
+    background: radial-gradient(ellipse at 50% 0%, rgba(33,216,255,0.09) 0%, transparent 68%);
+  }
+  .card-yellow {
+    background: rgba(231,251,16,0.04);
+    border: 1px solid rgba(231,251,16,0.16);
+  }
+  .card-yellow::before {
+    background: radial-gradient(ellipse at 50% 0%, rgba(231,251,16,0.08) 0%, transparent 68%);
+  }
+
+  .card-icon {
+    width: 34px; height: 34px; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .card-icon svg { width: 26px; height: 26px; }
+  .card-cyan  .card-icon svg { fill: #21d8ff; }
+  .card-yellow .card-icon svg { fill: #E7FB10; }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px; line-height: 1; margin-bottom: 5px;
+    position: relative; z-index: 1;
+  }
+  .card-cyan  .stat-num { color: #21d8ff; }
+  .card-yellow .stat-num { color: #E7FB10; }
+
+  .stat-label {
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #ffffff; margin-bottom: 7px;
+    position: relative; z-index: 1;
+  }
+  .stat-desc {
+    font-size: 12px; color: #52525e; line-height: 1.45;
+    position: relative; z-index: 1;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <img src="revive-icon.png" class="brand-icon-top" alt="Revive Research"/>
+
+  <div class="eyebrow"    id="eyebrow">Research Academy + Education Center</div>
+  <div class="main-title" id="title">What's <span>Inside</span></div>
+  <div class="subtitle"   id="subtitle">Free with every Revive Research account</div>
+
+  <div class="stats-grid">
+
+    <div class="stat-card card-cyan" id="c1">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 14c-3.73 0-7 1.79-7 4v1h14v-1c0-2.21-3.27-4-7-4z"/></svg>
+      </div>
+      <div class="stat-num" id="n1">0</div>
+      <div class="stat-label">Body Systems</div>
+      <div class="stat-desc">Healing, Growth, Metabolic, Cognitive, Skin, Longevity, Hormonal</div>
+    </div>
+
+    <div class="stat-card card-yellow" id="c2">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4zm0 14V13.17l2.5 1.5L11 13.17V18H6zm12 0h-5v-4.83l2.5 1.5L18 13.17V18zm0-7h-5V4h5v7z"/></svg>
+      </div>
+      <div class="stat-num" id="n2">0</div>
+      <div class="stat-label">Research Articles</div>
+      <div class="stat-desc">Deep dives on every compound, pathway, and protocol</div>
+    </div>
+
+    <div class="stat-card card-cyan" id="c3">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>
+      </div>
+      <div class="stat-num" id="n3">2</div>
+      <div class="stat-label">Reading Modes</div>
+      <div class="stat-desc">Beginner breakdowns + advanced deep-dives — switch anytime</div>
+    </div>
+
+    <div class="stat-card card-yellow" id="c4">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+      </div>
+      <div class="stat-num" id="n4">0</div>
+      <div class="stat-label">Academy Modules</div>
+      <div class="stat-desc">Structured curriculum from orientation to advanced research</div>
+    </div>
+
+    <div class="stat-card card-cyan" id="c5">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+      </div>
+      <div class="stat-num" id="n5">XP</div>
+      <div class="stat-label">Points Per Lesson</div>
+      <div class="stat-desc">Earn XP every time you complete a lesson or quiz</div>
+    </div>
+
+    <div class="stat-card card-yellow" id="c6">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011.5 15.9V19H8v2h8v-2h-3.5v-3.1a5.01 5.01 0 003.11-2.96C18.08 12.63 20 10.55 20 8V7c0-1.1-.9-2-1-2zM7 8V7h2v3.82C7.84 10.4 7 9.3 7 8zm10 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+      </div>
+      <div class="stat-num" id="n6">&#8734;</div>
+      <div class="stat-label">Achievements</div>
+      <div class="stat-desc">Badges, researcher titles, and rank progression to unlock</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+function easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function progress(t, start, end) {
+  if (t <= start) return 0;
+  if (t >= end)   return 1;
+  return (t - start) / (end - start);
+}
+function fadeUp(el, t, start, end) {
+  if (!el) return;
+  const p = easeOutCubic(progress(t, start, end));
+  el.style.opacity   = p;
+  el.style.transform = `translateY(${(1 - p) * 14}px)`;
+}
+function popIn(el, t, start, end) {
+  if (!el) return;
+  const raw = progress(t, start, end);
+  const p   = easeOutBack(raw);
+  el.style.opacity   = Math.min(raw * 2.5, 1);
+  el.style.transform = `scale(${0.72 + 0.28 * p})`;
+}
+function countUp(el, t, start, end, target, suffix) {
+  if (!el) return;
+  const p = easeOutCubic(progress(t, start, end));
+  el.textContent = Math.round(p * target) + (suffix || '');
+}
+
+const TL = {
+  eyebrow:  [0,    380],
+  title:    [140,  520],
+  subtitle: [260,  620],
+  c1: [520,  800],
+  c2: [690,  970],
+  c3: [860, 1140],
+  c4: [1030, 1310],
+  c5: [1200, 1480],
+  c6: [1370, 1650],
+};
+const COUNT = {
+  n1: { start: 580, end: 1050, target: 7,  suffix: '' },
+  n2: { start: 750, end: 1280, target: 50, suffix: '+' },
+  n4: { start: 1090, end: 1450, target: 5, suffix: '' },
+};
+
+window.setFrame = function(t) {
+  fadeUp(document.getElementById('eyebrow'),  t, ...TL.eyebrow);
+  fadeUp(document.getElementById('title'),    t, ...TL.title);
+  fadeUp(document.getElementById('subtitle'), t, ...TL.subtitle);
+
+  ['c1','c2','c3','c4','c5','c6'].forEach(id => {
+    popIn(document.getElementById(id), t, ...TL[id]);
+  });
+
+  countUp(document.getElementById('n1'), t, COUNT.n1.start, COUNT.n1.end, COUNT.n1.target, COUNT.n1.suffix);
+  countUp(document.getElementById('n2'), t, COUNT.n2.start, COUNT.n2.end, COUNT.n2.target, COUNT.n2.suffix);
+  countUp(document.getElementById('n4'), t, COUNT.n4.start, COUNT.n4.end, COUNT.n4.target, COUNT.n4.suffix);
+};
+
+document.fonts.ready.then(() => {
+  window.setFrame(0);
+  window.__fontsReady = true;
+});
+</script>
+</body>
+</html>
