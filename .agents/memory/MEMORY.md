@@ -1,0 +1,1 @@
+- [Email GIF rendering pipeline](email-gif-pipeline.md) — animated HTML→GIF via Playwright+FFmpeg; 2x capture + dither=none is the only way to get clean text
