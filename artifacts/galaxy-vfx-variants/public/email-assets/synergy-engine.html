@@ -4,76 +4,100 @@
 <meta charset="utf-8"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:520px;height:580px;overflow:hidden;background:#0a0a0c;-webkit-font-smoothing:antialiased;font-family:'DM Sans',Helvetica,Arial,sans-serif}
-.scene{position:absolute;inset:0;will-change:opacity}
+html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;font-family:'DM Sans',Helvetica,Arial,sans-serif}
 
-/* ── Shared header ── */
-.hdr{height:48px;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.055);background:#0c0c10;position:relative;flex-shrink:0}
-.hdr-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;border:1px solid rgba(33,216,255,.22);background:rgba(33,216,255,.05);font:600 9px/1 'DM Sans',sans-serif;color:#21d8ff;letter-spacing:.04em;white-space:nowrap}
-.hdr-dot{width:4.5px;height:4.5px;border-radius:50%;background:#21d8ff;flex-shrink:0}
-.hdr-sep{width:1px;height:13px;background:rgba(255,255,255,.09);margin:0 10px;flex-shrink:0}
-.hdr-sub{font:400 10.5px/1 'DM Sans',sans-serif;color:#42424e;white-space:nowrap}
-.rr-mark{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;border:1px solid rgba(231,251,16,.32);background:rgba(231,251,16,.05);display:flex;align-items:center;justify-content:center}
-.rr-mark span{font:700 12px/1 'DM Sans',sans-serif;color:#E7FB10}
+/* ── Browser chrome bar ── */
+.chrome{height:40px;background:#111116;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.cdots{display:flex;gap:6px}
+.cdot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.13)}
+.curl{flex:1;max-width:340px;margin:0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;height:22px;display:flex;align-items:center;padding:0 9px;gap:5px}
+.curl-lock{width:9px;height:9px;opacity:.35;flex-shrink:0}
+.curl-url{font:400 11px/1 'DM Sans',sans-serif;color:#464650;white-space:nowrap}
+.curl-path{color:#626270}
 
-/* ── S2: Stack Builder ── */
-#s2{display:flex;flex-direction:column}
-#s2-content{flex:1;padding:18px 20px 16px;overflow:hidden}
-.builder-label{font:600 9.5px/1 'DM Sans',sans-serif;color:#333340;letter-spacing:.08em;text-transform:uppercase;margin-bottom:13px}
-.cards-row{display:flex;gap:10px;margin-bottom:14px}
-.compound-card{flex:1;background:#0e0e13;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;will-change:transform,opacity;overflow:hidden}
-.cc-system{font:600 9px/1 'DM Sans',sans-serif;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;opacity:.8}
-.cc-name{font:700 18px/1.1 'DM Sans',sans-serif;color:#dcdce8;margin-bottom:4px}
-.cc-abbr{font:400 9.5px/1.4 'DM Sans',sans-serif;color:#3e3e4a;margin-bottom:10px}
-.cc-dots{display:flex;gap:4px}
-.cc-dot{width:5px;height:5px;border-radius:50%}
+/* ── Scene container ── */
+.sw{position:relative;width:680px;height:660px;overflow:hidden;background:#0a0a0c}
+.scene{position:absolute;inset:0;opacity:0;overflow:hidden}
 
-.wolverine-wrap{display:flex;justify-content:center;margin-bottom:13px}
-.wolverine-inner{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;border-radius:10px;border:1px solid rgba(231,251,16,.22);background:rgba(231,251,16,.04);transform-origin:center;will-change:transform,opacity}
-.wolv-text strong{display:block;font:700 12px/1 'DM Sans',sans-serif;color:#D8E810;letter-spacing:.02em;margin-bottom:3px}
-.wolv-text span{font:400 10px/1.4 'DM Sans',sans-serif;color:#5a5030}
+/* ═══════════════ S1: GALAXY ═══════════════ */
+#s1{background:#0a0a0c}
 
-.score-mini-wrap{background:#0c0c10;border:1px solid rgba(255,255,255,.055);border-radius:9px;padding:13px 16px;will-change:opacity}
-.sm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.sm-top-label{font:600 9.5px/1 'DM Sans',sans-serif;color:#3a3a48;text-transform:uppercase;letter-spacing:.06em}
-.sm-top-val{font:700 15px/1 'DM Sans',sans-serif;color:#10b981}
-.sm-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:9px}
-.sm-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#10b981 0%,#21d8ff 100%);width:95%}
-.sm-mech{font:400 10.5px/1.55 'DM Sans',sans-serif;color:#4a4a58}
+/* ═══════════════ S2: STACK BUILDER ═══════════════ */
+#s2{background:#12121a;padding:28px 36px 20px}
 
-/* ── S3: Score Reveal ── */
-#s3{display:flex;flex-direction:column}
-#s3-inner{flex:1;padding:14px 22px 12px;display:flex;flex-direction:column;overflow:hidden}
-.s3-pair{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
-.s3-cname{display:inline-flex;align-items:center;gap:5px}
-.s3-cname-text{font:700 14px/1 'DM Sans',sans-serif;color:#d0d0dc}
-.s3-cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.s3-plus{font:300 14px/1 'DM Sans',sans-serif;color:#333340}
-.s3-stack-name{text-align:center;font:500 9px/1 'DM Sans',sans-serif;color:#35353f;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.sec-label{font:600 10px/1 'DM Sans',sans-serif;color:#2e2e3a;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
 
-.ring-wrap{display:flex;justify-content:center;flex-shrink:0;margin-bottom:16px}
+.cards-row{display:flex;gap:14px;margin-bottom:18px}
+.compound-card{flex:1;border-radius:12px;padding:18px;will-change:transform,opacity;overflow:hidden;border:1.5px solid}
+.cc-system{font:600 9.5px/1 'DM Sans',sans-serif;letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px;opacity:.85}
+.cc-name{font:700 22px/1 'DM Sans',sans-serif;color:#dcdce8;margin-bottom:5px}
+.cc-abbr{font:400 10.5px/1.4 'DM Sans',sans-serif;color:#3e3e50;margin-bottom:13px}
+.cc-sel{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:1px solid;font:600 9px/1 'DM Sans',sans-serif;letter-spacing:.04em}
+.cc-dots{display:flex;gap:5px;margin-top:12px}
+.cc-dot{width:6px;height:6px;border-radius:50%}
 
-.mech-list{list-style:none;display:flex;flex-direction:column;gap:9px}
-.mech-item{display:flex;align-items:flex-start;gap:9px;will-change:opacity}
-.mech-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.mech-text{font:400 11.5px/1.55 'DM Sans',sans-serif;color:#5a5a6a}
-.part-tag{text-align:right;margin-top:auto;padding-top:10px;font:500 8.5px/1 'DM Sans',sans-serif;color:#202028;letter-spacing:.06em}
+.wolverine-wrap{margin-bottom:16px}
+.wolverine-inner{display:inline-flex;align-items:center;gap:12px;padding:13px 20px;border-radius:12px;border:1.5px solid rgba(231,251,16,.25);background:rgba(231,251,16,.04);width:100%;will-change:transform,opacity}
+.wolv-icon{flex-shrink:0}
+.wolv-text strong{display:block;font:700 13px/1 'DM Sans',sans-serif;color:#D8E810;letter-spacing:.02em;margin-bottom:4px}
+.wolv-text span{font:400 11px/1.4 'DM Sans',sans-serif;color:#58500c}
+
+.score-mini{background:#0e0e14;border:1.5px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px;will-change:opacity}
+.sm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sm-label{font:600 10px/1 'DM Sans',sans-serif;color:#383848;text-transform:uppercase;letter-spacing:.07em}
+.sm-val{font:700 17px/1 'DM Sans',sans-serif;color:#22c55e}
+.sm-track{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:11px}
+.sm-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#21d8ff 0%,#10b981 100%)}
+.sm-mech{font:400 11.5px/1.55 'DM Sans',sans-serif;color:#484858}
+
+/* ═══════════════ S3: SCORE REVEAL ═══════════════ */
+#s3{background:#12121a;display:flex;flex-direction:column;align-items:center;padding:28px 36px 24px}
+
+.s3-pair{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:7px}
+.s3-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:99px;border:1.5px solid;font:700 13px/1 'DM Sans',sans-serif}
+.s3-plus{font:300 18px/1 'DM Sans',sans-serif;color:#2a2a38}
+.s3-stack-name{font:500 10px/1 'DM Sans',sans-serif;color:#2e2e40;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px}
+
+.ring-wrap{position:relative;display:flex;justify-content:center;margin-bottom:20px}
+
+.legendary-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:99px;border:1.5px solid rgba(231,251,16,.30);background:rgba(231,251,16,.05);margin-bottom:18px;will-change:opacity}
+.leg-star{flex-shrink:0}
+.legendary-badge span{font:700 11.5px/1 'DM Sans',sans-serif;color:#c8dc08;letter-spacing:.04em;text-transform:uppercase}
+
+.mech-list{list-style:none;display:flex;flex-direction:column;gap:11px;width:100%;max-width:540px}
+.mech-item{display:flex;align-items:flex-start;gap:11px;will-change:opacity}
+.mech-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.mech-text{font:400 12.5px/1.6 'DM Sans',sans-serif;color:#505060}
+
+.part-tag{margin-top:auto;padding-top:14px;font:500 9px/1 'DM Sans',sans-serif;color:#1e1e2a;letter-spacing:.07em;text-align:center;align-self:center}
 </style>
-<script>window.__fontsReady=false;document.fonts.ready.then(()=>{window.__fontsReady=true;});</script>
+<script>window.__fontsReady=false;document.fonts.ready.then(()=>{window.__fontsReady=true;})</script>
 </head>
 <body>
 
+<!-- ── Chrome bar ── -->
+<div class="chrome">
+  <div class="cdots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
+  <div class="curl">
+    <svg class="curl-lock" viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="6" width="8" height="7" rx="1.5"/><path d="M4 6V4a2 2 0 0 1 4 0v2"/></svg>
+    <span class="curl-url">reviveresearch.co<span class="curl-path">/research-stacks</span></span>
+  </div>
+</div>
+
+<!-- ── Scene wrapper ── -->
+<div class="sw">
+
 <!-- ═══════════════ S1: GALAXY ═══════════════ -->
-<div id="s1" class="scene" style="opacity:1;background:#0a0a0c">
-  <svg width="520" height="580" viewBox="0 0 520 580" xmlns="http://www.w3.org/2000/svg">
+<div id="s1" class="scene" style="opacity:1">
+  <svg width="680" height="660" viewBox="0 0 680 660" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <radialGradient id="coreG" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#21d8ff" stop-opacity=".45"/>
-        <stop offset="35%" stop-color="#9d4edd" stop-opacity=".18"/>
-        <stop offset="75%" stop-color="#1a0a2e" stop-opacity=".08"/>
+        <stop offset="0%"   stop-color="#21d8ff" stop-opacity=".45"/>
+        <stop offset="35%"  stop-color="#9d4edd" stop-opacity=".18"/>
+        <stop offset="75%"  stop-color="#1a0a2e" stop-opacity=".08"/>
         <stop offset="100%" stop-color="#0a0a0c" stop-opacity="0"/>
       </radialGradient>
       <radialGradient id="bpcG" cx="50%" cy="50%" r="50%">
@@ -84,424 +108,396 @@ html,body{width:520px;height:580px;overflow:hidden;background:#0a0a0c;-webkit-fo
         <stop offset="0%" stop-color="#9d4edd" stop-opacity="1"/>
         <stop offset="100%" stop-color="#9d4edd" stop-opacity="0"/>
       </radialGradient>
-      <linearGradient id="bottomFade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#0a0a0c" stop-opacity="0"/>
-        <stop offset="55%" stop-color="#0a0a0c" stop-opacity=".88"/>
+      <linearGradient id="botFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#0a0a0c" stop-opacity="0"/>
+        <stop offset="60%"  stop-color="#0a0a0c" stop-opacity=".88"/>
         <stop offset="100%" stop-color="#0a0a0c" stop-opacity=".98"/>
       </linearGradient>
       <filter id="bGlow" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="4" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
       <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
-        <feGaussianBlur stdDeviation="6"/>
+        <feGaussianBlur stdDeviation="7"/>
       </filter>
     </defs>
 
     <!-- BG -->
-    <rect width="520" height="580" fill="#0a0a0c"/>
+    <rect width="680" height="660" fill="#0a0a0c"/>
 
-    <!-- Ambient dust field -->
-    <g opacity=".28" fill="#ffffff">
-      <circle cx="42" cy="48" r=".9"/><circle cx="118" cy="33" r="1.1"/><circle cx="187" cy="62" r=".7"/>
-      <circle cx="308" cy="40" r="1.0"/><circle cx="422" cy="27" r=".8"/><circle cx="480" cy="65" r=".6"/>
-      <circle cx="28" cy="118" r=".7"/><circle cx="92" cy="102" r="1.0"/><circle cx="162" cy="85" r=".8"/>
-      <circle cx="342" cy="75" r=".6"/><circle cx="448" cy="92" r="1.1"/><circle cx="502" cy="112" r=".7"/>
-      <circle cx="52" cy="182" r="1.0"/><circle cx="78" cy="158" r=".6"/><circle cx="132" cy="168" r=".8"/>
-      <circle cx="382" cy="142" r=".7"/><circle cx="462" cy="165" r=".9"/><circle cx="496" cy="180" r=".6"/>
-      <circle cx="33" cy="258" r=".8"/><circle cx="72" cy="275" r="1.0"/><circle cx="108" cy="292" r=".6"/>
-      <circle cx="418" cy="248" r=".8"/><circle cx="468" cy="268" r="1.1"/><circle cx="508" cy="250" r=".5"/>
-      <circle cx="48" cy="342" r=".9"/><circle cx="88" cy="365" r=".6"/><circle cx="138" cy="348" r="1.0"/>
-      <circle cx="390" cy="338" r=".7"/><circle cx="452" cy="360" r=".9"/><circle cx="492" cy="332" r=".6"/>
-      <circle cx="65" cy="428" r=".6"/><circle cx="112" cy="415" r="1.1"/><circle cx="168" cy="445" r=".7"/>
-      <circle cx="362" cy="422" r=".8"/><circle cx="432" cy="438" r=".6"/><circle cx="476" cy="420" r="1.0"/>
-      <circle cx="82" cy="508" r=".8"/><circle cx="145" cy="492" r=".6"/><circle cx="218" cy="525" r="1.0"/>
-      <circle cx="318" cy="515" r=".7"/><circle cx="398" cy="502" r=".9"/><circle cx="462" cy="488" r=".6"/>
-      <circle cx="232" cy="30" r=".7"/><circle cx="272" cy="18" r="1.0"/><circle cx="392" cy="52" r=".8"/>
-      <circle cx="24" cy="392" r=".9"/><circle cx="510" cy="398" r=".7"/><circle cx="70" cy="465" r=".6"/>
-      <circle cx="192" cy="128" r=".6"/><circle cx="435" cy="128" r=".8"/><circle cx="490" cy="485" r=".7"/>
-      <circle cx="156" cy="52" r=".8"/><circle cx="355" cy="22" r=".6"/><circle cx="505" cy="338" r=".8"/>
-      <circle cx="255" cy="500" r=".9"/><circle cx="22" cy="285" r=".7"/><circle cx="285" cy="558" r=".6"/>
+    <!-- Ambient dust -->
+    <g opacity=".26" fill="#ffffff">
+      <circle cx="55" cy="55" r="1.0"/><circle cx="155" cy="38" r="1.2"/><circle cx="245" cy="72" r=".8"/>
+      <circle cx="402" cy="48" r="1.1"/><circle cx="552" cy="32" r=".9"/><circle cx="628" cy="74" r=".7"/>
+      <circle cx="35" cy="138" r=".8"/><circle cx="120" cy="118" r="1.1"/><circle cx="212" cy="98" r=".9"/>
+      <circle cx="448" cy="88" r=".7"/><circle cx="586" cy="106" r="1.2"/><circle cx="656" cy="130" r=".8"/>
+      <circle cx="68" cy="212" r="1.1"/><circle cx="102" cy="185" r=".7"/><circle cx="173" cy="196" r=".9"/>
+      <circle cx="500" cy="166" r=".8"/><circle cx="604" cy="192" r="1.0"/><circle cx="648" cy="210" r=".7"/>
+      <circle cx="43" cy="302" r=".9"/><circle cx="94" cy="322" r="1.1"/><circle cx="141" cy="342" r=".7"/>
+      <circle cx="546" cy="290" r=".9"/><circle cx="612" cy="314" r="1.2"/><circle cx="664" cy="292" r=".6"/>
+      <circle cx="62" cy="400" r="1.0"/><circle cx="115" cy="428" r=".7"/><circle cx="181" cy="408" r="1.1"/>
+      <circle cx="510" cy="396" r=".8"/><circle cx="590" cy="421" r="1.0"/><circle cx="643" cy="388" r=".7"/>
+      <circle cx="85" cy="500" r=".7"/><circle cx="147" cy="484" r="1.2"/><circle cx="220" cy="518" r=".8"/>
+      <circle cx="474" cy="496" r=".9"/><circle cx="565" cy="508" r=".7"/><circle cx="622" cy="572" r="1.1"/>
+      <circle cx="304" cy="35" r=".8"/><circle cx="356" cy="22" r="1.1"/><circle cx="512" cy="60" r=".9"/>
+      <circle cx="32" cy="459" r="1.0"/><circle cx="665" cy="462" r=".8"/><circle cx="92" cy="542" r=".7"/>
     </g>
 
-    <!-- Galaxy core glow (centered at 260,250) -->
-    <circle cx="260" cy="250" r="105" fill="url(#coreG)" opacity=".55"/>
-    <circle cx="260" cy="250" r="55" fill="#080810" opacity=".5"/>
-    <circle cx="260" cy="250" r="22" fill="#10101e" opacity=".7"/>
-    <circle cx="260" cy="250" r="9"  fill="#21d8ff" opacity=".18"/>
-    <circle cx="260" cy="250" r="4"  fill="#21d8ff" opacity=".5"/>
-    <circle cx="260" cy="250" r="2"  fill="#ffffff" opacity=".85"/>
+    <!-- Galaxy core (centered 340,290) -->
+    <circle cx="340" cy="290" r="135" fill="url(#coreG)" opacity=".55"/>
+    <circle cx="340" cy="290" r="70"  fill="#080810" opacity=".5"/>
+    <circle cx="340" cy="290" r="28"  fill="#10101e" opacity=".7"/>
+    <circle cx="340" cy="290" r="11"  fill="#21d8ff" opacity=".18"/>
+    <circle cx="340" cy="290" r="5"   fill="#21d8ff" opacity=".5"/>
+    <circle cx="340" cy="290" r="2.5" fill="#ffffff" opacity=".85"/>
 
-    <!-- ── Body system arm stars ── -->
+    <!-- Arm stars: HEALING (cyan) — hosts BPC-157 + TB-500 -->
+    <circle cx="405" cy="249" r="3"   fill="#21d8ff" opacity=".38"/>
+    <circle cx="425" cy="230" r="2.4" fill="#21d8ff" opacity=".28"/>
+    <circle cx="547" cy="270" r="2.4" fill="#21d8ff" opacity=".26"/>
+    <circle cx="565" cy="250" r="1.8" fill="#21d8ff" opacity=".2"/>
 
-    <!-- HEALING arm — cyan, right side; hosts BPC-157 + TB-500 -->
-    <circle cx="310" cy="218" r="2.5" fill="#21d8ff" opacity=".4"/><!-- GHK-Cu -->
-    <circle cx="325" cy="202" r="2"   fill="#21d8ff" opacity=".3"/>
-    <circle cx="418" cy="232" r="2"   fill="#21d8ff" opacity=".28"/>
-    <circle cx="432" cy="215" r="1.5" fill="#21d8ff" opacity=".22"/>
+    <!-- METABOLIC (green) lower-right -->
+    <circle cx="442" cy="367" r="3.5" fill="#10b981" opacity=".48"/>
+    <circle cx="473" cy="390" r="2.4" fill="#10b981" opacity=".33"/>
+    <circle cx="416" cy="350" r="2.4" fill="#10b981" opacity=".28"/>
+    <circle cx="508" cy="408" r="1.8" fill="#10b981" opacity=".22"/>
 
-    <!-- METABOLIC arm — green, lower-right -->
-    <circle cx="338" cy="315" r="3"   fill="#10b981" opacity=".5"/>
-    <circle cx="362" cy="335" r="2"   fill="#10b981" opacity=".35"/>
-    <circle cx="318" cy="300" r="2"   fill="#10b981" opacity=".3"/>
-    <circle cx="388" cy="350" r="1.5" fill="#10b981" opacity=".24"/>
-    <circle cx="342" cy="358" r="1.5" fill="#10b981" opacity=".2"/>
+    <!-- GROWTH (yellow) lower -->
+    <circle cx="356" cy="418" r="3"   fill="#E7FB10" opacity=".36"/>
+    <circle cx="324" cy="445" r="2.4" fill="#E7FB10" opacity=".26"/>
+    <circle cx="385" cy="438" r="1.8" fill="#E7FB10" opacity=".20"/>
 
-    <!-- GROWTH arm — yellow, lower -->
-    <circle cx="272" cy="358" r="2.5" fill="#E7FB10" opacity=".38"/>
-    <circle cx="248" cy="382" r="2"   fill="#E7FB10" opacity=".28"/>
-    <circle cx="295" cy="375" r="1.5" fill="#E7FB10" opacity=".22"/>
-    <circle cx="268" cy="405" r="1.5" fill="#E7FB10" opacity=".18"/>
+    <!-- COGNITIVE (purple) lower-left -->
+    <circle cx="207" cy="382" r="3.5" fill="#9d4edd" opacity=".46"/>
+    <circle cx="177" cy="362" r="2.4" fill="#9d4edd" opacity=".33"/>
+    <circle cx="232" cy="405" r="2.4" fill="#9d4edd" opacity=".26"/>
+    <circle cx="154" cy="398" r="1.8" fill="#9d4edd" opacity=".20"/>
 
-    <!-- COGNITIVE arm — purple, lower-left -->
-    <circle cx="158" cy="328" r="3"   fill="#9d4edd" opacity=".48"/>
-    <circle cx="135" cy="310" r="2"   fill="#9d4edd" opacity=".35"/>
-    <circle cx="178" cy="348" r="2"   fill="#9d4edd" opacity=".28"/>
-    <circle cx="118" cy="342" r="1.5" fill="#9d4edd" opacity=".22"/>
+    <!-- SKIN (magenta) left -->
+    <circle cx="194" cy="288" r="3"   fill="#ec4899" opacity=".40"/>
+    <circle cx="160" cy="270" r="2.4" fill="#ec4899" opacity=".30"/>
+    <circle cx="212" cy="312" r="1.8" fill="#ec4899" opacity=".24"/>
 
-    <!-- SKIN arm — magenta, left -->
-    <circle cx="148" cy="248" r="2.5" fill="#ec4899" opacity=".42"/>
-    <circle cx="122" cy="232" r="2"   fill="#ec4899" opacity=".32"/>
-    <circle cx="162" cy="268" r="1.5" fill="#ec4899" opacity=".26"/>
-    <circle cx="108" cy="258" r="1.5" fill="#ec4899" opacity=".2"/>
+    <!-- LONGEVITY (blue) upper-left -->
+    <circle cx="216" cy="200" r="3.5" fill="#60a5fa" opacity=".46"/>
+    <circle cx="186" cy="180" r="2.4" fill="#60a5fa" opacity=".33"/>
+    <circle cx="246" cy="186" r="2.4" fill="#60a5fa" opacity=".26"/>
 
-    <!-- LONGEVITY arm — blue, upper-left -->
-    <circle cx="165" cy="172" r="3"   fill="#60a5fa" opacity=".48"/>
-    <circle cx="142" cy="155" r="2"   fill="#60a5fa" opacity=".35"/>
-    <circle cx="188" cy="160" r="2"   fill="#60a5fa" opacity=".28"/>
-    <circle cx="135" cy="192" r="1.5" fill="#60a5fa" opacity=".22"/>
+    <!-- HORMONAL (orange) upper -->
+    <circle cx="311" cy="162" r="3"   fill="#f97316" opacity=".36"/>
+    <circle cx="334" cy="132" r="2.4" fill="#f97316" opacity=".26"/>
+    <circle cx="363" cy="152" r="1.8" fill="#f97316" opacity=".22"/>
 
-    <!-- HORMONAL arm — orange, upper -->
-    <circle cx="238" cy="138" r="2.5" fill="#f97316" opacity=".38"/>
-    <circle cx="255" cy="112" r="2"   fill="#f97316" opacity=".28"/>
-    <circle cx="278" cy="130" r="1.5" fill="#f97316" opacity=".24"/>
-    <circle cx="295" cy="112" r="1.5" fill="#f97316" opacity=".2"/>
+    <!-- BPC-157 featured star: (458, 222) -->
+    <circle cx="458" cy="222" r="22" fill="#21d8ff" opacity=".10" filter="url(#starGlow)"/>
+    <circle id="bpc-outer" cx="458" cy="222" r="15" fill="url(#bpcG)" opacity=".20"/>
+    <circle cx="458" cy="222" r="9"  fill="#21d8ff" opacity=".22"/>
+    <circle cx="458" cy="222" r="5.5" fill="#21d8ff" opacity=".92"/>
+    <circle cx="458" cy="222" r="2.8" fill="#ffffff" opacity=".95"/>
+    <line x1="448" y1="222" x2="468" y2="222" stroke="#21d8ff" stroke-width="1" opacity=".38"/>
+    <line x1="458" y1="212" x2="458" y2="232" stroke="#21d8ff" stroke-width="1" opacity=".38"/>
 
-    <!-- ── BPC-157 featured star glow (soft layer, animated via JS) ── -->
-    <!-- Soft outer glow rendered via filter on a blurred circle -->
-    <circle cx="350" cy="190" r="18" fill="#21d8ff" opacity=".12" filter="url(#starGlow)"/>
-    <!-- Animated outer ring (id referenced) -->
-    <circle id="bpc-outer" cx="350" cy="190" r="12" fill="url(#bpcG)" opacity=".22"/>
-    <!-- Inner glow -->
-    <circle cx="350" cy="190" r="7"  fill="#21d8ff" opacity=".22"/>
-    <!-- Core -->
-    <circle cx="350" cy="190" r="4.5" fill="#21d8ff" opacity=".92"/>
-    <circle cx="350" cy="190" r="2.2" fill="#ffffff" opacity=".95"/>
-    <!-- Cross flare -->
-    <line x1="343" y1="190" x2="357" y2="190" stroke="#21d8ff" stroke-width=".9" opacity=".38"/>
-    <line x1="350" y1="183" x2="350" y2="197" stroke="#21d8ff" stroke-width=".9" opacity=".38"/>
+    <!-- TB-500 featured star: (524, 254) -->
+    <circle cx="524" cy="254" r="20" fill="#9d4edd" opacity=".09" filter="url(#starGlow)"/>
+    <circle id="tb-outer" cx="524" cy="254" r="13" fill="url(#tbG)" opacity=".17"/>
+    <circle cx="524" cy="254" r="8"  fill="#9d4edd" opacity=".20"/>
+    <circle cx="524" cy="254" r="5"  fill="#9d4edd" opacity=".88"/>
+    <circle cx="524" cy="254" r="2.5" fill="#ffffff" opacity=".9"/>
+    <line x1="514" y1="254" x2="534" y2="254" stroke="#9d4edd" stroke-width="1" opacity=".35"/>
+    <line x1="524" y1="244" x2="524" y2="264" stroke="#9d4edd" stroke-width="1" opacity=".35"/>
 
-    <!-- ── TB-500 featured star glow ── -->
-    <circle cx="400" cy="218" r="16" fill="#9d4edd" opacity=".1" filter="url(#starGlow)"/>
-    <circle id="tb-outer" cx="400" cy="218" r="11" fill="url(#tbG)" opacity=".18"/>
-    <circle cx="400" cy="218" r="6.5" fill="#9d4edd" opacity=".2"/>
-    <circle cx="400" cy="218" r="4"   fill="#9d4edd" opacity=".88"/>
-    <circle cx="400" cy="218" r="2"   fill="#ffffff" opacity=".9"/>
-    <!-- Cross flare -->
-    <line x1="393" y1="218" x2="407" y2="218" stroke="#9d4edd" stroke-width=".9" opacity=".35"/>
-    <line x1="400" y1="211" x2="400" y2="225" stroke="#9d4edd" stroke-width=".9" opacity=".35"/>
-
-    <!-- ── Connection beam BPC→TB ── -->
-    <!-- BPC: (350,190) TB: (400,218) — length ≈ 57px -->
-    <line id="beam-glow" x1="350" y1="190" x2="400" y2="218"
-          stroke="#21d8ff" stroke-width="5" stroke-linecap="round"
-          stroke-dasharray="62" stroke-dashoffset="62" stroke-opacity="0"
+    <!-- Connection beam: BPC(458,222) → TB(524,254) length≈71px -->
+    <line id="beam-glow" x1="458" y1="222" x2="524" y2="254"
+          stroke="#21d8ff" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="74" stroke-dashoffset="74" stroke-opacity="0"
           filter="url(#bGlow)"/>
-    <line id="beam" x1="350" y1="190" x2="400" y2="218"
-          stroke="#21d8ff" stroke-width="1.5" stroke-linecap="round"
-          stroke-dasharray="62" stroke-dashoffset="62" stroke-opacity="0"/>
-    <!-- Traveling particle on beam -->
-    <circle id="beam-dot" cx="350" cy="190" r="2.8" fill="#ffffff" opacity="0"/>
+    <line id="beam" x1="458" y1="222" x2="524" y2="254"
+          stroke="#21d8ff" stroke-width="1.8" stroke-linecap="round"
+          stroke-dasharray="74" stroke-dashoffset="74" stroke-opacity="0"/>
+    <circle id="beam-dot" cx="458" cy="222" r="3.2" fill="#ffffff" opacity="0"/>
 
-    <!-- ── Bottom gradient fade ── -->
-    <rect x="0" y="482" width="520" height="98" fill="url(#bottomFade)"/>
+    <!-- Bottom gradient fade -->
+    <rect x="0" y="560" width="680" height="100" fill="url(#botFade)"/>
 
-    <!-- ── Compound chips (bottom overlay) ── -->
-    <!-- BPC-157 chip -->
-    <rect x="112" y="518" width="72" height="22" rx="5.5"
-          fill="rgba(33,216,255,.06)" stroke="rgba(33,216,255,.28)" stroke-width=".7"/>
-    <circle cx="123" cy="529" r="3" fill="#21d8ff" opacity=".72"/>
-    <text x="129" y="533" font-family="DM Sans,Arial,sans-serif" font-size="9" font-weight="700"
+    <!-- Compound chips bottom overlay -->
+    <rect x="148" y="604" width="84" height="25" rx="6.5"
+          fill="rgba(33,216,255,.06)" stroke="rgba(33,216,255,.28)" stroke-width=".8"/>
+    <circle cx="162" cy="616.5" r="3.5" fill="#21d8ff" opacity=".72"/>
+    <text x="170" y="621" font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="700"
           fill="#21d8ff" letter-spacing=".02em">BPC-157</text>
 
-    <!-- Plus -->
-    <text x="192" y="533" font-family="Arial,sans-serif" font-size="12" fill="#282832" text-anchor="middle">+</text>
+    <text x="244" y="621" font-family="Arial,sans-serif" font-size="14" fill="#282832" text-anchor="middle">+</text>
 
-    <!-- TB-500 chip -->
-    <rect x="199" y="518" width="65" height="22" rx="5.5"
-          fill="rgba(157,78,221,.06)" stroke="rgba(157,78,221,.28)" stroke-width=".7"/>
-    <circle cx="210" cy="529" r="3" fill="#9d4edd" opacity=".72"/>
-    <text x="216" y="533" font-family="DM Sans,Arial,sans-serif" font-size="9" font-weight="700"
+    <rect x="252" y="604" width="76" height="25" rx="6.5"
+          fill="rgba(157,78,221,.06)" stroke="rgba(157,78,221,.28)" stroke-width=".8"/>
+    <circle cx="266" cy="616.5" r="3.5" fill="#9d4edd" opacity=".72"/>
+    <text x="275" y="621" font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="700"
           fill="#9d4edd" letter-spacing=".02em">TB-500</text>
 
-    <!-- Labels that appear after beam draws -->
+    <!-- Labels appear after beam -->
     <g id="galaxy-labels" opacity="0">
-      <!-- BPC-157 label -->
-      <rect x="316" y="170" width="54" height="14" rx="3"
-            fill="rgba(33,216,255,.1)" stroke="rgba(33,216,255,.22)" stroke-width=".6"/>
-      <text x="343" y="180" font-family="DM Sans,Arial,sans-serif" font-size="7.5" font-weight="700"
+      <rect x="412" y="200" width="66" height="16" rx="4"
+            fill="rgba(33,216,255,.10)" stroke="rgba(33,216,255,.22)" stroke-width=".7"/>
+      <text x="445" y="212" font-family="DM Sans,Arial,sans-serif" font-size="8.5" font-weight="700"
             fill="#21d8ff" text-anchor="middle" letter-spacing=".04em">BPC-157</text>
-      <!-- TB-500 label -->
-      <rect x="407" y="208" width="50" height="14" rx="3"
-            fill="rgba(157,78,221,.1)" stroke="rgba(157,78,221,.22)" stroke-width=".6"/>
-      <text x="432" y="218" font-family="DM Sans,Arial,sans-serif" font-size="7.5" font-weight="700"
+      <rect x="530" y="244" width="60" height="16" rx="4"
+            fill="rgba(157,78,221,.10)" stroke="rgba(157,78,221,.22)" stroke-width=".7"/>
+      <text x="560" y="256" font-family="DM Sans,Arial,sans-serif" font-size="8.5" font-weight="700"
             fill="#9d4edd" text-anchor="middle" letter-spacing=".04em">TB-500</text>
     </g>
 
-    <!-- ── Pathway label ── -->
-    <text x="260" y="553" font-family="DM Sans,Arial,sans-serif" font-size="9" fill="#303038"
-          text-anchor="middle" letter-spacing=".05em">HEALING SYSTEM · SHARED PATHWAY</text>
+    <!-- Pathway label -->
+    <text x="340" y="644" font-family="DM Sans,Arial,sans-serif" font-size="10" fill="#2c2c38"
+          text-anchor="middle" letter-spacing=".06em">HEALING SYSTEM · SHARED RECOVERY PATHWAY</text>
 
-    <!-- ── Top-left: SYNERGY ENGINE badge ── -->
-    <rect x="14" y="14" width="112" height="19" rx="9.5"
-          fill="rgba(33,216,255,.05)" stroke="rgba(33,216,255,.2)" stroke-width=".7"/>
-    <circle cx="25.5" cy="23.5" r="2.5" fill="#21d8ff"/>
-    <text x="33" y="28" font-family="DM Sans,Arial,sans-serif" font-size="8" font-weight="700"
-          fill="#21d8ff" letter-spacing=".06em">SYNERGY ENGINE</text>
+    <!-- Synergy engine badge top-left -->
+    <rect x="18" y="18" width="132" height="22" rx="11"
+          fill="rgba(33,216,255,.05)" stroke="rgba(33,216,255,.20)" stroke-width=".8"/>
+    <circle cx="32" cy="29" r="3" fill="#21d8ff"/>
+    <text x="41" y="34" font-family="DM Sans,Arial,sans-serif" font-size="9" font-weight="700"
+          fill="#21d8ff" letter-spacing=".07em">SYNERGY ENGINE</text>
 
-    <!-- ── Top-right: RR mark ── -->
-    <circle cx="498" cy="23" r="13"
-            fill="rgba(231,251,16,.05)" stroke="rgba(231,251,16,.3)" stroke-width=".7"/>
-    <text x="498" y="27.5" font-family="DM Sans,Arial,sans-serif" font-size="11.5" font-weight="700"
+    <!-- RR mark top-right -->
+    <circle cx="652" cy="29" r="16"
+            fill="rgba(231,251,16,.05)" stroke="rgba(231,251,16,.30)" stroke-width=".8"/>
+    <text x="652" y="34" font-family="DM Sans,Arial,sans-serif" font-size="13" font-weight="700"
           fill="#E7FB10" text-anchor="middle">R</text>
-
-    <!-- PART THREE -->
-    <text x="506" y="572" font-family="DM Sans,Arial,sans-serif" font-size="8" fill="#1e1e26"
-          text-anchor="end" letter-spacing=".05em">PART THREE OF FOUR</text>
   </svg>
-</div>
+</div><!-- /S1 -->
 
 <!-- ═══════════════ S2: STACK BUILDER ═══════════════ -->
-<div id="s2" class="scene" style="opacity:0;background:#0a0a0c">
-  <div class="hdr">
-    <div class="hdr-badge"><span class="hdr-dot"></span>SYNERGY ENGINE</div>
-    <div class="hdr-sep"></div>
-    <div class="hdr-sub">Custom Stack Builder</div>
-    <div class="rr-mark"><span>R</span></div>
-  </div>
+<div id="s2" class="scene">
+  <div class="sec-label">Custom Stack Builder &nbsp;·&nbsp; Select compounds &amp; discover synergies</div>
 
-  <div id="s2-content">
-    <div class="builder-label">Select compounds · discover synergies</div>
-
-    <!-- Compound cards -->
-    <div class="cards-row">
-      <!-- BPC-157 -->
-      <div id="card-bpc" class="compound-card" style="opacity:0;border-color:rgba(33,216,255,.18)">
-        <div class="cc-system" style="color:#21d8ff">Healing</div>
-        <div class="cc-name">BPC-157</div>
-        <div class="cc-abbr">Body Protection Compound</div>
-        <div class="cc-dots">
-          <div class="cc-dot" style="background:#21d8ff;opacity:.9"></div>
-          <div class="cc-dot" style="background:#21d8ff;opacity:.9"></div>
-          <div class="cc-dot" style="background:#21d8ff;opacity:.9"></div>
-          <div class="cc-dot" style="background:#21d8ff;opacity:.9"></div>
-          <div class="cc-dot" style="background:#21d8ff;opacity:.9"></div>
-        </div>
+  <div class="cards-row">
+    <!-- BPC-157 -->
+    <div id="card-bpc" class="compound-card"
+         style="opacity:0;transform:translateX(-60px);background:#0d1018;border-color:rgba(33,216,255,.22)">
+      <div class="cc-system" style="color:#21d8ff">Healing System</div>
+      <div class="cc-name">BPC-157</div>
+      <div class="cc-abbr">Body Protection Compound</div>
+      <div class="cc-sel" style="color:#21d8ff;border-color:rgba(33,216,255,.35);background:rgba(33,216,255,.08)">
+        <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#21d8ff"/></svg>
+        SELECTED
       </div>
-      <!-- TB-500 -->
-      <div id="card-tb500" class="compound-card" style="opacity:0;border-color:rgba(157,78,221,.18)">
-        <div class="cc-system" style="color:#9d4edd">Healing</div>
-        <div class="cc-name">TB-500</div>
-        <div class="cc-abbr">Thymosin Beta-4 Analog</div>
-        <div class="cc-dots">
-          <div class="cc-dot" style="background:#9d4edd;opacity:.9"></div>
-          <div class="cc-dot" style="background:#9d4edd;opacity:.9"></div>
-          <div class="cc-dot" style="background:#9d4edd;opacity:.9"></div>
-          <div class="cc-dot" style="background:#9d4edd;opacity:.9"></div>
-          <div class="cc-dot" style="background:#9d4edd;opacity:.9"></div>
-        </div>
+      <div class="cc-dots">
+        <div class="cc-dot" style="background:#21d8ff"></div>
+        <div class="cc-dot" style="background:#21d8ff"></div>
+        <div class="cc-dot" style="background:#21d8ff"></div>
+        <div class="cc-dot" style="background:#21d8ff"></div>
+        <div class="cc-dot" style="background:#21d8ff"></div>
       </div>
     </div>
-
-    <!-- Wolverine Stack badge -->
-    <div class="wolverine-wrap">
-      <div id="wolverine-badge" class="wolverine-inner" style="opacity:0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D8E810"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-        <div class="wolv-text">
-          <strong>WOLVERINE STACK DETECTED</strong>
-          <span>Known high-synergy combination recognized</span>
-        </div>
+    <!-- TB-500 -->
+    <div id="card-tb500" class="compound-card"
+         style="opacity:0;transform:translateX(-60px);background:#100d18;border-color:rgba(157,78,221,.22)">
+      <div class="cc-system" style="color:#9d4edd">Healing System</div>
+      <div class="cc-name">TB-500</div>
+      <div class="cc-abbr">Thymosin Beta-4 Analog</div>
+      <div class="cc-sel" style="color:#9d4edd;border-color:rgba(157,78,221,.35);background:rgba(157,78,221,.08)">
+        <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#9d4edd"/></svg>
+        SELECTED
       </div>
-    </div>
-
-    <!-- Synergy score mini -->
-    <div id="score-mini" class="score-mini-wrap" style="opacity:0">
-      <div class="sm-top">
-        <span class="sm-top-label">Synergy Score</span>
-        <span class="sm-top-val">95 / 100</span>
+      <div class="cc-dots">
+        <div class="cc-dot" style="background:#9d4edd"></div>
+        <div class="cc-dot" style="background:#9d4edd"></div>
+        <div class="cc-dot" style="background:#9d4edd"></div>
+        <div class="cc-dot" style="background:#9d4edd"></div>
+        <div class="cc-dot" style="background:#9d4edd"></div>
       </div>
-      <div class="sm-bar-track"><div class="sm-bar-fill"></div></div>
-      <div class="sm-mech">Shared VEGF upregulation + thymosin &#946;4 actin remodeling pathway</div>
     </div>
   </div>
-</div>
+
+  <!-- Wolverine Stack detected badge -->
+  <div class="wolverine-wrap">
+    <div id="wolverine-badge" class="wolverine-inner" style="opacity:0;transform:scale(.9)">
+      <svg class="wolv-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="#D8E810" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      <div class="wolv-text">
+        <strong>WOLVERINE STACK DETECTED</strong>
+        <span>Known high-synergy combination · Legendary status</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score mini bar -->
+  <div id="score-mini" class="score-mini" style="opacity:0">
+    <div class="sm-top">
+      <span class="sm-label">Synergy Score</span>
+      <span class="sm-val">95 / 100</span>
+    </div>
+    <div class="sm-track"><div class="sm-fill" style="width:0%" id="sm-fill-bar"></div></div>
+    <div class="sm-mech">Shared VEGF upregulation · thymosin β4 actin remodeling pathway</div>
+  </div>
+</div><!-- /S2 -->
 
 <!-- ═══════════════ S3: SCORE REVEAL ═══════════════ -->
-<div id="s3" class="scene" style="opacity:0;background:#0a0a0c">
-  <div class="hdr">
-    <div class="hdr-badge"><span class="hdr-dot"></span>SYNERGY ENGINE</div>
-    <div class="hdr-sep"></div>
-    <div class="hdr-sub">Stack Analysis</div>
-    <div class="rr-mark"><span>R</span></div>
+<div id="s3" class="scene">
+
+  <!-- Compound pair chips -->
+  <div id="s3-labels" class="s3-pair" style="opacity:0">
+    <div class="s3-chip" style="color:#21d8ff;border-color:rgba(33,216,255,.30);background:rgba(33,216,255,.07)">
+      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#21d8ff"/></svg>
+      BPC-157
+    </div>
+    <div class="s3-plus">+</div>
+    <div class="s3-chip" style="color:#9d4edd;border-color:rgba(157,78,221,.30);background:rgba(157,78,221,.07)">
+      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#9d4edd"/></svg>
+      TB-500
+    </div>
+  </div>
+  <div class="s3-stack-name">Wolverine Stack &nbsp;·&nbsp; Healing System</div>
+
+  <!-- Synergy ring (r=105, circ=659.7) -->
+  <div class="ring-wrap">
+    <svg width="240" height="240" viewBox="0 0 240 240">
+      <defs>
+        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stop-color="#21d8ff"/>
+          <stop offset="50%"  stop-color="#9d4edd"/>
+          <stop offset="100%" stop-color="#10b981"/>
+        </linearGradient>
+        <filter id="ringBlur" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="6"/>
+        </filter>
+      </defs>
+      <!-- Track -->
+      <circle cx="120" cy="120" r="100" fill="none"
+              stroke="rgba(255,255,255,.055)" stroke-width="13"/>
+      <!-- Glow (blurred copy) -->
+      <circle id="ring-glow" cx="120" cy="120" r="100" fill="none"
+              stroke="url(#ringGrad)" stroke-width="13"
+              stroke-dasharray="628.3" stroke-dashoffset="628.3"
+              stroke-linecap="round"
+              transform="rotate(-90 120 120)"
+              filter="url(#ringBlur)" opacity="0"/>
+      <!-- Progress arc -->
+      <circle id="ring-prog" cx="120" cy="120" r="100" fill="none"
+              stroke="url(#ringGrad)" stroke-width="13"
+              stroke-dasharray="628.3" stroke-dashoffset="628.3"
+              stroke-linecap="round"
+              transform="rotate(-90 120 120)"/>
+      <!-- Score number -->
+      <text id="score-num" x="120" y="108" text-anchor="middle"
+            font-family="DM Sans,Arial,sans-serif" font-weight="700" font-size="58"
+            fill="#dcdce8">0</text>
+      <!-- /100 -->
+      <text x="120" y="130" text-anchor="middle"
+            font-family="DM Sans,Arial,sans-serif" font-size="12" font-weight="500"
+            fill="#44445a" letter-spacing=".03em">/ 100</text>
+      <!-- SYNERGY SCORE label -->
+      <text x="120" y="152" text-anchor="middle"
+            font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="600"
+            fill="#30303e" letter-spacing=".10em">SYNERGY SCORE</text>
+    </svg>
   </div>
 
-  <div id="s3-inner">
-    <!-- Compound pair -->
-    <div id="s3-labels" class="s3-pair" style="opacity:0">
-      <div class="s3-cname">
-        <div class="s3-cdot" style="background:#21d8ff"></div>
-        <span class="s3-cname-text">BPC-157</span>
-      </div>
-      <div class="s3-plus">+</div>
-      <div class="s3-cname">
-        <div class="s3-cdot" style="background:#9d4edd"></div>
-        <span class="s3-cname-text">TB-500</span>
-      </div>
-    </div>
-    <div class="s3-stack-name">Wolverine Stack &nbsp;·&nbsp; Healing System</div>
-
-    <!-- Synergy ring -->
-    <div class="ring-wrap">
-      <svg width="196" height="196" viewBox="0 0 196 196">
-        <defs>
-          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stop-color="#21d8ff"/>
-            <stop offset="50%"  stop-color="#9d4edd"/>
-            <stop offset="100%" stop-color="#10b981"/>
-          </linearGradient>
-          <filter id="ringBlur" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="5"/>
-          </filter>
-        </defs>
-        <!-- Track -->
-        <circle cx="98" cy="98" r="82" fill="none"
-                stroke="rgba(255,255,255,.055)" stroke-width="11"/>
-        <!-- Glow copy (blurred) -->
-        <circle id="ring-glow-filter" cx="98" cy="98" r="82" fill="none"
-                stroke="url(#ringGrad)" stroke-width="11"
-                stroke-dasharray="515.2" stroke-dashoffset="515.2"
-                stroke-linecap="round"
-                transform="rotate(-90 98 98)"
-                filter="url(#ringBlur)" opacity="0"/>
-        <!-- Progress arc -->
-        <circle id="ring-prog" cx="98" cy="98" r="82" fill="none"
-                stroke="url(#ringGrad)" stroke-width="11"
-                stroke-dasharray="515.2" stroke-dashoffset="515.2"
-                stroke-linecap="round"
-                transform="rotate(-90 98 98)"/>
-        <!-- Center -->
-        <text id="score-num" x="98" y="90" text-anchor="middle"
-              font-family="DM Sans,Arial,sans-serif" font-weight="700" font-size="50"
-              fill="#e0e0ea">0</text>
-        <text x="98" y="108" text-anchor="middle"
-              font-family="DM Sans,Arial,sans-serif" font-size="10.5" font-weight="500"
-              fill="#484858" letter-spacing=".03em">/ 100</text>
-        <text x="98" y="126" text-anchor="middle"
-              font-family="DM Sans,Arial,sans-serif" font-size="9" font-weight="600"
-              fill="#363645" letter-spacing=".08em">SYNERGY SCORE</text>
-      </svg>
-    </div>
-
-    <!-- Mechanism lines -->
-    <ul class="mech-list">
-      <li id="mech-1" class="mech-item" style="opacity:0">
-        <div class="mech-dot" style="background:#21d8ff"></div>
-        <div class="mech-text">Shared VEGF upregulation + thymosin &#946;4 actin remodeling pathway</div>
-      </li>
-      <li id="mech-2" class="mech-item" style="opacity:0">
-        <div class="mech-dot" style="background:#9d4edd"></div>
-        <div class="mech-text">Complementary extracellular matrix remodeling mechanism</div>
-      </li>
-    </ul>
-
-    <div class="part-tag">PART THREE OF FOUR</div>
+  <!-- Legendary Combo badge -->
+  <div id="legendary-badge" class="legendary-badge" style="opacity:0">
+    <svg class="leg-star" width="14" height="14" viewBox="0 0 24 24" fill="#D8E810">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+    <span>Legendary Combo</span>
   </div>
-</div>
+
+  <!-- Mechanism lines -->
+  <ul class="mech-list">
+    <li id="mech-1" class="mech-item" style="opacity:0">
+      <div class="mech-dot" style="background:#21d8ff"></div>
+      <div class="mech-text">Shared VEGF upregulation + thymosin β4 actin remodeling — convergent tissue repair pathway</div>
+    </li>
+    <li id="mech-2" class="mech-item" style="opacity:0">
+      <div class="mech-dot" style="background:#9d4edd"></div>
+      <div class="mech-text">Complementary extracellular matrix remodeling via laminin, fibronectin, and collagen synthesis</div>
+    </li>
+  </ul>
+
+  <div class="part-tag">REVIVE RESEARCH · SYNERGY ENGINE</div>
+</div><!-- /S3 -->
+
+</div><!-- /scene wrapper -->
 
 <script>
 (function(){
-  const el  = id => document.getElementById(id);
+  const $  = id => document.getElementById(id);
   const eIO = x => x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2;
   const c01 = x => Math.max(0,Math.min(1,x));
   const prg = (a,b,t) => c01((t-a)/(b-a));
   const mix = (a,b,x) => a+(b-a)*x;
 
-  const BEAM_LEN = 62;
-  const RING_C   = 515.2; // 2pi*82
+  const BEAM_LEN = 74;   // sqrt((524-458)^2+(254-222)^2) ≈ 74px
+  const RING_C   = 628.3; // 2π×100
 
   window.setFrame = function(ms){
-    const t = ms % 8000;
+    const t = ms % 9000;
 
-    /* ── scene fades ── */
-    const s1op = t < 2300 ? 1            : eIO(1-prg(2300,2500,t));
-    const s2op = t < 2300 ? 0 : t < 5000? eIO(prg(2300,2500,t))   : eIO(1-prg(5000,5200,t));
-    const s3op = t < 5000 ? 0 : t < 7700? eIO(prg(5000,5200,t))   : eIO(1-prg(7700,8000,t));
+    /* ── Scene opacity ── */
+    const s1 = t<2500 ? 1 : eIO(1-prg(2500,2800,t));
+    const s2 = t<2500 ? 0 : t<5500 ? eIO(prg(2500,2800,t)) : eIO(1-prg(5500,5800,t));
+    const s3 = t<5500 ? 0 : eIO(prg(5500,5800,t));
 
-    el('s1').style.opacity = s1op;
-    el('s2').style.opacity = s2op;
-    el('s3').style.opacity = s3op;
+    $('s1').style.opacity = s1;
+    $('s2').style.opacity = s2;
+    $('s3').style.opacity = s3;
 
     /* ── S1: Galaxy ── */
-    // Beam draw 700→1500ms
-    const bp = eIO(prg(700,1500,t));
+    const bp = eIO(prg(600,1600,t));
     const bOff = BEAM_LEN*(1-bp);
-    el('beam').setAttribute('stroke-dashoffset', bOff);
-    el('beam').setAttribute('stroke-opacity',  bp*0.88);
-    el('beam-glow').setAttribute('stroke-dashoffset', bOff);
-    el('beam-glow').setAttribute('stroke-opacity', bp*0.32);
+    $('beam').setAttribute('stroke-dashoffset', bOff);
+    $('beam').setAttribute('stroke-opacity', bp*0.88);
+    $('beam-glow').setAttribute('stroke-dashoffset', bOff);
+    $('beam-glow').setAttribute('stroke-opacity', bp*0.30);
 
-    // Traveling dot on beam (after beam is drawn)
-    const dotShow = bp > 0.92 ? (0.55+0.45*Math.abs(Math.sin(t*0.0055))) : 0;
-    const dotFrac = c01(((t-1500)%1000)/1000);
-    el('beam-dot').setAttribute('opacity', dotShow);
-    el('beam-dot').setAttribute('cx', mix(350,400,dotFrac));
-    el('beam-dot').setAttribute('cy', mix(190,218,dotFrac));
+    const dotShow = bp>0.92 ? (0.55+0.45*Math.abs(Math.sin(t*0.0052))) : 0;
+    const dotFrac = c01(((t-1600)%1100)/1100);
+    $('beam-dot').setAttribute('opacity', dotShow);
+    $('beam-dot').setAttribute('cx', mix(458,524,dotFrac));
+    $('beam-dot').setAttribute('cy', mix(222,254,dotFrac));
 
-    // BPC-157 pulse
-    el('bpc-outer').setAttribute('r',       11 + 3.5*Math.sin(t*0.0024));
-    el('bpc-outer').setAttribute('opacity', 0.20 + 0.14*Math.sin(t*0.0024));
+    $('bpc-outer').setAttribute('r',       14+4*Math.sin(t*0.0022));
+    $('bpc-outer').setAttribute('opacity', 0.18+0.14*Math.sin(t*0.0022));
+    $('tb-outer').setAttribute('r',        12+3.5*Math.sin(t*0.0022+1.4));
+    $('tb-outer').setAttribute('opacity',  0.15+0.12*Math.sin(t*0.0022+1.4));
+    $('galaxy-labels').style.opacity = eIO(prg(1700,2300,t));
 
-    // TB-500 pulse (offset)
-    el('tb-outer').setAttribute('r',       10 + 3*Math.sin(t*0.0024+1.4));
-    el('tb-outer').setAttribute('opacity', 0.16 + 0.12*Math.sin(t*0.0024+1.4));
+    /* ── S2: Stack Builder ── */
+    const bpcA = eIO(prg(2800,3200,t));
+    $('card-bpc').style.opacity   = bpcA;
+    $('card-bpc').style.transform = `translateX(${mix(-60,0,bpcA)}px)`;
 
-    // Labels appear after beam
-    el('galaxy-labels').style.opacity = eIO(prg(1600,2100,t));
+    const tbA = eIO(prg(3600,4000,t));
+    $('card-tb500').style.opacity   = tbA;
+    $('card-tb500').style.transform = `translateX(${mix(-60,0,tbA)}px)`;
 
-    /* ── S2: Builder ── */
-    const bpcC = eIO(prg(2500,2900,t));
-    el('card-bpc').style.opacity   = bpcC;
-    el('card-bpc').style.transform = `translateX(${mix(-80,0,bpcC)}px)`;
+    const wA = eIO(prg(4200,4600,t));
+    $('wolverine-badge').style.opacity   = wA;
+    $('wolverine-badge').style.transform = `scale(${mix(.88,1,wA)})`;
 
-    const tbC = eIO(prg(3400,3800,t));
-    el('card-tb500').style.opacity   = tbC;
-    el('card-tb500').style.transform = `translateX(${mix(-80,0,tbC)}px)`;
+    const sA = eIO(prg(4600,5000,t));
+    $('score-mini').style.opacity = sA;
+    // Animate bar fill in sync
+    $('sm-fill-bar').style.width = (95*eIO(prg(4700,5200,t)))+'%';
 
-    const wP = eIO(prg(4000,4400,t));
-    el('wolverine-badge').style.opacity   = wP;
-    el('wolverine-badge').style.transform = `scale(${mix(0.88,1,wP)})`;
+    /* ── S3: Score Reveal ── */
+    $('s3-labels').style.opacity = eIO(prg(5800,6200,t));
 
-    el('score-mini').style.opacity = eIO(prg(4400,4800,t));
-
-    /* ── S3: Score ── */
-    const rP = eIO(prg(5300,6900,t));
+    const rP = eIO(prg(6000,7800,t));
     const rOff = RING_C*(1-0.95*rP);
-    el('ring-prog').setAttribute('stroke-dashoffset', rOff);
-    el('ring-glow-filter').setAttribute('stroke-dashoffset', rOff);
-    el('score-num').textContent = Math.round(95*rP);
+    $('ring-prog').setAttribute('stroke-dashoffset', rOff);
+    $('ring-glow').setAttribute('stroke-dashoffset', rOff);
+    $('score-num').textContent = Math.round(95*rP);
 
-    // Ring glow pulses after ring completes
-    const glow = rP > 0.97
-      ? 0.30 + 0.45*Math.abs(Math.sin((t-6900)*0.0042))
-      : rP*0.3;
-    el('ring-glow-filter').style.opacity = glow;
+    const glow = rP>0.96
+      ? 0.28+0.48*Math.abs(Math.sin((t-7800)*0.0038))
+      : rP*0.28;
+    $('ring-glow').style.opacity = glow;
 
-    el('mech-1').style.opacity    = eIO(prg(6700,7000,t));
-    el('mech-2').style.opacity    = eIO(prg(7000,7300,t));
-    el('s3-labels').style.opacity = eIO(prg(5200,5600,t));
+    $('legendary-badge').style.opacity = eIO(prg(7600,7900,t));
+    $('mech-1').style.opacity = eIO(prg(7700,8000,t));
+    $('mech-2').style.opacity = eIO(prg(8000,8300,t));
   };
 
   window.setFrame(0);
