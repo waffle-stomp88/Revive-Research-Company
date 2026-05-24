@@ -20,7 +20,7 @@ export function AgeVerificationModal() {
 
   useEffect(() => {
     if (isSearchBot()) return;
-    const verified = sessionStorage.getItem(AGE_VERIFIED_KEY);
+    const verified = localStorage.getItem(AGE_VERIFIED_KEY);
     if (!verified) {
       setIsOpen(true);
     }
@@ -40,7 +40,7 @@ export function AgeVerificationModal() {
 
   const handleEnter = () => {
     if (agreed) {
-      sessionStorage.setItem(AGE_VERIFIED_KEY, "true");
+      localStorage.setItem(AGE_VERIFIED_KEY, "true");
       setIsOpen(false);
     }
   };
@@ -122,7 +122,7 @@ export function AgeVerificationModal() {
                     htmlFor="age-terms" 
                     className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1 pointer-events-none"
                   >
-                    I agree to these terms and confirm I am 21+.
+                    I confirm that I am 21 years of age or older and agree to the terms above.
                   </label>
                 </motion.div>
               </div>
