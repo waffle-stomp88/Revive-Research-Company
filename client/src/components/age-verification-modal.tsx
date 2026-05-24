@@ -88,42 +88,42 @@ export function AgeVerificationModal() {
                   Welcome to Revive Research. Every compound we offer is third-party tested with full documentation available. We believe researchers deserve transparency—from pricing to purity.
                 </p>
 
-                <div className="space-y-2 sm:space-y-3">
-                  <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.25) 0%, rgba(33, 216, 255, 0.15) 100%)', border: '1.5px solid rgba(33, 216, 255, 0.7)', boxShadow: '0 0 20px rgba(33, 216, 255, 0.4), inset 0 0 10px rgba(33, 216, 255, 0.15)' }}>
-                    <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#21d8ff' }} />
-                    <p className="text-xs" style={{ color: '#ffffff' }}>
-                      Products are for lawful research use only—not for human or animal consumption.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(236, 72, 153, 0.15) 100%)', border: '1.5px solid rgba(236, 72, 153, 0.7)', boxShadow: '0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.15)' }}>
-                    <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#ec4899' }} />
-                    <p className="text-xs" style={{ color: '#ffffff' }}>
-                      Purchaser assumes full responsibility for use, handling, and distribution.
-                    </p>
-                  </div>
-                </div>
-
-                <motion.div 
-                  className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all w-full"
-                  style={{ background: 'rgba(157, 78, 221, 0.05)', border: '1px solid rgba(157, 78, 221, 0.2)' }}
-                  whileHover={hoverIf(hoverCapable, { background: 'rgba(157, 78, 221, 0.1)', boxShadow: '0 0 15px rgba(157, 78, 221, 0.3)' })}
+                <motion.div
+                  className="rounded-lg cursor-pointer w-full overflow-hidden"
+                  style={{ border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.03)' }}
+                  whileHover={hoverIf(hoverCapable, { background: 'rgba(255,255,255,0.05)' })}
                   onClick={() => setAgreed(!agreed)}
                   data-testid="button-age-terms"
                 >
-                  <Checkbox
-                    id="age-terms"
-                    checked={agreed}
-                    onCheckedChange={(checked) => setAgreed(checked === true)}
-                    data-testid="checkbox-age-verification"
-                    className="pointer-events-none"
-                  />
-                  <label 
-                    htmlFor="age-terms" 
-                    className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1 pointer-events-none"
-                  >
-                    I confirm that I am 21 years of age or older and agree to the terms above.
-                  </label>
+                  <div className="px-4 pt-4 pb-3 space-y-2.5">
+                    <div className="flex items-start gap-2.5">
+                      <Shield className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Products are for lawful research use only — not for human or animal consumption.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Purchaser assumes full responsibility for use, handling, and distribution.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                    <Checkbox
+                      id="age-terms"
+                      checked={agreed}
+                      onCheckedChange={(checked) => setAgreed(checked === true)}
+                      data-testid="checkbox-age-verification"
+                      className="pointer-events-none"
+                    />
+                    <label
+                      htmlFor="age-terms"
+                      className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1 pointer-events-none"
+                    >
+                      I confirm that I am 21 years of age or older and agree to the terms above.
+                    </label>
+                  </div>
                 </motion.div>
               </div>
 
