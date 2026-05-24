@@ -36,9 +36,13 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 
 /* Toggle */
 .tog-outer{display:inline-flex;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:4px;position:relative;margin-bottom:16px}
-.tog-pill{position:absolute;top:4px;border-radius:8px;pointer-events:none}
+.tog-pill{position:absolute;top:4px;border-radius:8px;pointer-events:none;transition:none}
 .tog-btn{padding:7px 18px;border-radius:8px;font:600 12px/1 'DM Sans',sans-serif;color:#4a4a56;position:relative;z-index:1;white-space:nowrap}
-.ton{color:#1a1a1f}
+
+/* Cursor */
+.cursor{position:absolute;pointer-events:none;z-index:999;transform-origin:3px 3px}
+.cursor svg{display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7))}
+.click-ripple{position:absolute;width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);transform:scale(0);transform-origin:center;pointer-events:none;z-index:998}
 
 /* ── S1: Education Center ── */
 .edu-t{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:#f0f0f2;line-height:1;margin-bottom:4px}
@@ -58,13 +62,13 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 .ac-time{font:400 10px/1 'DM Sans',sans-serif;color:#38384a}
 .ac-ttl{font:600 12.5px/1.4 'DM Sans',sans-serif;color:#9090a0;margin-bottom:6px}
 .ac-diff{display:inline-block;font:500 9.5px/1 'DM Sans',sans-serif;padding:2px 8px;border-radius:4px}
-.cta-p{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid rgba(33,216,255,.22);background:rgba(33,216,255,.06);cursor:default}
+.cta-p{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid rgba(33,216,255,.22);background:rgba(33,216,255,.06)}
 .cta-p span{font:400 12px/1 'DM Sans',sans-serif;color:#4a4a58}
 .cta-p strong{font:700 12px/1 'DM Sans',sans-serif;color:#21d8ff}
 .cta-p em{font:700 12px/1 'DM Sans',sans-serif;font-style:normal;color:#E7FB10}
 .cta-p svg{width:12px;height:12px;stroke:#21d8ff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
-/* ── S2: QB Article ── */
+/* ── S2: Article ── */
 .sec-title{font:700 14px/1.2 'DM Sans',sans-serif;color:#d0d0d8;margin-bottom:8px}
 .sec-body{font:400 13px/1.65 'DM Sans',sans-serif;color:#484854;margin-bottom:12px}
 .kv-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
@@ -76,7 +80,6 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 .inf-box{border-radius:12px;border:1px solid rgba(231,251,16,.25);background:linear-gradient(135deg,rgba(231,251,16,.05) 0%,transparent 55%);padding:15px}
 .inf-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .inf-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;border:1px solid #E7FB10;background:linear-gradient(135deg,rgba(231,251,16,.14),rgba(33,216,255,.05))}
-.inf-badge svg{width:12px;height:12px;fill:#E7FB10}
 .inf-badge span{font:700 10.5px/1 'DM Sans',sans-serif;background:linear-gradient(90deg,#E7FB10,#21d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .ves-wrap{position:relative;width:300px;height:200px;margin:0 auto}
 .ves-bg{position:absolute;inset:0;border-radius:10px;background:radial-gradient(ellipse at 50% 90%,rgba(231,251,16,.13) 0%,transparent 65%)}
@@ -127,7 +130,6 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 <div id="s1" class="scene">
   <div class="edu-t">Education Center</div>
   <div class="edu-s">Open-access reference library for peptide research</div>
-
   <div class="tab-row">
     <div class="tab">All Articles</div>
     <div class="tab ta">Peptide Profiles</div>
@@ -135,84 +137,20 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
     <div class="tab">Understanding COAs</div>
     <div class="tab">Body Systems</div>
   </div>
-
   <div class="stats-row">
     <div class="sc"><div class="sc-dot"></div>30+ Articles</div>
     <div class="sc"><div class="sc-dot"></div>7 Body Systems</div>
     <div class="sc"><div class="sc-dot"></div>Quick Breakdown &amp; Deep Dive</div>
     <div class="sc"><div class="sc-dot"></div>Free Access</div>
   </div>
-
-  <!-- Article card grid 3×2 -->
   <div class="cg">
-    <div class="ac" id="c0" style="opacity:0">
-      <div class="ac-bar" style="background:#22c55e"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.09)">Healing</div>
-          <div class="ac-time">8 min</div>
-        </div>
-        <div class="ac-ttl">BPC-157: Tissue Repair Mechanisms</div>
-        <div class="ac-diff" style="background:rgba(34,197,94,.1);color:#22c55e">Beginner</div>
-      </div>
-    </div>
-    <div class="ac" id="c1" style="opacity:0">
-      <div class="ac-bar" style="background:#22c55e"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.09)">Healing</div>
-          <div class="ac-time">7 min</div>
-        </div>
-        <div class="ac-ttl">TB-500: Actin Remodeling &amp; Recovery</div>
-        <div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div>
-      </div>
-    </div>
-    <div class="ac" id="c2" style="opacity:0">
-      <div class="ac-bar" style="background:#E7FB10"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#c8d900;border-color:rgba(231,251,16,.3);background:rgba(231,251,16,.07)">Growth</div>
-          <div class="ac-time">10 min</div>
-        </div>
-        <div class="ac-ttl">CJC-1295: Growth Hormone Axis</div>
-        <div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div>
-      </div>
-    </div>
-    <div class="ac" id="c3" style="opacity:0">
-      <div class="ac-bar" style="background:#ec4899"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#ec4899;border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.08)">Skin</div>
-          <div class="ac-time">9 min</div>
-        </div>
-        <div class="ac-ttl">GHK-Cu: Copper Peptide Complex</div>
-        <div class="ac-diff" style="background:rgba(157,78,221,.08);color:#9d4edd">Advanced</div>
-      </div>
-    </div>
-    <div class="ac" id="c4" style="opacity:0">
-      <div class="ac-bar" style="background:#9d4edd"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#9d4edd;border-color:rgba(157,78,221,.3);background:rgba(157,78,221,.08)">Longevity</div>
-          <div class="ac-time">11 min</div>
-        </div>
-        <div class="ac-ttl">Epithalon: Telomere &amp; Longevity</div>
-        <div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div>
-      </div>
-    </div>
-    <div class="ac" id="c5" style="opacity:0">
-      <div class="ac-bar" style="background:#21d8ff"></div>
-      <div class="ac-body">
-        <div class="ac-top">
-          <div class="ac-cat" style="color:#21d8ff;border-color:rgba(33,216,255,.3);background:rgba(33,216,255,.07)">Cognitive</div>
-          <div class="ac-time">8 min</div>
-        </div>
-        <div class="ac-ttl">Semax: Cognitive Enhancement</div>
-        <div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div>
-      </div>
-    </div>
+    <div class="ac" id="c0" style="opacity:0"><div class="ac-bar" style="background:#22c55e"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.09)">Healing</div><div class="ac-time">8 min</div></div><div class="ac-ttl">BPC-157: Tissue Repair Mechanisms</div><div class="ac-diff" style="background:rgba(34,197,94,.1);color:#22c55e">Beginner</div></div></div>
+    <div class="ac" id="c1" style="opacity:0"><div class="ac-bar" style="background:#22c55e"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.09)">Healing</div><div class="ac-time">7 min</div></div><div class="ac-ttl">TB-500: Actin Remodeling &amp; Recovery</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
+    <div class="ac" id="c2" style="opacity:0"><div class="ac-bar" style="background:#E7FB10"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#c8d900;border-color:rgba(231,251,16,.3);background:rgba(231,251,16,.07)">Growth</div><div class="ac-time">10 min</div></div><div class="ac-ttl">CJC-1295: Growth Hormone Axis</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
+    <div class="ac" id="c3" style="opacity:0"><div class="ac-bar" style="background:#ec4899"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#ec4899;border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.08)">Skin</div><div class="ac-time">9 min</div></div><div class="ac-ttl">GHK-Cu: Copper Peptide Complex</div><div class="ac-diff" style="background:rgba(157,78,221,.08);color:#9d4edd">Advanced</div></div></div>
+    <div class="ac" id="c4" style="opacity:0"><div class="ac-bar" style="background:#9d4edd"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#9d4edd;border-color:rgba(157,78,221,.3);background:rgba(157,78,221,.08)">Longevity</div><div class="ac-time">11 min</div></div><div class="ac-ttl">Epithalon: Telomere &amp; Longevity</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
+    <div class="ac" id="c5" style="opacity:0"><div class="ac-bar" style="background:#21d8ff"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#21d8ff;border-color:rgba(33,216,255,.3);background:rgba(33,216,255,.07)">Cognitive</div><div class="ac-time">8 min</div></div><div class="ac-ttl">Semax: Cognitive Enhancement</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
   </div>
-
   <div class="cta-p">
     <svg viewBox="0 0 16 16"><path d="M2 12l5-5 3 3 4-4M14 6h-4M14 6v4"/></svg>
     <span>New to peptides?</span>
@@ -223,31 +161,31 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 </div>
 
 <!-- ════════════════════════════════════════════
-     S2 — BPC-157 Quick Breakdown
+     S2 — BPC-157 Article (QB → mouse click → DD)
 ════════════════════════════════════════════ -->
-<div id="s2" class="scene">
-  <div class="back">
-    <svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>
-    Education Center
-  </div>
+<div id="s2" class="scene" style="overflow:visible">
+
+  <div class="back"><svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>Education Center</div>
+
   <div class="bdg-row">
     <div class="bdg bg">Peptide Profile</div>
     <div class="bdg bg">Healing System</div>
     <div class="bdg bm">8 min read</div>
     <div class="bdg bc">Academy Lesson</div>
   </div>
-  <div class="art-title">BPC-157: Tissue Repair Mechanisms</div>
-  <div class="art-sum">How Body Protection Compound modulates angiogenesis, growth factor signaling, and nitric oxide pathways in connective tissue repair.</div>
 
-  <!-- Toggle: QB active -->
-  <div class="tog-outer">
-    <div class="tog-pill" id="s2-pill" style="background:linear-gradient(135deg,#22c55e,#16a34a)"></div>
-    <div class="tog-btn ton" id="s2-qb">Quick Breakdown</div>
+  <div class="art-title">BPC-157: Tissue Repair Mechanisms</div>
+  <div class="art-sum" style="margin-bottom:12px">How Body Protection Compound modulates angiogenesis, growth factor signaling, and nitric oxide pathways in connective tissue repair.</div>
+
+  <!-- Toggle (pill animated by JS) -->
+  <div class="tog-outer" id="s2-tog">
+    <div class="tog-pill" id="s2-pill"></div>
+    <div class="tog-btn" id="s2-qb">Quick Breakdown</div>
     <div class="tog-btn" id="s2-dd">Deep Dive</div>
   </div>
 
   <!-- QB content -->
-  <div>
+  <div id="s2-qb-content">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
       <div class="bdg bg" style="padding:5px 11px;font-size:11px">
         <svg viewBox="0 0 12 12" style="width:10px;height:10px;stroke:#22c55e;fill:none;stroke-width:2"><polyline points="2,6 5,9 10,3"/></svg>
@@ -255,7 +193,7 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
       </div>
     </div>
     <div class="sec-title">What Makes BPC-157 Special?</div>
-    <div class="sec-body">Think of BPC-157 as your body's emergency construction crew. Where normal healing might take weeks, BPC-157 signals cells to start building and repairing immediately — activating multiple repair pathways simultaneously.</div>
+    <div class="sec-body">Think of BPC-157 as your body's emergency construction crew — activating multiple repair pathways simultaneously to accelerate tissue healing.</div>
     <ul class="kv-list">
       <li class="kv-item"><div class="kv-dot" style="background:#22c55e"></div>Activates VEGF pathways to stimulate new blood vessel growth at injury sites</li>
       <li class="kv-item"><div class="kv-dot" style="background:#21d8ff"></div>Upregulates growth hormone receptors in damaged connective tissue</li>
@@ -263,43 +201,60 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
     </ul>
     <div class="tag-row">
       <div class="bdg bg">Healing System</div>
-      <div class="bdg bg">Tissue Repair</div>
       <div class="bdg bg">Angiogenesis</div>
       <div class="bdg bc">Nitric Oxide</div>
     </div>
   </div>
+
+  <!-- DD intro content (hidden, fades in after click) -->
+  <div id="s2-dd-content" style="opacity:0;position:absolute;left:38px;right:38px">
+    <div class="sec-title" style="color:#9d4edd;margin-bottom:9px">Molecular Pathway Analysis</div>
+    <div class="sec-body">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration across damaged tissue matrices.</div>
+    <div class="sec-body">Research confirms upregulation of VEGFR2, eNOS, and FAK signaling — establishing a multi-pathway repair network unique among known peptide sequences.</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;border:1px solid rgba(231,251,16,.2);background:rgba(231,251,16,.04)">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.2 3.5.5-2.5 2.4.6 3.4L7 8.9l-3.1 1.6.6-3.4L2 4.7l3.5-.5z" stroke="#E7FB10" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      <span style="font:500 11.5px/1.4 'DM Sans',sans-serif;color:#5a5a66">See the interactive angiogenesis visualization below</span>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto"><polyline points="2,2 5,6 8,2" stroke="#E7FB10" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <!-- Mouse cursor -->
+  <div class="cursor" id="s2-cursor" style="opacity:0;left:0;top:0">
+    <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+      <path d="M2 2l16 10-7 1.5-4 7z" fill="white" stroke="rgba(0,0,0,.5)" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <!-- Click ripple -->
+  <div class="click-ripple" id="s2-ripple" style="left:0;top:0"></div>
+
 </div>
 
 <!-- ════════════════════════════════════════════
-     S3 — BPC-157 Deep Dive + Real Angiogenesis
+     S3 — BPC-157 Deep Dive + Real Vessel Animation
 ════════════════════════════════════════════ -->
 <div id="s3" class="scene">
-  <div class="back">
-    <svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>
-    Education Center
-  </div>
-  <div class="art-title" style="font-size:20px;margin-bottom:4px">BPC-157: Tissue Repair Mechanisms</div>
+  <div class="back"><svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>Education Center</div>
+  <div class="art-title" style="font-size:19px;margin-bottom:4px">BPC-157: Tissue Repair Mechanisms</div>
 
-  <!-- Toggle: DD active -->
-  <div class="tog-outer" style="margin-bottom:12px">
+  <!-- Toggle: DD locked -->
+  <div class="tog-outer" style="margin-bottom:11px">
     <div class="tog-pill" id="s3-pill" style="background:linear-gradient(135deg,#9d4edd,#7c3aed)"></div>
     <div class="tog-btn" id="s3-qb">Quick Breakdown</div>
-    <div class="tog-btn ton" id="s3-dd">Deep Dive</div>
+    <div class="tog-btn" id="s3-dd" style="color:#1a1a1f">Deep Dive</div>
   </div>
 
-  <div class="art-sum" style="margin-bottom:11px">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration.</div>
+  <div class="art-sum" style="margin-bottom:11px;font-size:12.5px">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration.</div>
 
-  <!-- Real BPC-157 Angiogenesis Infographic -->
+  <!-- Angiogenesis infographic -->
   <div class="inf-box">
     <div class="inf-top">
       <div class="inf-badge">
-        <svg viewBox="0 0 12 12"><path d="M10.5 5.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM6 3.5v3M6 7.5v.5"/></svg>
+        <svg width="12" height="12" viewBox="0 0 12 12" style="fill:#E7FB10"><path d="M10.5 5.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/><path d="M6 3.5v3M6 7.5v.5" stroke="#1a1a1f" stroke-width="1" fill="none"/></svg>
         <span>Angiogenesis Mechanism</span>
       </div>
       <div style="font:400 10px/1 'DM Sans',sans-serif;color:#3a3a48">Interactive research visualization</div>
     </div>
 
-    <!-- The real SVG vessel tree (300×200 viewBox, matching bpc157-angiogenesis-visual.tsx) -->
     <div class="ves-wrap">
       <div class="ves-bg"></div>
       <svg id="ves-svg" viewBox="0 0 300 200" width="300" height="200" style="display:block;width:300px;height:200px">
@@ -309,38 +264,23 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-
-        <!-- BPC circle (pulsing yellow) -->
         <circle id="bpc-c" cx="150" cy="185" r="12" fill="#E7FB10" style="filter:drop-shadow(0 0 8px rgba(231,251,16,.85))"/>
         <text x="150" y="188.5" text-anchor="middle" fill="#1a1a1f" font-size="7.5" font-weight="bold" font-family="DM Sans,sans-serif">BPC</text>
-
-        <!-- 11 vessel branches — same paths as real component -->
-        <!-- Trunk (yellow, thick) -->
-        <path id="v0" d="M 150 180 Q 150 140 150 100" fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:80;stroke-dashoffset:80;opacity:0"/>
-        <!-- Primary left (yellow) -->
-        <path id="v1" d="M 150 100 Q 120 80 90 60" fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <!-- Primary right (yellow) -->
-        <path id="v2" d="M 150 100 Q 180 80 210 60" fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <!-- Secondary far-left (cyan) -->
-        <path id="v3" d="M 90 60 Q 60 50 40 30" fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <!-- Secondary inner-left (cyan) -->
-        <path id="v4" d="M 90 60 Q 80 40 70 20" fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
-        <!-- Secondary far-right (cyan) -->
-        <path id="v5" d="M 210 60 Q 230 50 250 30" fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <!-- Secondary inner-right (cyan) -->
-        <path id="v6" d="M 210 60 Q 220 40 230 20" fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
-        <!-- Tertiary tips (pink) -->
-        <path id="v7" d="M 40 30 Q 25 20 15 10" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
-        <path id="v8" d="M 250 30 Q 265 20 275 10" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
-        <path id="v9" d="M 70 20 Q 55 10 45 5" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
-        <path id="v10" d="M 230 20 Q 245 10 255 5" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
-
-        <!-- "New Vessel Formation" label (appears after vessels draw) -->
+        <path id="v0"  d="M 150 180 Q 150 140 150 100" fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:80;stroke-dashoffset:80;opacity:0"/>
+        <path id="v1"  d="M 150 100 Q 120 80 90 60"   fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v2"  d="M 150 100 Q 180 80 210 60"  fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v3"  d="M 90 60 Q 60 50 40 30"     fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v4"  d="M 90 60 Q 80 40 70 20"     fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
+        <path id="v5"  d="M 210 60 Q 230 50 250 30"  fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v6"  d="M 210 60 Q 220 40 230 20"  fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
+        <path id="v7"  d="M 40 30 Q 25 20 15 10"     fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
+        <path id="v8"  d="M 250 30 Q 265 20 275 10"  fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
+        <path id="v9"  d="M 70 20 Q 55 10 45 5"      fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
+        <path id="v10" d="M 230 20 Q 245 10 255 5"   fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
         <text id="nvf" x="150" y="11" text-anchor="middle" fill="#E7FB10" font-size="9.5" font-weight="bold" font-family="DM Sans,sans-serif" style="opacity:0;filter:drop-shadow(0 0 5px rgba(231,251,16,.7))">New Vessel Formation</text>
       </svg>
     </div>
 
-    <!-- Phase section -->
     <div id="ph-sec" style="opacity:0">
       <div style="font:600 9px/1 'DM Sans',sans-serif;color:#444452;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px">Angiogenesis Phases</div>
       <div class="ph-grid">
@@ -350,7 +290,7 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
         <div class="ph-btn" id="p3"><div class="ph-dot" style="background:#ec4899"></div><span class="ph-lbl" id="pl3">Tissue Perfusion</span></div>
       </div>
       <div class="ph-descs">
-        <div class="ph-desc" id="pd0" style="background:rgba(231,251,16,.06);border:1px solid rgba(231,251,16,.18)">BPC-157 upregulates VEGF, triggering growth factor signaling cascades that initiate vessel formation</div>
+        <div class="ph-desc" id="pd0" style="background:rgba(231,251,16,.06);border:1px solid rgba(231,251,16,.18)">BPC-157 upregulates VEGF, triggering growth factor cascades that initiate vessel formation</div>
         <div class="ph-desc" id="pd1" style="background:rgba(33,216,255,.06);border:1px solid rgba(33,216,255,.18)">Endothelial cells migrate toward the injury site, guided by chemotactic VEGF gradients</div>
         <div class="ph-desc" id="pd2" style="background:rgba(157,78,221,.06);border:1px solid rgba(157,78,221,.18)">New capillary branches sprout and extend through damaged tissue, establishing vascular networks</div>
         <div class="ph-desc" id="pd3" style="background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.18)">Restored blood flow delivers oxygen and nutrients to healing tissue via new vascular pathways</div>
@@ -360,7 +300,7 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 </div>
 
 <!-- ════════════════════════════════════════════
-     S4 — Research Academy Curriculum
+     S4 — Research Academy
 ════════════════════════════════════════════ -->
 <div id="s4" class="scene">
   <div class="acad-hd">
@@ -370,69 +310,31 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
     <div class="acad-t">Research Academy</div>
     <div class="acad-s">Your structured path from beginner to expert researcher</div>
   </div>
-
   <div class="persona-row">
     <div class="pers-btn">Beginner</div>
     <div class="pers-btn pa">Intermediate</div>
     <div class="pers-btn">Advanced</div>
   </div>
-
   <div class="mod-grid">
-    <!-- Module 1: Orientation -->
     <div class="mod-card" id="m0" style="opacity:0;transform:translateY(16px);border-color:rgba(33,216,255,.25);background:rgba(33,216,255,.04)">
-      <div class="mod-hd">
-        <div class="mod-ic" style="background:rgba(33,216,255,.12)">
-          <svg viewBox="0 0 24 24" style="stroke:#21d8ff"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div class="mod-name" style="color:#21d8ff">Orientation</div>
-      </div>
+      <div class="mod-hd"><div class="mod-ic" style="background:rgba(33,216,255,.12)"><svg viewBox="0 0 24 24" style="stroke:#21d8ff"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="mod-name" style="color:#21d8ff">Orientation</div></div>
       <div class="mod-desc">Research fundamentals, legal landscape, and your first order</div>
-      <div class="mod-ft">
-        <div class="mod-ls">5 lessons</div>
-        <div class="mod-xp" style="color:#21d8ff">55 XP</div>
-      </div>
+      <div class="mod-ft"><div class="mod-ls">5 lessons</div><div class="mod-xp" style="color:#21d8ff">55 XP</div></div>
     </div>
-    <!-- Module 2: Core Foundations -->
     <div class="mod-card" id="m1" style="opacity:0;transform:translateY(16px);border-color:rgba(231,251,16,.25);background:rgba(231,251,16,.04)">
-      <div class="mod-hd">
-        <div class="mod-ic" style="background:rgba(231,251,16,.12)">
-          <svg viewBox="0 0 24 24" style="stroke:#c8d900"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <div class="mod-name" style="color:#c8d900">Core Foundations</div>
-      </div>
+      <div class="mod-hd"><div class="mod-ic" style="background:rgba(231,251,16,.12)"><svg viewBox="0 0 24 24" style="stroke:#c8d900"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="mod-name" style="color:#c8d900">Core Foundations</div></div>
       <div class="mod-desc">Purity, lyophilization, peptide stability, and reconstitution</div>
-      <div class="mod-ft">
-        <div class="mod-ls">4 lessons</div>
-        <div class="mod-xp" style="color:#c8d900">85 XP</div>
-      </div>
+      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#c8d900">85 XP</div></div>
     </div>
-    <!-- Module 3: Research Skills -->
     <div class="mod-card" id="m2" style="opacity:0;transform:translateY(16px);border-color:rgba(157,78,221,.25);background:rgba(157,78,221,.04)">
-      <div class="mod-hd">
-        <div class="mod-ic" style="background:rgba(157,78,221,.12)">
-          <svg viewBox="0 0 24 24" style="stroke:#9d4edd"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H3m6 0h12M3 14v6a2 2 0 002 2h14a2 2 0 002-2v-6"/></svg>
-        </div>
-        <div class="mod-name" style="color:#9d4edd">Research Skills</div>
-      </div>
+      <div class="mod-hd"><div class="mod-ic" style="background:rgba(157,78,221,.12)"><svg viewBox="0 0 24 24" style="stroke:#9d4edd"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H3m6 0h12M3 14v6a2 2 0 002 2h14a2 2 0 002-2v-6"/></svg></div><div class="mod-name" style="color:#9d4edd">Research Skills</div></div>
       <div class="mod-desc">COA reading, literature review, lab safety, documentation</div>
-      <div class="mod-ft">
-        <div class="mod-ls">4 lessons</div>
-        <div class="mod-xp" style="color:#9d4edd">90 XP</div>
-      </div>
+      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#9d4edd">90 XP</div></div>
     </div>
-    <!-- Module 4: Lab Confidence -->
     <div class="mod-card" id="m3" style="opacity:0;transform:translateY(16px);border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04)">
-      <div class="mod-hd">
-        <div class="mod-ic" style="background:rgba(34,197,94,.12)">
-          <svg viewBox="0 0 24 24" style="stroke:#22c55e"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-        </div>
-        <div class="mod-name" style="color:#22c55e">Lab Confidence</div>
-      </div>
+      <div class="mod-hd"><div class="mod-ic" style="background:rgba(34,197,94,.12)"><svg viewBox="0 0 24 24" style="stroke:#22c55e"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div><div class="mod-name" style="color:#22c55e">Lab Confidence</div></div>
       <div class="mod-desc">Troubleshooting, advanced techniques, and final review</div>
-      <div class="mod-ft">
-        <div class="mod-ls">4 lessons</div>
-        <div class="mod-xp" style="color:#22c55e">135 XP</div>
-      </div>
+      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#22c55e">135 XP</div></div>
     </div>
   </div>
 </div>
@@ -443,20 +345,18 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 window.__fontsReady = false;
 document.fonts.ready.then(() => { window.__fontsReady = true; });
 
-// ── Math helpers ──────────────────────────────────────
 const clamp = (v,a,b) => Math.min(b,Math.max(a,v));
 const pct   = (t,a,b) => clamp((t-a)/(b-a),0,1);
 const eOut  = x => 1 - Math.pow(1-x,3);
-const eIn   = x => x * x * x;
+const eSin  = x => Math.sin(x * Math.PI / 2);
 
-// ── Scene windows [full_start, full_end] ──────────────
-// Transition cross-fade = 450ms
+// Scene windows
 const FADE = 450;
 const S = [
   [300,  2500],   // S1 Education Center
-  [2950, 4950],   // S2 QB Article
-  [5400, 9100],   // S3 DD + Vessel animation  (3.7s — longest)
-  [9600, 12000],  // S4 Academy Curriculum
+  [2950, 5200],   // S2 QB → DD click (longer to show DD intro)
+  [5650, 9300],   // S3 Vessel animation
+  [9800, 12300],  // S4 Academy
 ];
 
 function sceneA(t, i) {
@@ -466,25 +366,44 @@ function sceneA(t, i) {
   return t < s ? eOut(pct(t, s-FADE, s)) : 1-eOut(pct(t, e, e+FADE));
 }
 
-// ── Vessel animation constants (S3) ──────────────────
-const VD    = [0,0.3,0.4,0.7,0.8,0.9,1.0,1.3,1.4,1.5,1.6]; // delays from real component
-const VLEN  = [80,55,55,55,45,55,45,30,30,25,25];            // approx path lengths
-const VS    = 5600;  // vessel draw start time (ms)
-const VSCL  = 800;   // delay scale (ms per delay unit)
-const VDUR  = 520;   // each vessel draw duration (ms)
-const PLBL  = ['#E7FB10','#21d8ff','#9d4edd','#ec4899'];
-const PHS   = 7400;  // phase cycling start (ms) — after vessels done
-const PHDT  = 380;   // ms per phase (cycles ~4.5s of S3 remaining)
+// Cursor / click timing (within S2)
+const CUR_APPEAR = 3500;  // cursor fades in
+const CUR_MOVE   = 400;   // ms to drift to DD button
+const CUR_LAND   = 3900;  // cursor lands on DD
+const CUR_CLICK  = 4050;  // click moment
+const CUR_FADE   = 4350;  // cursor fades out
+
+// Pill slide: QB (green) → DD (purple)
+const PILL_S = 4050;
+const PILL_D = 320;
+
+// Content swap
+const QB_FADE_S = 4050;
+const DD_FADE_S = 4200;
+
+// Vessel animation (S3 scene)
+const VD   = [0,0.3,0.4,0.7,0.8,0.9,1.0,1.3,1.4,1.5,1.6];
+const VLEN = [80,55,55,55,45,55,45,30,30,25,25];
+const VS   = 5800;
+const VSCL = 800;
+const VDUR = 520;
+const PLBL = ['#E7FB10','#21d8ff','#9d4edd','#ec4899'];
+const PHS  = 7600;
+const PHDT = 380;
+
+// Ripple state
+let ripplePlaying = false;
+let rippleStart   = 0;
 
 window.setFrame = function(t) {
-  // ── Scene opacity ──────────────────────────────────
+  // ── Scene opacities ──────────────────────────
   for (let i=0;i<4;i++) {
-    const el=document.getElementById('s'+(i+1));
+    const el = document.getElementById('s'+(i+1));
     if (el) el.style.opacity = sceneA(t,i);
   }
 
-  // ── URL bar ───────────────────────────────────────
-  const pathEl=document.getElementById('curl-path');
+  // ── URL bar ───────────────────────────────────
+  const pathEl = document.getElementById('curl-path');
   if (pathEl) {
     const a2=sceneA(t,1), a3=sceneA(t,2);
     if (a2>0.5||a3>0.5) pathEl.textContent='/guides/what-is-bpc-157-peptide';
@@ -492,84 +411,158 @@ window.setFrame = function(t) {
     else pathEl.textContent='/guides/peptide-education-center';
   }
 
-  // ── S1: Staggered card entry ───────────────────────
-  const s1s=S[0][0];
+  // ── S1: card stagger ─────────────────────────
+  const s1s = S[0][0];
   for (let i=0;i<6;i++) {
-    const el=document.getElementById('c'+i);
+    const el = document.getElementById('c'+i);
     if (el) el.style.opacity = eOut(pct(t, s1s+i*140, s1s+i*140+450));
   }
 
-  // ── S2: Toggle pill geometry ──────────────────────
-  const s2pill=document.getElementById('s2-pill');
-  const s2qb=document.getElementById('s2-qb');
-  if (s2pill && s2qb) {
-    s2pill.style.left='4px';
-    s2pill.style.width=s2qb.offsetWidth+'px';
-    s2pill.style.height=s2qb.offsetHeight+'px';
+  // ── S2: toggle pill ───────────────────────────
+  const s2qbEl  = document.getElementById('s2-qb');
+  const s2ddEl  = document.getElementById('s2-dd');
+  const s2pill  = document.getElementById('s2-pill');
+
+  if (s2pill && s2qbEl && s2ddEl) {
+    const qbW = s2qbEl.offsetWidth;
+    const ddW = s2ddEl.offsetWidth;
+    const h   = s2qbEl.offsetHeight;
+    const p   = eOut(pct(t, PILL_S, PILL_S+PILL_D));
+
+    // Interpolate x and width
+    const startX = 4, endX = 4 + qbW;
+    const curX   = startX + (endX - startX) * p;
+    const curW   = qbW + (ddW - qbW) * p;
+
+    s2pill.style.left   = curX + 'px';
+    s2pill.style.width  = curW + 'px';
+    s2pill.style.height = h + 'px';
+
+    // Color: green → purple
+    const c1=[34,197,94], c2=[157,78,221];
+    const c1b=[22,163,74], c2b=[124,58,237];
+    const mix = (a,b,t) => Math.round(a+(b-a)*p);
+    s2pill.style.background = `linear-gradient(135deg,rgb(${c1.map((v,i)=>mix(v,c2[i],p)).join(',')}),rgb(${c1b.map((v,i)=>mix(v,c2b[i],p)).join(',')}))`;
+
+    // Button text colors
+    s2qbEl.style.color = p < 0.5 ? '#1a1a1f' : '#4a4a56';
+    s2ddEl.style.color = p >= 0.5 ? '#1a1a1f' : '#4a4a56';
+
+    // S2 starts with pill on QB
+    if (t < PILL_S) {
+      s2pill.style.left  = '4px';
+      s2pill.style.width = qbW + 'px';
+      s2pill.style.height = h + 'px';
+      s2pill.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+      s2qbEl.style.color = '#1a1a1f';
+      s2ddEl.style.color = '#4a4a56';
+    }
   }
 
-  // ── S3: DD pill geometry ──────────────────────────
-  const s3pill=document.getElementById('s3-pill');
-  const s3qb=document.getElementById('s3-qb');
-  const s3dd=document.getElementById('s3-dd');
+  // ── S2: content swap ─────────────────────────
+  const qbCont = document.getElementById('s2-qb-content');
+  const ddCont = document.getElementById('s2-dd-content');
+  if (qbCont) qbCont.style.opacity = 1 - eOut(pct(t, QB_FADE_S, QB_FADE_S+280));
+  if (ddCont) ddCont.style.opacity = eOut(pct(t, DD_FADE_S, DD_FADE_S+380));
+
+  // ── S2: cursor movement ───────────────────────
+  const curEl  = document.getElementById('s2-cursor');
+  const ripple = document.getElementById('s2-ripple');
+
+  if (curEl) {
+    // Starting position (lower content area), ending at DD button
+    // DD button center: tog padding-left=38, QB width≈138px, DD width≈104px → center at 38+138+52=228px from scene left
+    // y: toggle top ≈ 175px into scene
+    const X0=62, Y0=395, X1=229, Y1=177;
+    const moveP = eSin(pct(t, CUR_APPEAR+80, CUR_LAND));
+    const cx = X0 + (X1-X0)*moveP;
+    const cy = Y0 + (Y1-Y0)*moveP;
+
+    const fadeIn  = pct(t, CUR_APPEAR, CUR_APPEAR+200);
+    const fadeOut = 1 - pct(t, CUR_FADE, CUR_FADE+300);
+    curEl.style.opacity = Math.min(fadeIn, fadeOut);
+    curEl.style.transform = `translate(${cx}px,${cy}px)`;
+
+    // Click shrink
+    if (t >= CUR_CLICK && t < CUR_CLICK+130) {
+      curEl.style.transform = `translate(${cx}px,${cy}px) scale(0.72)`;
+    }
+  }
+
+  // ── Click ripple ──────────────────────────────
+  if (ripple) {
+    const X1=229, Y1=177;
+    if (t >= CUR_CLICK && t < CUR_CLICK+500) {
+      const rp = pct(t, CUR_CLICK, CUR_CLICK+460);
+      const scale = rp * 2.8;
+      const alpha = 1 - rp;
+      ripple.style.opacity = alpha;
+      ripple.style.transform = `translate(${X1-14}px,${Y1-14}px) scale(${scale})`;
+    } else {
+      ripple.style.opacity = 0;
+    }
+  }
+
+  // ── S3: DD pill geometry ──────────────────────
+  const s3pill = document.getElementById('s3-pill');
+  const s3qb   = document.getElementById('s3-qb');
+  const s3dd   = document.getElementById('s3-dd');
   if (s3pill && s3qb && s3dd) {
-    s3pill.style.left=(4+s3qb.offsetWidth)+'px';
-    s3pill.style.width=s3dd.offsetWidth+'px';
-    s3pill.style.height=s3dd.offsetHeight+'px';
+    s3pill.style.left   = (4+s3qb.offsetWidth)+'px';
+    s3pill.style.width  = s3dd.offsetWidth+'px';
+    s3pill.style.height = s3dd.offsetHeight+'px';
   }
 
-  // ── S3: BPC circle pulse ──────────────────────────
-  const bpcC=document.getElementById('bpc-c');
+  // ── S3: BPC circle pulse ──────────────────────
+  const bpcC = document.getElementById('bpc-c');
   if (bpcC) {
-    const pulse=Math.sin((t-VS)/680*Math.PI);
-    bpcC.setAttribute('r', 12+2.8*Math.max(0,pulse));
+    const pulse = Math.sin((t-VS)/650*Math.PI);
+    bpcC.setAttribute('r', 12 + 2.8*Math.max(0,pulse));
   }
 
-  // ── S3: Vessel draw animation ──────────────────────
+  // ── S3: Vessel draw ───────────────────────────
   for (let i=0;i<11;i++) {
-    const el=document.getElementById('v'+i);
+    const el = document.getElementById('v'+i);
     if (!el) continue;
-    const vs2=VS+VD[i]*VSCL;
-    const p=eOut(pct(t, vs2, vs2+VDUR));
+    const vs2 = VS+VD[i]*VSCL;
+    const p   = eOut(pct(t, vs2, vs2+VDUR));
     el.style.strokeDashoffset = VLEN[i]*(1-p);
     el.style.opacity = p>0.01 ? 1 : 0;
   }
 
-  // "New Vessel Formation" label
-  const nvf=document.getElementById('nvf');
-  const lastVEnd=VS+VD[10]*VSCL+VDUR;
-  if (nvf) nvf.style.opacity=eOut(pct(t, lastVEnd, lastVEnd+500));
+  const nvf = document.getElementById('nvf');
+  const lastVEnd = VS+VD[10]*VSCL+VDUR;
+  if (nvf) nvf.style.opacity = eOut(pct(t, lastVEnd, lastVEnd+500));
 
-  // Phase section fade in
-  const phSec=document.getElementById('ph-sec');
-  if (phSec) phSec.style.opacity=eOut(pct(t, PHS-350, PHS+100));
+  // ── S3: Phase section ─────────────────────────
+  const phSec = document.getElementById('ph-sec');
+  if (phSec) phSec.style.opacity = eOut(pct(t, PHS-350, PHS+100));
 
-  // Phase button cycling
-  let activePhase=-1;
-  if (t>=PHS) activePhase=Math.floor((t-PHS)/PHDT)%4;
+  let activePhase = -1;
+  if (t >= PHS) activePhase = Math.floor((t-PHS)/PHDT)%4;
 
   for (let i=0;i<4;i++) {
-    const btn=document.getElementById('p'+i);
-    const desc=document.getElementById('pd'+i);
-    const lbl=document.getElementById('pl'+i);
-    const on=i===activePhase;
+    const btn  = document.getElementById('p'+i);
+    const desc = document.getElementById('pd'+i);
+    const lbl  = document.getElementById('pl'+i);
+    const on   = i===activePhase;
     if (btn) {
-      btn.style.borderColor    = on ? PLBL[i] : 'rgba(255,255,255,.08)';
-      btn.style.backgroundColor= on ? PLBL[i]+'1c' : 'rgba(255,255,255,.02)';
-      btn.style.boxShadow      = on ? '0 0 16px '+PLBL[i]+'38' : 'none';
+      btn.style.borderColor     = on ? PLBL[i]         : 'rgba(255,255,255,.08)';
+      btn.style.backgroundColor = on ? PLBL[i]+'1c'   : 'rgba(255,255,255,.02)';
+      btn.style.boxShadow       = on ? '0 0 16px '+PLBL[i]+'38' : 'none';
     }
-    if (lbl) lbl.style.color=on ? PLBL[i] : '#484854';
-    if (desc) desc.style.display=on ? 'block' : 'none';
+    if (lbl)  lbl.style.color  = on ? PLBL[i] : '#484854';
+    if (desc) desc.style.display = on ? 'block' : 'none';
   }
 
-  // ── S4: Module card stagger + slide ──────────────
-  const s4s=S[3][0];
+  // ── S4: Module stagger ────────────────────────
+  const s4s = S[3][0];
   for (let i=0;i<4;i++) {
-    const el=document.getElementById('m'+i);
+    const el = document.getElementById('m'+i);
     if (el) {
-      const p=eOut(pct(t, s4s+i*240, s4s+i*240+480));
-      el.style.opacity=p;
-      el.style.transform='translateY('+(1-p)*16+'px)';
+      const p = eOut(pct(t, s4s+i*240, s4s+i*240+480));
+      el.style.opacity   = p;
+      el.style.transform = 'translateY('+(1-p)*16+'px)';
     }
   }
 };
