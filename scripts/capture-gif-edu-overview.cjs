@@ -13,7 +13,7 @@ const OUTPUT     = path.resolve(__dirname, "../exports/email2-edu-overview.gif")
 const WIDTH      = 680;
 const HEIGHT     = 700;
 const FPS        = 15;
-const DURATION_S = 12.5;
+const DURATION_S = 15.5;
 const TOTAL_FRAMES = Math.ceil(FPS * DURATION_S);
 const INTERVAL_MS  = Math.round(1000 / FPS);
 

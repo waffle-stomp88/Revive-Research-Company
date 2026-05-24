@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased}
 
 /* Chrome */
 .chrome{height:40px;background:#111116;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 14px;gap:10px}
@@ -19,101 +19,156 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 
 /* Scene wrapper */
 .sw{position:relative;width:680px;height:660px;overflow:hidden}
-.scene{position:absolute;inset:0;opacity:0;background:#1a1a1f;padding:26px 38px 22px;overflow:hidden}
+.scene{position:absolute;inset:0;opacity:0;background:#1a1a1f;padding:24px 36px 20px;overflow:hidden}
 
-/* ── SHARED ── */
-.back{display:flex;align-items:center;gap:5px;font:400 12px/1 'DM Sans',sans-serif;color:#484854;margin-bottom:12px}
-.back svg{width:12px;height:12px;fill:currentColor}
-.bdg-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+/* Shared */
+.back{display:flex;align-items:center;gap:5px;font:400 11.5px/1 'DM Sans',sans-serif;color:#484854;margin-bottom:10px}
+.bdg-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:9px}
 .bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;border:1px solid;font:600 10.5px/1.3 'DM Sans',sans-serif;white-space:nowrap}
 .bg{color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.09)}
 .bc{color:#21d8ff;border-color:rgba(33,216,255,.3);background:rgba(33,216,255,.07)}
 .bm{color:#4e4e5a;border-color:rgba(255,255,255,.1);background:transparent}
-.by{color:#c8d900;border-color:rgba(231,251,16,.3);background:rgba(231,251,16,.07)}
 .bp{color:#9d4edd;border-color:rgba(157,78,221,.3);background:rgba(157,78,221,.08)}
-.art-title{font:700 22px/1.2 'DM Sans',sans-serif;color:#22c55e;margin-bottom:6px}
-.art-sum{font:400 13px/1.6 'DM Sans',sans-serif;color:#434350;margin-bottom:14px}
-
-/* Toggle */
-.tog-outer{display:inline-flex;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:4px;position:relative;margin-bottom:16px}
-.tog-pill{position:absolute;top:4px;border-radius:8px;pointer-events:none;transition:none}
-.tog-btn{padding:7px 18px;border-radius:8px;font:600 12px/1 'DM Sans',sans-serif;color:#4a4a56;position:relative;z-index:1;white-space:nowrap}
+.tog-outer{display:inline-flex;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:4px;position:relative;margin-bottom:14px}
+.tog-pill{position:absolute;top:4px;border-radius:8px;pointer-events:none}
+.tog-btn{padding:7px 18px;border-radius:8px;font:600 11.5px/1 'DM Sans',sans-serif;color:#4a4a56;position:relative;z-index:1;white-space:nowrap}
+.art-title{font:700 21px/1.2 'DM Sans',sans-serif;color:#22c55e;margin-bottom:5px}
+.art-sum{font:400 12.5px/1.55 'DM Sans',sans-serif;color:#434350;margin-bottom:12px}
+.sec-title{font:700 14px/1.2 'DM Sans',sans-serif;color:#d0d0d8;margin-bottom:7px}
+.sec-body{font:400 12.5px/1.6 'DM Sans',sans-serif;color:#484854;margin-bottom:10px}
 
 /* Cursor */
-.cursor{position:absolute;pointer-events:none;z-index:999;transform-origin:3px 3px}
-.cursor svg{display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7))}
-.click-ripple{position:absolute;width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);transform:scale(0);transform-origin:center;pointer-events:none;z-index:998}
+.cursor{position:absolute;pointer-events:none;z-index:999;transform-origin:3px 3px;opacity:0}
+.cursor svg{display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8))}
+.click-ripple{position:absolute;width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);pointer-events:none;z-index:998;opacity:0}
 
 /* ── S1: Education Center ── */
-.edu-t{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:#f0f0f2;line-height:1;margin-bottom:4px}
-.edu-s{font:400 13px/1.4 'DM Sans',sans-serif;color:#46464e;margin-bottom:16px}
-.tab-row{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:14px}
-.tab{padding:8px 16px 10px;font:500 11.5px/1 'DM Sans',sans-serif;color:#38384a;border-bottom:2px solid transparent;margin-bottom:-1px}
+.edu-t{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;color:#f0f0f2;line-height:1;margin-bottom:3px}
+.edu-s{font:400 13px/1.4 'DM Sans',sans-serif;color:#46464e;margin-bottom:14px}
+.tab-row{display:flex;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:12px}
+.tab{padding:7px 14px 9px;font:500 11px/1 'DM Sans',sans-serif;color:#38384a;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tab.ta{color:#E7FB10;border-color:#E7FB10}
-.stats-row{display:flex;gap:22px;margin-bottom:15px}
-.sc{display:flex;align-items:center;gap:5px;font:500 11.5px/1 'DM Sans',sans-serif;color:#545462}
+.stats-row{display:flex;gap:20px;margin-bottom:12px}
+.sc{display:flex;align-items:center;gap:5px;font:500 11px/1 'DM Sans',sans-serif;color:#545462}
 .sc-dot{width:5px;height:5px;border-radius:50%;background:#E7FB10}
-.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.ac{background:#111116;border:1px solid rgba(255,255,255,.06);border-radius:9px;overflow:hidden}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}
+.ac{background:#111116;border:1px solid rgba(255,255,255,.06);border-radius:8px;overflow:hidden}
 .ac-bar{height:3px}
-.ac-body{padding:11px 13px}
-.ac-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.ac-cat{font:600 9.5px/1 'DM Sans',sans-serif;padding:2px 8px;border-radius:99px;border:1px solid}
-.ac-time{font:400 10px/1 'DM Sans',sans-serif;color:#38384a}
-.ac-ttl{font:600 12.5px/1.4 'DM Sans',sans-serif;color:#9090a0;margin-bottom:6px}
-.ac-diff{display:inline-block;font:500 9.5px/1 'DM Sans',sans-serif;padding:2px 8px;border-radius:4px}
-.cta-p{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:99px;border:1px solid rgba(33,216,255,.22);background:rgba(33,216,255,.06)}
-.cta-p span{font:400 12px/1 'DM Sans',sans-serif;color:#4a4a58}
-.cta-p strong{font:700 12px/1 'DM Sans',sans-serif;color:#21d8ff}
-.cta-p em{font:700 12px/1 'DM Sans',sans-serif;font-style:normal;color:#E7FB10}
-.cta-p svg{width:12px;height:12px;stroke:#21d8ff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ac-body{padding:10px 12px}
+.ac-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.ac-cat{font:600 9px/1 'DM Sans',sans-serif;padding:2px 7px;border-radius:99px;border:1px solid}
+.ac-time{font:400 9.5px/1 'DM Sans',sans-serif;color:#38384a}
+.ac-ttl{font:600 12px/1.4 'DM Sans',sans-serif;color:#9090a0;margin-bottom:5px}
+.ac-diff{display:inline-block;font:500 9px/1 'DM Sans',sans-serif;padding:2px 7px;border-radius:4px}
+.sys-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sys-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:99px;border:1px solid;font:500 10.5px/1 'DM Sans',sans-serif;white-space:nowrap}
+.sys-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.cta-p{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:99px;border:1px solid rgba(33,216,255,.22);background:rgba(33,216,255,.05)}
+.cta-p span{font:400 11.5px/1 'DM Sans',sans-serif;color:#4a4a58}
+.cta-p strong{font:700 11.5px/1 'DM Sans',sans-serif;color:#21d8ff}
+.cta-p em{font:700 11.5px/1 'DM Sans',sans-serif;font-style:normal;color:#E7FB10}
+.cta-p svg{width:11px;height:11px;stroke:#21d8ff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── S2: Article ── */
-.sec-title{font:700 14px/1.2 'DM Sans',sans-serif;color:#d0d0d8;margin-bottom:8px}
-.sec-body{font:400 13px/1.65 'DM Sans',sans-serif;color:#484854;margin-bottom:12px}
-.kv-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.kv-item{display:flex;align-items:flex-start;gap:9px;font:400 13px/1.5 'DM Sans',sans-serif;color:#484854}
-.kv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.tag-row{display:flex;gap:6px;flex-wrap:wrap}
+.kv-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.kv-item{display:flex;align-items:flex-start;gap:8px;font:400 12.5px/1.5 'DM Sans',sans-serif;color:#484854}
+.kv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.rel-art-row{border-top:1px solid rgba(255,255,255,.06);padding-top:14px}
+.rel-lbl{font:600 9.5px/1 'DM Sans',sans-serif;color:#3a3a48;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
+.rel-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);margin-bottom:6px}
+.rel-bar{width:3px;height:30px;border-radius:2px;flex-shrink:0}
+.rel-cat{font:600 9px/1 'DM Sans',sans-serif;margin-bottom:3px}
+.rel-ttl{font:500 12px/1.3 'DM Sans',sans-serif;color:#787888}
+.rel-arr{margin-left:auto;font:500 11px/1 'DM Sans',sans-serif;color:#3a3a48}
 
-/* ── S3: Vessel infographic ── */
-.inf-box{border-radius:12px;border:1px solid rgba(231,251,16,.25);background:linear-gradient(135deg,rgba(231,251,16,.05) 0%,transparent 55%);padding:15px}
-.inf-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
-.inf-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;border:1px solid #E7FB10;background:linear-gradient(135deg,rgba(231,251,16,.14),rgba(33,216,255,.05))}
-.inf-badge span{font:700 10.5px/1 'DM Sans',sans-serif;background:linear-gradient(90deg,#E7FB10,#21d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.ves-wrap{position:relative;width:300px;height:200px;margin:0 auto}
-.ves-bg{position:absolute;inset:0;border-radius:10px;background:radial-gradient(ellipse at 50% 90%,rgba(231,251,16,.13) 0%,transparent 65%)}
-.ph-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
-.ph-btn{border-radius:8px;padding:8px 4px;text-align:center;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
-.ph-dot{width:8px;height:8px;border-radius:50%;margin:0 auto 5px}
-.ph-lbl{font:700 8.5px/1.3 'DM Sans',sans-serif;color:#484854;display:block}
-.ph-descs{min-height:40px;margin-top:8px}
-.ph-desc{padding:7px 12px;border-radius:7px;font:400 11.5px/1.5 'DM Sans',sans-serif;color:#565662;display:none;text-align:center}
+/* ── S3: Vessel ── */
+.inf-box{border-radius:12px;border:1px solid rgba(231,251,16,.22);background:linear-gradient(135deg,rgba(231,251,16,.04) 0%,transparent 55%);padding:14px}
+.inf-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;border:1px solid #E7FB10;background:linear-gradient(135deg,rgba(231,251,16,.12),rgba(33,216,255,.04))}
+.inf-badge span{font:700 10px/1 'DM Sans',sans-serif;background:linear-gradient(90deg,#E7FB10,#21d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ves-wrap{position:relative;width:300px;height:190px;margin:0 auto}
+.ves-bg{position:absolute;inset:0;border-radius:10px;background:radial-gradient(ellipse at 50% 90%,rgba(231,251,16,.12) 0%,transparent 65%)}
+.ph-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}
+.ph-btn{border-radius:8px;padding:7px 4px;text-align:center;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+.ph-dot{width:7px;height:7px;border-radius:50%;margin:0 auto 4px}
+.ph-lbl{font:700 8px/1.3 'DM Sans',sans-serif;color:#484854;display:block}
+.ph-descs{min-height:36px;margin-top:7px}
+.ph-desc{padding:6px 11px;border-radius:7px;font:400 11px/1.5 'DM Sans',sans-serif;color:#565662;display:none;text-align:center}
 
 /* ── S4: Academy ── */
-.acad-hd{text-align:center;margin-bottom:18px}
-.acad-icon-wrap{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(33,216,255,.15),rgba(157,78,221,.1));border:1px solid rgba(33,216,255,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
-.acad-icon-wrap svg{width:22px;height:22px;stroke:#21d8ff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.acad-t{font:700 22px/1.1 'DM Sans',sans-serif;color:#f0f0f2;margin-bottom:4px}
-.acad-s{font:400 13px/1.4 'DM Sans',sans-serif;color:#464652}
-.persona-row{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-.pers-btn{padding:7px 20px;border-radius:99px;border:1px solid rgba(255,255,255,.1);font:500 12px/1 'DM Sans',sans-serif;color:#464652}
-.pers-btn.pa{border-color:rgba(33,216,255,.35);background:rgba(33,216,255,.09);color:#21d8ff}
-.mod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.mod-card{border-radius:11px;border:1px solid;padding:16px 17px}
-.mod-hd{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.mod-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.mod-ic svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mod-name{font:700 13.5px/1.2 'DM Sans',sans-serif}
-.mod-desc{font:400 11.5px/1.45 'DM Sans',sans-serif;color:#484854;margin-bottom:10px}
-.mod-ft{display:flex;justify-content:space-between;align-items:center}
-.mod-ls{font:400 10.5px/1 'DM Sans',sans-serif;color:#3a3a48}
-.mod-xp{font:700 11px/1 'DM Sans',sans-serif}
+.s4-amb{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.s4-amb .g1{position:absolute;top:-60px;left:-80px;width:320px;height:320px;background:rgba(231,251,16,.08);border-radius:50%;filter:blur(70px)}
+.s4-amb .g2{position:absolute;bottom:-80px;right:-60px;width:280px;height:280px;background:rgba(33,216,255,.07);border-radius:50%;filter:blur(70px)}
+.s4-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;background:rgba(231,251,16,.1);border:1px solid rgba(231,251,16,.3);font:600 10.5px/1 'DM Sans',sans-serif;color:#E7FB10;margin-bottom:9px}
+.s4-title{font:700 28px/1.1 'DM Sans',sans-serif;color:#f0f0f2;margin-bottom:3px}
+.s4-title span{background:linear-gradient(90deg,#E7FB10,#21d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.s4-sub{font:400 12.5px/1.4 'DM Sans',sans-serif;color:#464652;margin-bottom:14px}
+.s4-prog-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:16px}
+.s4-ring-wrap{position:relative;width:64px;height:64px;flex-shrink:0}
+.s4-ring-wrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.s4-ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 12px/1 'DM Sans',sans-serif;color:#f0f0f2}
+.s4-prog-info{flex:1}
+.s4-prog-label{font:600 13.5px/1 'DM Sans',sans-serif;color:#d0d0d8;margin-bottom:3px}
+.s4-prog-sub{font:400 11px/1 'DM Sans',sans-serif;color:#464652}
+.s4-stats{display:flex;gap:8px;flex-shrink:0}
+.s4-stat{text-align:center;padding:8px 14px;background:rgba(255,255,255,.04);border-radius:10px}
+.s4-stat-n{font:700 20px/1 'DM Sans',sans-serif}
+.s4-stat-l{font:400 9.5px/1 'DM Sans',sans-serif;color:#464652;margin-top:3px}
+.s4-recnext{border-top:1px solid rgba(255,255,255,.06);padding-top:11px;margin-top:11px;display:flex;align-items:center;gap:10px;width:100%}
+.s4-recnext-inner{flex:1}
+.s4-recnext-lbl{font:500 10px/1 'DM Sans',sans-serif;color:#464652;margin-bottom:3px}
+.s4-recnext-ttl{font:600 12.5px/1 'DM Sans',sans-serif;color:#d0d0d8}
+.s4-start-btn{padding:7px 14px;border-radius:8px;background:#E7FB10;font:700 11.5px/1 'DM Sans',sans-serif;color:#1a1a1f;display:flex;align-items:center;gap:5px;flex-shrink:0;border:none;cursor:default}
+.s4-path-lbl{display:flex;align-items:center;gap:7px;font:600 11px/1 'DM Sans',sans-serif;color:#3a3a48;text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px}
+.s4-mods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.s4-mod{border-radius:11px;padding:12px 12px 11px;position:relative;overflow:hidden}
+.s4-mod-num{position:absolute;top:9px;right:9px;font:700 10px/1 'DM Sans',sans-serif;padding:2px 7px;border-radius:99px}
+.s4-mod-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.s4-mod-ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.s4-mod-name{font:700 11.5px/1.2 'DM Sans',sans-serif;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.s4-mod-desc{font:400 10.5px/1.35 'DM Sans',sans-serif;color:#484854;margin-bottom:8px}
+.s4-mod-status{display:flex;align-items:center;gap:5px;font:600 11px/1 'DM Sans',sans-serif}
+.mile-wrap{position:relative;height:52px}
+.mile-track{position:absolute;top:14px;left:0;right:0;height:2px;background:rgba(255,255,255,.07);border-radius:1px}
+.mile-fill{position:absolute;top:14px;left:0;height:2px;border-radius:1px;background:linear-gradient(90deg,#E7FB10,#21d8ff);width:0}
+.mile-dots{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start}
+.mile-dot{display:flex;flex-direction:column;align-items:center;gap:4px;width:60px;text-align:center}
+.mile-dot-circle{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.12);background:#1a1a1f;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mile-dot-circle svg{width:13px;height:13px;stroke:rgba(255,255,255,.25);fill:none;stroke-width:2;stroke-linecap:round}
+.mile-xp{font:700 10px/1 'DM Sans',sans-serif;color:#3a3a48}
+.mile-name{font:400 9px/1.2 'DM Sans',sans-serif;color:#2e2e3a;white-space:nowrap}
+
+/* ── Lesson Viewer ── */
+.s4-viewer{position:absolute;left:18px;right:18px;bottom:16px;background:#111116;border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.7);transform:translateY(100%);opacity:0}
+.sv-header{padding:10px 14px 0}
+.sv-module{font:600 9.5px/1 'DM Sans',sans-serif;color:#21d8ff;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.sv-dots{display:flex;gap:4px;align-items:center}
+.sv-dot{height:3px;border-radius:99px;background:rgba(255,255,255,.2);transition:none}
+.sv-slides{height:180px;position:relative;padding:14px 16px 0}
+.sv-slide{position:absolute;inset:0;padding:14px 16px 0}
+.sv-icon-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sv-lesson-icon{width:38px;height:38px;border-radius:10px;background:rgba(33,216,255,.12);border:1px solid rgba(33,216,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sv-lesson-icon svg{width:19px;height:19px;stroke:#21d8ff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sv-les-title{font:700 15px/1.2 'DM Sans',sans-serif;color:#f0f0f2}
+.sv-les-sub{font:400 10.5px/1 'DM Sans',sans-serif;color:#464652;margin-top:2px}
+.sv-body{font:400 12.5px/1.6 'DM Sans',sans-serif;color:#5a5a68}
+.sv-chain{display:flex;align-items:center;gap:6px;margin:10px 0;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+.sv-aa{display:flex;flex-direction:column;align-items:center;gap:3px}
+.sv-aa-circle{width:28px;height:28px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font:700 8px/1 'DM Sans',sans-serif}
+.sv-aa-lbl{font:400 8px/1 'DM Sans',sans-serif;color:#464652;white-space:nowrap}
+.sv-bond{font:600 11px/1 'DM Sans',sans-serif;color:#3a3a48;flex-shrink:0}
+.sv-chain-lbl{font:500 9px/1 'DM Sans',sans-serif;color:#464652;margin-left:8px}
+.sv-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)}
+.sv-xp-badge{font:600 10px/1 'DM Sans',sans-serif;color:#464652}
+.sv-next{padding:7px 16px;border-radius:8px;background:#21d8ff;font:700 11.5px/1 'DM Sans',sans-serif;color:#1a1a1f;border:none;cursor:default;display:flex;align-items:center;gap:5px}
+.sv-complete{padding:7px 16px;border-radius:8px;background:#E7FB10;font:700 11.5px/1 'DM Sans',sans-serif;color:#1a1a1f;border:none;cursor:default;display:flex;align-items:center;gap:5px}
+
+/* XP flash badge */
+.xp-flash{position:absolute;top:100px;left:50%;transform:translateX(-50%) scale(0);background:linear-gradient(135deg,#E7FB10,#c8d900);border-radius:99px;padding:8px 20px;font:700 15px/1 'DM Sans',sans-serif;color:#1a1a1f;white-space:nowrap;box-shadow:0 0 30px rgba(231,251,16,.6);z-index:50;opacity:0}
 </style>
 </head>
 <body>
 
-<!-- Chrome bar -->
 <div class="chrome">
   <div class="cdots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
   <div class="curl">
@@ -124,9 +179,9 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 
 <div class="sw">
 
-<!-- ════════════════════════════════════════════
-     S1 — Education Center Landing
-════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     S1 — Education Center
+═══════════════════════════════════════ -->
 <div id="s1" class="scene">
   <div class="edu-t">Education Center</div>
   <div class="edu-s">Open-access reference library for peptide research</div>
@@ -140,7 +195,7 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
   <div class="stats-row">
     <div class="sc"><div class="sc-dot"></div>30+ Articles</div>
     <div class="sc"><div class="sc-dot"></div>7 Body Systems</div>
-    <div class="sc"><div class="sc-dot"></div>Quick Breakdown &amp; Deep Dive</div>
+    <div class="sc"><div class="sc-dot"></div>QB &amp; Deep Dive modes</div>
     <div class="sc"><div class="sc-dot"></div>Free Access</div>
   </div>
   <div class="cg">
@@ -149,35 +204,38 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
     <div class="ac" id="c2" style="opacity:0"><div class="ac-bar" style="background:#E7FB10"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#c8d900;border-color:rgba(231,251,16,.3);background:rgba(231,251,16,.07)">Growth</div><div class="ac-time">10 min</div></div><div class="ac-ttl">CJC-1295: Growth Hormone Axis</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
     <div class="ac" id="c3" style="opacity:0"><div class="ac-bar" style="background:#ec4899"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#ec4899;border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.08)">Skin</div><div class="ac-time">9 min</div></div><div class="ac-ttl">GHK-Cu: Copper Peptide Complex</div><div class="ac-diff" style="background:rgba(157,78,221,.08);color:#9d4edd">Advanced</div></div></div>
     <div class="ac" id="c4" style="opacity:0"><div class="ac-bar" style="background:#9d4edd"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#9d4edd;border-color:rgba(157,78,221,.3);background:rgba(157,78,221,.08)">Longevity</div><div class="ac-time">11 min</div></div><div class="ac-ttl">Epithalon: Telomere &amp; Longevity</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
-    <div class="ac" id="c5" style="opacity:0"><div class="ac-bar" style="background:#21d8ff"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#21d8ff;border-color:rgba(33,216,255,.3);background:rgba(33,216,255,.07)">Cognitive</div><div class="ac-time">8 min</div></div><div class="ac-ttl">Semax: Cognitive Enhancement</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
+    <div class="ac" id="c5" style="opacity:0"><div class="ac-bar" style="background:#21d8ff"></div><div class="ac-body"><div class="ac-top"><div class="ac-cat" style="color:#21d8ff;border-color:rgba(33,216,255,.3);background:rgba(33,216,255,.07)">Cognitive</div><div class="ac-time">8 min</div></div><div class="ac-ttl">Semax: Neuroprotection &amp; Focus</div><div class="ac-diff" style="background:rgba(33,216,255,.08);color:#21d8ff">Intermediate</div></div></div>
+  </div>
+  <!-- Browse by body system -->
+  <div style="font:600 9.5px/1 'DM Sans',sans-serif;color:#38384a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Browse by Body System</div>
+  <div class="sys-row">
+    <div class="sys-pill" style="color:#22c55e;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.06)"><div class="sys-dot" style="background:#22c55e"></div>Healing</div>
+    <div class="sys-pill" style="color:#f97316;border-color:rgba(249,115,22,.25);background:rgba(249,115,22,.06)"><div class="sys-dot" style="background:#f97316"></div>Metabolic</div>
+    <div class="sys-pill" style="color:#21d8ff;border-color:rgba(33,216,255,.25);background:rgba(33,216,255,.06)"><div class="sys-dot" style="background:#21d8ff"></div>Cognitive</div>
+    <div class="sys-pill" style="color:#ec4899;border-color:rgba(236,72,153,.25);background:rgba(236,72,153,.06)"><div class="sys-dot" style="background:#ec4899"></div>Skin</div>
+    <div class="sys-pill" style="color:#9d4edd;border-color:rgba(157,78,221,.25);background:rgba(157,78,221,.06)"><div class="sys-dot" style="background:#9d4edd"></div>Longevity</div>
+    <div class="sys-pill" style="color:#ef4444;border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.06)"><div class="sys-dot" style="background:#ef4444"></div>Hormonal</div>
+    <div class="sys-pill" style="color:#c8d900;border-color:rgba(200,217,0,.25);background:rgba(200,217,0,.06)"><div class="sys-dot" style="background:#c8d900"></div>Growth</div>
   </div>
   <div class="cta-p">
     <svg viewBox="0 0 16 16"><path d="M2 12l5-5 3 3 4-4M14 6h-4M14 6v4"/></svg>
-    <span>New to peptides?</span>
-    <strong>Try the</strong>
-    <em>Research Academy</em>
+    <span>New to peptides?</span><strong>Try the</strong><em>Research Academy</em>
     <svg viewBox="0 0 12 12"><polyline points="4,2 8,6 4,10"/></svg>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     S2 — BPC-157 Article (QB → mouse click → DD)
-════════════════════════════════════════════ -->
-<div id="s2" class="scene" style="overflow:visible">
-
-  <div class="back"><svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>Education Center</div>
-
+<!-- ═══════════════════════════════════════
+     S2 — BPC-157 Article (QB → click → DD)
+═══════════════════════════════════════ -->
+<div id="s2" class="scene">
+  <div class="back"><svg width="12" height="12" viewBox="0 0 12 12" fill="#484854"><polyline points="8,2 4,6 8,10" stroke="#484854" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>Education Center</div>
   <div class="bdg-row">
-    <div class="bdg bg">Peptide Profile</div>
-    <div class="bdg bg">Healing System</div>
-    <div class="bdg bm">8 min read</div>
-    <div class="bdg bc">Academy Lesson</div>
+    <div class="bdg bg">Peptide Profile</div><div class="bdg bg">Healing System</div>
+    <div class="bdg bm">8 min read</div><div class="bdg bc">Academy Lesson</div>
   </div>
-
   <div class="art-title">BPC-157: Tissue Repair Mechanisms</div>
-  <div class="art-sum" style="margin-bottom:12px">How Body Protection Compound modulates angiogenesis, growth factor signaling, and nitric oxide pathways in connective tissue repair.</div>
+  <div class="art-sum">How Body Protection Compound modulates angiogenesis, growth factor signaling, and nitric oxide pathways in connective tissue repair.</div>
 
-  <!-- Toggle (pill animated by JS) -->
   <div class="tog-outer" id="s2-tog">
     <div class="tog-pill" id="s2-pill"></div>
     <div class="tog-btn" id="s2-qb">Quick Breakdown</div>
@@ -186,103 +244,87 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
 
   <!-- QB content -->
   <div id="s2-qb-content">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <div class="bdg bg" style="padding:5px 11px;font-size:11px">
-        <svg viewBox="0 0 12 12" style="width:10px;height:10px;stroke:#22c55e;fill:none;stroke-width:2"><polyline points="2,6 5,9 10,3"/></svg>
-        Beginner Friendly
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
+      <div class="bdg bg" style="padding:4px 10px;font-size:10.5px">
+        <svg viewBox="0 0 12 12" style="width:9px;height:9px;stroke:#22c55e;fill:none;stroke-width:2;margin-right:3px"><polyline points="2,6 5,9 10,3"/></svg>Beginner Friendly
       </div>
     </div>
     <div class="sec-title">What Makes BPC-157 Special?</div>
-    <div class="sec-body">Think of BPC-157 as your body's emergency construction crew — activating multiple repair pathways simultaneously to accelerate tissue healing.</div>
+    <div class="sec-body">Think of BPC-157 as your body's emergency construction crew — activating multiple repair pathways simultaneously to accelerate tissue healing far beyond baseline recovery rates.</div>
     <ul class="kv-list">
       <li class="kv-item"><div class="kv-dot" style="background:#22c55e"></div>Activates VEGF pathways to stimulate new blood vessel growth at injury sites</li>
       <li class="kv-item"><div class="kv-dot" style="background:#21d8ff"></div>Upregulates growth hormone receptors in damaged connective tissue</li>
       <li class="kv-item"><div class="kv-dot" style="background:#9d4edd"></div>Modulates nitric oxide signaling for cytoprotection and anti-inflammation</li>
     </ul>
     <div class="tag-row">
-      <div class="bdg bg">Healing System</div>
-      <div class="bdg bg">Angiogenesis</div>
-      <div class="bdg bc">Nitric Oxide</div>
+      <div class="bdg bg">Healing System</div><div class="bdg bg">Angiogenesis</div>
+      <div class="bdg bc">Nitric Oxide</div><div class="bdg bg">Tissue Repair</div>
+    </div>
+    <div class="rel-art-row">
+      <div class="rel-lbl">Related Articles</div>
+      <div class="rel-item"><div class="rel-bar" style="background:#22c55e"></div><div><div class="rel-cat" style="color:#22c55e">Healing</div><div class="rel-ttl">TB-500: Actin Binding &amp; Tissue Recovery</div></div><div class="rel-arr">→</div></div>
+      <div class="rel-item"><div class="rel-bar" style="background:#ec4899"></div><div><div class="rel-cat" style="color:#ec4899">Skin</div><div class="rel-ttl">GHK-Cu: Copper Peptide Complex</div></div><div class="rel-arr">→</div></div>
     </div>
   </div>
 
-  <!-- DD intro content (hidden, fades in after click) -->
-  <div id="s2-dd-content" style="opacity:0;position:absolute;left:38px;right:38px">
-    <div class="sec-title" style="color:#9d4edd;margin-bottom:9px">Molecular Pathway Analysis</div>
+  <!-- DD content (fades in after click) -->
+  <div id="s2-dd-content" style="opacity:0;position:absolute;left:36px;right:36px;top:190px">
+    <div class="sec-title" style="color:#9d4edd;margin-bottom:8px">Molecular Pathway Analysis</div>
     <div class="sec-body">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration across damaged tissue matrices.</div>
-    <div class="sec-body">Research confirms upregulation of VEGFR2, eNOS, and FAK signaling — establishing a multi-pathway repair network unique among known peptide sequences.</div>
-    <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;border:1px solid rgba(231,251,16,.2);background:rgba(231,251,16,.04)">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.2 3.5.5-2.5 2.4.6 3.4L7 8.9l-3.1 1.6.6-3.4L2 4.7l3.5-.5z" stroke="#E7FB10" stroke-width="1.2" stroke-linejoin="round"/></svg>
-      <span style="font:500 11.5px/1.4 'DM Sans',sans-serif;color:#5a5a66">See the interactive angiogenesis visualization below</span>
+    <div class="sec-body">Research confirms upregulation of VEGFR2, eNOS, and FAK signaling — a multi-pathway repair network unique among known peptide sequences.</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:9px;border:1px solid rgba(231,251,16,.18);background:rgba(231,251,16,.04);margin-top:2px">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1l1.4 3 3.3.5-2.4 2.3.6 3.2L6.5 8.6l-3 1.4.6-3.2L1.8 4.5l3.3-.5z" stroke="#E7FB10" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      <span style="font:500 11px/1.4 'DM Sans',sans-serif;color:#5a5a66">See the interactive angiogenesis visualization below</span>
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto"><polyline points="2,2 5,6 8,2" stroke="#E7FB10" stroke-width="1.5" stroke-linecap="round"/></svg>
     </div>
   </div>
 
-  <!-- Mouse cursor -->
-  <div class="cursor" id="s2-cursor" style="opacity:0;left:0;top:0">
-    <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
-      <path d="M2 2l16 10-7 1.5-4 7z" fill="white" stroke="rgba(0,0,0,.5)" stroke-width="1.2" stroke-linejoin="round"/>
-    </svg>
+  <!-- Cursor -->
+  <div class="cursor" id="s2-cursor">
+    <svg width="20" height="24" viewBox="0 0 20 24"><path d="M2 2l14 9-6.5 1.4-3.5 6.1z" fill="white" stroke="rgba(0,0,0,.5)" stroke-width="1.2" stroke-linejoin="round"/></svg>
   </div>
-  <!-- Click ripple -->
-  <div class="click-ripple" id="s2-ripple" style="left:0;top:0"></div>
-
+  <div class="click-ripple" id="s2-ripple"></div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     S3 — BPC-157 Deep Dive + Real Vessel Animation
-════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     S3 — BPC-157 DD + Real Vessel Animation
+═══════════════════════════════════════ -->
 <div id="s3" class="scene">
-  <div class="back"><svg viewBox="0 0 12 12"><polyline points="8,2 4,6 8,10"/></svg>Education Center</div>
-  <div class="art-title" style="font-size:19px;margin-bottom:4px">BPC-157: Tissue Repair Mechanisms</div>
-
-  <!-- Toggle: DD locked -->
-  <div class="tog-outer" style="margin-bottom:11px">
+  <div class="back"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="8,2 4,6 8,10" stroke="#484854" stroke-width="1.5" stroke-linecap="round"/></svg>Education Center</div>
+  <div class="art-title" style="font-size:18px;margin-bottom:4px">BPC-157: Tissue Repair Mechanisms</div>
+  <div class="tog-outer" style="margin-bottom:10px">
     <div class="tog-pill" id="s3-pill" style="background:linear-gradient(135deg,#9d4edd,#7c3aed)"></div>
     <div class="tog-btn" id="s3-qb">Quick Breakdown</div>
     <div class="tog-btn" id="s3-dd" style="color:#1a1a1f">Deep Dive</div>
   </div>
-
-  <div class="art-sum" style="margin-bottom:11px;font-size:12.5px">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration.</div>
-
-  <!-- Angiogenesis infographic -->
+  <div class="art-sum" style="margin-bottom:10px;font-size:12px">BPC-157 acts on the VEGF/NO signaling axis, promoting angiogenesis through growth factor cascades and endothelial cell migration.</div>
   <div class="inf-box">
-    <div class="inf-top">
-      <div class="inf-badge">
-        <svg width="12" height="12" viewBox="0 0 12 12" style="fill:#E7FB10"><path d="M10.5 5.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/><path d="M6 3.5v3M6 7.5v.5" stroke="#1a1a1f" stroke-width="1" fill="none"/></svg>
-        <span>Angiogenesis Mechanism</span>
-      </div>
-      <div style="font:400 10px/1 'DM Sans',sans-serif;color:#3a3a48">Interactive research visualization</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="inf-badge"><span>Angiogenesis Mechanism</span></div>
+      <div style="font:400 9.5px/1 'DM Sans',sans-serif;color:#3a3a48">Interactive visualization</div>
     </div>
-
     <div class="ves-wrap">
       <div class="ves-bg"></div>
-      <svg id="ves-svg" viewBox="0 0 300 200" width="300" height="200" style="display:block;width:300px;height:200px">
-        <defs>
-          <filter id="vglow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="2.5" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <circle id="bpc-c" cx="150" cy="185" r="12" fill="#E7FB10" style="filter:drop-shadow(0 0 8px rgba(231,251,16,.85))"/>
-        <text x="150" y="188.5" text-anchor="middle" fill="#1a1a1f" font-size="7.5" font-weight="bold" font-family="DM Sans,sans-serif">BPC</text>
-        <path id="v0"  d="M 150 180 Q 150 140 150 100" fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:80;stroke-dashoffset:80;opacity:0"/>
-        <path id="v1"  d="M 150 100 Q 120 80 90 60"   fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <path id="v2"  d="M 150 100 Q 180 80 210 60"  fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <path id="v3"  d="M 90 60 Q 60 50 40 30"     fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <path id="v4"  d="M 90 60 Q 80 40 70 20"     fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
-        <path id="v5"  d="M 210 60 Q 230 50 250 30"  fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
-        <path id="v6"  d="M 210 60 Q 220 40 230 20"  fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
-        <path id="v7"  d="M 40 30 Q 25 20 15 10"     fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
-        <path id="v8"  d="M 250 30 Q 265 20 275 10"  fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
-        <path id="v9"  d="M 70 20 Q 55 10 45 5"      fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
-        <path id="v10" d="M 230 20 Q 245 10 255 5"   fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
-        <text id="nvf" x="150" y="11" text-anchor="middle" fill="#E7FB10" font-size="9.5" font-weight="bold" font-family="DM Sans,sans-serif" style="opacity:0;filter:drop-shadow(0 0 5px rgba(231,251,16,.7))">New Vessel Formation</text>
+      <svg viewBox="0 0 300 190" width="300" height="190" style="display:block;width:300px;height:190px">
+        <defs><filter id="vglow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <circle id="bpc-c" cx="150" cy="178" r="11" fill="#E7FB10" style="filter:drop-shadow(0 0 8px rgba(231,251,16,.85))"/>
+        <text x="150" y="181" text-anchor="middle" fill="#1a1a1f" font-size="7" font-weight="bold" font-family="DM Sans,sans-serif">BPC</text>
+        <path id="v0"  d="M150 174 Q150 135 150 96"  fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:80;stroke-dashoffset:80;opacity:0"/>
+        <path id="v1"  d="M150 96 Q122 77 92 58"     fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v2"  d="M150 96 Q178 77 208 58"    fill="none" stroke="#E7FB10" stroke-width="4" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v3"  d="M92 58 Q64 48 42 29"       fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v4"  d="M92 58 Q80 38 70 19"       fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
+        <path id="v5"  d="M208 58 Q228 48 248 29"    fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:55;stroke-dashoffset:55;opacity:0"/>
+        <path id="v6"  d="M208 58 Q218 38 228 19"    fill="none" stroke="#21d8ff" stroke-width="3" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:45;stroke-dashoffset:45;opacity:0"/>
+        <path id="v7"  d="M42 29 Q26 19 16 10"       fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
+        <path id="v8"  d="M248 29 Q262 19 272 10"    fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:30;stroke-dashoffset:30;opacity:0"/>
+        <path id="v9"  d="M70 19 Q55 10 45 5"        fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
+        <path id="v10" d="M228 19 Q243 10 253 5"     fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" filter="url(#vglow)" style="stroke-dasharray:25;stroke-dashoffset:25;opacity:0"/>
+        <text id="nvf" x="150" y="10" text-anchor="middle" fill="#E7FB10" font-size="9" font-weight="bold" font-family="DM Sans,sans-serif" style="opacity:0;filter:drop-shadow(0 0 5px rgba(231,251,16,.7))">New Vessel Formation</text>
       </svg>
     </div>
-
     <div id="ph-sec" style="opacity:0">
-      <div style="font:600 9px/1 'DM Sans',sans-serif;color:#444452;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px">Angiogenesis Phases</div>
+      <div style="font:600 8.5px/1 'DM Sans',sans-serif;color:#444452;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Angiogenesis Phases</div>
       <div class="ph-grid">
         <div class="ph-btn" id="p0"><div class="ph-dot" style="background:#E7FB10"></div><span class="ph-lbl" id="pl0">VEGF Release</span></div>
         <div class="ph-btn" id="p1"><div class="ph-dot" style="background:#21d8ff"></div><span class="ph-lbl" id="pl1">Endothelial Migration</span></div>
@@ -290,280 +332,580 @@ html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;-moz
         <div class="ph-btn" id="p3"><div class="ph-dot" style="background:#ec4899"></div><span class="ph-lbl" id="pl3">Tissue Perfusion</span></div>
       </div>
       <div class="ph-descs">
-        <div class="ph-desc" id="pd0" style="background:rgba(231,251,16,.06);border:1px solid rgba(231,251,16,.18)">BPC-157 upregulates VEGF, triggering growth factor cascades that initiate vessel formation</div>
-        <div class="ph-desc" id="pd1" style="background:rgba(33,216,255,.06);border:1px solid rgba(33,216,255,.18)">Endothelial cells migrate toward the injury site, guided by chemotactic VEGF gradients</div>
-        <div class="ph-desc" id="pd2" style="background:rgba(157,78,221,.06);border:1px solid rgba(157,78,221,.18)">New capillary branches sprout and extend through damaged tissue, establishing vascular networks</div>
-        <div class="ph-desc" id="pd3" style="background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.18)">Restored blood flow delivers oxygen and nutrients to healing tissue via new vascular pathways</div>
+        <div class="ph-desc" id="pd0" style="background:rgba(231,251,16,.06);border:1px solid rgba(231,251,16,.18)">BPC-157 upregulates VEGF, triggering cascades that initiate vessel formation</div>
+        <div class="ph-desc" id="pd1" style="background:rgba(33,216,255,.06);border:1px solid rgba(33,216,255,.18)">Endothelial cells migrate toward the injury site guided by VEGF gradients</div>
+        <div class="ph-desc" id="pd2" style="background:rgba(157,78,221,.06);border:1px solid rgba(157,78,221,.18)">New capillary branches sprout through damaged tissue, establishing vascular networks</div>
+        <div class="ph-desc" id="pd3" style="background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.18)">Restored blood flow delivers oxygen and nutrients via new vascular pathways</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     S4 — Research Academy
-════════════════════════════════════════════ -->
-<div id="s4" class="scene">
-  <div class="acad-hd">
-    <div class="acad-icon-wrap">
-      <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+<!-- ═══════════════════════════════════════
+     S4 — Research Academy Story Arc
+═══════════════════════════════════════ -->
+<div id="s4" class="scene" style="padding:22px 30px 18px;overflow:visible">
+
+  <!-- Ambient glow -->
+  <div class="s4-amb"><div class="g1"></div><div class="g2"></div></div>
+
+  <!-- Badge -->
+  <div style="position:relative;z-index:1">
+    <div class="s4-badge">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.2 2.6 2.8.4-2 2 .5 2.8L6 7.5l-2.5 1.3.5-2.8-2-2 2.8-.4z" stroke="#E7FB10" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      Guided Onboarding
     </div>
-    <div class="acad-t">Research Academy</div>
-    <div class="acad-s">Your structured path from beginner to expert researcher</div>
+    <div class="s4-title">Peptide Research <span>Academy</span></div>
+    <div class="s4-sub">A structured introduction to peptide research. Learn fundamentals before you begin.</div>
+
+    <!-- Progress card -->
+    <div class="s4-prog-card" style="flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:200px">
+        <!-- Progress ring -->
+        <div class="s4-ring-wrap">
+          <svg viewBox="0 0 64 64" width="64" height="64">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+            <circle id="s4-ring-circle" cx="32" cy="32" r="26" fill="none" stroke="#E7FB10" stroke-width="6"
+              stroke-dasharray="163.4" stroke-dashoffset="163.4" stroke-linecap="round"
+              style="filter:drop-shadow(0 0 6px rgba(231,251,16,.5))"/>
+          </svg>
+          <div class="s4-ring-pct" id="s4-ring-pct">0%</div>
+        </div>
+        <div>
+          <div class="s4-prog-label">Your Progress</div>
+          <div class="s4-prog-sub" id="s4-lesson-text">0 of 17 lessons completed</div>
+          <div style="margin-top:5px">
+            <div class="bdg bc" style="font-size:9.5px;padding:2px 8px">Intermediate Researcher</div>
+          </div>
+        </div>
+      </div>
+      <div class="s4-stats">
+        <div class="s4-stat">
+          <div class="s4-stat-n" id="s4-xp-num" style="color:#E7FB10">0</div>
+          <div class="s4-stat-l">Total XP</div>
+        </div>
+        <div class="s4-stat">
+          <div class="s4-stat-n" id="s4-ach-num" style="color:#21d8ff">0</div>
+          <div class="s4-stat-l">Achievements</div>
+        </div>
+      </div>
+      <!-- Recommended next -->
+      <div class="s4-recnext" id="s4-recnext">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><polyline points="2,12 6,6 9,9 14,3" stroke="#E7FB10" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="10,3 14,3 14,7" stroke="#E7FB10" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="s4-recnext-inner">
+          <div class="s4-recnext-lbl">Recommended Next</div>
+          <div class="s4-recnext-ttl">What is a Peptide?</div>
+        </div>
+        <button class="s4-start-btn" id="s4-start-btn">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="#1a1a1f"><polygon points="2,1 9,5 2,9"/></svg>
+          Start
+        </button>
+      </div>
+    </div>
+
+    <!-- Learning Path label -->
+    <div class="s4-path-lbl">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.2 2.6 2.8.4-2 2 .5 2.8L6 7.5l-2.5 1.3.5-2.8-2-2 2.8-.4z" stroke="#E7FB10" stroke-width="1.1" stroke-linejoin="round"/></svg>
+      Your Learning Path
+    </div>
+
+    <!-- 4 Module cards -->
+    <div class="s4-mods">
+      <!-- M0: Orientation (cyan) -->
+      <div class="s4-mod" id="s4m0" style="opacity:0;transform:translateY(18px);background:linear-gradient(135deg,rgba(33,216,255,.1) 0%,transparent 100%);border:1px solid rgba(33,216,255,.4);box-shadow:0 0 18px rgba(33,216,255,.15)">
+        <div class="s4-mod-num" style="background:rgba(33,216,255,.15);color:#21d8ff">1/4</div>
+        <div class="s4-mod-ic" style="background:rgba(33,216,255,.15);box-shadow:0 0 14px rgba(33,216,255,.25)">
+          <svg viewBox="0 0 24 24" style="stroke:#21d8ff"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="s4-mod-name" style="color:#21d8ff">Orientation</div>
+        <div class="s4-mod-desc">Get started with research fundamentals</div>
+        <div class="s4-mod-status" id="s4m0-status" style="color:#21d8ff">
+          Start <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="3,2 7,5 3,8" stroke="#21d8ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <!-- M1: Core Foundations (yellow) — locked -->
+      <div class="s4-mod" id="s4m1" style="opacity:0;transform:translateY(18px);background:linear-gradient(135deg,rgba(231,251,16,.05) 0%,transparent 100%);border:1px solid rgba(231,251,16,.2);box-shadow:0 0 12px rgba(231,251,16,.08)">
+        <div class="s4-mod-num" style="background:rgba(231,251,16,.1);color:#c8d900">2/4</div>
+        <div class="s4-mod-ic" style="background:rgba(231,251,16,.1);box-shadow:0 0 10px rgba(231,251,16,.12);opacity:.6">
+          <svg viewBox="0 0 24 24" style="stroke:#c8d900"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="s4-mod-name" style="color:rgba(200,217,0,.5)">Core Foundations</div>
+        <div class="s4-mod-desc" style="opacity:.6">Master essential concepts</div>
+        <div class="s4-mod-status" style="color:#3a3a48">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2.5" y="4.5" width="5" height="4" rx="1" stroke="#3a3a48" stroke-width="1.2"/><path d="M3.5 4.5V3a2 2 0 014 0v1.5" stroke="#3a3a48" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Locked
+        </div>
+      </div>
+      <!-- M2: Research Skills (purple) — locked -->
+      <div class="s4-mod" id="s4m2" style="opacity:0;transform:translateY(18px);background:linear-gradient(135deg,rgba(157,78,221,.05) 0%,transparent 100%);border:1px solid rgba(157,78,221,.18);box-shadow:0 0 10px rgba(157,78,221,.06)">
+        <div class="s4-mod-num" style="background:rgba(157,78,221,.1);color:rgba(157,78,221,.5)">3/4</div>
+        <div class="s4-mod-ic" style="background:rgba(157,78,221,.1);opacity:.5">
+          <svg viewBox="0 0 24 24" style="stroke:#9d4edd"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H3m6 0h12"/></svg>
+        </div>
+        <div class="s4-mod-name" style="color:rgba(157,78,221,.5)">Research Skills</div>
+        <div class="s4-mod-desc" style="opacity:.5">Develop professional expertise</div>
+        <div class="s4-mod-status" style="color:#3a3a48">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2.5" y="4.5" width="5" height="4" rx="1" stroke="#3a3a48" stroke-width="1.2"/><path d="M3.5 4.5V3a2 2 0 014 0v1.5" stroke="#3a3a48" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Locked
+        </div>
+      </div>
+      <!-- M3: Lab Confidence (green) — locked -->
+      <div class="s4-mod" id="s4m3" style="opacity:0;transform:translateY(18px);background:linear-gradient(135deg,rgba(34,197,94,.05) 0%,transparent 100%);border:1px solid rgba(34,197,94,.18);box-shadow:0 0 10px rgba(34,197,94,.06)">
+        <div class="s4-mod-num" style="background:rgba(34,197,94,.1);color:rgba(34,197,94,.5)">4/4</div>
+        <div class="s4-mod-ic" style="background:rgba(34,197,94,.1);opacity:.5">
+          <svg viewBox="0 0 24 24" style="stroke:#22c55e"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="s4-mod-name" style="color:rgba(34,197,94,.5)">Lab Confidence</div>
+        <div class="s4-mod-desc" style="opacity:.5">Put it all together</div>
+        <div class="s4-mod-status" style="color:#3a3a48">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2.5" y="4.5" width="5" height="4" rx="1" stroke="#3a3a48" stroke-width="1.2"/><path d="M3.5 4.5V3a2 2 0 014 0v1.5" stroke="#3a3a48" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Locked
+        </div>
+      </div>
+    </div>
+
+    <!-- Milestone strip -->
+    <div class="mile-wrap">
+      <div class="mile-track"></div>
+      <div class="mile-fill" id="mile-fill"></div>
+      <div class="mile-dots">
+        <!-- M1: 100 XP -->
+        <div class="mile-dot">
+          <div class="mile-dot-circle" id="mile0-circle">
+            <svg viewBox="0 0 14 14"><path d="M7 1.5l1.3 2.7 3 .4-2.2 2.1.5 3L7 8.4l-2.6 1.3.5-3L2.7 4.6l3-.4z" stroke-width="1.2"/></svg>
+          </div>
+          <div class="mile-xp">100 XP</div>
+          <div class="mile-name">Early Learner</div>
+        </div>
+        <!-- M2: 250 XP -->
+        <div class="mile-dot">
+          <div class="mile-dot-circle">
+            <svg viewBox="0 0 14 14"><circle cx="7" cy="5" r="3" stroke-width="1.2"/><path d="M3 13c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke-width="1.2"/></svg>
+          </div>
+          <div class="mile-xp">250 XP</div>
+          <div class="mile-name">Research Ready</div>
+        </div>
+        <!-- M3: 400 XP -->
+        <div class="mile-dot">
+          <div class="mile-dot-circle">
+            <svg viewBox="0 0 14 14"><rect x="2" y="3" width="10" height="8" rx="1.5" stroke-width="1.2"/><path d="M5 3V2a2 2 0 014 0v1" stroke-width="1.2"/></svg>
+          </div>
+          <div class="mile-xp">400 XP</div>
+          <div class="mile-name">5% Discount</div>
+        </div>
+        <!-- M4: 600 XP -->
+        <div class="mile-dot">
+          <div class="mile-dot-circle">
+            <svg viewBox="0 0 14 14"><path d="M7 2l1 3h3l-2.5 1.8 1 3L7 8l-2.5 1.8 1-3L3 5h3z" stroke-width="1.2"/></svg>
+          </div>
+          <div class="mile-xp">600 XP</div>
+          <div class="mile-name">Certified</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="persona-row">
-    <div class="pers-btn">Beginner</div>
-    <div class="pers-btn pa">Intermediate</div>
-    <div class="pers-btn">Advanced</div>
+
+  <!-- ── Lesson Viewer Overlay ── -->
+  <div class="s4-viewer" id="s4-viewer">
+    <div class="sv-header">
+      <div class="sv-module">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style="stroke:#21d8ff;stroke-width:2;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Module 1 · Orientation
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;flex:1;gap:3px;align-items:center">
+          <div id="sd0" class="sv-dot" style="flex:2;background:#E7FB10"></div>
+          <div id="sd1" class="sv-dot" style="flex:1"></div>
+        </div>
+        <span style="font:400 9.5px/1 'DM Sans',sans-serif;color:#3a3a48;margin-left:4px" id="sv-slide-label">1 / 2</span>
+      </div>
+    </div>
+
+    <!-- Slide 1: What is a Peptide? -->
+    <div class="sv-slides">
+      <div class="sv-slide" id="sv-slide1">
+        <div class="sv-icon-row">
+          <div class="sv-lesson-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <div><div class="sv-les-title">What is a Peptide?</div><div class="sv-les-sub">Lesson 2 of 5 · 10 XP</div></div>
+        </div>
+        <!-- Amino acid chain visual -->
+        <div class="sv-chain">
+          <div class="sv-aa">
+            <div class="sv-aa-circle" style="color:#22c55e;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.1)">AA</div>
+            <div class="sv-aa-lbl">Amino Acid</div>
+          </div>
+          <div class="sv-bond">—</div>
+          <div class="sv-aa">
+            <div class="sv-aa-circle" style="color:#21d8ff;border-color:rgba(33,216,255,.4);background:rgba(33,216,255,.1)">AA</div>
+            <div class="sv-aa-lbl">Amino Acid</div>
+          </div>
+          <div class="sv-bond">—</div>
+          <div class="sv-aa">
+            <div class="sv-aa-circle" style="color:#9d4edd;border-color:rgba(157,78,221,.4);background:rgba(157,78,221,.1)">AA</div>
+            <div class="sv-aa-lbl">Amino Acid</div>
+          </div>
+          <div class="sv-chain-lbl">= Peptide (2–50 amino acids)</div>
+        </div>
+        <div class="sv-body">A peptide is a short chain of amino acids connected by peptide bonds — smaller than proteins, but capable of triggering precise biological responses.</div>
+      </div>
+
+      <!-- Slide 2: How Peptides Work -->
+      <div class="sv-slide" id="sv-slide2" style="opacity:0">
+        <div class="sv-icon-row">
+          <div class="sv-lesson-icon" style="background:rgba(231,251,16,.12);border-color:rgba(231,251,16,.2)">
+            <svg viewBox="0 0 24 24" style="stroke:#E7FB10"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H3m6 0h12M3 14v6a2 2 0 002 2h14a2 2 0 002-2v-6"/></svg>
+          </div>
+          <div><div class="sv-les-title" style="color:#E7FB10">How Peptides Work</div><div class="sv-les-sub">Lesson 2 of 5 · cont.</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(231,251,16,.05);border:1px solid rgba(231,251,16,.15);border-radius:8px;margin-bottom:9px">
+          <svg width="32" height="28" viewBox="0 0 32 28" fill="none">
+            <ellipse cx="8" cy="14" rx="7" ry="9" stroke="#E7FB10" stroke-width="1.5"/>
+            <path d="M15 8h8M15 12h6M15 16h8M15 20h5" stroke="#E7FB10" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+            <circle cx="8" cy="14" r="3" fill="rgba(231,251,16,.2)" stroke="#E7FB10" stroke-width="1"/>
+          </svg>
+          <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><polyline points="2,7 14,7" stroke="#21d8ff" stroke-width="1.5" stroke-linecap="round"/><polyline points="10,3 14,7 10,11" stroke="#21d8ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div style="font:500 11px/1.4 'DM Sans',sans-serif;color:#787888">Peptide binds receptor → triggers cellular response</div>
+        </div>
+        <div class="sv-body">Peptides act as biological signals. BPC-157 binds VEGF and nitric oxide receptors, activating precise tissue repair cascades with remarkable specificity.</div>
+      </div>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="sv-footer">
+      <div class="sv-xp-badge">+10 XP on completion</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="sv-next" id="sv-next-btn">
+          Next <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="3,2 7,5 3,8" stroke="#1a1a1f" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="sv-complete" id="sv-complete-btn" style="opacity:0;display:none">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="2,5.5 4.5,8 9,3" stroke="#1a1a1f" stroke-width="2" stroke-linecap="round"/></svg>
+          Complete (+10 XP)
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="mod-grid">
-    <div class="mod-card" id="m0" style="opacity:0;transform:translateY(16px);border-color:rgba(33,216,255,.25);background:rgba(33,216,255,.04)">
-      <div class="mod-hd"><div class="mod-ic" style="background:rgba(33,216,255,.12)"><svg viewBox="0 0 24 24" style="stroke:#21d8ff"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="mod-name" style="color:#21d8ff">Orientation</div></div>
-      <div class="mod-desc">Research fundamentals, legal landscape, and your first order</div>
-      <div class="mod-ft"><div class="mod-ls">5 lessons</div><div class="mod-xp" style="color:#21d8ff">55 XP</div></div>
-    </div>
-    <div class="mod-card" id="m1" style="opacity:0;transform:translateY(16px);border-color:rgba(231,251,16,.25);background:rgba(231,251,16,.04)">
-      <div class="mod-hd"><div class="mod-ic" style="background:rgba(231,251,16,.12)"><svg viewBox="0 0 24 24" style="stroke:#c8d900"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="mod-name" style="color:#c8d900">Core Foundations</div></div>
-      <div class="mod-desc">Purity, lyophilization, peptide stability, and reconstitution</div>
-      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#c8d900">85 XP</div></div>
-    </div>
-    <div class="mod-card" id="m2" style="opacity:0;transform:translateY(16px);border-color:rgba(157,78,221,.25);background:rgba(157,78,221,.04)">
-      <div class="mod-hd"><div class="mod-ic" style="background:rgba(157,78,221,.12)"><svg viewBox="0 0 24 24" style="stroke:#9d4edd"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H3m6 0h12M3 14v6a2 2 0 002 2h14a2 2 0 002-2v-6"/></svg></div><div class="mod-name" style="color:#9d4edd">Research Skills</div></div>
-      <div class="mod-desc">COA reading, literature review, lab safety, documentation</div>
-      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#9d4edd">90 XP</div></div>
-    </div>
-    <div class="mod-card" id="m3" style="opacity:0;transform:translateY(16px);border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04)">
-      <div class="mod-hd"><div class="mod-ic" style="background:rgba(34,197,94,.12)"><svg viewBox="0 0 24 24" style="stroke:#22c55e"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div><div class="mod-name" style="color:#22c55e">Lab Confidence</div></div>
-      <div class="mod-desc">Troubleshooting, advanced techniques, and final review</div>
-      <div class="mod-ft"><div class="mod-ls">4 lessons</div><div class="mod-xp" style="color:#22c55e">135 XP</div></div>
-    </div>
+
+  <!-- XP flash badge -->
+  <div class="xp-flash" id="xp-flash">+10 XP Earned!</div>
+
+  <!-- Cursor for S4 interactions -->
+  <div class="cursor" id="s4-cursor">
+    <svg width="20" height="24" viewBox="0 0 20 24"><path d="M2 2l14 9-6.5 1.4-3.5 6.1z" fill="white" stroke="rgba(0,0,0,.5)" stroke-width="1.2" stroke-linejoin="round"/></svg>
   </div>
-</div>
+  <div class="click-ripple" id="s4-ripple"></div>
+
+</div><!-- end S4 -->
 
 </div><!-- end .sw -->
 
 <script>
 window.__fontsReady = false;
-document.fonts.ready.then(() => { window.__fontsReady = true; });
+document.fonts.ready.then(()=>{ window.__fontsReady=true; });
 
-const clamp = (v,a,b) => Math.min(b,Math.max(a,v));
-const pct   = (t,a,b) => clamp((t-a)/(b-a),0,1);
-const eOut  = x => 1 - Math.pow(1-x,3);
-const eSin  = x => Math.sin(x * Math.PI / 2);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const pct=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const eOut=x=>1-Math.pow(1-x,3);
+const eSin=x=>Math.sin(x*Math.PI/2);
 
 // Scene windows
-const FADE = 450;
-const S = [
-  [300,  2500],   // S1 Education Center
-  [2950, 5200],   // S2 QB → DD click (longer to show DD intro)
-  [5650, 9300],   // S3 Vessel animation
-  [9800, 12300],  // S4 Academy
+const FADE=450;
+const S=[
+  [300,  2450],  // S1
+  [2950, 5150],  // S2
+  [5650, 9250],  // S3
+  [9750, 15200], // S4 (long — 5.45s)
 ];
 
-function sceneA(t, i) {
-  const [s,e] = S[i];
-  if (t < s-FADE || t > e+FADE) return 0;
-  if (t >= s && t <= e) return 1;
-  return t < s ? eOut(pct(t, s-FADE, s)) : 1-eOut(pct(t, e, e+FADE));
+function sceneA(t,i){
+  const[s,e]=S[i];
+  if(t<s-FADE||t>e+FADE) return 0;
+  if(t>=s&&t<=e) return 1;
+  return t<s?eOut(pct(t,s-FADE,s)):1-eOut(pct(t,e,e+FADE));
 }
 
-// Cursor / click timing (within S2)
-const CUR_APPEAR = 3500;  // cursor fades in
-const CUR_MOVE   = 400;   // ms to drift to DD button
-const CUR_LAND   = 3900;  // cursor lands on DD
-const CUR_CLICK  = 4050;  // click moment
-const CUR_FADE   = 4350;  // cursor fades out
+// S2 cursor timing
+const CUR_APPEAR=3550,CUR_LAND=3950,CUR_CLICK=4100,CUR_FADE=4400;
+const PILL_S=4100,PILL_D=320;
 
-// Pill slide: QB (green) → DD (purple)
-const PILL_S = 4050;
-const PILL_D = 320;
+// S3 vessel timing
+const VD=[0,.3,.4,.7,.8,.9,1,1.3,1.4,1.5,1.6];
+const VLEN=[80,55,55,55,45,55,45,30,30,25,25];
+const VS=5850,VSCL=800,VDUR=520;
+const PLBL=['#E7FB10','#21d8ff','#9d4edd','#ec4899'];
+const PHS=7700,PHDT=380;
 
-// Content swap
-const QB_FADE_S = 4050;
-const DD_FADE_S = 4200;
+// S4 Academy timing
+const S4_START  =9750;
+const S4_MOD_S  =9750;  // module cards stagger start
+const S4_VIEWER_OPEN=11150; // lesson viewer slides up
+const S4_SLIDE_ADV  =12200; // advance to slide 2
+const S4_CUR2_APPEAR=11600; // cursor appears near Next btn
+const S4_CUR2_CLICK =11900; // clicks Next
+const S4_CUR3_APPEAR=12600; // cursor to Complete btn
+const S4_CUR3_CLICK =12950; // clicks Complete
+const S4_VIEWER_CLOSE=13100;// viewer starts closing
+const S4_XP_ANIM=13500;     // XP counter starts
+const S4_REC_FADE=13200;    // recommended next fades out
+const S4_COMPLETE_SHOWN=12400; // Complete button shows
 
-// Vessel animation (S3 scene)
-const VD   = [0,0.3,0.4,0.7,0.8,0.9,1.0,1.3,1.4,1.5,1.6];
-const VLEN = [80,55,55,55,45,55,45,30,30,25,25];
-const VS   = 5800;
-const VSCL = 800;
-const VDUR = 520;
-const PLBL = ['#E7FB10','#21d8ff','#9d4edd','#ec4899'];
-const PHS  = 7600;
-const PHDT = 380;
-
-// Ripple state
-let ripplePlaying = false;
-let rippleStart   = 0;
-
-window.setFrame = function(t) {
-  // ── Scene opacities ──────────────────────────
-  for (let i=0;i<4;i++) {
-    const el = document.getElementById('s'+(i+1));
-    if (el) el.style.opacity = sceneA(t,i);
+window.setFrame=function(t){
+  // Scene opacities
+  for(let i=0;i<4;i++){
+    const el=document.getElementById('s'+(i+1));
+    if(el) el.style.opacity=sceneA(t,i);
   }
 
-  // ── URL bar ───────────────────────────────────
-  const pathEl = document.getElementById('curl-path');
-  if (pathEl) {
-    const a2=sceneA(t,1), a3=sceneA(t,2);
-    if (a2>0.5||a3>0.5) pathEl.textContent='/guides/what-is-bpc-157-peptide';
-    else if (sceneA(t,3)>0.5) pathEl.textContent='/academy';
-    else pathEl.textContent='/guides/peptide-education-center';
+  // URL bar
+  const pEl=document.getElementById('curl-path');
+  if(pEl){
+    const a2=sceneA(t,1),a3=sceneA(t,2);
+    if(a2>0.5||a3>0.5) pEl.textContent='/guides/what-is-bpc-157-peptide';
+    else if(sceneA(t,3)>0.5) pEl.textContent='/academy';
+    else pEl.textContent='/guides/peptide-education-center';
   }
 
-  // ── S1: card stagger ─────────────────────────
-  const s1s = S[0][0];
-  for (let i=0;i<6;i++) {
-    const el = document.getElementById('c'+i);
-    if (el) el.style.opacity = eOut(pct(t, s1s+i*140, s1s+i*140+450));
+  // ── S1: Card stagger ──────────────────────
+  const s1s=S[0][0];
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('c'+i);
+    if(el) el.style.opacity=eOut(pct(t,s1s+i*130,s1s+i*130+420));
   }
 
-  // ── S2: toggle pill ───────────────────────────
-  const s2qbEl  = document.getElementById('s2-qb');
-  const s2ddEl  = document.getElementById('s2-dd');
-  const s2pill  = document.getElementById('s2-pill');
-
-  if (s2pill && s2qbEl && s2ddEl) {
-    const qbW = s2qbEl.offsetWidth;
-    const ddW = s2ddEl.offsetWidth;
-    const h   = s2qbEl.offsetHeight;
-    const p   = eOut(pct(t, PILL_S, PILL_S+PILL_D));
-
-    // Interpolate x and width
-    const startX = 4, endX = 4 + qbW;
-    const curX   = startX + (endX - startX) * p;
-    const curW   = qbW + (ddW - qbW) * p;
-
-    s2pill.style.left   = curX + 'px';
-    s2pill.style.width  = curW + 'px';
-    s2pill.style.height = h + 'px';
-
-    // Color: green → purple
-    const c1=[34,197,94], c2=[157,78,221];
-    const c1b=[22,163,74], c2b=[124,58,237];
-    const mix = (a,b,t) => Math.round(a+(b-a)*p);
-    s2pill.style.background = `linear-gradient(135deg,rgb(${c1.map((v,i)=>mix(v,c2[i],p)).join(',')}),rgb(${c1b.map((v,i)=>mix(v,c2b[i],p)).join(',')}))`;
-
-    // Button text colors
-    s2qbEl.style.color = p < 0.5 ? '#1a1a1f' : '#4a4a56';
-    s2ddEl.style.color = p >= 0.5 ? '#1a1a1f' : '#4a4a56';
-
-    // S2 starts with pill on QB
-    if (t < PILL_S) {
-      s2pill.style.left  = '4px';
-      s2pill.style.width = qbW + 'px';
-      s2pill.style.height = h + 'px';
-      s2pill.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
-      s2qbEl.style.color = '#1a1a1f';
-      s2ddEl.style.color = '#4a4a56';
-    }
-  }
-
-  // ── S2: content swap ─────────────────────────
-  const qbCont = document.getElementById('s2-qb-content');
-  const ddCont = document.getElementById('s2-dd-content');
-  if (qbCont) qbCont.style.opacity = 1 - eOut(pct(t, QB_FADE_S, QB_FADE_S+280));
-  if (ddCont) ddCont.style.opacity = eOut(pct(t, DD_FADE_S, DD_FADE_S+380));
-
-  // ── S2: cursor movement ───────────────────────
-  const curEl  = document.getElementById('s2-cursor');
-  const ripple = document.getElementById('s2-ripple');
-
-  if (curEl) {
-    // Starting position (lower content area), ending at DD button
-    // DD button center: tog padding-left=38, QB width≈138px, DD width≈104px → center at 38+138+52=228px from scene left
-    // y: toggle top ≈ 175px into scene
-    const X0=62, Y0=395, X1=229, Y1=177;
-    const moveP = eSin(pct(t, CUR_APPEAR+80, CUR_LAND));
-    const cx = X0 + (X1-X0)*moveP;
-    const cy = Y0 + (Y1-Y0)*moveP;
-
-    const fadeIn  = pct(t, CUR_APPEAR, CUR_APPEAR+200);
-    const fadeOut = 1 - pct(t, CUR_FADE, CUR_FADE+300);
-    curEl.style.opacity = Math.min(fadeIn, fadeOut);
-    curEl.style.transform = `translate(${cx}px,${cy}px)`;
-
-    // Click shrink
-    if (t >= CUR_CLICK && t < CUR_CLICK+130) {
-      curEl.style.transform = `translate(${cx}px,${cy}px) scale(0.72)`;
-    }
-  }
-
-  // ── Click ripple ──────────────────────────────
-  if (ripple) {
-    const X1=229, Y1=177;
-    if (t >= CUR_CLICK && t < CUR_CLICK+500) {
-      const rp = pct(t, CUR_CLICK, CUR_CLICK+460);
-      const scale = rp * 2.8;
-      const alpha = 1 - rp;
-      ripple.style.opacity = alpha;
-      ripple.style.transform = `translate(${X1-14}px,${Y1-14}px) scale(${scale})`;
+  // ── S2: Toggle pill ───────────────────────
+  const s2qb=document.getElementById('s2-qb'),s2dd=document.getElementById('s2-dd'),s2pill=document.getElementById('s2-pill');
+  if(s2pill&&s2qb&&s2dd){
+    const qbW=s2qb.offsetWidth,ddW=s2dd.offsetWidth,h=s2qb.offsetHeight;
+    const p=eOut(pct(t,PILL_S,PILL_S+PILL_D));
+    if(t<PILL_S){
+      s2pill.style.cssText=`left:4px;width:${qbW}px;height:${h}px;background:linear-gradient(135deg,#22c55e,#16a34a)`;
+      s2qb.style.color='#1a1a1f';s2dd.style.color='#4a4a56';
     } else {
-      ripple.style.opacity = 0;
+      const cx=4+(qbW)*p,cw=qbW+(ddW-qbW)*p;
+      const r=[34,197,94],rb=[22,163,74],r2=[157,78,221],r2b=[124,58,237];
+      const mc=(a,b)=>Math.round(a+(b-a)*p);
+      s2pill.style.cssText=`left:${cx}px;width:${cw}px;height:${h}px;background:linear-gradient(135deg,rgb(${r.map((v,i)=>mc(v,r2[i])).join(',')}),rgb(${rb.map((v,i)=>mc(v,r2b[i])).join(',')}))`;
+      s2qb.style.color=p<0.5?'#1a1a1f':'#4a4a56';
+      s2dd.style.color=p>=0.5?'#1a1a1f':'#4a4a56';
     }
   }
 
-  // ── S3: DD pill geometry ──────────────────────
-  const s3pill = document.getElementById('s3-pill');
-  const s3qb   = document.getElementById('s3-qb');
-  const s3dd   = document.getElementById('s3-dd');
-  if (s3pill && s3qb && s3dd) {
-    s3pill.style.left   = (4+s3qb.offsetWidth)+'px';
-    s3pill.style.width  = s3dd.offsetWidth+'px';
-    s3pill.style.height = s3dd.offsetHeight+'px';
+  // S2 content swap
+  const qbC=document.getElementById('s2-qb-content'),ddC=document.getElementById('s2-dd-content');
+  if(qbC) qbC.style.opacity=1-eOut(pct(t,4100,4400));
+  if(ddC) ddC.style.opacity=eOut(pct(t,4250,4650));
+
+  // S2 cursor
+  const s2cur=document.getElementById('s2-cursor');
+  const s2rip=document.getElementById('s2-ripple');
+  const X0=65,Y0=395,X1=228,Y1=177;
+  if(s2cur){
+    const mp=eSin(pct(t,CUR_APPEAR+60,CUR_LAND));
+    const cx=X0+(X1-X0)*mp,cy=Y0+(Y1-Y0)*mp;
+    const fi=pct(t,CUR_APPEAR,CUR_APPEAR+200);
+    const fo=1-pct(t,CUR_FADE,CUR_FADE+280);
+    s2cur.style.opacity=Math.min(fi,fo);
+    const sc=(t>=CUR_CLICK&&t<CUR_CLICK+130)?0.72:1;
+    s2cur.style.transform=`translate(${cx}px,${cy}px) scale(${sc})`;
+  }
+  if(s2rip){
+    if(t>=CUR_CLICK&&t<CUR_CLICK+480){
+      const rp=pct(t,CUR_CLICK,CUR_CLICK+460);
+      s2rip.style.opacity=1-rp;
+      s2rip.style.transform=`translate(${X1-13}px,${Y1-13}px) scale(${rp*2.6})`;
+    } else { s2rip.style.opacity=0; }
   }
 
-  // ── S3: BPC circle pulse ──────────────────────
-  const bpcC = document.getElementById('bpc-c');
-  if (bpcC) {
-    const pulse = Math.sin((t-VS)/650*Math.PI);
-    bpcC.setAttribute('r', 12 + 2.8*Math.max(0,pulse));
+  // S3 pill geometry
+  const s3pill=document.getElementById('s3-pill'),s3qb=document.getElementById('s3-qb'),s3dd=document.getElementById('s3-dd');
+  if(s3pill&&s3qb&&s3dd){
+    s3pill.style.left=(4+s3qb.offsetWidth)+'px';
+    s3pill.style.width=s3dd.offsetWidth+'px';
+    s3pill.style.height=s3dd.offsetHeight+'px';
   }
 
-  // ── S3: Vessel draw ───────────────────────────
-  for (let i=0;i<11;i++) {
-    const el = document.getElementById('v'+i);
-    if (!el) continue;
-    const vs2 = VS+VD[i]*VSCL;
-    const p   = eOut(pct(t, vs2, vs2+VDUR));
-    el.style.strokeDashoffset = VLEN[i]*(1-p);
-    el.style.opacity = p>0.01 ? 1 : 0;
+  // S3 BPC pulse
+  const bpcC=document.getElementById('bpc-c');
+  if(bpcC){ const pulse=Math.sin((t-VS)/650*Math.PI); bpcC.setAttribute('r',11+2.5*Math.max(0,pulse)); }
+
+  // S3 vessel draw
+  for(let i=0;i<11;i++){
+    const el=document.getElementById('v'+i);
+    if(!el) continue;
+    const vs2=VS+VD[i]*VSCL;
+    const p=eOut(pct(t,vs2,vs2+VDUR));
+    el.style.strokeDashoffset=VLEN[i]*(1-p);
+    el.style.opacity=p>0.01?1:0;
+  }
+  const nvf=document.getElementById('nvf');
+  const lastVEnd=VS+VD[10]*VSCL+VDUR;
+  if(nvf) nvf.style.opacity=eOut(pct(t,lastVEnd,lastVEnd+480));
+
+  // S3 phase
+  const phSec=document.getElementById('ph-sec');
+  if(phSec) phSec.style.opacity=eOut(pct(t,PHS-300,PHS+100));
+  let ap=-1; if(t>=PHS) ap=Math.floor((t-PHS)/PHDT)%4;
+  for(let i=0;i<4;i++){
+    const btn=document.getElementById('p'+i),desc=document.getElementById('pd'+i),lbl=document.getElementById('pl'+i);
+    const on=i===ap;
+    if(btn){btn.style.borderColor=on?PLBL[i]:'rgba(255,255,255,.08)';btn.style.backgroundColor=on?PLBL[i]+'1c':'rgba(255,255,255,.02)';btn.style.boxShadow=on?'0 0 14px '+PLBL[i]+'35':'none';}
+    if(lbl) lbl.style.color=on?PLBL[i]:'#484854';
+    if(desc) desc.style.display=on?'block':'none';
   }
 
-  const nvf = document.getElementById('nvf');
-  const lastVEnd = VS+VD[10]*VSCL+VDUR;
-  if (nvf) nvf.style.opacity = eOut(pct(t, lastVEnd, lastVEnd+500));
+  // ── S4: Academy ──────────────────────────
 
-  // ── S3: Phase section ─────────────────────────
-  const phSec = document.getElementById('ph-sec');
-  if (phSec) phSec.style.opacity = eOut(pct(t, PHS-350, PHS+100));
-
-  let activePhase = -1;
-  if (t >= PHS) activePhase = Math.floor((t-PHS)/PHDT)%4;
-
-  for (let i=0;i<4;i++) {
-    const btn  = document.getElementById('p'+i);
-    const desc = document.getElementById('pd'+i);
-    const lbl  = document.getElementById('pl'+i);
-    const on   = i===activePhase;
-    if (btn) {
-      btn.style.borderColor     = on ? PLBL[i]         : 'rgba(255,255,255,.08)';
-      btn.style.backgroundColor = on ? PLBL[i]+'1c'   : 'rgba(255,255,255,.02)';
-      btn.style.boxShadow       = on ? '0 0 16px '+PLBL[i]+'38' : 'none';
+  // Module cards stagger
+  for(let i=0;i<4;i++){
+    const el=document.getElementById('s4m'+i);
+    if(el){
+      const p=eOut(pct(t,S4_MOD_S+i*200,S4_MOD_S+i*200+440));
+      el.style.opacity=p;el.style.transform='translateY('+(1-p)*18+'px)';
     }
-    if (lbl)  lbl.style.color  = on ? PLBL[i] : '#484854';
-    if (desc) desc.style.display = on ? 'block' : 'none';
   }
 
-  // ── S4: Module stagger ────────────────────────
-  const s4s = S[3][0];
-  for (let i=0;i<4;i++) {
-    const el = document.getElementById('m'+i);
-    if (el) {
-      const p = eOut(pct(t, s4s+i*240, s4s+i*240+480));
-      el.style.opacity   = p;
-      el.style.transform = 'translateY('+(1-p)*16+'px)';
+  // Viewer open/close
+  const viewer=document.getElementById('s4-viewer');
+  if(viewer){
+    if(t<S4_VIEWER_OPEN){ viewer.style.opacity=0;viewer.style.transform='translateY(100%)'; }
+    else if(t<S4_VIEWER_CLOSE){
+      const op=eOut(pct(t,S4_VIEWER_OPEN,S4_VIEWER_OPEN+400));
+      viewer.style.opacity=op;viewer.style.transform=`translateY(${(1-op)*60}px)`;
+    } else {
+      const cl=eOut(pct(t,S4_VIEWER_CLOSE,S4_VIEWER_CLOSE+380));
+      viewer.style.opacity=1-cl;viewer.style.transform=`translateY(${cl*60}px)`;
     }
+  }
+
+  // Slide dots & content
+  const sd0=document.getElementById('sd0'),sd1=document.getElementById('sd1');
+  const sv1=document.getElementById('sv-slide1'),sv2=document.getElementById('sv-slide2');
+  const svLbl=document.getElementById('sv-slide-label');
+  const atS2=t>=S4_SLIDE_ADV;
+  if(sd0){sd0.style.flex=atS2?'1':'2';sd0.style.background=atS2?'#22c55e':'#E7FB10';}
+  if(sd1){sd1.style.flex=atS2?'2':'1';sd1.style.background=atS2?'#E7FB10':'rgba(255,255,255,.2)';}
+  if(sv1) sv1.style.opacity=1-eOut(pct(t,S4_SLIDE_ADV,S4_SLIDE_ADV+280));
+  if(sv2) sv2.style.opacity=eOut(pct(t,S4_SLIDE_ADV+80,S4_SLIDE_ADV+380));
+  if(svLbl) svLbl.textContent=atS2?'2 / 2':'1 / 2';
+
+  // Next btn fades, Complete btn appears
+  const nextBtn=document.getElementById('sv-next-btn'),completeBtn=document.getElementById('sv-complete-btn');
+  if(nextBtn) nextBtn.style.opacity=1-eOut(pct(t,S4_COMPLETE_SHOWN-100,S4_COMPLETE_SHOWN+200));
+  if(completeBtn){
+    const showP=eOut(pct(t,S4_COMPLETE_SHOWN,S4_COMPLETE_SHOWN+300));
+    if(showP>0.01) completeBtn.style.display='flex';
+    completeBtn.style.opacity=showP;
+    if(t>S4_VIEWER_CLOSE+200) completeBtn.style.display='none';
+  }
+
+  // S4 cursor: Next click then Complete click
+  const s4cur=document.getElementById('s4-cursor');
+  const s4rip=document.getElementById('s4-ripple');
+  // Viewer is at bottom, Next btn at roughly x=480, y=590 (from scene top... 
+  // viewer is 22px from scene bottom → scene height 660, viewer bottom 660-22=638, viewer ~230px tall → viewer top ~408
+  // footer is at viewer top+header(34)+slides(184)=viewer top+218 ≈ 626 from scene top
+  // Within scene: viewer left=18, right=18; footer y ≈ 626; Next btn is right side of footer ≈ x=500
+  // Need to account for scene padding (22px top) when viewer is inside scene
+  // The viewer itself is position:absolute within the scene. Let me use approximate coords.
+  const NEXT_X=478,NEXT_Y=593;
+  const COMP_X=468,COMP_Y=593;
+
+  if(s4cur&&s4rip){
+    let curOpacity=0,curX=NEXT_X,curY=NEXT_Y,curScale=1;
+
+    // Phase 1: cursor to Next
+    if(t>=S4_CUR2_APPEAR&&t<S4_CUR2_CLICK+300){
+      const fi=pct(t,S4_CUR2_APPEAR,S4_CUR2_APPEAR+200);
+      const fo=1-pct(t,S4_CUR2_CLICK+150,S4_CUR2_CLICK+300);
+      curOpacity=Math.min(fi,fo);
+      curX=NEXT_X;curY=NEXT_Y;
+      curScale=(t>=S4_CUR2_CLICK&&t<S4_CUR2_CLICK+130)?0.72:1;
+    }
+    // Phase 2: cursor to Complete
+    if(t>=S4_CUR3_APPEAR&&t<S4_VIEWER_CLOSE+200){
+      const fi=pct(t,S4_CUR3_APPEAR,S4_CUR3_APPEAR+200);
+      const fo=1-pct(t,S4_VIEWER_CLOSE,S4_VIEWER_CLOSE+200);
+      curOpacity=Math.min(fi,fo);
+      curX=COMP_X;curY=COMP_Y;
+      curScale=(t>=S4_CUR3_CLICK&&t<S4_CUR3_CLICK+130)?0.72:1;
+    }
+
+    s4cur.style.opacity=curOpacity;
+    s4cur.style.transform=`translate(${curX}px,${curY}px) scale(${curScale})`;
+
+    // Ripple 1 (Next click)
+    if(t>=S4_CUR2_CLICK&&t<S4_CUR2_CLICK+460&&t<S4_CUR3_APPEAR){
+      const rp=pct(t,S4_CUR2_CLICK,S4_CUR2_CLICK+440);
+      s4rip.style.opacity=1-rp;s4rip.style.transform=`translate(${NEXT_X-13}px,${NEXT_Y-13}px) scale(${rp*2.5})`;
+    }
+    // Ripple 2 (Complete click)
+    else if(t>=S4_CUR3_CLICK&&t<S4_CUR3_CLICK+460){
+      const rp=pct(t,S4_CUR3_CLICK,S4_CUR3_CLICK+440);
+      s4rip.style.opacity=1-rp;s4rip.style.transform=`translate(${COMP_X-13}px,${COMP_Y-13}px) scale(${rp*2.5})`;
+    } else { s4rip.style.opacity=0; }
+  }
+
+  // XP flash badge
+  const xpFlash=document.getElementById('xp-flash');
+  if(xpFlash){
+    if(t>=S4_XP_ANIM&&t<S4_XP_ANIM+900){
+      const p=pct(t,S4_XP_ANIM,S4_XP_ANIM+900);
+      const scale=p<0.2?eOut(p/0.2)*1.1:p>0.7?1-eOut((p-0.7)/0.3)*0.15:1.05;
+      const opa=p<0.15?eOut(p/0.15):p>0.7?1-eOut((p-0.7)/0.3):1;
+      xpFlash.style.opacity=opa;xpFlash.style.transform=`translateX(-50%) scale(${scale})`;
+    } else { xpFlash.style.opacity=0; }
+  }
+
+  // XP counter animation
+  const xpNum=document.getElementById('s4-xp-num');
+  if(xpNum){
+    const xp=Math.round(10*eOut(pct(t,S4_XP_ANIM+200,S4_XP_ANIM+800)));
+    xpNum.textContent=xp;
+    if(xp>0) xpNum.style.textShadow='0 0 20px rgba(231,251,16,.7)';
+    else xpNum.style.textShadow='none';
+  }
+
+  // Progress ring fill
+  const ringCircle=document.getElementById('s4-ring-circle');
+  const ringPct=document.getElementById('s4-ring-pct');
+  if(ringCircle){
+    const circumference=163.4;
+    const progress=eOut(pct(t,S4_XP_ANIM+200,S4_XP_ANIM+800))*5.88;
+    ringCircle.setAttribute('stroke-dashoffset',circumference*(1-progress/100));
+    if(ringPct) ringPct.textContent=progress>0.5?Math.round(progress)+'%':'0%';
+  }
+
+  // Lesson count update
+  const lesText=document.getElementById('s4-lesson-text');
+  if(lesText) lesText.textContent=t>=S4_XP_ANIM+600?'1 of 17 lessons completed':'0 of 17 lessons completed';
+
+  // Module 0 status update (Start → 1/5 lessons)
+  const m0status=document.getElementById('s4m0-status');
+  if(m0status&&t>=S4_XP_ANIM+400){
+    m0status.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10" fill="#21d8ff"><polygon points="2,1 9,5 2,9"/></svg> 1 / 5 lessons';
+    m0status.style.color='rgba(33,216,255,.7)';
+    // Glow the module card
+    const m0=document.getElementById('s4m0');
+    if(m0) m0.style.boxShadow='0 0 24px rgba(33,216,255,.25)';
+  }
+
+  // Recommended next: pulse before viewer opens, then fade when viewer shows
+  const recNext=document.getElementById('s4-recnext');
+  if(recNext){
+    if(t>S4_XP_ANIM+800) recNext.style.opacity=0;
+    else if(t>=S4_VIEWER_OPEN) recNext.style.opacity=Math.max(0,1-pct(t,S4_VIEWER_OPEN,S4_VIEWER_OPEN+300));
+    else if(t>=S4_START+600&&t<S4_VIEWER_OPEN){
+      // Subtle pulse on Start button to draw attention
+      const pulse=0.85+0.15*Math.sin((t-S4_START-600)/400*Math.PI);
+      recNext.style.opacity=pulse;
+    } else recNext.style.opacity=1;
+  }
+
+  // Milestone fill (based on XP)
+  const mileFill=document.getElementById('mile-fill');
+  if(mileFill){
+    const xpVal=10*eOut(pct(t,S4_XP_ANIM+200,S4_XP_ANIM+800));
+    const fillPct=Math.min(xpVal/600,1)*100;
+    mileFill.style.width=fillPct+'%';
   }
 };
 </script>
