@@ -23,7 +23,7 @@ test.describe("PK Profile button — article page", () => {
   // it here before each navigation prevents the modal from opening.
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      sessionStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", "true");
     });
   });
 

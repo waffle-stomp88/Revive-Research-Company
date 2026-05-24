@@ -16,7 +16,7 @@ test.describe("Order confirmation — Venmo deep-link pre-fill after page refres
   test.beforeEach(async ({ page }) => {
     // Pre-accept the age gate (stored in sessionStorage) so the modal doesn't block interactions.
     await page.addInitScript(() => {
-      sessionStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", "true");
     });
 
     await page.route(`**/api/orders/${MOCK_ORDER_ID}`, (route) => {
@@ -69,7 +69,7 @@ test.describe("Order confirmation — Venmo deep-link pre-fill after page refres
 test.describe("Order confirmation — CashApp deep-link pre-fill after page refresh", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      sessionStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", "true");
     });
 
     await page.route(`**/api/orders/${MOCK_ORDER_ID}`, (route) => {
