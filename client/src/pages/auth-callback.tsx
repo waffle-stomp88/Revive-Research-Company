@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 
@@ -6,31 +6,19 @@ export default function AuthCallback() {
   const [, navigate] = useLocation();
   const [status, setStatus] = useState<"loading" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
+  const handled = useRef(false);
 
   useEffect(() => {
-    const handleCallback = async () => {
+    const finishSignIn = async (accessToken: string) => {
+      if (handled.current) return;
+      handled.current = true;
+
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          console.error("[AuthCallback] Session error:", sessionError.message);
-          setErrorMsg(sessionError.message);
-          setStatus("error");
-          return;
-        }
-
-        if (!session) {
-          console.error("[AuthCallback] No session found after OAuth redirect");
-          setErrorMsg("No session found. Please try signing in again.");
-          setStatus("error");
-          return;
-        }
-
         const response = await fetch("/api/auth/sync", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.access_token}`,
+            "Authorization": `Bearer ${accessToken}`,
           },
           credentials: "include",
           body: JSON.stringify({}),
@@ -70,7 +58,39 @@ export default function AuthCallback() {
       }
     };
 
-    handleCallback();
+    // Listen for the SIGNED_IN event — Supabase fires this once it has
+    // finished parsing the OAuth tokens from the URL hash.  Calling
+    // getSession() immediately races against that parsing and can return
+    // null, causing a spurious "cannot be signed in" flash.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
+          finishSignIn(session.access_token);
+        }
+      }
+    );
+
+    // Fallback: if the session was already established before this component
+    // mounted (e.g. back-forward cache), getSession() will have it.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        finishSignIn(session.access_token);
+      }
+    });
+
+    // Safety timeout — if nothing fires in 8 s, show an error rather than
+    // leaving the user on a spinner forever.
+    const timer = setTimeout(() => {
+      if (!handled.current) {
+        setErrorMsg("Sign-in timed out. Please try again.");
+        setStatus("error");
+      }
+    }, 8000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, [navigate]);
 
   if (status === "error") {
