@@ -83,3 +83,9 @@ id = "LBu1YRiBcI1XqZQ0Q4eLb"
 uri = "file://exports/email2-edu-overview.gif"
 type = "image"
 title = "Email 2 — Platform Overview GIF (v3, no overlap)"
+
+[[outputs]]
+id = "N39UDbkKUhjnDazjY2oH4"
+uri = "file://exports/email3-synergy-engine.gif"
+type = "image"
+title = "Email 3 GIF — Synergy Engine (BPC-157 + TB-500)"
