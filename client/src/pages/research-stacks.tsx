@@ -2124,6 +2124,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </Button>
         </Link>
       </div>
+      <div className="hidden md:block">
+        <PathwayMap selectedPeptides={selectedPeptides} knownStacks={knownStacks} />
+      </div>
       {/* Mobile-only Goal Starters - shown above grid so new users see it first */}
       {selectedPeptides.length === 0 && products && (
         <div className="lg:hidden">
