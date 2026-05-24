@@ -7,497 +7,634 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:680px;background:#0e0e12;-webkit-font-smoothing:antialiased;font-family:'DM Sans',Helvetica,Arial,sans-serif}
+html,body{width:680px;background:#050709;-webkit-font-smoothing:antialiased;font-family:'DM Sans',Helvetica,Arial,sans-serif}
 
-/* ── Browser chrome bar ── */
 .chrome{height:40px;background:#111116;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
 .cdots{display:flex;gap:6px}
 .cdot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.13)}
 .curl{flex:1;max-width:340px;margin:0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;height:22px;display:flex;align-items:center;padding:0 9px;gap:5px}
-.curl-lock{width:9px;height:9px;opacity:.35;flex-shrink:0}
 .curl-url{font:400 11px/1 'DM Sans',sans-serif;color:#464650;white-space:nowrap}
 .curl-path{color:#626270}
 
-/* ── Scene container ── */
-.sw{position:relative;width:680px;height:660px;overflow:hidden;background:#0a0a0c}
-.scene{position:absolute;inset:0;opacity:0;overflow:hidden}
+.sw{position:relative;width:680px;height:660px;overflow:hidden}
+.scene{position:absolute;inset:0;opacity:0}
 
-/* ═══════════════ S1: GALAXY ═══════════════ */
-#s1{background:#0a0a0c}
+/* ═══ S1: PATHWAY MAP ═══ */
+#s1{background:radial-gradient(ellipse at center, #0d1117 0%, #080b10 60%, #050709 100%)}
 
-/* ═══════════════ S2: STACK BUILDER ═══════════════ */
-#s2{background:#12121a;padding:28px 36px 20px}
+.pm-header{
+  height:46px;padding:0 18px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(34,197,94,.14);
+  background:rgba(13,17,23,.85);
+  position:relative;z-index:2;
+}
+.pm-icon-wrap{
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.22);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.pm-title{font:700 11.5px/1 'DM Sans',sans-serif;color:#dcdce8;letter-spacing:.07em;text-transform:uppercase}
+.pm-sub{font:400 10.5px/1 'DM Sans',sans-serif;color:rgba(34,197,94,.50);margin-top:3px}
+.pm-badge{
+  margin-left:auto;
+  display:inline-flex;align-items:center;gap:5px;
+  font:600 8.5px/1 'DM Sans',sans-serif;color:rgba(34,197,94,.38);
+  letter-spacing:.07em;
+}
 
-.sec-label{font:600 10px/1 'DM Sans',sans-serif;color:#2e2e3a;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
+/* Compound selector */
+.sel-section{padding:12px 20px 0}
+.sel-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+.sel-title{font:700 11px/1 'DM Sans',sans-serif;color:#dcdce8;text-transform:uppercase;letter-spacing:.08em}
+.sel-count{font:400 10.5px/1 'DM Sans',sans-serif;color:#2a2a38}
+.sel-search{
+  height:32px;background:#0a0a10;
+  border:1px solid rgba(255,255,255,.07);border-radius:7px;
+  display:flex;align-items:center;padding:0 11px;gap:7px;margin-bottom:10px;
+}
+.sel-search-icon{opacity:.20;flex-shrink:0}
+.sel-search-placeholder{font:400 11.5px/1 'DM Sans',sans-serif;color:#1e1e2c}
+.cmpd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 
-.cards-row{display:flex;gap:14px;margin-bottom:18px}
-.compound-card{flex:1;border-radius:12px;padding:18px;will-change:transform,opacity;overflow:hidden;border:1.5px solid}
-.cc-system{font:600 9.5px/1 'DM Sans',sans-serif;letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px;opacity:.85}
-.cc-name{font:700 22px/1 'DM Sans',sans-serif;color:#dcdce8;margin-bottom:5px}
-.cc-abbr{font:400 10.5px/1.4 'DM Sans',sans-serif;color:#3e3e50;margin-bottom:13px}
-.cc-sel{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:1px solid;font:600 9px/1 'DM Sans',sans-serif;letter-spacing:.04em}
-.cc-dots{display:flex;gap:5px;margin-top:12px}
-.cc-dot{width:6px;height:6px;border-radius:50%}
+.cmpd-btn{
+  background:#0a0a10;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;
+  padding:10px 12px;display:flex;align-items:center;gap:9px;
+}
+.cmpd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cmpd-name{font:700 12px/1 'DM Sans',sans-serif;color:#b0b0bc;letter-spacing:.01em}
+.cmpd-sys{font:400 9px/1 'DM Sans',sans-serif;color:#242434;margin-top:3px;letter-spacing:.04em;text-transform:uppercase}
 
-.wolverine-wrap{margin-bottom:16px}
-.wolverine-inner{display:inline-flex;align-items:center;gap:12px;padding:13px 20px;border-radius:12px;border:1.5px solid rgba(231,251,16,.25);background:rgba(231,251,16,.04);width:100%;will-change:transform,opacity}
-.wolv-icon{flex-shrink:0}
-.wolv-text strong{display:block;font:700 13px/1 'DM Sans',sans-serif;color:#D8E810;letter-spacing:.02em;margin-bottom:4px}
-.wolv-text span{font:400 11px/1.4 'DM Sans',sans-serif;color:#58500c}
+/* ═══ S2: SCORE REVEAL ═══ */
+#s2{
+  background:radial-gradient(ellipse at center, #0d1117 0%, #080b10 60%, #050709 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:36px 36px 24px;
+}
+.s2-pair{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.s2-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 15px;
+  border-radius:99px;border:1.5px solid;
+  font:700 12.5px/1 'DM Sans',sans-serif;
+}
+.s2-plus{font:300 20px/1 'DM Sans',sans-serif;color:#1e1e2c}
+.s2-stack-lbl{
+  font:500 10px/1 'DM Sans',sans-serif;color:#222232;
+  letter-spacing:.10em;text-transform:uppercase;margin-bottom:28px;
+}
+.ring-wrap{position:relative;display:flex;justify-content:center;align-items:center;margin-bottom:20px}
+.leg-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 18px;border-radius:99px;
+  border:1.5px solid rgba(251,191,36,.28);background:rgba(251,191,36,.04);
+  margin-bottom:22px;
+}
+.leg-badge span{font:700 11.5px/1 'DM Sans',sans-serif;color:#c8920a;letter-spacing:.05em;text-transform:uppercase}
+.desc-card{
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:16px 22px;max-width:560px;width:100%;
+}
+.desc-text{font:400 12.5px/1.65 'DM Sans',sans-serif;color:#3a3a50}
+.part-tag{
+  margin-top:auto;padding-top:18px;
+  font:500 9px/1 'DM Sans',sans-serif;color:#181824;letter-spacing:.08em;text-align:center;
+}
 
-.score-mini{background:#0e0e14;border:1.5px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px;will-change:opacity}
-.sm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.sm-label{font:600 10px/1 'DM Sans',sans-serif;color:#383848;text-transform:uppercase;letter-spacing:.07em}
-.sm-val{font:700 17px/1 'DM Sans',sans-serif;color:#22c55e}
-.sm-track{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:11px}
-.sm-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#21d8ff 0%,#10b981 100%)}
-.sm-mech{font:400 11.5px/1.55 'DM Sans',sans-serif;color:#484858}
-
-/* ═══════════════ S3: SCORE REVEAL ═══════════════ */
-#s3{background:#12121a;display:flex;flex-direction:column;align-items:center;padding:28px 36px 24px}
-
-.s3-pair{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:7px}
-.s3-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:99px;border:1.5px solid;font:700 13px/1 'DM Sans',sans-serif}
-.s3-plus{font:300 18px/1 'DM Sans',sans-serif;color:#2a2a38}
-.s3-stack-name{font:500 10px/1 'DM Sans',sans-serif;color:#2e2e40;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px}
-
-.ring-wrap{position:relative;display:flex;justify-content:center;margin-bottom:20px}
-
-.legendary-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:99px;border:1.5px solid rgba(231,251,16,.30);background:rgba(231,251,16,.05);margin-bottom:18px;will-change:opacity}
-.leg-star{flex-shrink:0}
-.legendary-badge span{font:700 11.5px/1 'DM Sans',sans-serif;color:#c8dc08;letter-spacing:.04em;text-transform:uppercase}
-
-.mech-list{list-style:none;display:flex;flex-direction:column;gap:11px;width:100%;max-width:540px}
-.mech-item{display:flex;align-items:flex-start;gap:11px;will-change:opacity}
-.mech-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.mech-text{font:400 12.5px/1.6 'DM Sans',sans-serif;color:#505060}
-
-.part-tag{margin-top:auto;padding-top:14px;font:500 9px/1 'DM Sans',sans-serif;color:#1e1e2a;letter-spacing:.07em;text-align:center;align-self:center}
+#cursor{position:absolute;pointer-events:none;z-index:100;opacity:0;will-change:transform;top:0;left:0}
 </style>
 <script>window.__fontsReady=false;document.fonts.ready.then(()=>{window.__fontsReady=true;})</script>
 </head>
 <body>
 
-<!-- ── Chrome bar ── -->
 <div class="chrome">
   <div class="cdots"><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div></div>
   <div class="curl">
-    <svg class="curl-lock" viewBox="0 0 12 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="6" width="8" height="7" rx="1.5"/><path d="M4 6V4a2 2 0 0 1 4 0v2"/></svg>
+    <svg width="9" height="11" viewBox="0 0 12 14" fill="none" stroke="#464650" stroke-width="1.5" stroke-linecap="round" style="opacity:.45"><rect x="2" y="6" width="8" height="7" rx="1.5"/><path d="M4 6V4a2 2 0 0 1 4 0v2"/></svg>
     <span class="curl-url">reviveresearch.co<span class="curl-path">/research-stacks</span></span>
   </div>
 </div>
 
-<!-- ── Scene wrapper ── -->
 <div class="sw">
 
-<!-- ═══════════════ S1: GALAXY ═══════════════ -->
+<!-- ═══════════════════ S1: PATHWAY MAP ═══════════════════ -->
 <div id="s1" class="scene" style="opacity:1">
-  <svg width="680" height="660" viewBox="0 0 680 660" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="coreG" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stop-color="#21d8ff" stop-opacity=".45"/>
-        <stop offset="35%"  stop-color="#9d4edd" stop-opacity=".18"/>
-        <stop offset="75%"  stop-color="#1a0a2e" stop-opacity=".08"/>
-        <stop offset="100%" stop-color="#0a0a0c" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="bpcG" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#21d8ff" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#21d8ff" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="tbG" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#9d4edd" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#9d4edd" stop-opacity="0"/>
-      </radialGradient>
-      <linearGradient id="botFade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#0a0a0c" stop-opacity="0"/>
-        <stop offset="60%"  stop-color="#0a0a0c" stop-opacity=".88"/>
-        <stop offset="100%" stop-color="#0a0a0c" stop-opacity=".98"/>
-      </linearGradient>
-      <filter id="bGlow" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="5" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
-        <feGaussianBlur stdDeviation="7"/>
-      </filter>
-    </defs>
 
-    <!-- BG -->
-    <rect width="680" height="660" fill="#0a0a0c"/>
-
-    <!-- Ambient dust -->
-    <g opacity=".26" fill="#ffffff">
-      <circle cx="55" cy="55" r="1.0"/><circle cx="155" cy="38" r="1.2"/><circle cx="245" cy="72" r=".8"/>
-      <circle cx="402" cy="48" r="1.1"/><circle cx="552" cy="32" r=".9"/><circle cx="628" cy="74" r=".7"/>
-      <circle cx="35" cy="138" r=".8"/><circle cx="120" cy="118" r="1.1"/><circle cx="212" cy="98" r=".9"/>
-      <circle cx="448" cy="88" r=".7"/><circle cx="586" cy="106" r="1.2"/><circle cx="656" cy="130" r=".8"/>
-      <circle cx="68" cy="212" r="1.1"/><circle cx="102" cy="185" r=".7"/><circle cx="173" cy="196" r=".9"/>
-      <circle cx="500" cy="166" r=".8"/><circle cx="604" cy="192" r="1.0"/><circle cx="648" cy="210" r=".7"/>
-      <circle cx="43" cy="302" r=".9"/><circle cx="94" cy="322" r="1.1"/><circle cx="141" cy="342" r=".7"/>
-      <circle cx="546" cy="290" r=".9"/><circle cx="612" cy="314" r="1.2"/><circle cx="664" cy="292" r=".6"/>
-      <circle cx="62" cy="400" r="1.0"/><circle cx="115" cy="428" r=".7"/><circle cx="181" cy="408" r="1.1"/>
-      <circle cx="510" cy="396" r=".8"/><circle cx="590" cy="421" r="1.0"/><circle cx="643" cy="388" r=".7"/>
-      <circle cx="85" cy="500" r=".7"/><circle cx="147" cy="484" r="1.2"/><circle cx="220" cy="518" r=".8"/>
-      <circle cx="474" cy="496" r=".9"/><circle cx="565" cy="508" r=".7"/><circle cx="622" cy="572" r="1.1"/>
-      <circle cx="304" cy="35" r=".8"/><circle cx="356" cy="22" r="1.1"/><circle cx="512" cy="60" r=".9"/>
-      <circle cx="32" cy="459" r="1.0"/><circle cx="665" cy="462" r=".8"/><circle cx="92" cy="542" r=".7"/>
-    </g>
-
-    <!-- Galaxy core (centered 340,290) -->
-    <circle cx="340" cy="290" r="135" fill="url(#coreG)" opacity=".55"/>
-    <circle cx="340" cy="290" r="70"  fill="#080810" opacity=".5"/>
-    <circle cx="340" cy="290" r="28"  fill="#10101e" opacity=".7"/>
-    <circle cx="340" cy="290" r="11"  fill="#21d8ff" opacity=".18"/>
-    <circle cx="340" cy="290" r="5"   fill="#21d8ff" opacity=".5"/>
-    <circle cx="340" cy="290" r="2.5" fill="#ffffff" opacity=".85"/>
-
-    <!-- Arm stars: HEALING (cyan) — hosts BPC-157 + TB-500 -->
-    <circle cx="405" cy="249" r="3"   fill="#21d8ff" opacity=".38"/>
-    <circle cx="425" cy="230" r="2.4" fill="#21d8ff" opacity=".28"/>
-    <circle cx="547" cy="270" r="2.4" fill="#21d8ff" opacity=".26"/>
-    <circle cx="565" cy="250" r="1.8" fill="#21d8ff" opacity=".2"/>
-
-    <!-- METABOLIC (green) lower-right -->
-    <circle cx="442" cy="367" r="3.5" fill="#10b981" opacity=".48"/>
-    <circle cx="473" cy="390" r="2.4" fill="#10b981" opacity=".33"/>
-    <circle cx="416" cy="350" r="2.4" fill="#10b981" opacity=".28"/>
-    <circle cx="508" cy="408" r="1.8" fill="#10b981" opacity=".22"/>
-
-    <!-- GROWTH (yellow) lower -->
-    <circle cx="356" cy="418" r="3"   fill="#E7FB10" opacity=".36"/>
-    <circle cx="324" cy="445" r="2.4" fill="#E7FB10" opacity=".26"/>
-    <circle cx="385" cy="438" r="1.8" fill="#E7FB10" opacity=".20"/>
-
-    <!-- COGNITIVE (purple) lower-left -->
-    <circle cx="207" cy="382" r="3.5" fill="#9d4edd" opacity=".46"/>
-    <circle cx="177" cy="362" r="2.4" fill="#9d4edd" opacity=".33"/>
-    <circle cx="232" cy="405" r="2.4" fill="#9d4edd" opacity=".26"/>
-    <circle cx="154" cy="398" r="1.8" fill="#9d4edd" opacity=".20"/>
-
-    <!-- SKIN (magenta) left -->
-    <circle cx="194" cy="288" r="3"   fill="#ec4899" opacity=".40"/>
-    <circle cx="160" cy="270" r="2.4" fill="#ec4899" opacity=".30"/>
-    <circle cx="212" cy="312" r="1.8" fill="#ec4899" opacity=".24"/>
-
-    <!-- LONGEVITY (blue) upper-left -->
-    <circle cx="216" cy="200" r="3.5" fill="#60a5fa" opacity=".46"/>
-    <circle cx="186" cy="180" r="2.4" fill="#60a5fa" opacity=".33"/>
-    <circle cx="246" cy="186" r="2.4" fill="#60a5fa" opacity=".26"/>
-
-    <!-- HORMONAL (orange) upper -->
-    <circle cx="311" cy="162" r="3"   fill="#f97316" opacity=".36"/>
-    <circle cx="334" cy="132" r="2.4" fill="#f97316" opacity=".26"/>
-    <circle cx="363" cy="152" r="1.8" fill="#f97316" opacity=".22"/>
-
-    <!-- BPC-157 featured star: (458, 222) -->
-    <circle cx="458" cy="222" r="22" fill="#21d8ff" opacity=".10" filter="url(#starGlow)"/>
-    <circle id="bpc-outer" cx="458" cy="222" r="15" fill="url(#bpcG)" opacity=".20"/>
-    <circle cx="458" cy="222" r="9"  fill="#21d8ff" opacity=".22"/>
-    <circle cx="458" cy="222" r="5.5" fill="#21d8ff" opacity=".92"/>
-    <circle cx="458" cy="222" r="2.8" fill="#ffffff" opacity=".95"/>
-    <line x1="448" y1="222" x2="468" y2="222" stroke="#21d8ff" stroke-width="1" opacity=".38"/>
-    <line x1="458" y1="212" x2="458" y2="232" stroke="#21d8ff" stroke-width="1" opacity=".38"/>
-
-    <!-- TB-500 featured star: (524, 254) -->
-    <circle cx="524" cy="254" r="20" fill="#9d4edd" opacity=".09" filter="url(#starGlow)"/>
-    <circle id="tb-outer" cx="524" cy="254" r="13" fill="url(#tbG)" opacity=".17"/>
-    <circle cx="524" cy="254" r="8"  fill="#9d4edd" opacity=".20"/>
-    <circle cx="524" cy="254" r="5"  fill="#9d4edd" opacity=".88"/>
-    <circle cx="524" cy="254" r="2.5" fill="#ffffff" opacity=".9"/>
-    <line x1="514" y1="254" x2="534" y2="254" stroke="#9d4edd" stroke-width="1" opacity=".35"/>
-    <line x1="524" y1="244" x2="524" y2="264" stroke="#9d4edd" stroke-width="1" opacity=".35"/>
-
-    <!-- Connection beam: BPC(458,222) → TB(524,254) length≈71px -->
-    <line id="beam-glow" x1="458" y1="222" x2="524" y2="254"
-          stroke="#21d8ff" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="74" stroke-dashoffset="74" stroke-opacity="0"
-          filter="url(#bGlow)"/>
-    <line id="beam" x1="458" y1="222" x2="524" y2="254"
-          stroke="#21d8ff" stroke-width="1.8" stroke-linecap="round"
-          stroke-dasharray="74" stroke-dashoffset="74" stroke-opacity="0"/>
-    <circle id="beam-dot" cx="458" cy="222" r="3.2" fill="#ffffff" opacity="0"/>
-
-    <!-- Bottom gradient fade -->
-    <rect x="0" y="560" width="680" height="100" fill="url(#botFade)"/>
-
-    <!-- Compound chips bottom overlay -->
-    <rect x="148" y="604" width="84" height="25" rx="6.5"
-          fill="rgba(33,216,255,.06)" stroke="rgba(33,216,255,.28)" stroke-width=".8"/>
-    <circle cx="162" cy="616.5" r="3.5" fill="#21d8ff" opacity=".72"/>
-    <text x="170" y="621" font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="700"
-          fill="#21d8ff" letter-spacing=".02em">BPC-157</text>
-
-    <text x="244" y="621" font-family="Arial,sans-serif" font-size="14" fill="#282832" text-anchor="middle">+</text>
-
-    <rect x="252" y="604" width="76" height="25" rx="6.5"
-          fill="rgba(157,78,221,.06)" stroke="rgba(157,78,221,.28)" stroke-width=".8"/>
-    <circle cx="266" cy="616.5" r="3.5" fill="#9d4edd" opacity=".72"/>
-    <text x="275" y="621" font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="700"
-          fill="#9d4edd" letter-spacing=".02em">TB-500</text>
-
-    <!-- Labels appear after beam -->
-    <g id="galaxy-labels" opacity="0">
-      <rect x="412" y="200" width="66" height="16" rx="4"
-            fill="rgba(33,216,255,.10)" stroke="rgba(33,216,255,.22)" stroke-width=".7"/>
-      <text x="445" y="212" font-family="DM Sans,Arial,sans-serif" font-size="8.5" font-weight="700"
-            fill="#21d8ff" text-anchor="middle" letter-spacing=".04em">BPC-157</text>
-      <rect x="530" y="244" width="60" height="16" rx="4"
-            fill="rgba(157,78,221,.10)" stroke="rgba(157,78,221,.22)" stroke-width=".7"/>
-      <text x="560" y="256" font-family="DM Sans,Arial,sans-serif" font-size="8.5" font-weight="700"
-            fill="#9d4edd" text-anchor="middle" letter-spacing=".04em">TB-500</text>
-    </g>
-
-    <!-- Pathway label -->
-    <text x="340" y="644" font-family="DM Sans,Arial,sans-serif" font-size="10" fill="#2c2c38"
-          text-anchor="middle" letter-spacing=".06em">HEALING SYSTEM · SHARED RECOVERY PATHWAY</text>
-
-    <!-- Synergy engine badge top-left -->
-    <rect x="18" y="18" width="132" height="22" rx="11"
-          fill="rgba(33,216,255,.05)" stroke="rgba(33,216,255,.20)" stroke-width=".8"/>
-    <circle cx="32" cy="29" r="3" fill="#21d8ff"/>
-    <text x="41" y="34" font-family="DM Sans,Arial,sans-serif" font-size="9" font-weight="700"
-          fill="#21d8ff" letter-spacing=".07em">SYNERGY ENGINE</text>
-
-    <!-- RR mark top-right -->
-    <circle cx="652" cy="29" r="16"
-            fill="rgba(231,251,16,.05)" stroke="rgba(231,251,16,.30)" stroke-width=".8"/>
-    <text x="652" y="34" font-family="DM Sans,Arial,sans-serif" font-size="13" font-weight="700"
-          fill="#E7FB10" text-anchor="middle">R</text>
-  </svg>
-</div><!-- /S1 -->
-
-<!-- ═══════════════ S2: STACK BUILDER ═══════════════ -->
-<div id="s2" class="scene">
-  <div class="sec-label">Custom Stack Builder &nbsp;·&nbsp; Select compounds &amp; discover synergies</div>
-
-  <div class="cards-row">
-    <!-- BPC-157 -->
-    <div id="card-bpc" class="compound-card"
-         style="opacity:0;transform:translateX(-60px);background:#0d1018;border-color:rgba(33,216,255,.22)">
-      <div class="cc-system" style="color:#21d8ff">Healing System</div>
-      <div class="cc-name">BPC-157</div>
-      <div class="cc-abbr">Body Protection Compound</div>
-      <div class="cc-sel" style="color:#21d8ff;border-color:rgba(33,216,255,.35);background:rgba(33,216,255,.08)">
-        <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#21d8ff"/></svg>
-        SELECTED
-      </div>
-      <div class="cc-dots">
-        <div class="cc-dot" style="background:#21d8ff"></div>
-        <div class="cc-dot" style="background:#21d8ff"></div>
-        <div class="cc-dot" style="background:#21d8ff"></div>
-        <div class="cc-dot" style="background:#21d8ff"></div>
-        <div class="cc-dot" style="background:#21d8ff"></div>
-      </div>
+  <div class="pm-header">
+    <div class="pm-icon-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     </div>
-    <!-- TB-500 -->
-    <div id="card-tb500" class="compound-card"
-         style="opacity:0;transform:translateX(-60px);background:#100d18;border-color:rgba(157,78,221,.22)">
-      <div class="cc-system" style="color:#9d4edd">Healing System</div>
-      <div class="cc-name">TB-500</div>
-      <div class="cc-abbr">Thymosin Beta-4 Analog</div>
-      <div class="cc-sel" style="color:#9d4edd;border-color:rgba(157,78,221,.35);background:rgba(157,78,221,.08)">
-        <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#9d4edd"/></svg>
-        SELECTED
-      </div>
-      <div class="cc-dots">
-        <div class="cc-dot" style="background:#9d4edd"></div>
-        <div class="cc-dot" style="background:#9d4edd"></div>
-        <div class="cc-dot" style="background:#9d4edd"></div>
-        <div class="cc-dot" style="background:#9d4edd"></div>
-        <div class="cc-dot" style="background:#9d4edd"></div>
-      </div>
+    <div>
+      <div class="pm-title">Synergy Pathway Map</div>
+      <div class="pm-sub">Select peptides below to visualize their connections</div>
+    </div>
+    <div class="pm-badge">
+      <svg width="7" height="7" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#22c55e"/></svg>
+      POWERED BY REVIVE SYNERGY ENGINE™
     </div>
   </div>
 
-  <!-- Wolverine Stack detected badge -->
-  <div class="wolverine-wrap">
-    <div id="wolverine-badge" class="wolverine-inner" style="opacity:0;transform:scale(.9)">
-      <svg class="wolv-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="#D8E810" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-      <div class="wolv-text">
-        <strong>WOLVERINE STACK DETECTED</strong>
-        <span>Known high-synergy combination · Legendary status</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Score mini bar -->
-  <div id="score-mini" class="score-mini" style="opacity:0">
-    <div class="sm-top">
-      <span class="sm-label">Synergy Score</span>
-      <span class="sm-val">95 / 100</span>
-    </div>
-    <div class="sm-track"><div class="sm-fill" style="width:0%" id="sm-fill-bar"></div></div>
-    <div class="sm-mech">Shared VEGF upregulation · thymosin β4 actin remodeling pathway</div>
-  </div>
-</div><!-- /S2 -->
-
-<!-- ═══════════════ S3: SCORE REVEAL ═══════════════ -->
-<div id="s3" class="scene">
-
-  <!-- Compound pair chips -->
-  <div id="s3-labels" class="s3-pair" style="opacity:0">
-    <div class="s3-chip" style="color:#21d8ff;border-color:rgba(33,216,255,.30);background:rgba(33,216,255,.07)">
-      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#21d8ff"/></svg>
-      BPC-157
-    </div>
-    <div class="s3-plus">+</div>
-    <div class="s3-chip" style="color:#9d4edd;border-color:rgba(157,78,221,.30);background:rgba(157,78,221,.07)">
-      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#9d4edd"/></svg>
-      TB-500
-    </div>
-  </div>
-  <div class="s3-stack-name">Wolverine Stack &nbsp;·&nbsp; Healing System</div>
-
-  <!-- Synergy ring (r=105, circ=659.7) -->
-  <div class="ring-wrap">
-    <svg width="240" height="240" viewBox="0 0 240 240">
+  <!-- PathwayMap SVG canvas -->
+  <div style="position:relative;width:680px;height:302px;overflow:hidden">
+    <svg id="pm-svg" width="680" height="302" viewBox="0 0 680 302" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#21d8ff"/>
-          <stop offset="50%"  stop-color="#9d4edd"/>
-          <stop offset="100%" stop-color="#10b981"/>
-        </linearGradient>
-        <filter id="ringBlur" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="6"/>
+        <radialGradient id="pmBg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%"   stop-color="#0d1117"/>
+          <stop offset="55%"  stop-color="#090d12"/>
+          <stop offset="100%" stop-color="#050709"/>
+        </radialGradient>
+        <filter id="softBlur" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="9"/>
         </filter>
+        <filter id="nodeGlow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="connGlow" x="-20%" y="-400%" width="140%" height="900%">
+          <feGaussianBlur stdDeviation="4"/>
+        </filter>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#fbbf24"/>
+          <stop offset="50%"  stop-color="#f59e0b"/>
+          <stop offset="100%" stop-color="#fbbf24"/>
+        </linearGradient>
+        <linearGradient id="botFadeG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="55%"  stop-color="#050709" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#050709" stop-opacity="1"/>
+        </linearGradient>
       </defs>
-      <!-- Track -->
-      <circle cx="120" cy="120" r="100" fill="none"
-              stroke="rgba(255,255,255,.055)" stroke-width="13"/>
-      <!-- Glow (blurred copy) -->
-      <circle id="ring-glow" cx="120" cy="120" r="100" fill="none"
-              stroke="url(#ringGrad)" stroke-width="13"
-              stroke-dasharray="628.3" stroke-dashoffset="628.3"
-              stroke-linecap="round"
-              transform="rotate(-90 120 120)"
-              filter="url(#ringBlur)" opacity="0"/>
-      <!-- Progress arc -->
-      <circle id="ring-prog" cx="120" cy="120" r="100" fill="none"
-              stroke="url(#ringGrad)" stroke-width="13"
-              stroke-dasharray="628.3" stroke-dashoffset="628.3"
-              stroke-linecap="round"
-              transform="rotate(-90 120 120)"/>
-      <!-- Score number -->
-      <text id="score-num" x="120" y="108" text-anchor="middle"
-            font-family="DM Sans,Arial,sans-serif" font-weight="700" font-size="58"
-            fill="#dcdce8">0</text>
-      <!-- /100 -->
-      <text x="120" y="130" text-anchor="middle"
-            font-family="DM Sans,Arial,sans-serif" font-size="12" font-weight="500"
-            fill="#44445a" letter-spacing=".03em">/ 100</text>
-      <!-- SYNERGY SCORE label -->
-      <text x="120" y="152" text-anchor="middle"
-            font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="600"
-            fill="#30303e" letter-spacing=".10em">SYNERGY SCORE</text>
+
+      <rect width="680" height="302" fill="url(#pmBg)"/>
+
+      <!-- Starfield -->
+      <g fill="#ffffff">
+        <circle cx="38"  cy="22"  r=".7"  opacity=".14"/>
+        <circle cx="114" cy="12"  r=".9"  opacity=".10"/>
+        <circle cx="208" cy="36"  r=".6"  opacity=".16"/>
+        <circle cx="342" cy="16"  r=".8"  opacity=".09"/>
+        <circle cx="461" cy="30"  r=".7"  opacity=".12"/>
+        <circle cx="576" cy="20"  r=".8"  opacity=".10"/>
+        <circle cx="644" cy="44"  r=".6"  opacity=".14"/>
+        <circle cx="22"  cy="88"  r=".8"  opacity=".11"/>
+        <circle cx="88"  cy="72"  r=".6"  opacity=".15"/>
+        <circle cx="168" cy="100" r=".7"  opacity=".09"/>
+        <circle cx="288" cy="62"  r=".9"  opacity=".12"/>
+        <circle cx="418" cy="76"  r=".6"  opacity=".10"/>
+        <circle cx="538" cy="56"  r=".8"  opacity=".13"/>
+        <circle cx="614" cy="82"  r=".7"  opacity=".11"/>
+        <circle cx="48"  cy="152" r=".6"  opacity=".10"/>
+        <circle cx="136" cy="134" r=".8"  opacity=".09"/>
+        <circle cx="654" cy="138" r=".7"  opacity=".13"/>
+        <circle cx="28"  cy="230" r=".8"  opacity=".10"/>
+        <circle cx="106" cy="250" r=".6"  opacity=".14"/>
+        <circle cx="226" cy="264" r=".7"  opacity=".09"/>
+        <circle cx="556" cy="244" r=".7"  opacity=".11"/>
+        <circle cx="636" cy="234" r=".8"  opacity=".09"/>
+        <circle cx="60"  cy="284" r=".6"  opacity=".12"/>
+        <circle cx="610" cy="290" r=".7"  opacity=".10"/>
+        <circle cx="316" cy="290" r=".8"  opacity=".08"/>
+      </g>
+
+      <!-- Ambient colored motes -->
+      <circle cx="376" cy="146" r="1.6" fill="#22c55e" opacity=".16"/>
+      <circle cx="412" cy="128" r="1.2" fill="#22c55e" opacity=".12"/>
+      <circle cx="340" cy="162" r="1.0" fill="#21d8ff" opacity=".10"/>
+      <circle cx="520" cy="152" r="1.4" fill="#22c55e" opacity=".14"/>
+      <circle cx="144" cy="160" r="1.3" fill="#9d4edd" opacity=".13"/>
+      <circle cx="106" cy="134" r="1.1" fill="#60a5fa" opacity=".11"/>
+      <circle cx="244" cy="174" r="1.2" fill="#21d8ff" opacity=".11"/>
+      <circle cx="296" cy="118" r="1.0" fill="#f97316" opacity=".10"/>
+
+      <!-- Ghost connections (always visible, very dim) -->
+      <g opacity="1">
+        <line x1="94"  y1="116" x2="244" y2="150" stroke="rgba(255,255,255,.065)" stroke-width=".9" stroke-dasharray="4 7"/>
+        <line x1="244" y1="150" x2="386" y2="122" stroke="rgba(255,255,255,.065)" stroke-width=".9" stroke-dasharray="4 7"/>
+        <line x1="386" y1="122" x2="518" y2="148" stroke="rgba(255,255,255,.065)" stroke-width=".9" stroke-dasharray="4 7"/>
+        <line x1="518" y1="148" x2="614" y2="120" stroke="rgba(255,255,255,.065)" stroke-width=".9" stroke-dasharray="4 7"/>
+        <line x1="94"  y1="116" x2="386" y2="122" stroke="rgba(255,255,255,.035)" stroke-width=".7" stroke-dasharray="3 9"/>
+        <line x1="244" y1="150" x2="518" y2="148" stroke="rgba(255,255,255,.035)" stroke-width=".7" stroke-dasharray="3 9"/>
+      </g>
+
+      <!-- Ghost nodes -->
+      <g opacity="1">
+        <circle cx="94"  cy="116" r="14" fill="rgba(34,197,94,.04)"/>
+        <circle cx="94"  cy="116" r="7"  fill="rgba(34,197,94,.08)"/>
+        <circle cx="94"  cy="116" r="3.5" fill="rgba(34,197,94,.18)"/>
+        <text x="94" y="120" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="7" font-weight="600" fill="rgba(34,197,94,.28)">?</text>
+
+        <circle cx="244" cy="150" r="12" fill="rgba(33,216,255,.04)"/>
+        <circle cx="244" cy="150" r="6"  fill="rgba(33,216,255,.08)"/>
+        <circle cx="244" cy="150" r="3"  fill="rgba(33,216,255,.20)"/>
+        <text x="244" y="154" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="6.5" font-weight="600" fill="rgba(33,216,255,.26)">?</text>
+
+        <circle cx="386" cy="122" r="12" fill="rgba(168,85,247,.04)"/>
+        <circle cx="386" cy="122" r="6"  fill="rgba(168,85,247,.08)"/>
+        <circle cx="386" cy="122" r="3"  fill="rgba(168,85,247,.18)"/>
+        <text x="386" y="126" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="6.5" font-weight="600" fill="rgba(168,85,247,.26)">?</text>
+
+        <circle cx="518" cy="148" r="10" fill="rgba(34,197,94,.04)"/>
+        <circle cx="518" cy="148" r="5"  fill="rgba(34,197,94,.08)"/>
+        <circle cx="518" cy="148" r="2.5" fill="rgba(34,197,94,.18)"/>
+        <text x="518" y="152" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="6" font-weight="600" fill="rgba(34,197,94,.24)">?</text>
+
+        <circle cx="614" cy="120" r="9"  fill="rgba(33,216,255,.04)"/>
+        <circle cx="614" cy="120" r="4.5" fill="rgba(33,216,255,.07)"/>
+        <circle cx="614" cy="120" r="2.2" fill="rgba(33,216,255,.16)"/>
+        <text x="614" y="124" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="5.5" font-weight="600" fill="rgba(33,216,255,.22)">?</text>
+      </g>
+
+      <!-- Empty state overlay (fades out after BPC click) -->
+      <g id="empty-state">
+        <text x="340" y="148" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="19" font-weight="700" fill="#21d8ff" letter-spacing="-.01em">Select peptides to map their pathways</text>
+        <text x="340" y="170" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="12" fill="rgba(255,255,255,.17)">Discover how compounds interact through shared mechanisms</text>
+        <line x1="340" y1="190" x2="340" y2="212" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+        <polyline points="331,204 340,214 349,204" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+      </g>
+
+      <!-- BPC-157 node (opacity 0 until clicked) -->
+      <g id="bpc-node" opacity="0">
+        <!-- ambient glow -->
+        <circle cx="182" cy="110" r="45" fill="rgba(34,197,94,.07)" filter="url(#softBlur)"/>
+        <!-- rings -->
+        <circle cx="182" cy="110" r="24" fill="rgba(34,197,94,.06)" stroke="rgba(34,197,94,.18)" stroke-width="1.2"/>
+        <circle cx="182" cy="110" r="14" fill="rgba(34,197,94,.12)"/>
+        <circle cx="182" cy="110" r="8"  fill="#22c55e" opacity=".92"/>
+        <circle cx="182" cy="110" r="4"  fill="#ffffff" opacity=".96"/>
+        <!-- crosshair -->
+        <line x1="168" y1="110" x2="196" y2="110" stroke="#22c55e" stroke-width="1" opacity=".40"/>
+        <line x1="182" y1="96"  x2="182" y2="124" stroke="#22c55e" stroke-width="1" opacity=".40"/>
+        <!-- label -->
+        <rect x="196" y="100" width="66" height="20" rx="4.5" fill="rgba(34,197,94,.11)" stroke="rgba(34,197,94,.32)" stroke-width=".8"/>
+        <text x="229" y="114" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#22c55e" letter-spacing=".04em">BPC-157</text>
+      </g>
+
+      <!-- TB-500 node (opacity 0 until clicked) -->
+      <g id="tb-node" opacity="0">
+        <circle cx="490" cy="160" r="42" fill="rgba(34,197,94,.06)" filter="url(#softBlur)"/>
+        <circle cx="490" cy="160" r="22" fill="rgba(34,197,94,.06)" stroke="rgba(34,197,94,.16)" stroke-width="1.2"/>
+        <circle cx="490" cy="160" r="13" fill="rgba(34,197,94,.11)"/>
+        <circle cx="490" cy="160" r="7.5" fill="#22c55e" opacity=".92"/>
+        <circle cx="490" cy="160" r="3.8" fill="#ffffff" opacity=".96"/>
+        <line x1="477" y1="160" x2="503" y2="160" stroke="#22c55e" stroke-width="1" opacity=".40"/>
+        <line x1="490" y1="147" x2="490" y2="173" stroke="#22c55e" stroke-width="1" opacity=".40"/>
+        <!-- label left side so it doesn't clip -->
+        <rect x="414" y="150" width="60" height="20" rx="4.5" fill="rgba(34,197,94,.11)" stroke="rgba(34,197,94,.32)" stroke-width=".8"/>
+        <text x="444" y="164" text-anchor="middle" font-family="DM Sans,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#22c55e" letter-spacing=".04em">TB-500</text>
+      </g>
+
+      <!-- Connection: BPC(182,110) → TB(490,160)  len≈310 -->
+      <!-- Glow -->
+      <line id="conn-glow" x1="182" y1="110" x2="490" y2="160"
+            stroke="#fbbf24" stroke-width="9" stroke-linecap="round"
+            stroke-dasharray="315" stroke-dashoffset="315" stroke-opacity="0"
+            filter="url(#connGlow)"/>
+      <!-- Beam -->
+      <line id="conn-beam" x1="182" y1="110" x2="490" y2="160"
+            stroke="url(#goldGrad)" stroke-width="2.2" stroke-linecap="round"
+            stroke-dasharray="315" stroke-dashoffset="315" stroke-opacity="0"/>
+      <!-- Traveling particles -->
+      <circle id="dot1" cx="182" cy="110" r="3.8" fill="#fbbf24" opacity="0"/>
+      <circle id="dot2" cx="182" cy="110" r="2.8" fill="#ffffff"  opacity="0"/>
+
+      <!-- Wolverine Stack label (midpoint 336,135) -->
+      <g id="wolv-label" opacity="0">
+        <rect x="278" y="124" width="116" height="22" rx="5"
+              fill="rgba(251,191,36,.09)" stroke="rgba(251,191,36,.38)" stroke-width=".9"/>
+        <text x="336" y="139" text-anchor="middle" font-family="DM Sans,Arial,sans-serif"
+              font-size="9" font-weight="700" fill="#fbbf24" letter-spacing=".06em">⚡ WOLVERINE STACK</text>
+      </g>
+
+      <!-- Bottom gradient fade-out -->
+      <rect x="0" y="220" width="680" height="82" fill="url(#botFadeG)"/>
     </svg>
   </div>
 
-  <!-- Legendary Combo badge -->
-  <div id="legendary-badge" class="legendary-badge" style="opacity:0">
-    <svg class="leg-star" width="14" height="14" viewBox="0 0 24 24" fill="#D8E810">
+  <!-- Compound selector -->
+  <div class="sel-section">
+    <div class="sel-hdr">
+      <span class="sel-title">Select Your Peptides</span>
+      <span class="sel-count">Click to select · 53 peptides</span>
+    </div>
+    <div class="sel-search">
+      <svg class="sel-search-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="m15 15 3 3"/></svg>
+      <span class="sel-search-placeholder">Search peptides...</span>
+    </div>
+
+    <div class="cmpd-grid">
+      <!-- Row 1 -->
+      <div id="btn-bpc" class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#22c55e"></div>
+        <div><div class="cmpd-name">BPC-157</div><div class="cmpd-sys">Healing</div></div>
+      </div>
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#21d8ff"></div>
+        <div><div class="cmpd-name">GHK-Cu</div><div class="cmpd-sys">Skin</div></div>
+      </div>
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#f97316"></div>
+        <div><div class="cmpd-name">MOTS-C</div><div class="cmpd-sys">Metabolic</div></div>
+      </div>
+      <!-- Row 2 -->
+      <div id="btn-tb" class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#22c55e"></div>
+        <div><div class="cmpd-name">TB-500</div><div class="cmpd-sys">Healing</div></div>
+      </div>
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#E7FB10"></div>
+        <div><div class="cmpd-name">Ipamorelin</div><div class="cmpd-sys">Growth</div></div>
+      </div>
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#60a5fa"></div>
+        <div><div class="cmpd-name">NAD+</div><div class="cmpd-sys">Longevity</div></div>
+      </div>
+      <!-- Row 3 -->
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#9d4edd"></div>
+        <div><div class="cmpd-name">Semax</div><div class="cmpd-sys">Cognitive</div></div>
+      </div>
+      <div class="cmpd-btn">
+        <div class="cmpd-dot" style="background:#ec4899"></div>
+        <div><div class="cmpd-name">PT-141</div><div class="cmpd-sys">Hormonal</div></div>
+      </div>
+      <div class="cmpd-btn" style="opacity:.5">
+        <div class="cmpd-dot" style="background:#6b7280"></div>
+        <div><div class="cmpd-name">Selank</div><div class="cmpd-sys">Cognitive</div></div>
+      </div>
+      <!-- Row 4 -->
+      <div class="cmpd-btn" style="opacity:.5">
+        <div class="cmpd-dot" style="background:#6b7280"></div>
+        <div><div class="cmpd-name">CJC-1295</div><div class="cmpd-sys">Growth</div></div>
+      </div>
+      <div class="cmpd-btn" style="opacity:.5">
+        <div class="cmpd-dot" style="background:#6b7280"></div>
+        <div><div class="cmpd-name">Epithalon</div><div class="cmpd-sys">Longevity</div></div>
+      </div>
+      <div class="cmpd-btn" style="opacity:.5">
+        <div class="cmpd-dot" style="background:#6b7280"></div>
+        <div><div class="cmpd-name">AOD-9604</div><div class="cmpd-sys">Metabolic</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /S1 -->
+
+<!-- ═══════════════════ S2: SCORE REVEAL ═══════════════════ -->
+<div id="s2" class="scene">
+  <!-- Ambient green glow behind ring -->
+  <div style="position:absolute;top:120px;left:50%;transform:translateX(-50%);width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.08) 0%,transparent 70%);pointer-events:none"></div>
+
+  <div id="s2-pair" class="s2-pair" style="opacity:0">
+    <div class="s2-chip" style="color:#22c55e;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.07)">
+      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#22c55e"/></svg>
+      BPC-157
+    </div>
+    <div class="s2-plus">+</div>
+    <div class="s2-chip" style="color:#22c55e;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.07)">
+      <svg width="8" height="8" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#22c55e"/></svg>
+      TB-500
+    </div>
+  </div>
+  <div class="s2-stack-lbl">Wolverine Stack &nbsp;·&nbsp; Healing System</div>
+
+  <div class="ring-wrap">
+    <svg width="248" height="248" viewBox="0 0 248 248">
+      <defs>
+        <filter id="rGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="7"/>
+        </filter>
+      </defs>
+      <!-- Track -->
+      <circle cx="124" cy="124" r="102" fill="none"
+              stroke="rgba(255,255,255,.05)" stroke-width="14"/>
+      <!-- Glow ring -->
+      <circle id="ring-glow" cx="124" cy="124" r="102" fill="none"
+              stroke="#22c55e" stroke-width="16"
+              stroke-dasharray="641" stroke-dashoffset="552"
+              stroke-linecap="round"
+              transform="rotate(-90 124 124)"
+              filter="url(#rGlow)" opacity=".40"/>
+      <!-- Progress ring -->
+      <circle id="ring-prog" cx="124" cy="124" r="102" fill="none"
+              stroke="#22c55e" stroke-width="14"
+              stroke-dasharray="641" stroke-dashoffset="552"
+              stroke-linecap="round"
+              transform="rotate(-90 124 124)"/>
+      <!-- Score -->
+      <text id="score-num" x="124" y="116" text-anchor="middle"
+            font-family="'Bebas Neue',Arial,sans-serif" font-size="68"
+            fill="#22c55e">14</text>
+      <!-- /100 -->
+      <text x="124" y="140" text-anchor="middle"
+            font-family="DM Sans,Arial,sans-serif" font-size="11" font-weight="600"
+            fill="rgba(255,255,255,.16)" letter-spacing=".06em">/ 100</text>
+      <!-- SYNERGY -->
+      <text x="124" y="160" text-anchor="middle"
+            font-family="DM Sans,Arial,sans-serif" font-size="10" font-weight="600"
+            fill="rgba(255,255,255,.12)" letter-spacing=".14em">SYNERGY</text>
+    </svg>
+  </div>
+
+  <div id="leg-badge" class="leg-badge" style="opacity:0">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
     </svg>
     <span>Legendary Combo</span>
   </div>
 
-  <!-- Mechanism lines -->
-  <ul class="mech-list">
-    <li id="mech-1" class="mech-item" style="opacity:0">
-      <div class="mech-dot" style="background:#21d8ff"></div>
-      <div class="mech-text">Shared VEGF upregulation + thymosin β4 actin remodeling — convergent tissue repair pathway</div>
-    </li>
-    <li id="mech-2" class="mech-item" style="opacity:0">
-      <div class="mech-dot" style="background:#9d4edd"></div>
-      <div class="mech-text">Complementary extracellular matrix remodeling via laminin, fibronectin, and collagen synthesis</div>
-    </li>
-  </ul>
+  <div id="desc-card" class="desc-card" style="opacity:0">
+    <div class="desc-text">
+      BPC-157 drives local repair via VEGF upregulation while TB-500 provides systemic healing through thymosin beta-4 actin regulation — covering both localized and whole-body regeneration.
+    </div>
+  </div>
 
   <div class="part-tag">REVIVE RESEARCH · SYNERGY ENGINE</div>
-</div><!-- /S3 -->
+</div><!-- /S2 -->
 
-</div><!-- /scene wrapper -->
+<!-- Mouse cursor -->
+<svg id="cursor" width="22" height="26" viewBox="0 0 22 26">
+  <path d="M2 2 L2 20 L6.5 14.5 L10 22 L12.5 21 L9 13.5 L16 13.5 Z"
+        fill="white" stroke="#111" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
+
+</div><!-- /sw -->
 
 <script>
 (function(){
-  const $  = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
   const eIO = x => x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2;
+  const eOut = x => 1-Math.pow(1-x,3);
   const c01 = x => Math.max(0,Math.min(1,x));
   const prg = (a,b,t) => c01((t-a)/(b-a));
-  const mix = (a,b,x) => a+(b-a)*x;
+  const lerp = (a,b,x) => a+(b-a)*x;
 
-  const BEAM_LEN = 74;   // sqrt((524-458)^2+(254-222)^2) ≈ 74px
-  const RING_C   = 628.3; // 2π×100
+  // ── Layout constants (scene coords, y=0 at top of .sw) ──
+  // pm-header: 46px
+  // pm-svg: 302px → ends at y=348
+  // sel-section padding-top:12px → y=360
+  // sel-hdr ~18px + mb5 → y=383
+  // sel-search 32px + mb10 → y=425
+  // row1 buttons: y=425, h≈45px, center=447
+  // gap9 → row2: y=479, center=501
+  // gap9 → row3: y=533, center=556
+  // gap9 → row4: y=587, center=610
 
-  window.setFrame = function(ms){
-    const t = ms % 9000;
+  const BPC_X = 123, BPC_Y = 447;
+  const TB_X  = 123, TB_Y  = 501;
+  const CUR_START_X = 370, CUR_START_Y = 615;
 
-    /* ── Scene opacity ── */
-    const s1 = t<2500 ? 1 : eIO(1-prg(2500,2800,t));
-    const s2 = t<2500 ? 0 : t<5500 ? eIO(prg(2500,2800,t)) : eIO(1-prg(5500,5800,t));
-    const s3 = t<5500 ? 0 : eIO(prg(5500,5800,t));
+  // Connection geometry
+  // BPC node at SVG(182,110), TB node at SVG(490,160)
+  // SVG is at scene y=46 from top of .sw
+  const CONN_LEN = 315; // ceil(sqrt(308^2+50^2))
 
-    $('s1').style.opacity = s1;
-    $('s2').style.opacity = s2;
-    $('s3').style.opacity = s3;
+  // Ring: circumference = 2π×102 ≈ 641
+  const RING_C = 641;
+  // 14% fill = offset 641*(1-.14) = 551
+  // 95% fill = offset 641*(1-.95) = 32
+  const RING_OFF_14 = RING_C * 0.86;  // ≈ 551
+  const RING_OFF_95 = RING_C * 0.05;  // ≈ 32
 
-    /* ── S1: Galaxy ── */
-    const bp = eIO(prg(600,1600,t));
-    const bOff = BEAM_LEN*(1-bp);
-    $('beam').setAttribute('stroke-dashoffset', bOff);
-    $('beam').setAttribute('stroke-opacity', bp*0.88);
-    $('beam-glow').setAttribute('stroke-dashoffset', bOff);
-    $('beam-glow').setAttribute('stroke-opacity', bp*0.30);
+  const TOTAL = 9000;
 
-    const dotShow = bp>0.92 ? (0.55+0.45*Math.abs(Math.sin(t*0.0052))) : 0;
-    const dotFrac = c01(((t-1600)%1100)/1100);
-    $('beam-dot').setAttribute('opacity', dotShow);
-    $('beam-dot').setAttribute('cx', mix(458,524,dotFrac));
-    $('beam-dot').setAttribute('cy', mix(222,254,dotFrac));
+  function connPos(p) {
+    return {
+      x: 182 + (490-182)*p,
+      y: 110 + (160-110)*p
+    };
+  }
 
-    $('bpc-outer').setAttribute('r',       14+4*Math.sin(t*0.0022));
-    $('bpc-outer').setAttribute('opacity', 0.18+0.14*Math.sin(t*0.0022));
-    $('tb-outer').setAttribute('r',        12+3.5*Math.sin(t*0.0022+1.4));
-    $('tb-outer').setAttribute('opacity',  0.15+0.12*Math.sin(t*0.0022+1.4));
-    $('galaxy-labels').style.opacity = eIO(prg(1700,2300,t));
+  window.setFrame = function(ms) {
+    const t = ms % TOTAL;
 
-    /* ── S2: Stack Builder ── */
-    const bpcA = eIO(prg(2800,3200,t));
-    $('card-bpc').style.opacity   = bpcA;
-    $('card-bpc').style.transform = `translateX(${mix(-60,0,bpcA)}px)`;
+    // ── Scene fades ──
+    // S1 visible 0→5700, fades 5700→6000
+    // S2 fades in 5700→6000
+    const s1op = t < 5700 ? eIO(prg(0,700,t)) : eIO(1-prg(5700,6000,t));
+    const s2op = t < 5700 ? 0 : eIO(prg(5700,6000,t));
+    $('s1').style.opacity = s1op;
+    $('s2').style.opacity = s2op;
 
-    const tbA = eIO(prg(3600,4000,t));
-    $('card-tb500').style.opacity   = tbA;
-    $('card-tb500').style.transform = `translateX(${mix(-60,0,tbA)}px)`;
+    // ══════════ SCENE 1 ══════════
 
-    const wA = eIO(prg(4200,4600,t));
-    $('wolverine-badge').style.opacity   = wA;
-    $('wolverine-badge').style.transform = `scale(${mix(.88,1,wA)})`;
+    // Empty state fades out when BPC is clicked (t=2200)
+    const emptyOp = t < 2000 ? 1 : eIO(1-prg(2000,2600,t));
+    $('empty-state').style.opacity = emptyOp;
 
-    const sA = eIO(prg(4600,5000,t));
-    $('score-mini').style.opacity = sA;
-    // Animate bar fill in sync
-    $('sm-fill-bar').style.width = (95*eIO(prg(4700,5200,t)))+'%';
+    // ── Cursor ──
+    // Visible: 1000→5300
+    const curOp = (t >= 1000 && t < 5300) ? 1 : 0;
+    $('cursor').style.opacity = curOp;
 
-    /* ── S3: Score Reveal ── */
-    $('s3-labels').style.opacity = eIO(prg(5800,6200,t));
+    let cx = CUR_START_X, cy = CUR_START_Y;
+    if (t >= 1000 && t < 1700) {
+      // Glide toward BPC button
+      const p = eOut(prg(1000, 1700, t));
+      cx = lerp(CUR_START_X, BPC_X, p);
+      cy = lerp(CUR_START_Y, BPC_Y, p);
+    } else if (t >= 1700 && t < 2200) {
+      // Hover on BPC
+      cx = BPC_X; cy = BPC_Y;
+    } else if (t >= 2200 && t < 2900) {
+      // Glide from BPC to TB
+      const p = eOut(prg(2300, 2900, t));
+      cx = lerp(BPC_X, TB_X, p);
+      cy = lerp(BPC_Y, TB_Y, p);
+    } else if (t >= 2900) {
+      // Hover on TB-500
+      cx = TB_X; cy = TB_Y;
+    }
+    $('cursor').style.transform = `translate(${cx}px,${cy}px)`;
 
-    const rP = eIO(prg(6000,7800,t));
-    const rOff = RING_C*(1-0.95*rP);
-    $('ring-prog').setAttribute('stroke-dashoffset', rOff);
-    $('ring-glow').setAttribute('stroke-dashoffset', rOff);
-    $('score-num').textContent = Math.round(95*rP);
+    // ── BPC-157 button state ──
+    const bpcBtn = $('btn-bpc');
+    if (t >= 2200) {
+      bpcBtn.style.borderColor = 'rgba(34,197,94,.58)';
+      bpcBtn.style.background  = 'rgba(34,197,94,.09)';
+    } else if (t >= 1700) {
+      bpcBtn.style.borderColor = 'rgba(34,197,94,.30)';
+      bpcBtn.style.background  = 'rgba(34,197,94,.04)';
+    } else {
+      bpcBtn.style.borderColor = 'rgba(255,255,255,.08)';
+      bpcBtn.style.background  = '#0a0a10';
+    }
 
-    const glow = rP>0.96
-      ? 0.28+0.48*Math.abs(Math.sin((t-7800)*0.0038))
-      : rP*0.28;
-    $('ring-glow').style.opacity = glow;
+    // ── TB-500 button state ──
+    const tbBtn = $('btn-tb');
+    if (t >= 3900) {
+      tbBtn.style.borderColor = 'rgba(34,197,94,.58)';
+      tbBtn.style.background  = 'rgba(34,197,94,.09)';
+    } else if (t >= 2900) {
+      tbBtn.style.borderColor = 'rgba(34,197,94,.30)';
+      tbBtn.style.background  = 'rgba(34,197,94,.04)';
+    } else {
+      tbBtn.style.borderColor = 'rgba(255,255,255,.08)';
+      tbBtn.style.background  = '#0a0a10';
+    }
 
-    $('legendary-badge').style.opacity = eIO(prg(7600,7900,t));
-    $('mech-1').style.opacity = eIO(prg(7700,8000,t));
-    $('mech-2').style.opacity = eIO(prg(8000,8300,t));
+    // ── BPC-157 node ──
+    const bpcNodeOp = t < 2200 ? 0 : eIO(prg(2200, 2900, t));
+    $('bpc-node').style.opacity = bpcNodeOp;
+
+    // ── TB-500 node ──
+    const tbNodeOp = t < 3900 ? 0 : eIO(prg(3900, 4600, t));
+    $('tb-node').style.opacity = tbNodeOp;
+
+    // ── Connection ──
+    const connP   = t < 4600 ? 0 : eIO(prg(4600, 5600, t));
+    const connOp  = t < 4600 ? 0 : eIO(prg(4600, 4900, t));
+    const dashOff = CONN_LEN * (1 - connP);
+    $('conn-beam').setAttribute('stroke-dashoffset', dashOff);
+    $('conn-beam').setAttribute('stroke-opacity', connOp);
+    $('conn-glow').setAttribute('stroke-dashoffset', dashOff);
+    $('conn-glow').setAttribute('stroke-opacity', connOp * 0.45);
+
+    // ── Traveling particles (after beam is mostly drawn) ──
+    if (connP > 0.3 && t < 5700) {
+      const elapsed = t - 4900;
+      const spd1 = 900; // ms per pass
+      const spd2 = 1300;
+      const p1 = ((elapsed % spd1) / spd1 + 1) % 1;
+      const p2 = (((elapsed + 450) % spd2) / spd2 + 1) % 1;
+      const pos1 = connPos(c01(p1));
+      const pos2 = connPos(c01(p2));
+      const fadeFactor = Math.min(1, (connP-0.3)/0.3);
+      $('dot1').setAttribute('cx', pos1.x);
+      $('dot1').setAttribute('cy', pos1.y);
+      $('dot1').setAttribute('opacity', fadeFactor * 0.95);
+      $('dot2').setAttribute('cx', pos2.x);
+      $('dot2').setAttribute('cy', pos2.y);
+      $('dot2').setAttribute('opacity', fadeFactor * 0.60);
+    } else {
+      $('dot1').setAttribute('opacity', 0);
+      $('dot2').setAttribute('opacity', 0);
+    }
+
+    // ── Wolverine Stack label ──
+    const wolvOp = t < 5400 ? 0 : eIO(prg(5400, 5700, t));
+    $('wolv-label').style.opacity = wolvOp;
+
+    // ══════════ SCENE 2 ══════════
+    if (t < 5700) {
+      $('ring-prog').setAttribute('stroke-dashoffset', RING_OFF_14);
+      $('ring-glow').setAttribute('stroke-dashoffset', RING_OFF_14);
+      $('score-num').textContent = '14';
+      $('s2-pair').style.opacity  = 0;
+      $('leg-badge').style.opacity = 0;
+      $('desc-card').style.opacity = 0;
+    } else {
+      // Pair chips
+      $('s2-pair').style.opacity = eIO(prg(5900, 6200, t));
+
+      // Ring fill: 6000→7100 (1100ms)
+      const rp  = eIO(prg(6000, 7100, t));
+      const off = lerp(RING_OFF_14, RING_OFF_95, rp);
+      $('ring-prog').setAttribute('stroke-dashoffset', off);
+      $('ring-glow').setAttribute('stroke-dashoffset', off);
+      $('score-num').textContent = Math.round(lerp(14, 95, rp));
+
+      // Legendary badge: 7100→7400
+      $('leg-badge').style.opacity = eIO(prg(7100, 7400, t));
+
+      // Description: 7400→7900
+      $('desc-card').style.opacity = eIO(prg(7400, 7900, t));
+    }
   };
 
   window.setFrame(0);
