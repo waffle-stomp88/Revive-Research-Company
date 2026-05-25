@@ -386,8 +386,8 @@ export default function ProductDetail() {
   const handleNotifySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!product || !notifyEmail.trim()) return;
-    stockNotifyMutation.mutate({ productId: product.id, email: notifyEmail.trim() });
-    captureEmail(notifyEmail.trim(), "oos", product.id);
+    stockNotifyMutation.mutate({ productId: product.slug ?? product.id, email: notifyEmail.trim() });
+    captureEmail(notifyEmail.trim(), "oos", product.slug ?? product.id);
   };
 
   // Wishlist functionality

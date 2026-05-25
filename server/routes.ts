@@ -4239,7 +4239,7 @@ export async function registerRoutes(
         });
       }
       
-      // Create the notification
+      // No Zoho push on this path — stock notifications are stored only, never forwarded to Zoho Campaigns
       const notification = await storage.createStockNotification({
         productId,
         email,

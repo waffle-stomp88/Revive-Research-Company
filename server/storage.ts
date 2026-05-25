@@ -1438,8 +1438,7 @@ export class DatabaseStorage implements IStorage {
     const [existing] = await db.select().from(stockNotifications)
       .where(and(
         eq(stockNotifications.productId, productId),
-        eq(stockNotifications.email, email),
-        eq(stockNotifications.status, "pending")
+        eq(stockNotifications.email, email)
       ));
     return existing || undefined;
   }

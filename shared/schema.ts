@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean, decimal, timestamp, index, jsonb, unique } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, decimal, timestamp, index, jsonb, unique, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -445,7 +445,9 @@ export const stockNotifications = pgTable("stock_notifications", {
   status: text("status").default("pending"), // pending, notified, cancelled
   createdAt: timestamp("created_at").defaultNow(),
   notifiedAt: timestamp("notified_at"),
-});
+}, (table) => ({
+  emailProductUniq: uniqueIndex("stock_notifications_email_product_idx").on(table.email, table.productId),
+}));
 
 export const insertStockNotificationSchema = createInsertSchema(stockNotifications).omit({ id: true, createdAt: true, notifiedAt: true });
 export type InsertStockNotification = z.infer<typeof insertStockNotificationSchema>;
