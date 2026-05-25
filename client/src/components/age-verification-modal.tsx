@@ -158,13 +158,19 @@ export function AgeVerificationModal() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
                   <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>01</span>
                   <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
-                    For lawful research use only. Not for human or animal consumption.
+                    For lawful research use only. Not intended for human or animal use of any kind — including ingestion, injection, inhalation, or topical application.
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
                   <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>02</span>
                   <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
                     Purchaser assumes full responsibility for use, handling, and distribution.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '10px' }}>
+                  <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>03</span>
+                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                    These compounds are not FDA-approved and have not been evaluated for safety or efficacy.
                   </p>
                 </div>
               </div>
@@ -186,10 +192,19 @@ export function AgeVerificationModal() {
                   />
                   <label
                     htmlFor="age-terms"
-                    className="font-medium cursor-pointer pointer-events-none text-center"
+                    className="font-medium cursor-pointer text-center"
                     style={{ color: '#ffffff', fontSize: '14px', lineHeight: 1.5 }}
                   >
-                    I am 21 years or older and I understand the terms above.
+                    I am 21 years of age or older and I accept the terms above and the full{' '}
+                    <a
+                      href="/terms-of-service"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: '#21d8ff', textDecoration: 'underline' }}
+                    >
+                      Terms of Service
+                    </a>.
                   </label>
                 </div>
               </div>

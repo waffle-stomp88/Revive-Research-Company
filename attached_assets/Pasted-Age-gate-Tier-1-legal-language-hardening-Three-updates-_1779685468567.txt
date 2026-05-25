@@ -1,0 +1,41 @@
+Age gate — Tier 1 legal language hardening
+Three updates to the RUO compliance block and checkbox for legal precision. These changes close known gaps in standard RUO attestations without adding visual friction.
+
+1. Strengthen item 01 — close the "consumption" loophole
+Current item 01 text:
+For lawful research use only. Not for human or animal consumption.
+Replace with:
+For lawful research use only. Not intended for human or animal use of any kind — including ingestion, injection, inhalation, or topical application.
+Rationale: "consumption" alone could be interpreted narrowly (eating/drinking). Listing the specific routes of use closes the loophole that someone could argue they didn't violate the "consumption" restriction because they didn't eat the product.
+Keep all styling (red "01" label, white body text, font sizes) identical.
+
+2. Add a new third numbered item — explicit FDA non-approval
+Add a new item below the existing item 02 in the same numbered-list format:
+html<div style="display: flex; align-items: flex-start; gap: 10px;">
+  <span style="
+    color: #ef4444;
+    font-size: 11px;
+    font-family: monospace;
+    font-weight: 500;
+    flex-shrink: 0;
+    padding-top: 2px;
+    letter-spacing: 1px;
+  ">03</span>
+  <p style="color: #ffffff; font-size: 13px; line-height: 1.55; margin: 0;">
+    These compounds are not FDA-approved and have not been evaluated for safety or efficacy.
+  </p>
+</div>
+Add a 10px margin-top to this third item to match the spacing between item 01 and item 02.
+Rationale: This is the single most important addition. The FDA's December 2024 warning letters to peptide vendors hinged on implied medical use. Having the visitor explicitly affirm they understand these products are NOT FDA-approved gives you a direct defense if anyone later claims they believed these were medical products.
+
+3. Update checkbox label to reference the full Terms of Service page
+Current checkbox label:
+I am 21 years of age or older and I accept the terms above.
+Replace with:
+I am 21 years of age or older and I accept the terms above and the full Terms of Service.
+Where "Terms of Service" is a clickable link to your existing Terms of Service page. Use whatever route your Terms page lives at currently (e.g. /terms, /terms-of-service, etc. — use the existing route, don't create a new one).
+Style the link:
+csscolor: #21d8ff;        /* cyan, matches other links in the modal footer */
+text-decoration: underline;
+The link should open in a new tab (target="_blank" with rel="noopener noreferrer") so the visitor doesn't lose their place in the age gate.
+Rationale: This is the most important legal addition. By accepting the modal terms, the visitor now also legally accepts everything in your full Terms of Service document — anything you can't fit on the modal (jurisdiction, governing law, dispute resolution, refund policies, etc.) is now covered by the linked page. Without this link, your modal attestation only covers what's visibly on the modal itself.
