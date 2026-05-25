@@ -479,7 +479,7 @@ export default function ResearchStackDetail() {
           {/* Overview Tab */}
           {activeResearchTab === "overview" && (
             <section data-testid="section-overview-panel" className="relative overflow-hidden">
-              <div className="absolute bottom-0 right-0 text-[100px] md:text-[130px] font-display font-black uppercase leading-none text-white/[0.07] select-none pointer-events-none tracking-tight">
+              <div className="hidden md:block absolute bottom-0 right-0 text-[130px] font-display font-black uppercase leading-none text-white/[0.07] select-none pointer-events-none tracking-tight">
                 {stack.name}
               </div>
 
