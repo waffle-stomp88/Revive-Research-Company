@@ -94,7 +94,7 @@ export function AgeVerificationModal() {
             <div className="p-3 sm:p-8">
 
               {/* 1. Logo */}
-              <div className="flex items-center justify-center mb-2 sm:mb-6">
+              <div className="flex items-center justify-center mb-5 sm:mb-8">
                 <motion.img
                   src={logoUrl}
                   alt="Revive Research"
@@ -106,15 +106,15 @@ export function AgeVerificationModal() {
               </div>
 
               {/* 2. Headline + sub-copy */}
-              <div className="text-center mb-3 sm:mb-8">
+              <div className="text-center mb-4 sm:mb-8">
                 <h1
                   className="text-white"
                   style={{
-                    fontSize: 'clamp(22px, 5vw, 36px)',
+                    fontSize: 'clamp(28px, 5vw, 36px)',
                     fontWeight: 500,
                     letterSpacing: '-0.8px',
                     lineHeight: 1.15,
-                    marginBottom: '8px',
+                    marginBottom: '12px',
                     textWrap: 'balance',
                   } as React.CSSProperties}
                 >
@@ -122,9 +122,9 @@ export function AgeVerificationModal() {
                 </h1>
                 <p
                   style={{
-                    fontSize: 'clamp(13px, 3.5vw, 16px)',
+                    fontSize: '16px',
                     color: '#b0b0b5',
-                    lineHeight: 1.45,
+                    lineHeight: 1.5,
                     margin: '0 auto',
                     maxWidth: '370px',
                     textWrap: 'pretty',
