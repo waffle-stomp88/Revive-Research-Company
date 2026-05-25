@@ -124,7 +124,19 @@ export function AgeVerificationModal() {
                   marginBottom: '24px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px' }}>
+                <motion.div
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    paddingBottom: '12px',
+                    marginBottom: '14px',
+                    borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
+                  }}
+                >
                   <AlertTriangle
                     style={{ color: '#ef4444', width: '18px', height: '18px', flexShrink: 0 }}
                     aria-hidden="true"
@@ -141,13 +153,20 @@ export function AgeVerificationModal() {
                   >
                     Research Use Only
                   </p>
+                </motion.div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                  <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>01</span>
+                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                    For lawful research use only. Not for human or animal consumption.
+                  </p>
                 </div>
-                <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.6, margin: '0 0 8px' }}>
-                  For lawful research use only. Not for human or animal consumption.
-                </p>
-                <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
-                  Purchaser assumes full responsibility for use, handling, and distribution.
-                </p>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>02</span>
+                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                    Purchaser assumes full responsibility for use, handling, and distribution.
+                  </p>
+                </div>
               </div>
 
               {/* 4. Checkbox + attestation */}
