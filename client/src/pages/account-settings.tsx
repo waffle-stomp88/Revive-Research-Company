@@ -47,14 +47,19 @@ export default function AccountSettings() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to view your account settings.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        login();
-      }, 500);
+      const isOAuthCallback =
+        window.location.hash.includes("access_token") ||
+        window.location.search.includes("code=");
+      if (!isOAuthCallback) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to view your account settings.",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          login();
+        }, 500);
+      }
     }
   }, [authLoading, isAuthenticated, toast]);
 

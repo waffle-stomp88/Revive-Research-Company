@@ -180,11 +180,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to view your dashboard.",
-        variant: "destructive",
-      });
+      // Supabase processes the OAuth code asynchronously after the initial
+      // session check resolves to null. Suppress the toast while the callback
+      // is still in the URL so we don't flash an error that immediately clears.
+      const isOAuthCallback =
+        window.location.hash.includes("access_token") ||
+        window.location.search.includes("code=");
+      if (!isOAuthCallback) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to view your dashboard.",
+          variant: "destructive",
+        });
+      }
     }
   }, [authLoading, isAuthenticated, toast]);
 
