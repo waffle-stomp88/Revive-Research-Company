@@ -15,7 +15,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -172,12 +172,12 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
           width="60"
           height="22"
           rx="4"
-          fill={showIpamorelin ? "rgba(231, 251, 16, 0.2)" : "rgba(157, 78, 221, 0.2)"}
+          fill={showIpamorelin ? "rgba(212, 255, 31, 0.2)" : "rgba(157, 78, 221, 0.2)"}
           stroke={showIpamorelin ? "#D4FF1F" : "#9d4edd"}
           strokeWidth="1.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
-          style={{ filter: `drop-shadow(0 0 8px ${showIpamorelin ? 'rgba(231, 251, 16, 0.4)' : 'rgba(157, 78, 221, 0.4)'})` }}
+          style={{ filter: `drop-shadow(0 0 8px ${showIpamorelin ? 'rgba(212, 255, 31, 0.4)' : 'rgba(157, 78, 221, 0.4)'})` }}
         />
         <motion.text x="160" y="19" textAnchor="middle" fill={showIpamorelin ? "#D4FF1F" : "#9d4edd"} fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -274,7 +274,7 @@ export function IpamorelinSelectivityVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -286,12 +286,12 @@ export function IpamorelinSelectivityVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Target className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Target className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Selective GH Secretagogue Action
           </span>
@@ -304,8 +304,8 @@ export function IpamorelinSelectivityVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <div className="flex justify-center gap-3 mb-6">
@@ -313,10 +313,10 @@ export function IpamorelinSelectivityVisual() {
             onClick={() => setShowIpamorelin(true)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: showIpamorelin ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              backgroundColor: showIpamorelin ? 'rgba(212, 255, 31, 0.2)' : 'hsl(var(--foreground) / 0.03)',
               border: `1.5px solid ${showIpamorelin ? '#D4FF1F' : 'hsl(var(--foreground) / 0.1)'}`,
               color: showIpamorelin ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
-              boxShadow: showIpamorelin ? '0 0 15px rgba(231, 251, 16, 0.3)' : 'none'
+              boxShadow: showIpamorelin ? '0 0 15px rgba(212, 255, 31, 0.3)' : 'none'
             }}
             whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
             data-testid="button-ipamorelin"
@@ -368,8 +368,8 @@ export function IpamorelinSelectivityVisual() {
           <motion.div 
             className="flex items-center justify-center gap-2 py-2 px-4 mb-4 rounded-lg border"
             style={{
-              backgroundColor: 'rgba(231, 251, 16, 0.08)',
-              borderColor: 'rgba(231, 251, 16, 0.3)'
+              backgroundColor: 'rgba(212, 255, 31, 0.08)',
+              borderColor: 'rgba(212, 255, 31, 0.3)'
             }}
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
@@ -413,8 +413,8 @@ export function IpamorelinSelectivityVisual() {
                   transition={{ delay: 0.5 + idx * 0.08 }}
                   className="p-3 rounded-lg transition-all cursor-pointer"
                   style={{
-                    backgroundColor: hoveredRow === idx ? 'rgba(231, 251, 16, 0.1)' : 'hsl(var(--foreground) / 0.02)',
-                    border: `1px solid ${hoveredRow === idx ? 'rgba(231, 251, 16, 0.3)' : 'hsl(var(--foreground) / 0.05)'}`
+                    backgroundColor: hoveredRow === idx ? 'rgba(212, 255, 31, 0.1)' : 'hsl(var(--foreground) / 0.02)',
+                    border: `1px solid ${hoveredRow === idx ? 'rgba(212, 255, 31, 0.3)' : 'hsl(var(--foreground) / 0.05)'}`
                   }}
                   onMouseEnter={() => setHoveredRow(idx)}
                   onMouseLeave={() => setHoveredRow(null)}

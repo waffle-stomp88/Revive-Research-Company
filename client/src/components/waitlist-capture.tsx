@@ -57,7 +57,7 @@ function ScanLine() {
       className="absolute left-0 right-0 pointer-events-none z-10"
       style={{
         height: "1px",
-        background: "linear-gradient(90deg, transparent 10%, rgba(33,216,255,0.45) 35%, rgba(231,251,16,0.3) 50%, rgba(33,216,255,0.45) 65%, transparent 90%)",
+        background: "linear-gradient(90deg, transparent 10%, rgba(33,216,255,0.45) 35%, rgba(212, 255, 31,0.3) 50%, rgba(33,216,255,0.45) 65%, transparent 90%)",
         boxShadow: "0 0 6px rgba(33,216,255,0.15)",
       }}
       animate={{
@@ -245,7 +245,7 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
           className="absolute inset-0 rounded-md"
           style={{
             border: "2px solid rgba(33,216,255,0.35)",
-            boxShadow: "0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
+            boxShadow: "0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(212, 255, 31,0.1)",
           }}
         />
       ) : (
@@ -253,9 +253,9 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
           className="absolute inset-0 rounded-md"
           animate={{
             boxShadow: [
-              "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
-              "inset 0 0 0 2px rgba(33,216,255,0.5), 0 0 60px rgba(231,251,16,0.3), 0 0 120px rgba(33,216,255,0.15)",
-              "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
+              "inset 0 0 0 2px rgba(212, 255, 31,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(212, 255, 31,0.1)",
+              "inset 0 0 0 2px rgba(33,216,255,0.5), 0 0 60px rgba(212, 255, 31,0.3), 0 0 120px rgba(33,216,255,0.15)",
+              "inset 0 0 0 2px rgba(212, 255, 31,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(212, 255, 31,0.1)",
             ],
           }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -277,15 +277,15 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
             <motion.div
               animate={{
                 boxShadow: [
-                  "0 0 20px rgba(33,216,255,0.3), 0 0 40px rgba(231,251,16,0.15)",
-                  "0 0 40px rgba(231,251,16,0.5), 0 0 80px rgba(33,216,255,0.25)",
-                  "0 0 20px rgba(33,216,255,0.3), 0 0 40px rgba(231,251,16,0.15)",
+                  "0 0 20px rgba(33,216,255,0.3), 0 0 40px rgba(212, 255, 31,0.15)",
+                  "0 0 40px rgba(212, 255, 31,0.5), 0 0 80px rgba(33,216,255,0.25)",
+                  "0 0 20px rgba(33,216,255,0.3), 0 0 40px rgba(212, 255, 31,0.15)",
                 ],
               }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               className="h-20 w-20 rounded-full flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, rgba(33,216,255,0.15), rgba(231,251,16,0.1))",
+                background: "linear-gradient(135deg, rgba(33,216,255,0.15), rgba(212, 255, 31,0.1))",
                 border: "2px solid rgba(33,216,255,0.4)",
               }}
             >
@@ -299,7 +299,7 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
                 transition={{ duration: 1, delay: 0.3 + i * 0.2, ease: "easeOut" }}
                 className="absolute inset-0 rounded-full"
                 style={{
-                  border: `1px solid ${i % 2 === 0 ? "rgba(33,216,255,0.3)" : "rgba(231,251,16,0.2)"}`,
+                  border: `1px solid ${i % 2 === 0 ? "rgba(33,216,255,0.3)" : "rgba(212, 255, 31,0.2)"}`,
                 }}
               />
             ))}
@@ -373,7 +373,7 @@ function PreLaunchState({
           className="absolute inset-0 rounded-md"
           style={{
             border: "1px solid rgba(33,216,255,0.25)",
-            boxShadow: "0 0 30px rgba(33,216,255,0.08), 0 0 60px rgba(231,251,16,0.05)",
+            boxShadow: "0 0 30px rgba(33,216,255,0.08), 0 0 60px rgba(212, 255, 31,0.05)",
           }}
         />
       ) : (
@@ -381,10 +381,10 @@ function PreLaunchState({
           className="absolute inset-0 rounded-md"
           animate={{
             boxShadow: [
-              "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
-              "inset 0 0 0 1px rgba(33,216,255,0.4), inset 0 0 0 2px rgba(231,251,16,0.15), 0 0 50px rgba(33,216,255,0.15), 0 0 100px rgba(231,251,16,0.08)",
+              "inset 0 0 0 1px rgba(212, 255, 31,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(212, 255, 31,0.08), 0 0 60px rgba(33,216,255,0.05)",
+              "inset 0 0 0 1px rgba(33,216,255,0.4), inset 0 0 0 2px rgba(212, 255, 31,0.15), 0 0 50px rgba(33,216,255,0.15), 0 0 100px rgba(212, 255, 31,0.08)",
               "inset 0 0 0 1px rgba(167,139,250,0.25), inset 0 0 0 2px rgba(33,216,255,0.1), 0 0 40px rgba(167,139,250,0.1), 0 0 80px rgba(33,216,255,0.06)",
-              "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
+              "inset 0 0 0 1px rgba(212, 255, 31,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(212, 255, 31,0.08), 0 0 60px rgba(33,216,255,0.05)",
             ],
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -447,9 +447,9 @@ function PreLaunchState({
               <div
                 className="h-11 w-11 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: "rgba(231,251,16,0.1)",
-                  border: "1px solid rgba(231,251,16,0.3)",
-                  boxShadow: "0 0 16px rgba(231,251,16,0.2)",
+                  background: "rgba(212, 255, 31,0.1)",
+                  border: "1px solid rgba(212, 255, 31,0.3)",
+                  boxShadow: "0 0 16px rgba(212, 255, 31,0.2)",
                 }}
               >
                 <motion.div
@@ -457,9 +457,9 @@ function PreLaunchState({
                     scale: [1, 1.2, 1],
                     rotate: [0, -8, 8, 0],
                     filter: [
-                      "drop-shadow(0 0 2px rgba(231,251,16,0.3))",
-                      "drop-shadow(0 0 8px rgba(231,251,16,0.7))",
-                      "drop-shadow(0 0 2px rgba(231,251,16,0.3))",
+                      "drop-shadow(0 0 2px rgba(212, 255, 31,0.3))",
+                      "drop-shadow(0 0 8px rgba(212, 255, 31,0.7))",
+                      "drop-shadow(0 0 2px rgba(212, 255, 31,0.3))",
                     ],
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
@@ -542,8 +542,8 @@ function PreLaunchState({
         <div
           className="relative rounded-lg p-4 sm:p-4 space-y-2.5 sm:space-y-2"
           style={{
-            background: "linear-gradient(135deg, rgba(231,251,16,0.04), rgba(33,216,255,0.04), rgba(167,139,250,0.03))",
-            border: "1px solid rgba(231,251,16,0.12)",
+            background: "linear-gradient(135deg, rgba(212, 255, 31,0.04), rgba(33,216,255,0.04), rgba(167,139,250,0.03))",
+            border: "1px solid rgba(212, 255, 31,0.12)",
           }}
         >
           <div className="space-y-1 text-center">
@@ -569,12 +569,12 @@ function PreLaunchState({
             <motion.div
               animate={{
                 boxShadow: [
-                  "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
-                  "0 0 30px rgba(33,216,255,0.3), 0 0 60px rgba(231,251,16,0.15)",
-                  "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
+                  "0 0 20px rgba(212, 255, 31,0.2), 0 0 40px rgba(33,216,255,0.08)",
+                  "0 0 30px rgba(33,216,255,0.3), 0 0 60px rgba(212, 255, 31,0.15)",
+                  "0 0 20px rgba(212, 255, 31,0.2), 0 0 40px rgba(33,216,255,0.08)",
                 ],
               }}
-              whileHover={hoverIf(hoverCapable, { scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" })}
+              whileHover={hoverIf(hoverCapable, { scale: 1.02, boxShadow: "0 0 28px rgba(212, 255, 31,0.4), 0 0 56px rgba(212, 255, 31,0.15)" })}
               whileTap={{ scale: 1.0 }}
               className="rounded-md cursor-pointer"
             >
@@ -691,9 +691,9 @@ export function ExitIntentPopup() {
                 className="absolute inset-0 rounded-md"
                 animate={{
                   boxShadow: [
-                    "inset 0 0 0 1px rgba(231,251,16,0.2), 0 0 25px rgba(231,251,16,0.08)",
+                    "inset 0 0 0 1px rgba(212, 255, 31,0.2), 0 0 25px rgba(212, 255, 31,0.08)",
                     "inset 0 0 0 1px rgba(33,216,255,0.35), 0 0 40px rgba(33,216,255,0.12)",
-                    "inset 0 0 0 1px rgba(231,251,16,0.2), 0 0 25px rgba(231,251,16,0.08)",
+                    "inset 0 0 0 1px rgba(212, 255, 31,0.2), 0 0 25px rgba(212, 255, 31,0.08)",
                   ],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -729,9 +729,9 @@ export function ExitIntentPopup() {
                     <motion.div
                       animate={{
                         filter: [
-                          "drop-shadow(0 0 4px rgba(231,251,16,0.4))",
-                          "drop-shadow(0 0 12px rgba(231,251,16,0.8))",
-                          "drop-shadow(0 0 4px rgba(231,251,16,0.4))",
+                          "drop-shadow(0 0 4px rgba(212, 255, 31,0.4))",
+                          "drop-shadow(0 0 12px rgba(212, 255, 31,0.8))",
+                          "drop-shadow(0 0 4px rgba(212, 255, 31,0.4))",
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -753,8 +753,8 @@ export function ExitIntentPopup() {
                   <div
                     className="rounded-lg p-3.5 space-y-2.5"
                     style={{
-                      background: "linear-gradient(135deg, rgba(231,251,16,0.04), rgba(33,216,255,0.04))",
-                      border: "1px solid rgba(231,251,16,0.12)",
+                      background: "linear-gradient(135deg, rgba(212, 255, 31,0.04), rgba(33,216,255,0.04))",
+                      border: "1px solid rgba(212, 255, 31,0.12)",
                     }}
                   >
                     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -769,12 +769,12 @@ export function ExitIntentPopup() {
                       <motion.div
                         animate={{
                           boxShadow: [
-                            "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
-                            "0 0 25px rgba(33,216,255,0.25), 0 0 50px rgba(231,251,16,0.1)",
-                            "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
+                            "0 0 15px rgba(212, 255, 31,0.2), 0 0 30px rgba(33,216,255,0.06)",
+                            "0 0 25px rgba(33,216,255,0.25), 0 0 50px rgba(212, 255, 31,0.1)",
+                            "0 0 15px rgba(212, 255, 31,0.2), 0 0 30px rgba(33,216,255,0.06)",
                           ],
                         }}
-                        whileHover={hoverIf(hoverCapable, { scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" })}
+                        whileHover={hoverIf(hoverCapable, { scale: 1.02, boxShadow: "0 0 28px rgba(212, 255, 31,0.4), 0 0 56px rgba(212, 255, 31,0.15)" })}
                         whileTap={{ scale: 1.0 }}
                         className="rounded-md cursor-pointer"
                       >

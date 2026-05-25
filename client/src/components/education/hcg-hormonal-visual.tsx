@@ -94,13 +94,13 @@ function HormonalAxisAnimation({ isInView, isActive }: { isInView: boolean; isAc
           cy="185"
           rx="45"
           ry="25"
-          fill="rgba(231, 251, 16, 0.2)"
+          fill="rgba(212, 255, 31, 0.2)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.6 }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.4))' }}
         />
         <motion.text x="160" y="182" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold">
           Gonads

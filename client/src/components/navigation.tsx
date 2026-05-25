@@ -207,8 +207,8 @@ export function Navigation() {
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           productLinks.some(p => location === p.href || location.startsWith(p.href + "/"))
-                            ? "text-[#D4FF1F] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
-                            : "text-white hover:text-[#D4FF1F] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
+                            ? "text-[#D4FF1F] drop-shadow-[0_0_12px_rgba(212, 255, 31,0.8)]"
+                            : "text-white hover:text-[#D4FF1F] hover:drop-shadow-[0_0_12px_rgba(212, 255, 31,0.5)]"
                         }`}
                         data-testid="link-nav-products"
                       >
@@ -244,7 +244,7 @@ export function Navigation() {
                   </DropdownMenu>
                   {productLinks.some(p => location === p.href || location.startsWith(p.href + "/")) && (
                     <motion.div
-                      className="absolute inset-0 bg-[#D4FF1F]/10 rounded-md border border-[#D4FF1F]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)] pointer-events-none"
+                      className="absolute inset-0 bg-[#D4FF1F]/10 rounded-md border border-[#D4FF1F]/40 shadow-[0_0_16px_rgba(212, 255, 31,0.3)] pointer-events-none"
                       layoutId="products-highlight"
                     />
                   )}
@@ -621,7 +621,7 @@ export function Navigation() {
                 
                 <Link href="/peptides">
                   <Button
-                    className="hidden md:inline-flex font-display bg-[#D4FF1F] text-black border-2 border-[#D4FF1F] shadow-[0_0_15px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] md:hover:bg-[#D4FF1F] transition-all duration-300"
+                    className="hidden md:inline-flex font-display bg-[#D4FF1F] text-black border-2 border-[#D4FF1F] shadow-[0_0_15px_rgba(212, 255, 31,0.3)] md:hover:shadow-[0_0_25px_rgba(212, 255, 31,0.5)] md:hover:bg-[#D4FF1F] transition-all duration-300"
                     data-testid="button-shop-products"
                   >
                     Shop Peptides

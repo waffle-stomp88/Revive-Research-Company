@@ -81,7 +81,7 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.8))' }}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.8))' }}
           />
         ))}
         
@@ -91,13 +91,13 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
           width="60"
           height="30"
           rx="8"
-          fill="rgba(231, 251, 16, 0.2)"
+          fill="rgba(212, 255, 31, 0.2)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.8, type: "spring" }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.5))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.5))' }}
         />
         <motion.text x="160" y="103" textAnchor="middle" fill="#D4FF1F" fontSize="10" fontWeight="bold">
           NAD+
@@ -269,7 +269,7 @@ export function NADSirtuinVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
           }}

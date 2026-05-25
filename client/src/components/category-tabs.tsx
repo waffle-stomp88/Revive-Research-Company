@@ -18,7 +18,7 @@ const categories: CategoryTab[] = [
     icon: FlaskConical,
     matchPaths: ["/peptides", "/products"],
     color: "#D4FF1F",
-    glowColor: "rgba(231,251,16,0.3)"
+    glowColor: "rgba(212, 255, 31,0.3)"
   },
   {
     label: "Stacks",

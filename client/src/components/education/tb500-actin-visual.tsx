@@ -179,7 +179,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
-                style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
+                style={{ filter: 'drop-shadow(0 0 8px rgba(212, 255, 31, 0.3))' }}
               />
               <motion.text
                 x="220" y="88"
@@ -229,7 +229,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
                 animate={isInView ? { pathLength: [0, 1] } : {}}
                 transition={{ duration: 1, repeat: Infinity }}
                 markerEnd="url(#arrowhead)"
-                style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+                style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }}
               />
               
               {[0, 1, 2, 3].map((i) => (
@@ -706,7 +706,7 @@ export function TB500ActinVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
           }}

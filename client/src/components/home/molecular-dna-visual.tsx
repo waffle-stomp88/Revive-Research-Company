@@ -44,7 +44,7 @@ function DNAHelix() {
       <svg 
         viewBox="0 0 400 120" 
         className="w-full max-w-2xl h-auto"
-        style={{ filter: 'drop-shadow(0 0 30px rgba(231, 251, 16, 0.3)) drop-shadow(0 0 60px rgba(33, 216, 255, 0.2))' }}
+        style={{ filter: 'drop-shadow(0 0 30px rgba(212, 255, 31, 0.3)) drop-shadow(0 0 60px rgba(33, 216, 255, 0.2))' }}
       >
         <defs>
           <linearGradient id="homeStrandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -216,7 +216,7 @@ export function MolecularDNAVisual() {
           <motion.div 
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
             style={{
-              background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.1) 0%, rgba(231, 251, 16, 0.05) 100%)',
+              background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.1) 0%, rgba(212, 255, 31, 0.05) 100%)',
               borderColor: 'rgba(33, 216, 255, 0.4)',
               boxShadow: '0 0 25px rgba(33, 216, 255, 0.2)'
             }}

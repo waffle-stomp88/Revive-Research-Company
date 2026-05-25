@@ -598,7 +598,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-7 text-xs border-[#D4FF1F] text-[#D4FF1F] hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] shadow-[0_0_8px_rgba(231,251,16,0.3)]"
+                className="h-7 text-xs border-[#D4FF1F] text-[#D4FF1F] hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] shadow-[0_0_8px_rgba(212, 255, 31,0.3)]"
                 onClick={() => onNavigateToTab("orders")}
                 data-testid="button-view-all-orders"
               >

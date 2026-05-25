@@ -42,7 +42,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                   : tier.popular
                     ? "1.5px solid #2a3a1a"
                     : "1.5px solid #1e1e2a",
-                boxShadow: isSelected ? "0 0 14px rgba(231,251,16,0.12)" : "none",
+                boxShadow: isSelected ? "0 0 14px rgba(212, 255, 31,0.12)" : "none",
               }}
               aria-pressed={isSelected}
             >

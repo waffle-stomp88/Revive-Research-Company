@@ -30,7 +30,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
-          background: 'radial-gradient(ellipse at center bottom, rgba(231, 251, 16, 0.15) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center bottom, rgba(212, 255, 31, 0.15) 0%, transparent 70%)'
         }}
       />
       
@@ -58,7 +58,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
           initial={{ scale: 0 }}
           animate={isInView ? { scale: [1, 1.2, 1] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.8))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.8))' }}
         />
         <motion.text
           x="150"
@@ -128,7 +128,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: [0, 1] } : {}}
           transition={{ delay: 2.5 }}
-          style={{ textShadow: '0 0 8px rgba(231, 251, 16, 0.6)' }}
+          style={{ textShadow: '0 0 8px rgba(212, 255, 31, 0.6)' }}
         >
           New Vessel Formation
         </motion.text>
@@ -181,7 +181,7 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.8))' }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(212, 255, 31, 0.8))' }}
           />
         ))}
         
@@ -198,7 +198,7 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
         
         <motion.circle
           cx="165" cy="50" r="20"
-          fill="rgba(231, 251, 16, 0.1)"
+          fill="rgba(212, 255, 31, 0.1)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
@@ -277,7 +277,7 @@ export function BPC157AngiogenesisVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -289,12 +289,12 @@ export function BPC157AngiogenesisVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Heart className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Heart className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Angiogenesis Mechanism
           </span>
@@ -307,8 +307,8 @@ export function BPC157AngiogenesisVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <AnimatedBloodVessels isInView={isInView} activePhase={activePhase} />
@@ -322,9 +322,9 @@ export function BPC157AngiogenesisVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                backgroundColor: isPlaying ? 'rgba(212, 255, 31, 0.2)' : 'hsl(var(--foreground) / 0.1)',
                 color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
+                border: `1px solid ${isPlaying ? 'rgba(212, 255, 31, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >

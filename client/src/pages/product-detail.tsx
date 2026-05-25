@@ -1243,7 +1243,7 @@ export default function ProductDetail() {
                   className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                     purchaseType === "subscription"
                       ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                      : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
+                      : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)]"
                   }`}
                   onClick={handleBuyNow}
                   data-testid="button-buy-now"
@@ -2115,7 +2115,7 @@ export default function ProductDetail() {
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           {[
-                            { name: "BPC-157", tier: { label: "Legendary", color: "#D4FF1F", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }, score: 92, mechanism: "Synergistic tissue repair via GH receptor upregulation and angiogenic co-activation." },
+                            { name: "BPC-157", tier: { label: "Legendary", color: "#D4FF1F", bg: "rgba(212, 255, 31,0.15)", border: "rgba(212, 255, 31,0.3)" }, score: 92, mechanism: "Synergistic tissue repair via GH receptor upregulation and angiogenic co-activation." },
                             { name: "TB-500", tier: { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }, score: 87, mechanism: "Complementary actin-binding pathway enhances systemic recovery and anti-inflammatory response." },
                             { name: "Ipamorelin", tier: { label: "Good", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" }, score: 80, mechanism: "Pulse GH release amplified by combined GHRH and ghrelin receptor co-agonism." },
                           ].map((partner) => (
@@ -2188,7 +2188,7 @@ export default function ProductDetail() {
                           const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
                           const score = partnerSynergy?.synergyBonus ?? 0;
                           const tier = score >= 90
-                            ? { label: "Legendary", color: "#D4FF1F", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }
+                            ? { label: "Legendary", color: "#D4FF1F", bg: "rgba(212, 255, 31,0.15)", border: "rgba(212, 255, 31,0.3)" }
                             : score >= 85
                             ? { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }
                             : score >= 75
@@ -2329,7 +2329,7 @@ export default function ProductDetail() {
                 <span className="font-bold text-[#D4FF1F]">${effectiveTotal}</span>
                 <Button
                   onClick={handleAddToCart}
-                  className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+                  className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(212, 255, 31,0.4)]"
                   data-testid="button-sticky-purchase-add-to-cart"
                 >
                   <ShoppingBag className="h-4 w-4" />
@@ -2351,7 +2351,7 @@ export default function ProductDetail() {
             </div>
             <Button
               size="lg"
-              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(212, 255, 31,0.4)]"
               onClick={handleAddToCart}
               data-testid="button-sticky-add-to-cart"
             >

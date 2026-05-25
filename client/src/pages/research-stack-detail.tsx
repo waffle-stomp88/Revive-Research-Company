@@ -587,7 +587,7 @@ export default function ResearchStackDetail() {
                     className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                       purchaseType === "subscription"
                         ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                        : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
+                        : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)]"
                     }`}
                     onClick={handleBuyNow}
                     disabled={!canAddToCart}
@@ -1064,7 +1064,7 @@ export default function ResearchStackDetail() {
             </div>
             <Button
               size="lg"
-              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(212, 255, 31,0.4)]"
               onClick={handleAddToCart}
               disabled={!canAddToCart}
               data-testid="button-sticky-add-to-cart-stack"

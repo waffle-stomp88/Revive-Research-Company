@@ -422,17 +422,17 @@
   @keyframes glow-yellow {
     0%, 100% {
       box-shadow: 
-        0 0 20px rgba(231, 251, 16, 0.5),
-        0 0 40px rgba(231, 251, 16, 0.3),
-        0 0 60px rgba(231, 251, 16, 0.2),
-        inset 0 0 10px rgba(231, 251, 16, 0.1);
+        0 0 20px rgba(212, 255, 31, 0.5),
+        0 0 40px rgba(212, 255, 31, 0.3),
+        0 0 60px rgba(212, 255, 31, 0.2),
+        inset 0 0 10px rgba(212, 255, 31, 0.1);
     }
     50% {
       box-shadow: 
-        0 0 30px rgba(231, 251, 16, 0.8),
-        0 0 60px rgba(231, 251, 16, 0.6),
-        0 0 90px rgba(231, 251, 16, 0.4),
-        inset 0 0 20px rgba(231, 251, 16, 0.2);
+        0 0 30px rgba(212, 255, 31, 0.8),
+        0 0 60px rgba(212, 255, 31, 0.6),
+        0 0 90px rgba(212, 255, 31, 0.4),
+        inset 0 0 20px rgba(212, 255, 31, 0.2);
     }
   }
 
@@ -493,12 +493,12 @@
   /* Yellow Border Glow & Pulse Animation */
   @keyframes pulse-glow-yellow {
     0%, 100% {
-      border-color: rgba(231, 251, 16, 0.5);
-      box-shadow: 0 0 15px rgba(231, 251, 16, 0.15), inset 0 0 15px rgba(231, 251, 16, 0.02);
+      border-color: rgba(212, 255, 31, 0.5);
+      box-shadow: 0 0 15px rgba(212, 255, 31, 0.15), inset 0 0 15px rgba(212, 255, 31, 0.02);
     }
     50% {
-      border-color: rgba(231, 251, 16, 0.75);
-      box-shadow: 0 0 25px rgba(231, 251, 16, 0.35), inset 0 0 15px rgba(231, 251, 16, 0.05);
+      border-color: rgba(212, 255, 31, 0.75);
+      box-shadow: 0 0 25px rgba(212, 255, 31, 0.35), inset 0 0 15px rgba(212, 255, 31, 0.05);
     }
   }
 
@@ -716,7 +716,7 @@ body.modal-open {
   background: linear-gradient(135deg, rgba(26, 26, 31, 0.95) 0%, rgba(26, 26, 31, 0.98) 100%);
   border: 2px solid #D4FF1F;
   border-radius: 0.75rem;
-  box-shadow: 0 0 40px rgba(231, 251, 16, 0.3), 0 0 60px rgba(33, 216, 255, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 40px rgba(212, 255, 31, 0.3), 0 0 60px rgba(33, 216, 255, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -773,7 +773,7 @@ body.modal-open {
 
 /* Status badge glow effects */
 .badge-glow-yellow {
-  box-shadow: 0 0 8px rgba(231, 251, 16, 0.4), inset 0 0 4px rgba(231, 251, 16, 0.2);
+  box-shadow: 0 0 8px rgba(212, 255, 31, 0.4), inset 0 0 4px rgba(212, 255, 31, 0.2);
 }
 
 .badge-glow-cyan {
@@ -815,20 +815,20 @@ body.modal-open {
 }
 
 @keyframes holographic-border {
-  0% { border-color: rgba(33, 216, 255, 0.4); box-shadow: 0 0 12px rgba(33, 216, 255, 0.15), 0 0 4px rgba(231, 251, 16, 0.1); }
-  33% { border-color: rgba(231, 251, 16, 0.4); box-shadow: 0 0 12px rgba(231, 251, 16, 0.15), 0 0 4px rgba(168, 85, 247, 0.1); }
+  0% { border-color: rgba(33, 216, 255, 0.4); box-shadow: 0 0 12px rgba(33, 216, 255, 0.15), 0 0 4px rgba(212, 255, 31, 0.1); }
+  33% { border-color: rgba(212, 255, 31, 0.4); box-shadow: 0 0 12px rgba(212, 255, 31, 0.15), 0 0 4px rgba(168, 85, 247, 0.1); }
   66% { border-color: rgba(168, 85, 247, 0.4); box-shadow: 0 0 12px rgba(168, 85, 247, 0.15), 0 0 4px rgba(33, 216, 255, 0.1); }
-  100% { border-color: rgba(33, 216, 255, 0.4); box-shadow: 0 0 12px rgba(33, 216, 255, 0.15), 0 0 4px rgba(231, 251, 16, 0.1); }
+  100% { border-color: rgba(33, 216, 255, 0.4); box-shadow: 0 0 12px rgba(33, 216, 255, 0.15), 0 0 4px rgba(212, 255, 31, 0.1); }
 }
 
 .holographic-pill {
   background: linear-gradient(
     135deg,
     rgba(33, 216, 255, 0.12) 0%,
-    rgba(231, 251, 16, 0.1) 25%,
+    rgba(212, 255, 31, 0.1) 25%,
     rgba(168, 85, 247, 0.12) 50%,
     rgba(33, 216, 255, 0.1) 75%,
-    rgba(231, 251, 16, 0.12) 100%
+    rgba(212, 255, 31, 0.12) 100%
   );
   background-size: 200% 200%;
   animation: holographic-shift 4s ease-in-out infinite, holographic-border 4s ease-in-out infinite;

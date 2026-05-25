@@ -17,8 +17,8 @@ export function BlurredGate({ previewContent, title, description, testId, custom
       className="rounded-xl px-4 py-3 text-center"
       style={{
         background: "rgba(26,26,31,0.92)",
-        border: "1px solid rgba(231,251,16,0.25)",
-        boxShadow: "0 0 20px rgba(231,251,16,0.06)",
+        border: "1px solid rgba(212, 255, 31,0.25)",
+        boxShadow: "0 0 20px rgba(212, 255, 31,0.06)",
       }}
     >
       <Lock className="w-4 h-4 mx-auto mb-1.5" style={{ color: "#D4FF1F" }} />

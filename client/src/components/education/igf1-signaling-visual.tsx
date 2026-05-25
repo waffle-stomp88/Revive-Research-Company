@@ -16,7 +16,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.1) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.1) 0%, transparent 70%)'
         }}
       />
       
@@ -240,7 +240,7 @@ export function IGF1SignalingVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -252,12 +252,12 @@ export function IGF1SignalingVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
             IGF-1 LR3 Signaling Cascade
           </span>
@@ -270,8 +270,8 @@ export function IGF1SignalingVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <div ref={cascadeRef}>

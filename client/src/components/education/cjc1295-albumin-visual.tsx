@@ -114,13 +114,13 @@ function AlbuminBindingAnimation({ isInView, showDAC }: { isInView: boolean; sho
               cy="100"
               rx="50"
               ry="35"
-              fill="rgba(231, 251, 16, 0.1)"
+              fill="rgba(212, 255, 31, 0.1)"
               stroke="#D4FF1F"
               strokeWidth="2"
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ duration: 0.5 }}
-              style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.4))' }}
+              style={{ filter: 'drop-shadow(0 0 15px rgba(212, 255, 31, 0.4))' }}
             />
             <motion.text x="160" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
               initial={{ opacity: 0 }}
@@ -323,7 +323,7 @@ export function CJC1295AlbuminVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
           }}

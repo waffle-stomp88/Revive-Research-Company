@@ -123,7 +123,7 @@ const getEmailBaseStyles = () => {
     footer: `background-color: ${brand.cardColor}; padding: 30px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);`,
     primaryColor: brand.primaryColor,
     accentColor: brand.accentColor,
-    glowYellow: `0 0 20px rgba(231, 251, 16, 0.3)`,
+    glowYellow: `0 0 20px rgba(212, 255, 31, 0.3)`,
     glowCyan: `0 0 20px rgba(33, 216, 255, 0.3)`,
   };
 };
@@ -362,7 +362,7 @@ ${getSharedFooterText(order.email, 'order')}
                 </h1>
                 
                 <!-- Order Number Badge -->
-                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.4);">
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.4);">
                   ORDER #${shortRef}
                 </span>
               </div>
@@ -829,7 +829,7 @@ ${getSharedFooterText(order.email, 'shipping')}
                   On Its Way!
                 </h1>
                 
-                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.4);">
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.4);">
                   ORDER #${shortRef}
                 </span>
               </div>
@@ -1449,13 +1449,13 @@ ${getSharedFooterText(email, 'newsletter')}`;
                 <!-- Benefit 2: Curated Updates -->
                 <tr>
                   <td style="padding: 8px 0;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(231, 251, 16, 0.2); border-radius: 12px; overflow: hidden;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(212, 255, 31, 0.2); border-radius: 12px; overflow: hidden;">
                       <tr>
                         <td style="padding: 16px 20px; border-left: 3px solid ${colors.neonYellow};">
                           <table role="presentation" cellspacing="0" cellpadding="0">
                             <tr>
                               <td style="width: 44px; vertical-align: top;">
-                                <div style="width: 32px; height: 32px; background: rgba(231, 251, 16, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
+                                <div style="width: 32px; height: 32px; background: rgba(212, 255, 31, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
                                   <span style="font-size: 14px; color: ${colors.neonYellow};">02</span>
                                 </div>
                               </td>
@@ -1533,7 +1533,7 @@ ${getSharedFooterText(email, 'newsletter')}`;
               <!-- Primary CTA Button with Glow -->
               <table role="presentation" cellspacing="0" cellpadding="0" align="center">
                 <tr>
-                  <td style="background: ${colors.neonYellow}; border-radius: 10px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.5), 0 0 60px rgba(231, 251, 16, 0.25);">
+                  <td style="background: ${colors.neonYellow}; border-radius: 10px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.5), 0 0 60px rgba(212, 255, 31, 0.25);">
                     <a href="https://reviveresearch.co/" style="display: inline-block; padding: 16px 40px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.5px;">
                       Explore Available Research
                     </a>
@@ -1683,13 +1683,13 @@ ${getSharedFooterText(email, 'newsletter')}
                 <!-- Pillar 1: Research Academy -->
                 <tr>
                   <td style="padding: 8px 0;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #252529; border: 1px solid rgba(231, 251, 16, 0.2); border-radius: 12px; overflow: hidden;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #252529; border: 1px solid rgba(212, 255, 31, 0.2); border-radius: 12px; overflow: hidden;">
                       <tr>
                         <td style="padding: 16px 20px; border-left: 3px solid ${styles.primaryColor};">
                           <table role="presentation" cellspacing="0" cellpadding="0">
                             <tr>
                               <td style="width: 44px; vertical-align: top;">
-                                <div style="width: 32px; height: 32px; background: rgba(231, 251, 16, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
+                                <div style="width: 32px; height: 32px; background: rgba(212, 255, 31, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
                                   <span style="font-size: 14px; color: ${styles.primaryColor};">01</span>
                                 </div>
                               </td>
@@ -1783,7 +1783,7 @@ ${getSharedFooterText(email, 'newsletter')}
               
               <table role="presentation" cellspacing="0" cellpadding="0" align="center">
                 <tr>
-                  <td style="background: ${styles.primaryColor}; border-radius: 10px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.5), 0 0 60px rgba(231, 251, 16, 0.25);">
+                  <td style="background: ${styles.primaryColor}; border-radius: 10px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.5), 0 0 60px rgba(212, 255, 31, 0.25);">
                     <a href="https://reviveresearch.co/" style="display: inline-block; padding: 16px 40px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.5px;">
                       Explore the Platform
                     </a>
@@ -1945,7 +1945,7 @@ ${getSharedFooterText(affiliate.email, 'order')}`;
           <!-- Referral Code -->
           <tr>
             <td style="padding: 0 40px 32px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.08) 0%, rgba(33,216,255,0.06) 100%); border: 1px solid rgba(231,251,16,0.2); border-radius: 12px; overflow: hidden;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(212, 255, 31,0.08) 0%, rgba(33,216,255,0.06) 100%); border: 1px solid rgba(212, 255, 31,0.2); border-radius: 12px; overflow: hidden;">
                 <tr>
                   <td style="padding: 24px 28px;">
                     <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #D4FF1F;">Your Referral Code</p>
@@ -2085,7 +2085,7 @@ You received this invitation because someone at Revive Research shared it with y
           <!-- HIGHLIGHTS CARD -->
           <tr>
             <td style="padding: 0 40px 32px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.06) 0%, rgba(33,216,255,0.04) 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(212, 255, 31,0.06) 0%, rgba(33,216,255,0.04) 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
                 <tr>
                   <td style="padding: 24px 28px;">
                     <p style="margin: 0 0 20px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #D4FF1F;">What You Get</p>

@@ -50,7 +50,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <circle cx="325" cy="80" r="22" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
+          <circle cx="325" cy="80" r="22" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.7))' }} />
           <text x="325" y="86" textAnchor="middle" fill="black" fontSize="12" fontWeight="700">GK</text>
           <text x="325" y="120" textAnchor="middle" fill="#D4FF1F" fontSize="12" fontWeight="600">GHK-Cu</text>
           <text x="325" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Collagen</text>
@@ -226,7 +226,7 @@ export function KLOWSynergyVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.2)'
           }}
@@ -298,8 +298,8 @@ export function KLOWSynergyVisual() {
             transition={{ delay: 0.6 }}
             className="p-4 rounded-lg border"
             style={{
-              backgroundColor: 'rgba(231, 251, 16, 0.08)',
-              borderColor: 'rgba(231, 251, 16, 0.3)'
+              backgroundColor: 'rgba(212, 255, 31, 0.08)',
+              borderColor: 'rgba(212, 255, 31, 0.3)'
             }}
           >
             <div className="flex items-center gap-2 mb-3">

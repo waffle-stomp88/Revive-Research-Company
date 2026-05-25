@@ -114,7 +114,7 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ delay: spine.delay + 0.5, duration: 1, repeat: Infinity }}
-                style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.8))' }}
+                style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.8))' }}
               />
             )}
           </motion.g>
@@ -123,7 +123,7 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
         <motion.g>
           <motion.circle
             cx="50" cy="100" r="18"
-            fill="rgba(231, 251, 16, 0.2)"
+            fill="rgba(212, 255, 31, 0.2)"
             stroke="#D4FF1F"
             strokeWidth="2"
             initial={{ scale: 0 }}

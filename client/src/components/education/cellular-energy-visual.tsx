@@ -43,7 +43,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ delay: 0.2 }}
         >
-          <Dna className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Dna className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Mitochondrial DNA Origin
           </span>
@@ -57,7 +57,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
           <svg 
             viewBox="0 0 300 120" 
             className="w-full h-auto"
-            style={{ filter: 'drop-shadow(0 0 25px rgba(231, 251, 16, 0.4)) drop-shadow(0 0 40px rgba(33, 216, 255, 0.2))' }}
+            style={{ filter: 'drop-shadow(0 0 25px rgba(212, 255, 31, 0.4)) drop-shadow(0 0 40px rgba(33, 216, 255, 0.2))' }}
           >
             {/* Enhanced gradients with more vibrant colors */}
             <defs>
@@ -203,7 +203,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               animate={isInView ? { opacity: [0.3, 1, 0.3], strokeDashoffset: [10, 0, 10] } : {}}
               transition={{ duration: 2, delay: 1.5, repeat: Infinity }}
               style={{ 
-                filter: 'drop-shadow(0 0 12px rgba(231, 251, 16, 0.6))'
+                filter: 'drop-shadow(0 0 12px rgba(212, 255, 31, 0.6))'
               }}
             />
             
@@ -219,8 +219,8 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 1.8 }}
               style={{ 
-                textShadow: '0 0 8px rgba(231, 251, 16, 0.8)',
-                filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.7))'
+                textShadow: '0 0 8px rgba(212, 255, 31, 0.8)',
+                filter: 'drop-shadow(0 0 6px rgba(212, 255, 31, 0.7))'
               }}
             >
               MOTS-c Gene
@@ -261,7 +261,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 2 }}
           >
-            <Atom className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <Atom className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
             <span className="text-sm font-medium bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#ec4899] bg-clip-text text-transparent">
               Peptide activates multiple cellular pathways
             </span>
@@ -339,8 +339,8 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
         <div className="inline-flex items-center gap-6 px-6 py-3 rounded-xl text-xs font-medium"
           style={{
             background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.1) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            border: '1px solid rgba(231, 251, 16, 0.3)',
-            boxShadow: '0 0 15px rgba(231, 251, 16, 0.15)'
+            border: '1px solid rgba(212, 255, 31, 0.3)',
+            boxShadow: '0 0 15px rgba(212, 255, 31, 0.15)'
           }}
         >
           <span className="flex items-center gap-2 text-[#D4FF1F]">

@@ -315,7 +315,7 @@ export default function LoginPage() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 30% 20%, rgba(231,251,16,0.06) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(33,216,255,0.07) 0%, transparent 55%), linear-gradient(135deg, #0d0d10 0%, #1a1a1f 50%, #0f0f14 100%)",
+              "radial-gradient(ellipse at 30% 20%, rgba(212, 255, 31,0.06) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(33,216,255,0.07) 0%, transparent 55%), linear-gradient(135deg, #0d0d10 0%, #1a1a1f 50%, #0f0f14 100%)",
           }}
         />
         <div

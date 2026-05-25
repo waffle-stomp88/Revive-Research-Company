@@ -388,7 +388,7 @@ export default function BundleDetail() {
                     className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
                       purchaseType === "subscription"
                         ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
-                        : "bg-[#D4FF1F] border-[#D4FF1F] md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                        : "bg-[#D4FF1F] border-[#D4FF1F] md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(212, 255, 31,0.4)] md:hover:shadow-[0_0_40px_rgba(212, 255, 31,0.6)]"
                     }`}
                     onClick={handleBuyNow}
                     disabled={!pricingReady}
@@ -476,7 +476,7 @@ export default function BundleDetail() {
             </div>
             <Button
               size="lg"
-              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(212, 255, 31,0.4)]"
               onClick={handleAddToCart}
               disabled={!pricingReady}
               data-testid="button-sticky-add-to-cart-bundle"

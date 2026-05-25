@@ -126,7 +126,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
                     repeat: Infinity,
                     delay: idx * 0.2
                   }}
-                  style={{ filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.8))' }}
+                  style={{ filter: 'drop-shadow(0 0 6px rgba(212, 255, 31, 0.8))' }}
                 />
               )}
             </motion.g>
@@ -143,14 +143,14 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
             cy="100"
             rx="35"
             ry="25"
-            fill="rgba(231, 251, 16, 0.15)"
+            fill="rgba(212, 255, 31, 0.15)"
             stroke="#D4FF1F"
             strokeWidth="2"
             animate={isExtending ? { 
               scale: [1, 1.05, 1],
             } : {}}
             transition={{ duration: 1.5, repeat: Infinity }}
-            style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.5))' }}
+            style={{ filter: 'drop-shadow(0 0 15px rgba(212, 255, 31, 0.5))' }}
           />
           <motion.text x="220" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold">
             Telomerase
@@ -167,7 +167,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
             fill="none"
             animate={isExtending ? { strokeDashoffset: [0, -10] } : {}}
             transition={{ duration: 0.5, repeat: Infinity, ease: "linear" }}
-            style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }}
           />
         </motion.g>
         
@@ -351,7 +351,7 @@ export function EpithalonTelomeraseVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#9d4edd',
             boxShadow: '0 0 20px rgba(157, 78, 221, 0.3)'
           }}

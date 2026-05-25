@@ -53,7 +53,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <circle cx="420" cy="80" r="18" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
+          <circle cx="420" cy="80" r="18" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.7))' }} />
           <text x="420" y="85" textAnchor="middle" fill="black" fontSize="9" fontWeight="700">GK</text>
           <text x="420" y="125" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="600">GHK-Cu</text>
           <text x="420" y="140" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7">Collagen Boost</text>
@@ -252,7 +252,7 @@ export function GLOWSynergyVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -264,12 +264,12 @@ export function GLOWSynergyVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.2)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.2)'
           }}
         >
-          <Sparkles className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Sparkles className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold text-[#D4FF1F]">
             Multi-Peptide Synergy Explained
           </span>
@@ -282,8 +282,8 @@ export function GLOWSynergyVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.2)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.03) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.2)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.03) 0%, transparent 50%)'
         }}
       >
         <div ref={glowRef}>
@@ -336,8 +336,8 @@ export function GLOWSynergyVisual() {
             transition={{ delay: 0.6 }}
             className="p-4 rounded-lg border"
             style={{
-              backgroundColor: 'rgba(231, 251, 16, 0.08)',
-              borderColor: 'rgba(231, 251, 16, 0.3)'
+              backgroundColor: 'rgba(212, 255, 31, 0.08)',
+              borderColor: 'rgba(212, 255, 31, 0.3)'
             }}
           >
             <div className="flex items-center gap-2 mb-3">

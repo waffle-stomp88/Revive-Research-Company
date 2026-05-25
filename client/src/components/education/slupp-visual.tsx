@@ -37,7 +37,7 @@ export function SLUPP332Visual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -50,12 +50,12 @@ export function SLUPP332Visual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Dumbbell className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Dumbbell className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
             Exercise in a Pill
           </span>
@@ -69,8 +69,8 @@ export function SLUPP332Visual() {
       <div 
         className="rounded-xl border overflow-hidden"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.03) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.03) 0%, transparent 50%)'
         }}
       >
         <div className="grid md:grid-cols-2 gap-0">
@@ -82,7 +82,7 @@ export function SLUPP332Visual() {
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="text-[10px] px-2 py-1 rounded-full transition-all"
                 style={{
-                  backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                  backgroundColor: isPlaying ? 'rgba(212, 255, 31, 0.2)' : 'hsl(var(--foreground) / 0.1)',
                   color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.6)',
                   border: `1px solid ${isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.2)'}`
                 }}
@@ -229,12 +229,12 @@ export function SLUPP332ComparisonTable() {
       <div 
         className="absolute inset-0 blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(circle at center, rgba(231, 251, 16, 0.05) 0%, transparent 70%)'
+          background: 'radial-gradient(circle at center, rgba(212, 255, 31, 0.05) 0%, transparent 70%)'
         }}
       />
       
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 shadow-[0_0_15px_rgba(231,251,16,0.2)]">
+        <div className="p-2 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 shadow-[0_0_15px_rgba(212, 255, 31,0.2)]">
           <Zap className="h-5 w-5 text-[#D4FF1F]" />
         </div>
         <div>

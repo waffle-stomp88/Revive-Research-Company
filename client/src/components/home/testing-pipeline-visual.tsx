@@ -20,7 +20,7 @@ const pipelineSteps = [
     subtitle: "Premium Raw Materials",
     description: "Carefully selected ingredients from certified suppliers",
     color: "#D4FF1F",
-    glowColor: "rgba(231, 251, 16, 0.4)",
+    glowColor: "rgba(212, 255, 31, 0.4)",
     details: [
       "Pharmaceutical-grade amino acids",
       "Vetted supplier network",

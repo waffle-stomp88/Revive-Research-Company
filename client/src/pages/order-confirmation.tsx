@@ -170,7 +170,7 @@ export default function OrderConfirmation() {
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
               <div className="absolute inset-0 rounded-full bg-[#D4FF1F]/20 animate-ping" />
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4FF1F] to-[#21d8ff] flex items-center justify-center shadow-[0_0_40px_rgba(231,251,16,0.4)]">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4FF1F] to-[#21d8ff] flex items-center justify-center shadow-[0_0_40px_rgba(212, 255, 31,0.4)]">
                 <CheckCircle className="w-10 h-10 text-black" />
               </div>
             </motion.div>
@@ -465,7 +465,7 @@ export default function OrderConfirmation() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="p-6 mb-6 border-[#D4FF1F]/20 bg-gradient-to-br from-card/80 to-card shadow-[0_0_30px_rgba(231,251,16,0.1)]">
+            <Card className="p-6 mb-6 border-[#D4FF1F]/20 bg-gradient-to-br from-card/80 to-card shadow-[0_0_30px_rgba(212, 255, 31,0.1)]">
               <div className="flex items-center gap-3 mb-5">
                 <div className="p-2 rounded-lg bg-[#D4FF1F]/10">
                   <Package className="w-5 h-5 text-[#D4FF1F]" />
@@ -673,7 +673,7 @@ export default function OrderConfirmation() {
           >
             <Button
               asChild
-              className="flex-1 font-display gap-2 bg-[#D4FF1F] text-black md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.5)] transition-all duration-300"
+              className="flex-1 font-display gap-2 bg-[#D4FF1F] text-black md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(212, 255, 31,0.3)] md:hover:shadow-[0_0_30px_rgba(212, 255, 31,0.5)] transition-all duration-300"
               size="lg"
               data-testid="button-continue-shopping"
             >

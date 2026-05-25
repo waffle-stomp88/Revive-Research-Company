@@ -24,7 +24,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.1) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.1) 0%, transparent 70%)'
         }}
       />
       
@@ -94,7 +94,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.circle
             cx="120" cy="110" r="25"
-            fill={activePhase >= 1 ? "rgba(231, 251, 16, 0.25)" : "rgba(231, 251, 16, 0.1)"}
+            fill={activePhase >= 1 ? "rgba(212, 255, 31, 0.25)" : "rgba(212, 255, 31, 0.1)"}
             stroke="#D4FF1F"
             strokeWidth={activePhase >= 1 ? 3 : 2}
             initial={{ scale: 0 }}
@@ -103,7 +103,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
             } : {}}
             transition={{ duration: 1.5, repeat: activePhase === 1 ? Infinity : 0 }}
             filter={activePhase >= 1 ? "url(#gshGlow)" : undefined}
-            style={activePhase >= 1 ? { filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.6))' } : {}}
+            style={activePhase >= 1 ? { filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.6))' } : {}}
           />
           <motion.text x="120" y="107" textAnchor="middle" fill="#D4FF1F" fontSize="12" fontWeight="bold"
             initial={{ opacity: 0 }}
@@ -111,7 +111,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
           >
             GSH
           </motion.text>
-          <motion.text x="120" y="120" textAnchor="middle" fill="rgba(231, 251, 16, 0.7)" fontSize="7"
+          <motion.text x="120" y="120" textAnchor="middle" fill="rgba(212, 255, 31, 0.7)" fontSize="7"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
           >
@@ -217,7 +217,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
               repeat: activePhase === 1 ? Infinity : 0,
               ease: "easeInOut"
             }}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.8))' }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(212, 255, 31, 0.8))' }}
           />
         ))}
 
@@ -280,7 +280,7 @@ export function GlutathioneRedoxVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -292,12 +292,12 @@ export function GlutathioneRedoxVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Shield className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Shield className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#10b981] bg-clip-text text-transparent">
             GSH/GSSG Redox Cycle
           </span>
@@ -310,8 +310,8 @@ export function GlutathioneRedoxVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <RedoxCycleAnimation isInView={isInView} activePhase={activePhase} />
@@ -325,9 +325,9 @@ export function GlutathioneRedoxVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                backgroundColor: isPlaying ? 'rgba(212, 255, 31, 0.2)' : 'hsl(var(--foreground) / 0.1)',
                 color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
+                border: `1px solid ${isPlaying ? 'rgba(212, 255, 31, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >

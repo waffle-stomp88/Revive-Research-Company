@@ -250,15 +250,15 @@ export function AnimatedTrustMeters() {
           <motion.div 
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
             style={{
-              background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)',
-              borderColor: 'rgba(231, 251, 16, 0.4)',
-              boxShadow: '0 0 25px rgba(231, 251, 16, 0.2)'
+              background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)',
+              borderColor: 'rgba(212, 255, 31, 0.4)',
+              boxShadow: '0 0 25px rgba(212, 255, 31, 0.2)'
             }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
           >
-            <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
             <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
               Trust Metrics
             </span>
@@ -291,16 +291,16 @@ export function AnimatedTrustMeters() {
         <motion.div
           className="rounded-2xl p-6 md:p-8"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, rgba(33, 216, 255, 0.03) 100%)',
-            border: '1px solid rgba(231, 251, 16, 0.2)',
-            boxShadow: '0 0 40px rgba(231, 251, 16, 0.1)'
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, rgba(33, 216, 255, 0.03) 100%)',
+            border: '1px solid rgba(212, 255, 31, 0.2)',
+            boxShadow: '0 0 40px rgba(212, 255, 31, 0.1)'
           }}
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 1, duration: 0.6 }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <Beaker className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <Beaker className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
             <h3 className="font-display text-lg font-bold text-[#D4FF1F]">
               Lab Testing Standards
             </h3>

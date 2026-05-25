@@ -145,7 +145,7 @@ function StructureComparison({ isInView }: { isInView: boolean }) {
     <div className="grid grid-cols-2 gap-4 mb-6">
       <motion.div
         className="p-4 rounded-lg text-center"
-        style={{ backgroundColor: 'rgba(231, 251, 16, 0.1)', border: '1px solid rgba(231, 251, 16, 0.3)' }}
+        style={{ backgroundColor: 'rgba(212, 255, 31, 0.1)', border: '1px solid rgba(212, 255, 31, 0.3)' }}
         initial={{ opacity: 0, x: -20 }}
         animate={isInView ? { opacity: 1, x: 0 } : {}}
       >
@@ -241,7 +241,7 @@ export function MelanotanReceptorVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.06) 0%, rgba(33, 216, 255, 0.06) 50%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.06) 0%, rgba(33, 216, 255, 0.06) 50%, transparent 70%)'
         }}
       />
       
@@ -253,7 +253,7 @@ export function MelanotanReceptorVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.15) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.15) 100%)',
             borderColor: melanotanTypes[activeType].color,
             boxShadow: `0 0 20px ${melanotanTypes[activeType].color}30`
           }}

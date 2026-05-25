@@ -103,7 +103,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.circle
             cx="160" cy="100" r="28"
-            fill={activePhase >= 1 ? "rgba(231, 251, 16, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+            fill={activePhase >= 1 ? "rgba(212, 255, 31, 0.2)" : "hsl(var(--foreground) / 0.05)"}
             stroke={activePhase >= 1 ? "#D4FF1F" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth={activePhase >= 1 ? 3 : 2}
             initial={{ scale: 0 }}
@@ -273,7 +273,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
               repeat: activePhase >= 2 ? Infinity : 0,
               ease: "easeInOut"
             }}
-            style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.8))' }}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.8))' }}
           />
         ))}
 

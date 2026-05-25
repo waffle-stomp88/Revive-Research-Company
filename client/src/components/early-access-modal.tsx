@@ -104,7 +104,7 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="relative w-full max-w-md bg-[#1a1a1f] border border-[#D4FF1F]/30 rounded-2xl p-6 md:p-8 shadow-2xl"
           style={{
-            boxShadow: "0 0 60px rgba(231, 251, 16, 0.15), 0 0 30px rgba(33, 216, 255, 0.1)",
+            boxShadow: "0 0 60px rgba(212, 255, 31, 0.15), 0 0 30px rgba(33, 216, 255, 0.1)",
           }}
           onClick={(e) => e.stopPropagation()}
         >

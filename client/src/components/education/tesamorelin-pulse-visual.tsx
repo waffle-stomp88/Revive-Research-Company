@@ -197,7 +197,7 @@ export function TesomorelinPulseVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: `linear-gradient(135deg, ${data.color}20 0%, rgba(231, 251, 16, 0.05) 100%)`,
+            background: `linear-gradient(135deg, ${data.color}20 0%, rgba(212, 255, 31, 0.05) 100%)`,
             borderColor: data.color,
             boxShadow: `0 0 20px ${data.color}40`
           }}

@@ -267,7 +267,7 @@ export function GLP1ReceptorVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
           }}

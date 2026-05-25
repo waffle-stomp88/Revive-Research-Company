@@ -559,7 +559,7 @@ function EarningsCalendarHeatmap({ sales }: { sales?: AffiliateSale[] }) {
   const getIntensity = (earnings: number) => {
     if (earnings === 0) return "bg-muted/30";
     const ratio = earnings / maxEarnings;
-    if (ratio > 0.75) return "bg-[#D4FF1F] shadow-[0_0_8px_rgba(231,251,16,0.6)]";
+    if (ratio > 0.75) return "bg-[#D4FF1F] shadow-[0_0_8px_rgba(212, 255, 31,0.6)]";
     if (ratio > 0.5) return "bg-[#D4FF1F]/70";
     if (ratio > 0.25) return "bg-[#D4FF1F]/40";
     return "bg-[#D4FF1F]/20";

@@ -766,13 +766,13 @@ function SleepWaveAnimation({ isInView }: { isInView: boolean }) {
           width="60"
           height="40"
           rx="6"
-          fill="rgba(231, 251, 16, 0.2)"
+          fill="rgba(212, 255, 31, 0.2)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.5 }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.4))' }}
         />
         <motion.text x="260" y="75" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -957,13 +957,13 @@ function SelankNeuropeptideAnimation({ isInView }: { isInView: boolean }) {
           cy="110"
           rx="50"
           ry="35"
-          fill="rgba(231, 251, 16, 0.15)"
+          fill="rgba(212, 255, 31, 0.15)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.4 }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.4))' }}
         />
         <motion.text x="240" y="105" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -1125,12 +1125,12 @@ function LipolysisAnimation({ isInView }: { isInView: boolean }) {
           cy="100"
           rx="55"
           ry="50"
-          fill="rgba(231, 251, 16, 0.15)"
+          fill="rgba(212, 255, 31, 0.15)"
           stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
-          style={{ filter: 'drop-shadow(0 0 12px rgba(231, 251, 16, 0.4))' }}
+          style={{ filter: 'drop-shadow(0 0 12px rgba(212, 255, 31, 0.4))' }}
         />
         <motion.text x="80" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -1273,7 +1273,7 @@ export function AOD9604Visual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#21d8ff',
             boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
           }}
@@ -1377,7 +1377,7 @@ function ZincBindingAnimation({ isInView }: { isInView: boolean }) {
           cx={zincBound ? 160 : 270}
           cy={zincBound ? 100 : 50}
           r="18"
-          fill={zincBound ? "rgba(231, 251, 16, 0.3)" : "rgba(231, 251, 16, 0.15)"}
+          fill={zincBound ? "rgba(212, 255, 31, 0.3)" : "rgba(212, 255, 31, 0.15)"}
           stroke="#D4FF1F"
           strokeWidth="2"
           animate={{ 
@@ -1385,7 +1385,7 @@ function ZincBindingAnimation({ isInView }: { isInView: boolean }) {
             cy: zincBound ? 100 : 50 
           }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.5))' }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(212, 255, 31, 0.5))' }}
         />
         <motion.text x={zincBound ? 160 : 270} y={zincBound ? 105 : 55} textAnchor="middle" fill="#D4FF1F" fontSize="10" fontWeight="bold"
           animate={{ 
@@ -1488,7 +1488,7 @@ export function ThymulinVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -1500,12 +1500,12 @@ export function ThymulinVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Zap className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Zap className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Zinc-Dependent Activation
           </span>
@@ -1518,8 +1518,8 @@ export function ThymulinVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <ZincBindingAnimation isInView={isInView} />

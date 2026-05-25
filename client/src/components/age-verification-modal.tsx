@@ -138,21 +138,21 @@ export function AgeVerificationModal() {
                     disabled={!agreed}
                     className="w-full h-10 bg-[#D4FF1F] text-black font-semibold"
                     style={{
-                      boxShadow: agreed ? '0 0 20px rgba(231, 251, 16, 0.5)' : 'none',
+                      boxShadow: agreed ? '0 0 20px rgba(212, 255, 31, 0.5)' : 'none',
                       opacity: agreed ? 1 : 0.5,
                       cursor: agreed ? 'pointer' : 'not-allowed',
                       transition: 'all 0.2s ease'
                     }}
                     onMouseEnter={(e) => {
                       if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.8), 0 0 30px rgba(231, 251, 16, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 255, 31, 0.8), 0 0 30px rgba(212, 255, 31, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(212, 255, 31)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 255, 31, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(212, 255, 31)';
                       }
                     }}
                     data-testid="button-enter-site"

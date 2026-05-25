@@ -93,7 +93,7 @@ export function NewsletterSignup({ compact = false, source = "footer", placehold
               <Button
                 type="submit"
                 disabled={isLoading || !email}
-                className="h-11 px-6 bg-[#D4FF1F] text-black font-bold border-0 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300"
+                className="h-11 px-6 bg-[#D4FF1F] text-black font-bold border-0 shadow-[0_0_20px_rgba(212, 255, 31,0.4)] md:hover:shadow-[0_0_30px_rgba(212, 255, 31,0.6)] transition-all duration-300"
                 data-testid="button-newsletter-subscribe"
               >
                 {isLoading ? "Joining..." : buttonLabel}

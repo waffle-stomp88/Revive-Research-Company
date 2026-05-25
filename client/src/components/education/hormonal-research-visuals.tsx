@@ -70,9 +70,9 @@ function GonadorelinAnimation({ isInView }: { isInView: boolean }) {
 
         {/* LH box */}
         <motion.rect x="95" y="163" width="55" height="28" rx="6"
-          fill="rgba(231,251,16,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
+          fill="rgba(212, 255, 31,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
           initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.9 }}
-          style={{ filter: "drop-shadow(0 0 8px rgba(231,251,16,0.4))" }} />
+          style={{ filter: "drop-shadow(0 0 8px rgba(212, 255, 31,0.4))" }} />
         <motion.text x="122" y="179" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.0 }}>
           LH Release
@@ -641,9 +641,9 @@ function OxytocinAnimation({ isInView }: { isInView: boolean }) {
 
         {/* VTA */}
         <motion.ellipse cx="170" cy="148" rx="48" ry="20"
-          fill="rgba(231,251,16,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
+          fill="rgba(212, 255, 31,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
           initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.5 }}
-          style={{ filter: "drop-shadow(0 0 8px rgba(231,251,16,0.4))" }} />
+          style={{ filter: "drop-shadow(0 0 8px rgba(212, 255, 31,0.4))" }} />
         <motion.text x="170" y="145" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>VTA</motion.text>
         <motion.text x="170" y="156" textAnchor="middle" fill="#D4FF1F" fontSize="7"

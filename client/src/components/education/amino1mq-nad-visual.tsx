@@ -24,7 +24,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.1) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.1) 0%, transparent 70%)'
         }}
       />
       
@@ -71,7 +71,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.circle
           cx="160" cy="95" r="25"
-          fill="rgba(231, 251, 16, 0.2)"
+          fill="rgba(212, 255, 31, 0.2)"
           stroke="#D4FF1F"
           strokeWidth="3"
           filter="url(#nadGlow)"
@@ -80,7 +80,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
             scale: [1, 1.15, 1],
           } : { scale: 0 }}
           transition={{ duration: 1.5, repeat: activeStep === 1 ? Infinity : 0 }}
-          style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.6))' }}
+          style={{ filter: 'drop-shadow(0 0 15px rgba(212, 255, 31, 0.6))' }}
         />
         <motion.text x="160" y="90" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -217,7 +217,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
           initial={{ opacity: 0 }}
           animate={isInView && activeStep >= 3 ? { opacity: 1 } : {}}
           transition={{ delay: 1.5 }}
-          style={{ textShadow: '0 0 8px rgba(231, 251, 16, 0.5)' }}
+          style={{ textShadow: '0 0 8px rgba(212, 255, 31, 0.5)' }}
         >
           NNMT Inhibition → NAD+ Restoration → Enhanced Cellular Energy
         </motion.text>
@@ -248,7 +248,7 @@ export function Amino1MQNADVisual() {
       <div 
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)'
         }}
       />
       
@@ -260,12 +260,12 @@ export function Amino1MQNADVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
             borderColor: '#D4FF1F',
-            boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
+            boxShadow: '0 0 20px rgba(212, 255, 31, 0.3)'
           }}
         >
-          <Battery className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <Battery className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             NAD+ Salvage Pathway
           </span>
@@ -278,8 +278,8 @@ export function Amino1MQNADVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          borderColor: 'rgba(212, 255, 31, 0.3)',
+          background: 'linear-gradient(135deg, rgba(212, 255, 31, 0.05) 0%, transparent 50%)'
         }}
       >
         <NADSalvageAnimation isInView={isInView} activeStep={activeStep} />
@@ -293,9 +293,9 @@ export function Amino1MQNADVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                backgroundColor: isPlaying ? 'rgba(212, 255, 31, 0.2)' : 'hsl(var(--foreground) / 0.1)',
                 color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
+                border: `1px solid ${isPlaying ? 'rgba(212, 255, 31, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >

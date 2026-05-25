@@ -114,20 +114,20 @@ function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; a
                 initial={{ pathLength: 0 }}
                 animate={isInView ? { pathLength: 1 } : {}}
                 transition={{ delay: 0.8 + idx * 0.2, duration: 0.5 }}
-                style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+                style={{ filter: 'drop-shadow(0 0 4px rgba(212, 255, 31, 0.6))' }}
               />
               
               <motion.circle
                 cx={x}
                 cy={y}
                 r="18"
-                fill="rgba(231, 251, 16, 0.15)"
+                fill="rgba(212, 255, 31, 0.15)"
                 stroke="#D4FF1F"
                 strokeWidth="2"
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ delay: 1 + idx * 0.2, type: "spring" }}
-                style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.4))' }}
+                style={{ filter: 'drop-shadow(0 0 8px rgba(212, 255, 31, 0.4))' }}
               />
               <motion.text
                 x={x}
@@ -355,7 +355,7 @@ export function GHKCuCopperVisual() {
         <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(212, 255, 31, 0.05) 100%)',
             borderColor: '#f97316',
             boxShadow: '0 0 20px rgba(249, 115, 22, 0.3)'
           }}
@@ -433,7 +433,7 @@ export function GHKCuCopperVisual() {
           <div 
             className="inline-flex items-center gap-6 px-6 py-3 rounded-xl text-xs font-medium"
             style={{
-              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(231, 251, 16, 0.05) 100%)',
+              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(212, 255, 31, 0.05) 100%)',
               border: '1px solid rgba(249, 115, 22, 0.3)',
             }}
           >

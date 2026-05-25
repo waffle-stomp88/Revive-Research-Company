@@ -1057,7 +1057,7 @@ export default function Dashboard() {
                               className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#D4FF1F]/20' : 'bg-muted/30'}`}
                               animate={orders && orders.length > 0 ? { 
                                 scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(231, 251, 16, 0)', '0 0 15px rgba(231, 251, 16, 0.6)', '0 0 0px rgba(231, 251, 16, 0)']
+                                boxShadow: ['0 0 0px rgba(212, 255, 31, 0)', '0 0 15px rgba(212, 255, 31, 0.6)', '0 0 0px rgba(212, 255, 31, 0)']
                               } : {}}
                               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                             >

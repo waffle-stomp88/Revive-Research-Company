@@ -3179,7 +3179,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     size="sm"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
                     disabled={notEnough || hasOutOfStock}
-                    className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)] text-xs sm:text-sm"
+                    className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-bold shadow-[0_0_20px_rgba(212, 255, 31,0.3)] text-xs sm:text-sm"
                     data-testid="button-add-custom-stack"
                   >
                     <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
@@ -4058,7 +4058,7 @@ function ResearchStacks() {
                             >
                               <span
                                 className="text-xs font-semibold px-2 py-1 rounded-md border"
-                                style={{ color: "#D4FF1F", borderColor: "rgba(231,251,16,0.4)", background: "rgba(26,26,31,0.85)" }}
+                                style={{ color: "#D4FF1F", borderColor: "rgba(212, 255, 31,0.4)", background: "rgba(26,26,31,0.85)" }}
                               >
                                 Sign in to see pricing
                               </span>

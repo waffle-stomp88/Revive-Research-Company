@@ -344,7 +344,7 @@ export function GHAmplifierDualReceptorVisual() {
         className="absolute inset-0 rounded-2xl blur-3xl -z-10"
         style={{
           background:
-            "radial-gradient(ellipse at 40% 30%, rgba(231,251,16,0.07) 0%, rgba(33,216,255,0.05) 60%, transparent 100%)",
+            "radial-gradient(ellipse at 40% 30%, rgba(212, 255, 31,0.07) 0%, rgba(33,216,255,0.05) 60%, transparent 100%)",
         }}
       />
 
@@ -358,7 +358,7 @@ export function GHAmplifierDualReceptorVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background:
-              "linear-gradient(135deg, rgba(231,251,16,0.12) 0%, rgba(33,216,255,0.08) 100%)",
+              "linear-gradient(135deg, rgba(212, 255, 31,0.12) 0%, rgba(33,216,255,0.08) 100%)",
             borderColor: IPAMORELIN_COLOR,
             boxShadow: `0 0 18px ${IPAMORELIN_COLOR}30`,
           }}

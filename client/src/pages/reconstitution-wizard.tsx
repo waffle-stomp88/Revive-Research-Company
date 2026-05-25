@@ -967,7 +967,7 @@ function Step4Result({
           size="lg"
           onClick={onDownload}
           disabled={isGeneratingPDF}
-          className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-display gap-2 shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+          className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-display gap-2 shadow-[0_0_20px_rgba(212, 255, 31,0.3)]"
           data-testid="button-download-pdf"
         >
           <Download className="h-5 w-5" />

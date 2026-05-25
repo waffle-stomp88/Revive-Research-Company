@@ -219,13 +219,13 @@ export default function AffiliatePage() {
                 onClick={() => scrollToSection("apply")}
                 className="gap-2 bg-[#D4FF1F] text-black font-display text-lg hover:bg-[#D4FF1F]/90 w-full sm:w-auto"
                 style={{
-                  boxShadow: "0 0 30px rgba(231, 251, 16, 0.6)",
+                  boxShadow: "0 0 30px rgba(212, 255, 31, 0.6)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 40px rgba(231, 251, 16, 0.8), 0 0 60px rgba(231, 251, 16, 0.4)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 40px rgba(212, 255, 31, 0.8), 0 0 60px rgba(212, 255, 31, 0.4)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 30px rgba(231, 251, 16, 0.6)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 30px rgba(212, 255, 31, 0.6)";
                 }}
                 data-testid="button-apply-now"
               >
@@ -339,7 +339,7 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="p-5 h-full border-2 border-[#D4FF1F]/60 bg-gradient-to-br from-[#D4FF1F]/10 to-transparent relative overflow-hidden animate-[pulse-glow-yellow_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)' }}>
+              <Card className="p-5 h-full border-2 border-[#D4FF1F]/60 bg-gradient-to-br from-[#D4FF1F]/10 to-transparent relative overflow-hidden animate-[pulse-glow-yellow_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(212, 255, 31, 0.3), inset 0 0 20px rgba(212, 255, 31, 0.05)' }}>
                 <div className="absolute top-3 right-3">
                   <Badge className="bg-[#D4FF1F] text-black font-bold text-xs">TIER 1</Badge>
                 </div>

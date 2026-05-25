@@ -320,9 +320,9 @@ export function COAAnatomyDiagram() {
               <motion.div
                 animate={{ 
                   boxShadow: [
-                    '0 0 20px rgba(231, 251, 16, 0.1)',
-                    '0 0 40px rgba(231, 251, 16, 0.2)',
-                    '0 0 20px rgba(231, 251, 16, 0.1)'
+                    '0 0 20px rgba(212, 255, 31, 0.1)',
+                    '0 0 40px rgba(212, 255, 31, 0.2)',
+                    '0 0 20px rgba(212, 255, 31, 0.1)'
                   ]
                 }}
                 transition={{ duration: 3, repeat: Infinity }}

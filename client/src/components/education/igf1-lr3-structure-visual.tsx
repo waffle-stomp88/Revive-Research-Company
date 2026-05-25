@@ -383,7 +383,7 @@ export function IGF1LR3StructureVisual() {
         className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(231, 251, 16, 0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(212, 255, 31, 0.08) 0%, transparent 70%)",
         }}
       />
 
@@ -396,16 +396,16 @@ export function IGF1LR3StructureVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background:
-              "linear-gradient(135deg, rgba(231,251,16,0.15) 0%, rgba(249,115,22,0.06) 100%)",
+              "linear-gradient(135deg, rgba(212, 255, 31,0.15) 0%, rgba(249,115,22,0.06) 100%)",
             borderColor: COLORS.lr3,
-            boxShadow: "0 0 20px rgba(231,251,16,0.25)",
+            boxShadow: "0 0 20px rgba(212, 255, 31,0.25)",
           }}
         >
           <FlaskConical
             className="h-5 w-5"
             style={{
               color: COLORS.lr3,
-              filter: "drop-shadow(0 0 4px rgba(231,251,16,0.6))",
+              filter: "drop-shadow(0 0 4px rgba(212, 255, 31,0.6))",
             }}
           />
           <span
@@ -426,8 +426,8 @@ export function IGF1LR3StructureVisual() {
       <div
         className="rounded-xl border p-5 mb-5"
         style={{
-          borderColor: "rgba(231,251,16,0.28)",
-          background: "linear-gradient(135deg, rgba(231,251,16,0.04) 0%, transparent 60%)",
+          borderColor: "rgba(212, 255, 31,0.28)",
+          background: "linear-gradient(135deg, rgba(212, 255, 31,0.04) 0%, transparent 60%)",
         }}
       >
         <div className="mb-2">

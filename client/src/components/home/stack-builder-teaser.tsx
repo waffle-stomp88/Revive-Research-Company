@@ -45,7 +45,7 @@ const synergyTiers = [
     label: "Legendary", 
     description: "Research-proven synergy",
     color: "#D4FF1F",
-    bgColor: "rgba(231, 251, 16, 0.15)",
+    bgColor: "rgba(212, 255, 31, 0.15)",
     highlight: true
   },
 ];
