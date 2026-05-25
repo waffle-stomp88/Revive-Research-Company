@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertTriangle, Zap } from "lucide-react";
+import { AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
@@ -30,7 +30,7 @@ export function AgeVerificationModal() {
     if (isOpen) {
       document.documentElement.classList.add("modal-open");
       document.body.classList.add("modal-open");
-      
+
       return () => {
         document.documentElement.classList.remove("modal-open");
         document.body.classList.remove("modal-open");
@@ -72,8 +72,10 @@ export function AgeVerificationModal() {
             className="age-modal-card"
           >
             <div className="p-4 sm:p-8">
-              <div className="flex items-center justify-center mb-4 sm:mb-8">
-                <motion.img 
+
+              {/* 1. Logo */}
+              <div className="flex items-center justify-center mb-6 sm:mb-8">
+                <motion.img
                   src={logoUrl}
                   alt="Revive Research"
                   className="h-12 sm:h-20 object-contain"
@@ -83,97 +85,159 @@ export function AgeVerificationModal() {
                 />
               </div>
 
-              <div className="space-y-3 sm:space-y-6 text-foreground/90">
-                <p className="text-xs sm:text-base leading-relaxed">
-                  Welcome to Revive Research. Every compound we offer is third-party tested with full documentation available. We believe researchers deserve transparency—from pricing to purity.
-                </p>
-
-                <motion.div
-                  className="rounded-lg cursor-pointer w-full overflow-hidden"
-                  style={{ border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.03)' }}
-                  whileHover={hoverIf(hoverCapable, { background: 'rgba(255,255,255,0.05)' })}
-                  onClick={() => setAgreed(!agreed)}
-                  data-testid="button-age-terms"
+              {/* 2. Headline + sub-copy */}
+              <div className="text-center mb-7 sm:mb-8">
+                <h1
+                  className="text-white"
+                  style={{
+                    fontSize: 'clamp(26px, 5vw, 34px)',
+                    fontWeight: 500,
+                    letterSpacing: '-0.5px',
+                    lineHeight: 1.1,
+                    marginBottom: '18px',
+                  }}
                 >
-                  <div className="px-4 pt-4 pb-3 space-y-2.5">
-                    <div className="flex items-start gap-2.5">
-                      <Shield className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Products are for lawful research use only — not for human or animal consumption.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-2.5">
-                      <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Purchaser assumes full responsibility for use, handling, and distribution.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                    <Checkbox
-                      id="age-terms"
-                      checked={agreed}
-                      onCheckedChange={(checked) => setAgreed(checked === true)}
-                      data-testid="checkbox-age-verification"
-                      className="pointer-events-none"
-                    />
-                    <label
-                      htmlFor="age-terms"
-                      className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1 pointer-events-none"
-                    >
-                      I confirm that I am 21 years of age or older and agree to the terms above.
-                    </label>
-                  </div>
-                </motion.div>
+                  You've seen this site a hundred times.
+                </h1>
+                <p
+                  style={{
+                    fontSize: '14px',
+                    color: '#b0b0b5',
+                    lineHeight: 1.6,
+                    margin: '0 auto',
+                    maxWidth: '340px',
+                  }}
+                >
+                  We're not going to convince you we're different. Walk in and judge for yourself.
+                </p>
               </div>
 
-              <div className="flex flex-col gap-2 mt-4 sm:mt-8">
+              {/* 3. RUO compliance block — red warning */}
+              <div
+                style={{
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  marginBottom: '22px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                  <AlertTriangle
+                    style={{ color: '#ef4444', width: '16px', height: '16px', flexShrink: 0 }}
+                    aria-hidden="true"
+                  />
+                  <p
+                    style={{
+                      color: '#ef4444',
+                      fontSize: '10px',
+                      fontWeight: 500,
+                      letterSpacing: '1.5px',
+                      margin: 0,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Research Use Only
+                  </p>
+                </div>
+                <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.55, margin: '0 0 8px' }}>
+                  For lawful research use only. Not for human or animal consumption.
+                </p>
+                <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.55, margin: 0 }}>
+                  Purchaser assumes full responsibility for use, handling, and distribution.
+                </p>
+              </div>
+
+              {/* 4. Checkbox + attestation */}
+              <div
+                className="flex items-center gap-3 cursor-pointer"
+                style={{ marginBottom: '24px' }}
+                onClick={() => setAgreed(!agreed)}
+                data-testid="button-age-terms"
+              >
+                <Checkbox
+                  id="age-terms"
+                  checked={agreed}
+                  onCheckedChange={(checked) => setAgreed(checked === true)}
+                  data-testid="checkbox-age-verification"
+                  className="pointer-events-none flex-shrink-0"
+                />
+                <label
+                  htmlFor="age-terms"
+                  className="text-xs font-medium cursor-pointer flex-1 pointer-events-none"
+                  style={{ color: '#ffffff', lineHeight: 1.5 }}
+                >
+                  I am 21 or older and I understand the terms above.
+                </label>
+              </div>
+
+              {/* 5 & 6. CTAs */}
+              <div className="flex flex-col gap-2.5">
                 <motion.div
-                  whileHover={hoverIf(agreed && hoverCapable, { scale: 1.05, y: -2 })}
+                  whileHover={hoverIf(agreed && hoverCapable, { scale: 1.03, y: -1 })}
                   whileTap={agreed ? { scale: 0.98 } : {}}
                   transition={{ duration: 0.2 }}
                 >
                   <Button
                     onClick={handleEnter}
                     disabled={!agreed}
-                    className="w-full h-10 bg-[#D4FF1F] text-black font-semibold"
+                    className="w-full bg-[#D4FF1F] text-black font-medium"
                     style={{
-                      boxShadow: agreed ? '0 0 20px rgba(212, 255, 31, 0.5)' : 'none',
+                      boxShadow: agreed ? '0 0 24px rgba(212, 255, 31, 0.35)' : 'none',
                       opacity: agreed ? 1 : 0.5,
                       cursor: agreed ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      borderRadius: '9px',
+                      fontSize: '14px',
+                      paddingTop: '14px',
+                      paddingBottom: '14px',
                     }}
                     onMouseEnter={(e) => {
                       if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 255, 31, 0.8), 0 0 30px rgba(212, 255, 31, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(212, 255, 31)';
+                        e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 255, 31, 0.6), 0 0 40px rgba(212, 255, 31, 0.3)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 255, 31, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(212, 255, 31)';
+                        e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 255, 31, 0.35)';
                       }
                     }}
-                    data-testid="button-enter-site"
+                    data-testid="button-prove-it"
                   >
-                    <Zap className="h-4 w-4 mr-2" />
-                    Enter Site
+                    <Zap className="h-4 w-4 mr-1.5" />
+                    Prove it
                   </Button>
                 </motion.div>
+
                 <Button
                   onClick={handleDecline}
                   variant="outline"
-                  className="w-full h-10 border-[#21d8ff]/50 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
+                  className="w-full text-[#21d8ff] border-[#2a2a2f]"
+                  style={{
+                    borderRadius: '9px',
+                    fontSize: '13px',
+                    paddingTop: '12px',
+                    paddingBottom: '12px',
+                    background: 'transparent',
+                  }}
                   data-testid="button-decline-entry"
                 >
-                  Leave
+                  Not interested
                 </Button>
               </div>
 
-              <p className="text-center text-[10px] text-muted-foreground mt-3">
+              {/* 7. Footer */}
+              <p
+                className="text-center mt-5"
+                style={{
+                  color: '#555',
+                  fontSize: '10px',
+                  letterSpacing: '0.5px',
+                }}
+              >
                 You must be 21+ to access this website.
               </p>
+
             </div>
           </motion.div>
         </div>
