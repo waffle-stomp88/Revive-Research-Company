@@ -98,7 +98,7 @@ export function AgeVerificationModal() {
                 <motion.img
                   src={logoUrl}
                   alt="Revive Research"
-                  className="h-14 sm:h-20 object-contain"
+                  className="h-10 sm:h-20 object-contain"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
