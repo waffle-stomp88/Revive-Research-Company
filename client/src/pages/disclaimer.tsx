@@ -3,7 +3,7 @@ import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, Shield, FlaskConical, Scale, Ban } from "lucide-react";
 
-const LAST_UPDATED = "January 23, 2026";
+const LAST_UPDATED = "November 18, 2025";
 
 export default function Disclaimer() {
   return (

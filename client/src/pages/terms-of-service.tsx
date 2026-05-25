@@ -3,7 +3,7 @@ import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { FileText, AlertTriangle } from "lucide-react";
 
-const LAST_UPDATED = "November 28, 2024";
+const LAST_UPDATED = "November 12, 2025";
 
 export default function TermsOfService() {
   return (
