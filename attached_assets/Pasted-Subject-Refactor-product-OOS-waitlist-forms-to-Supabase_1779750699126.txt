@@ -1,0 +1,46 @@
+Subject: Refactor product OOS waitlist forms to Supabase, remove Zoho push
+Following up on the newsletter signup fix that just landed. The OOS notification system needs different architecture than what we'd planned for "Waitlist." Here's the change.
+Context:
+Each product page has its own "notify me when restocked" form. These can't go to a flat Zoho list because we need to track which user wants which specific product. Restock notifications only get sent to the users waiting on THAT product.
+Zoho Campaigns is the wrong layer for per-product tracking. Supabase is the right source of truth. When a product restocks, I'll handle the Zoho campaign manually for now (export segment from Supabase, import as one-time list in Zoho, send campaign).
+What I need built:
+
+Supabase table product_waitlist with columns:
+
+id (uuid, primary key)
+email (text)
+product_id (text, references the product slug or SKU)
+signup_date (timestamp, default now)
+notified (boolean, default false)
+Add a unique constraint on (email, product_id) so the same user doesn't get logged twice for the same product
+
+
+Update the OOS waitlist API route to:
+
+Write to product_waitlist with email + product_id from the form submission
+NOT push to Zoho Campaigns
+Return clean success/error responses
+Surface duplicate-entry errors gracefully (user should see "you're already on the list" instead of a generic error)
+
+
+Update each per-product OOS form component to:
+
+Hit the updated API route
+Send email + product_id in the request body
+Show clear success state ("We'll email you when this is back in stock")
+Handle the duplicate-signup case with a friendly message
+
+
+Verify no remaining Zoho push exists on the waitlist code path. The newsletter signup keeps its client-side Zoho push (that's the integration we just shipped). The waitlist path should write to Supabase only.
+
+What I don't need:
+
+Any Zoho integration for the waitlist
+Any "Waitlist" list creation in Zoho
+Restock notification sending logic (I'll handle restock sends manually for now from Zoho's UI)
+
+Acceptance criteria:
+
+Submit a fresh email through any product's OOS form → row appears in product_waitlist with the right product_id → no contact lands in Zoho Research List → user sees confirmation message
+Submit the same email/product combo a second time → user sees a friendly "you're already on the list" message, no duplicate row created
+Submit the same email for a DIFFERENT product → second row created (one user can wait on multiple products)
