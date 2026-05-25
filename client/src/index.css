@@ -736,6 +736,18 @@ body.modal-open {
   -webkit-backdrop-filter: blur(20px);
 }
 
+/* Age gate CTA button — CSS-only glow, no JS event handlers */
+.age-gate-cta {
+  box-shadow: none;
+  transition: box-shadow 0.25s ease, opacity 0.2s ease !important;
+}
+.age-gate-cta--active {
+  box-shadow: 0 0 24px rgba(212, 255, 31, 0.35);
+}
+.age-gate-cta--active:hover {
+  box-shadow: 0 0 24px rgba(212, 255, 31, 0.6), 0 0 40px rgba(212, 255, 31, 0.3);
+}
+
 /* Holographic text shimmer effect */
 @keyframes holographic-shimmer {
   0% {

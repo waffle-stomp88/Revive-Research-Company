@@ -5,7 +5,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
-import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const LEGAL_ROUTES = ["/terms-of-service", "/terms", "/privacy", "/legal"];
 
@@ -19,26 +18,24 @@ function isSearchBot(): boolean {
 
 export function AgeVerificationModal() {
   const [location] = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 640);
+
+  const isLegalPage = LEGAL_ROUTES.some(route => location.startsWith(route));
+
+  // Synchronous init — no useEffect gap, so the overlay is present on the very first paint
+  const [isOpen, setIsOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    if (isSearchBot()) return false;
+    if (LEGAL_ROUTES.some(route => window.location.pathname.startsWith(route))) return false;
+    return !localStorage.getItem(AGE_VERIFIED_KEY);
+  });
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
-
-  const isLegalPage = LEGAL_ROUTES.some(route => location.startsWith(route));
-
-  useEffect(() => {
-    if (isSearchBot()) return;
-    if (isLegalPage) return;
-    const verified = localStorage.getItem(AGE_VERIFIED_KEY);
-    if (!verified) {
-      setIsOpen(true);
-    }
-  }, [isLegalPage]);
 
   useEffect(() => {
     if (isLegalPage) {
@@ -64,8 +61,6 @@ export function AgeVerificationModal() {
       setIsOpen(false);
     }
   };
-
-  const hoverCapable = useHoverCapable();
 
   const handleDecline = () => {
     window.location.href = "https://www.google.com";
@@ -219,40 +214,22 @@ export function AgeVerificationModal() {
 
               {/* 5 & 6. CTAs */}
               <div className="flex flex-col gap-2.5">
-                <motion.div
-                  whileHover={hoverIf(agreed && hoverCapable, { scale: 1.03, y: -1 })}
-                  whileTap={agreed ? { scale: 0.98 } : {}}
-                  transition={{ duration: 0.2 }}
-                >
                   <Button
                     onClick={handleEnter}
                     disabled={!agreed}
-                    className="w-full bg-[#D4FF1F] text-black text-[15px] font-semibold"
+                    className={`w-full bg-[#D4FF1F] text-black text-[15px] font-semibold age-gate-cta${agreed ? ' age-gate-cta--active' : ''}`}
                     style={{
-                      boxShadow: agreed ? '0 0 24px rgba(212, 255, 31, 0.35)' : 'none',
                       opacity: agreed ? 1 : 0.5,
                       cursor: agreed ? 'pointer' : 'not-allowed',
-                      transition: 'box-shadow 0.2s ease, opacity 0.2s ease',
                       borderRadius: '9px',
                       paddingTop: '14px',
                       paddingBottom: '14px',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 255, 31, 0.6), 0 0 40px rgba(212, 255, 31, 0.3)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 255, 31, 0.35)';
-                      }
                     }}
                     data-testid="button-prove-it"
                   >
                     <Zap className="h-4 w-4 mr-1.5" />
                     Prove it
                   </Button>
-                </motion.div>
 
                 <Button
                   onClick={handleDecline}
