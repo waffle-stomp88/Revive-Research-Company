@@ -1,0 +1,31 @@
+Bug: blinking text cursor appears on buttons and nav links site-wide
+When I click buttons (like the "Enter Site" button on the age verification modal) and nav links across the site, a blinking text cursor (caret) appears inside the element, like I'm in a text editor. Buttons and nav links shouldn't show a text caret — they're not editable.
+Since this happens on both buttons AND nav links across the site (not just one component), the root cause is likely something high in the DOM tree affecting all interactive elements.
+Diagnosis steps (do these in order):
+1. Search the entire codebase for contenteditable:
+grep -rn "contenteditable" client/ server/ shared/ public/
+If contenteditable="true" exists on a root wrapper (like <div id="root">, <body>, or any layout wrapper), that's almost certainly the cause. Every descendant inherits the editable behavior and shows a caret on focus.
+2. Check client/index.html and the root layout/app component for any contenteditable attribute, including ones set programmatically via React props or refs.
+3. Grep for user-select:
+grep -rn "user-select" client/src/
+Interactive elements should have user-select: none. If the global reset is wrong, that could contribute.
+4. Inspect a nav link and the Enter Site button with dev tools. Walk up the ancestor chain in the Elements panel until you find the FIRST common parent that has either contenteditable set OR user-select: text applied. That's the bug location.
+Fix options (in priority order):
+Option A (preferred): Find and remove the contenteditable attribute from wherever it shouldn't be. Cleanest fix, addresses the actual root cause.
+Option B (band-aid if Option A doesn't pan out): Add this to global CSS:
+cssbody, body * {
+  caret-color: transparent;
+}
+
+input, textarea, [contenteditable="true"] {
+  caret-color: auto;
+}
+This hides the caret site-wide, then re-enables it on real text input fields where users genuinely need to see where they're typing.
+Verify the fix:
+
+Age verification modal → click "Enter Site" → no blinking cursor
+Click any nav link → no blinking cursor
+If there are any search inputs or form fields, click into one → caret should appear (this is correct behavior)
+Tab through buttons/links with keyboard → no caret on buttons/links
+
+Let me know what you find as the root cause. If it was contenteditable on a wrapper, I'd like to know which file/component had it so we can prevent the same issue from recurring.

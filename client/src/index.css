@@ -48,6 +48,21 @@
     box-sizing: border-box;
   }
 
+  /* Prevent blinking text caret on non-editable interactive elements */
+  button, a, [role="button"], [role="link"], [role="tab"],
+  [role="menuitem"], [role="option"], label {
+    caret-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Restore caret and selection for genuine text input elements */
+  input, textarea, [contenteditable="true"] {
+    caret-color: auto;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   /* Ensure main app container never exceeds viewport */
   #root {
     max-width: 100%;
