@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, buildStockLookup, calculateStackPricing, isStackAvailable } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink, Info, Lock } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, ChevronRight, Monitor, GitMerge, Clock, ExternalLink, Info, Lock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -3897,229 +3897,256 @@ function ResearchStacks() {
                     data-testid={`card-stack-${stack.id}`}
                   >
                     <Card className="relative overflow-hidden h-full cursor-pointer">
-                    {stack.badge && (
-                      <Badge
-                        className="absolute top-3 right-3 z-10"
-                        style={{
-                          backgroundColor: stack.badgeColor,
-                          color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
-                        }}
-                      >
-                        {stack.badge}
-                      </Badge>
-                    )}
 
-                    <div className="relative h-28 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
-                      <motion.div
-                        initial={{ opacity: 0.2 }}
-                        whileHover={hoverIf(hoverCapable, { opacity: 0.4 })}
-                        transition={{ duration: 0.2, type: "tween" }}
-                        className="absolute inset-0"
-                        style={{
-                          background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)`,
-                        }}
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <motion.div
-                          whileHover={hoverIf(hoverCapable, { scale: 1.05, rotate: 3 })}
-                          transition={{ duration: 0.15, type: "tween" }}
-                          className="relative pointer-events-auto"
-                        >
+                      {/* ── MOBILE COMPACT LAYOUT ─────────────────────────── */}
+                      <div className="md:hidden p-3" data-testid={`card-stack-mobile-${stack.id}`}>
+                        <div className="flex gap-3 items-center">
                           <div
-                            className="w-14 h-14 rounded-xl flex items-center justify-center"
+                            className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center"
                             style={{ backgroundColor: `${stack.color}20` }}
                           >
-                            <Icon
-                              className="h-7 w-7"
-                              style={{ color: stack.color }}
-                            />
+                            <Icon className="h-6 w-6" style={{ color: stack.color }} />
                           </div>
-                          <div className="absolute -bottom-1 -right-1 flex gap-0.5">
-                            {stack.peptides.map((_, i) => (
-                              <div
-                                key={i}
-                                className="w-3 h-3 rounded-full border-2 border-[#1a1a1f]"
-                                style={{ backgroundColor: stack.color }}
-                              />
-                            ))}
-                          </div>
-                        </motion.div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 space-y-3">
-                    <div>
-                      <p
-                        className="text-xs font-medium mb-1"
-                        style={{ color: stack.color }}
-                      >
-                        {stack.subtitle}
-                      </p>
-                      <h3 className="font-display font-bold text-white text-lg leading-snug">
-                        {stack.name}
-                      </h3>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      {stack.peptides.map((peptide, pi) => (
-                        <Badge
-                          key={peptide}
-                          variant="outline"
-                          className="text-xs border-[#3a3a42] text-gray-300"
-                        >
-                          <FlaskConical className="h-3 w-3 mr-1" style={{ color: stack.color }} />
-                          {stack.peptideNames[pi] ?? peptide}
-                        </Badge>
-                      ))}
-                      {prebuiltOverlaps.length > 0 && (
-                        stack.intentionalOverlap ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30"
-                                data-testid={`badge-prebuilt-overlap-${stack.id}`}
-                              >
-                                <GitMerge className="h-2.5 w-2.5" />
-                                <span>Receptor competition</span>
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
-                              <p className="text-[11px] font-semibold text-sky-300 mb-1">Receptor competition study</p>
-                              <p className="text-[11px] text-muted-foreground">
-                                Shared receptor occupancy ({prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}) is the intended research design — not an accidental overlap.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                                data-testid={`badge-prebuilt-overlap-${stack.id}`}
-                              >
-                                <GitMerge className="h-2.5 w-2.5" />
-                                <span>{prebuiltOverlaps.length} overlap{prebuiltOverlaps.length > 1 ? "s" : ""}</span>
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
-                              <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
-                              <p className="text-[11px] text-muted-foreground">
-                                Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
-                              </p>
-                              <a
-                                href={`/research-stacks/${stack.id}#pathway-overlap`}
-                                className="inline-block mt-1.5 text-[11px] text-amber-300 hover:text-amber-200 underline underline-offset-2"
-                                data-testid={`link-overlap-details-${stack.id}`}
-                              >
-                                View details
-                              </a>
-                            </TooltipContent>
-                          </Tooltip>
-                        )
-                      )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {stack.description}
-                    </p>
-
-                    <div className="rounded-md bg-white/[0.04] border border-white/[0.07] px-3 py-2">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <Zap className="h-3 w-3 shrink-0" style={{ color: stack.color }} />
-                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: stack.color }}>
-                          Why it works
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2" data-testid={`text-synergy-teaser-${stack.id}`}>
-                        {stack.synergy.beginner}
-                      </p>
-                    </div>
-
-                    <MiniPKChart peptideNames={stack.peptides} stackId={stack.id} />
-
-                    <div className="flex items-end justify-between pt-2 border-t border-[#2a2a32]">
-                      <div className="space-y-1">
-                        {SOFT_GATE_ENABLED && !isAuthenticated ? (
-                          <div
-                            className="relative space-y-1 overflow-hidden rounded-md"
-                            data-testid={`price-gate-${stack.id}`}
-                          >
-                            <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.5 }} aria-hidden="true">
-                              <div className="text-xs text-muted-foreground">If bought separately: <span className="line-through">$•••.••</span></div>
-                              <div className="flex items-baseline gap-2">
-                                <span className="text-xl font-bold" style={{ color: stack.color }}>$•••.••</span>
-                                <span className="text-xs text-green-500 font-medium">Save $••.••</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-medium leading-none mb-0.5" style={{ color: stack.color }}>
+                                  {stack.subtitle}
+                                </p>
+                                <h3 className="font-display font-bold text-white text-base leading-tight truncate">
+                                  {stack.name}
+                                </h3>
                               </div>
+                              {stack.badge && (
+                                <Badge
+                                  className="flex-shrink-0 text-[10px]"
+                                  style={{
+                                    backgroundColor: stack.badgeColor,
+                                    color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
+                                  }}
+                                >
+                                  {stack.badge}
+                                </Badge>
+                              )}
                             </div>
-                            <button
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks")}&mode=signup`); }}
-                              className="absolute inset-0 flex items-center justify-center w-full"
-                              data-testid={`button-price-gate-signin-${stack.id}`}
-                            >
-                              <span
-                                className="text-xs font-semibold px-2 py-1 rounded-md border"
-                                style={{ color: "#D4FF1F", borderColor: "rgba(212, 255, 31,0.4)", background: "rgba(26,26,31,0.85)" }}
-                              >
-                                Sign in to see pricing
-                              </span>
-                            </button>
-                          </div>
-                        ) : (
-                          (() => {
-                            const pricing = getStackPricing(stack.id);
-                            const avail = getStackAvailability(stack.id);
-                            const stackIsOOS = avail !== null && !avail.available;
-                            if (!pricing && !productsWithStock) return <Skeleton className="h-12 w-32" />;
-                            if (!pricing) return (
-                              <div className="space-y-1">
-                                <div className="text-sm text-muted-foreground">Price unavailable</div>
-                              </div>
-                            );
-                            return (
-                              <>
-                                <div className="text-xs text-muted-foreground">
-                                  If bought separately: <span className="line-through">${Math.round(pricing.retailValue)}</span>
-                                </div>
-                                <div className="flex items-baseline gap-2 flex-wrap">
-                                  <span className="text-xl font-bold" style={{ color: stackIsOOS ? undefined : stack.color, opacity: stackIsOOS ? 0.5 : 1 }}>
-                                    ${Math.round(pricing.stackPrice)}
-                                  </span>
-                                  {stackIsOOS ? (
+                            <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                              {stack.peptideNames.slice(0, 3).map((name) => (
+                                <span
+                                  key={name}
+                                  className="text-[10px] px-1.5 py-0.5 rounded border border-[#3a3a42] text-gray-400 font-mono leading-none"
+                                >
+                                  {name}
+                                </span>
+                              ))}
+                              {stack.peptideNames.length > 3 && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded border border-[#3a3a42] text-muted-foreground leading-none">
+                                  +{stack.peptideNames.length - 3}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between mt-2">
+                              {SOFT_GATE_ENABLED && !isAuthenticated ? (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Lock className="h-3 w-3" />
+                                  Sign in for pricing
+                                </span>
+                              ) : (
+                                (() => {
+                                  const pricing = getStackPricing(stack.id);
+                                  if (!pricing) return <Skeleton className="h-4 w-20" />;
+                                  const avail = getStackAvailability(stack.id);
+                                  const stackIsOOS = avail !== null && !avail.available;
+                                  return stackIsOOS ? (
                                     <span className="text-xs text-red-400 font-medium">Out of Stock</span>
                                   ) : (
-                                    <span className="text-xs text-green-500 font-medium">
-                                      Save ${Math.round(pricing.savings)}
-                                    </span>
-                                  )}
-                                </div>
-                              </>
-                            );
-                          })()
-                        )}
-                        <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff] text-xs">
-                          Curated Stack
-                        </Badge>
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="text-sm font-bold" style={{ color: stack.color }}>
+                                        ${Math.round(pricing.stackPrice)}
+                                      </span>
+                                      <span className="text-[10px] text-green-500 font-medium">
+                                        Save ${Math.round(pricing.savings)}
+                                      </span>
+                                    </div>
+                                  );
+                                })()
+                              )}
+                              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      <Button
-                        size="sm"
-                        className="group"
-                        style={{
-                          backgroundColor: stack.color,
-                          color: stack.color === "#D4FF1F" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
-                        }}
-                        data-testid={`button-view-stack-${stack.id}`}
-                      >
-                        View Stack
-                        <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-                      </Button>
-                    </div>
-                    </div>
+                      {/* ── DESKTOP FULL LAYOUT ───────────────────────────── */}
+                      <div className="hidden md:block">
+                        {stack.badge && (
+                          <Badge
+                            className="absolute top-3 right-3 z-10"
+                            style={{
+                              backgroundColor: stack.badgeColor,
+                              color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
+                            }}
+                          >
+                            {stack.badge}
+                          </Badge>
+                        )}
+                        <div className="relative h-28 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
+                          <motion.div
+                            initial={{ opacity: 0.2 }}
+                            whileHover={hoverIf(hoverCapable, { opacity: 0.4 })}
+                            transition={{ duration: 0.2, type: "tween" }}
+                            className="absolute inset-0"
+                            style={{ background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)` }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <motion.div
+                              whileHover={hoverIf(hoverCapable, { scale: 1.05, rotate: 3 })}
+                              transition={{ duration: 0.15, type: "tween" }}
+                              className="relative pointer-events-auto"
+                            >
+                              <div
+                                className="w-14 h-14 rounded-xl flex items-center justify-center"
+                                style={{ backgroundColor: `${stack.color}20` }}
+                              >
+                                <Icon className="h-7 w-7" style={{ color: stack.color }} />
+                              </div>
+                              <div className="absolute -bottom-1 -right-1 flex gap-0.5">
+                                {stack.peptides.map((_, i) => (
+                                  <div key={i} className="w-3 h-3 rounded-full border-2 border-[#1a1a1f]" style={{ backgroundColor: stack.color }} />
+                                ))}
+                              </div>
+                            </motion.div>
+                          </div>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div>
+                            <p className="text-xs font-medium mb-1" style={{ color: stack.color }}>{stack.subtitle}</p>
+                            <h3 className="font-display font-bold text-white text-lg leading-snug">{stack.name}</h3>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 items-center">
+                            {stack.peptides.map((peptide, pi) => (
+                              <Badge key={peptide} variant="outline" className="text-xs border-[#3a3a42] text-gray-300">
+                                <FlaskConical className="h-3 w-3 mr-1" style={{ color: stack.color }} />
+                                {stack.peptideNames[pi] ?? peptide}
+                              </Badge>
+                            ))}
+                            {prebuiltOverlaps.length > 0 && (
+                              stack.intentionalOverlap ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30" data-testid={`badge-prebuilt-overlap-${stack.id}`}>
+                                      <GitMerge className="h-2.5 w-2.5" />
+                                      <span>Receptor competition</span>
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                                    <p className="text-[11px] font-semibold text-sky-300 mb-1">Receptor competition study</p>
+                                    <p className="text-[11px] text-muted-foreground">
+                                      Shared receptor occupancy ({prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}) is the intended research design — not an accidental overlap.
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30" data-testid={`badge-prebuilt-overlap-${stack.id}`}>
+                                      <GitMerge className="h-2.5 w-2.5" />
+                                      <span>{prebuiltOverlaps.length} overlap{prebuiltOverlaps.length > 1 ? "s" : ""}</span>
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                                    <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
+                                    <p className="text-[11px] text-muted-foreground">
+                                      Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                                    </p>
+                                    <a href={`/research-stacks/${stack.id}#pathway-overlap`} className="inline-block mt-1.5 text-[11px] text-amber-300 hover:text-amber-200 underline underline-offset-2" data-testid={`link-overlap-details-${stack.id}`}>
+                                      View details
+                                    </a>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{stack.description}</p>
+                          <div className="rounded-md bg-white/[0.04] border border-white/[0.07] px-3 py-2">
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <Zap className="h-3 w-3 shrink-0" style={{ color: stack.color }} />
+                              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: stack.color }}>Why it works</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2" data-testid={`text-synergy-teaser-${stack.id}`}>
+                              {stack.synergy.beginner}
+                            </p>
+                          </div>
+                          <MiniPKChart peptideNames={stack.peptides} stackId={stack.id} />
+                          <div className="flex items-end justify-between pt-2 border-t border-[#2a2a32]">
+                            <div className="space-y-1">
+                              {SOFT_GATE_ENABLED && !isAuthenticated ? (
+                                <div className="relative space-y-1 overflow-hidden rounded-md" data-testid={`price-gate-${stack.id}`}>
+                                  <div className="select-none pointer-events-none" style={{ filter: "blur(5px)", opacity: 0.5 }} aria-hidden="true">
+                                    <div className="text-xs text-muted-foreground">If bought separately: <span className="line-through">$•••.••</span></div>
+                                    <div className="flex items-baseline gap-2">
+                                      <span className="text-xl font-bold" style={{ color: stack.color }}>$•••.••</span>
+                                      <span className="text-xs text-green-500 font-medium">Save $••.••</span>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks")}&mode=signup`); }}
+                                    className="absolute inset-0 flex items-center justify-center w-full"
+                                    data-testid={`button-price-gate-signin-${stack.id}`}
+                                  >
+                                    <span className="text-xs font-semibold px-2 py-1 rounded-md border" style={{ color: "#D4FF1F", borderColor: "rgba(212, 255, 31,0.4)", background: "rgba(26,26,31,0.85)" }}>
+                                      Sign in to see pricing
+                                    </span>
+                                  </button>
+                                </div>
+                              ) : (
+                                (() => {
+                                  const pricing = getStackPricing(stack.id);
+                                  const avail = getStackAvailability(stack.id);
+                                  const stackIsOOS = avail !== null && !avail.available;
+                                  if (!pricing && !productsWithStock) return <Skeleton className="h-12 w-32" />;
+                                  if (!pricing) return <div className="space-y-1"><div className="text-sm text-muted-foreground">Price unavailable</div></div>;
+                                  return (
+                                    <>
+                                      <div className="text-xs text-muted-foreground">
+                                        If bought separately: <span className="line-through">${Math.round(pricing.retailValue)}</span>
+                                      </div>
+                                      <div className="flex items-baseline gap-2 flex-wrap">
+                                        <span className="text-xl font-bold" style={{ color: stackIsOOS ? undefined : stack.color, opacity: stackIsOOS ? 0.5 : 1 }}>
+                                          ${Math.round(pricing.stackPrice)}
+                                        </span>
+                                        {stackIsOOS ? (
+                                          <span className="text-xs text-red-400 font-medium">Out of Stock</span>
+                                        ) : (
+                                          <span className="text-xs text-green-500 font-medium">Save ${Math.round(pricing.savings)}</span>
+                                        )}
+                                      </div>
+                                    </>
+                                  );
+                                })()
+                              )}
+                              <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff] text-xs">Curated Stack</Badge>
+                            </div>
+                            <Button
+                              size="sm"
+                              className="group"
+                              style={{
+                                backgroundColor: stack.color,
+                                color: stack.color === "#D4FF1F" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
+                              }}
+                              data-testid={`button-view-stack-${stack.id}`}
+                            >
+                              View Stack
+                              <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
                     </Card>
                   </motion.div>
                   </motion.div>
                 </Link>
-                <div className="mt-2 flex justify-center">
+                <div className="mt-2 hidden md:flex justify-center">
                   <Button
                     size="sm"
                     variant="outline"
