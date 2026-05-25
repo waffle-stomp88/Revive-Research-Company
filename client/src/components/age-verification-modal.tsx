@@ -34,6 +34,9 @@ export function AgeVerificationModal() {
       document.documentElement.classList.add("modal-open");
       document.body.classList.add("modal-open");
     }
+    // Remove the pre-React black div synchronously — no paint gap
+    const pre = document.getElementById("pre-age-gate");
+    if (pre) pre.parentNode?.removeChild(pre);
     return shouldOpen;
   });
 
@@ -48,12 +51,6 @@ export function AgeVerificationModal() {
       setIsOpen(false);
     }
   }, [isLegalPage]);
-
-  useEffect(() => {
-    // Remove the pre-React inline overlay injected by index.html
-    const pre = document.getElementById("pre-age-gate");
-    if (pre) pre.parentNode?.removeChild(pre);
-  }, []);
 
   useEffect(() => {
     // Class is added synchronously in useState init for the initial open.
