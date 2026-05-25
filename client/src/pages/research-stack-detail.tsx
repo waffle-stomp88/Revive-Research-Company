@@ -66,7 +66,7 @@ export default function ResearchStackDetail() {
   const { isAuthenticated } = useAuth();
   const softGated = SOFT_GATE_ENABLED && !isAuthenticated;
   const [synergyLevel, setSynergyLevel] = useState<"beginner" | "expert">("beginner");
-  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "synergy">("overview");
+  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "resources">("overview");
 
   useEffect(() => {
     setSynergyLevel("beginner");
@@ -510,8 +510,8 @@ export default function ResearchStackDetail() {
                 [
                   { key: "overview", label: "Overview", mobileLabel: "Overview", testId: "tab-overview" },
                   { key: "pk", label: "Pharmacokinetics", mobileLabel: "PK", testId: "tab-pk" },
-                  { key: "synergy", label: "Synergy", mobileLabel: "Synergy", testId: "tab-synergy" },
-                ] as { key: "overview" | "pk" | "synergy"; label: string; mobileLabel: string; testId: string }[]
+                  { key: "resources", label: "Resources", mobileLabel: "Info", testId: "tab-resources" },
+                ] as { key: "overview" | "pk" | "resources"; label: string; mobileLabel: string; testId: string }[]
               ).map((tab) => (
                 <button
                   key={tab.key}
@@ -538,17 +538,52 @@ export default function ResearchStackDetail() {
                 {stack.name}
               </div>
 
-              {stack.longDescription && (
-                <>
-                  <p className="text-muted-foreground leading-relaxed mb-6" data-testid="text-overview-description">
-                    {stack.longDescription}
+              {/* Synergy explanation — the core story of the stack */}
+              <div className="mb-6" data-testid="section-synergy-explanation">
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5" style={{ color: stack.color }} />
+                    <h3 className="font-display font-semibold text-lg">Why These Peptides Work Together</h3>
+                  </div>
+                  <div role="group" aria-label="Synergy explanation level" className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-muted/30">
+                    <Button
+                      aria-pressed={synergyLevel === "beginner"}
+                      variant="ghost"
+                      size="sm"
+                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "beginner" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                      onClick={() => setSynergyLevel("beginner")}
+                      data-testid="button-synergy-beginner"
+                    >
+                      Plain
+                    </Button>
+                    <Button
+                      aria-pressed={synergyLevel === "expert"}
+                      variant="ghost"
+                      size="sm"
+                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "expert" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                      onClick={() => setSynergyLevel("expert")}
+                      data-testid="button-synergy-expert"
+                    >
+                      Mechanistic
+                    </Button>
+                  </div>
+                </div>
+                <Card className="p-4 border-border/60" data-testid="card-synergy-content">
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-synergy-copy">
+                    {synergyLevel === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
                   </p>
-                  <div className="mb-6 h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
-                </>
+                </Card>
+              </div>
+
+              {pathwayOverlaps.length > 0 && (
+                <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
+                  <PathwayOverlapCard overlaps={pathwayOverlaps} intentional={stack.intentionalOverlap} />
+                </div>
               )}
 
               {stack.keyBenefits.length > 0 && (
-                <div className="mb-8" data-testid="list-benefits-overview">
+                <div className="mb-2" data-testid="list-benefits-overview">
+                  <div className="mb-4 h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
                   <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {stack.keyBenefits.map((benefit, index) => (
@@ -559,59 +594,6 @@ export default function ResearchStackDetail() {
                     ))}
                   </div>
                 </div>
-              )}
-
-              <div data-testid="section-storage-overview">
-                <div className="flex items-center gap-3 mb-3">
-                  <BookOpen className="h-5 w-5 text-[#21d8ff]" />
-                  <h3 className="font-display font-semibold text-lg">Storage Information</h3>
-                </div>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  {stack.storageGuide}
-                </p>
-                <Link href="/guides/storage-101">
-                  <Button variant="outline" size="sm" className="border-[#21d8ff]/30 hover:border-[#21d8ff] gap-1.5" data-testid="link-learn-storage-overview">
-                    <BookOpen className="h-3.5 w-3.5" />
-                    Storage Best Practices
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
-                </Link>
-              </div>
-
-              {isHealingStack && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: 0.15 }}
-                  className="mt-8"
-                  data-testid="section-healing-guide-cta"
-                >
-                  <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-8" />
-                  <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
-                    <Card className="p-3 md:p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
-                          <FlaskConical className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e]" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                            <Badge className="bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 text-xs no-default-hover-elevate no-default-active-elevate">
-                              Deep Dive
-                            </Badge>
-                            <span className="hidden md:inline text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
-                          </div>
-                          <h4 className="font-display text-sm md:text-base font-bold leading-snug">
-                            Learn the Science Behind This Stack
-                          </h4>
-                          <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mt-1">
-                            Explore the tissue repair cascade, angiogenesis signaling, and how the peptides in this stack interact at the molecular level.
-                          </p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e] flex-shrink-0" />
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
               )}
             </section>
           )}
@@ -647,49 +629,99 @@ export default function ResearchStackDetail() {
             </section>
           )}
 
-          {/* Synergy Tab */}
-          {activeResearchTab === "synergy" && (
-            <section data-testid="section-synergy-panel">
-              <div className="mb-8" data-testid="section-synergy-explanation">
-                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5" style={{ color: stack.color }} />
-                    <h3 className="font-display font-semibold text-lg">Why These Peptides Work Together</h3>
-                  </div>
-                  <div role="group" aria-label="Synergy explanation level" className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-muted/30">
-                    <Button
-                      aria-pressed={synergyLevel === "beginner"}
-                      variant="ghost"
-                      size="sm"
-                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "beginner" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
-                      onClick={() => setSynergyLevel("beginner")}
-                      data-testid="button-synergy-beginner"
-                    >
-                      Overview
-                    </Button>
-                    <Button
-                      aria-pressed={synergyLevel === "expert"}
-                      variant="ghost"
-                      size="sm"
-                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "expert" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
-                      onClick={() => setSynergyLevel("expert")}
-                      data-testid="button-synergy-expert"
-                    >
-                      Mechanistic
-                    </Button>
-                  </div>
+          {/* Resources Tab */}
+          {activeResearchTab === "resources" && (
+            <section data-testid="section-resources-panel">
+              {/* Storage */}
+              <div className="mb-8" data-testid="section-storage-overview">
+                <div className="flex items-center gap-3 mb-3">
+                  <BookOpen className="h-5 w-5 text-[#21d8ff]" />
+                  <h3 className="font-display font-semibold text-lg">Storage Information</h3>
                 </div>
-                <Card className="p-4 border-border/60" data-testid="card-synergy-content">
-                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-synergy-copy">
-                    {synergyLevel === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
-                  </p>
-                </Card>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {stack.storageGuide}
+                </p>
+                <Link href="/guides/storage-101">
+                  <Button variant="outline" size="sm" className="border-[#21d8ff]/30 hover:border-[#21d8ff] gap-1.5" data-testid="link-learn-storage-overview">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    Storage Best Practices
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
               </div>
 
-              {pathwayOverlaps.length > 0 && (
-                <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
-                  <PathwayOverlapCard overlaps={pathwayOverlaps} intentional={stack.intentionalOverlap} />
+              {/* Education guides */}
+              {stack.educationLinks.length > 0 && (
+                <div className="mb-8" data-testid="section-education-resources">
+                  <div className="h-px bg-gradient-to-r from-[#ec4899]/40 via-[#21d8ff]/20 to-transparent mb-6" />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <GraduationCap className="h-5 w-5 text-[#ec4899]" />
+                      <h3 className="font-display font-semibold text-lg">Research Guides</h3>
+                    </div>
+                    <Link href="/guides/peptide-education-center">
+                      <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education-resources">
+                        All Articles
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="space-y-2">
+                    {stack.educationLinks.map((link) => (
+                      <Link key={link.peptideName} href={link.articleUrl}>
+                        <Card
+                          className="p-3 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer group"
+                          data-testid={`card-article-resources-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <BookOpen className="h-4 w-4 text-[#ec4899] flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-medium group-hover:text-[#ec4899] transition-colors truncate">{link.articleTitle}</h4>
+                              <p className="text-xs text-muted-foreground">{link.peptideName}</p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          </div>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Healing guide deep dive */}
+              {isHealingStack && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.1 }}
+                  data-testid="section-healing-guide-cta"
+                >
+                  <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-6" />
+                  <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
+                    <Card className="p-3 md:p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
+                          <FlaskConical className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                            <Badge className="bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 text-xs no-default-hover-elevate no-default-active-elevate">
+                              Deep Dive
+                            </Badge>
+                            <span className="hidden md:inline text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
+                          </div>
+                          <h4 className="font-display text-sm md:text-base font-bold leading-snug">
+                            Learn the Science Behind This Stack
+                          </h4>
+                          <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mt-1">
+                            Explore the tissue repair cascade, angiogenesis signaling, and how the peptides in this stack interact at the molecular level.
+                          </p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e] flex-shrink-0" />
+                      </div>
+                    </Card>
+                  </Link>
+                </motion.div>
               )}
             </section>
           )}
