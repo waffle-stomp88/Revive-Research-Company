@@ -202,7 +202,7 @@ export function AgeVerificationModal() {
                   <Button
                     onClick={handleEnter}
                     disabled={!agreed}
-                    className="w-full bg-[#D4FF1F] text-black font-medium text-[18px]"
+                    className="w-full bg-[#D4FF1F] text-black font-bold text-[18px]"
                     style={{
                       boxShadow: agreed ? '0 0 24px rgba(212, 255, 31, 0.35)' : 'none',
                       opacity: agreed ? 1 : 0.5,
