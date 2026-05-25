@@ -110,7 +110,7 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-44 md:bottom-24 right-3 md:right-6 z-50 w-[90%] sm:w-[380px] md:w-[400px] max-w-[400px]"
+            className="fixed bottom-24 md:bottom-24 right-3 md:right-6 z-50 w-[92%] sm:w-[380px] md:w-[400px] max-w-[400px]"
           >
             <Card 
               className="border-2 overflow-hidden"
@@ -155,7 +155,7 @@ export function ChatBot() {
                 </Button>
               </div>
 
-              <ScrollArea className="h-[350px] p-4">
+              <ScrollArea className="h-[220px] md:h-[350px] p-4">
                 <div className="space-y-4">
                   {messages.map((message, index) => (
                     <motion.div
