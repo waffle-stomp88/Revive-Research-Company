@@ -86,26 +86,26 @@ export function AgeVerificationModal() {
               </div>
 
               {/* 2. Headline + sub-copy */}
-              <div className="text-center mb-7 sm:mb-8">
+              <div className="text-center mb-8">
                 <h1
                   className="text-white"
                   style={{
-                    fontSize: 'clamp(26px, 5vw, 34px)',
+                    fontSize: 'clamp(28px, 5vw, 36px)',
                     fontWeight: 500,
-                    letterSpacing: '-0.5px',
-                    lineHeight: 1.1,
-                    marginBottom: '18px',
+                    letterSpacing: '-0.8px',
+                    lineHeight: 1.15,
+                    marginBottom: '14px',
                   }}
                 >
                   You've seen this site a hundred times.
                 </h1>
                 <p
                   style={{
-                    fontSize: '14px',
+                    fontSize: '16px',
                     color: '#b0b0b5',
-                    lineHeight: 1.6,
+                    lineHeight: 1.5,
                     margin: '0 auto',
-                    maxWidth: '340px',
+                    maxWidth: '440px',
                   }}
                 >
                   We're not going to convince you we're different. Walk in and judge for yourself.
@@ -118,21 +118,21 @@ export function AgeVerificationModal() {
                   border: '1px solid rgba(239, 68, 68, 0.35)',
                   background: 'rgba(239, 68, 68, 0.08)',
                   borderRadius: '8px',
-                  padding: '14px 16px',
-                  marginBottom: '22px',
+                  padding: '16px 18px',
+                  marginBottom: '24px',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                   <AlertTriangle
-                    style={{ color: '#ef4444', width: '16px', height: '16px', flexShrink: 0 }}
+                    style={{ color: '#ef4444', width: '18px', height: '18px', flexShrink: 0 }}
                     aria-hidden="true"
                   />
                   <p
                     style={{
                       color: '#ef4444',
-                      fontSize: '10px',
-                      fontWeight: 500,
-                      letterSpacing: '1.5px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      letterSpacing: '2px',
                       margin: 0,
                       textTransform: 'uppercase',
                     }}
@@ -140,10 +140,10 @@ export function AgeVerificationModal() {
                     Research Use Only
                   </p>
                 </div>
-                <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.55, margin: '0 0 8px' }}>
+                <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.6, margin: '0 0 8px' }}>
                   For lawful research use only. Not for human or animal consumption.
                 </p>
-                <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.55, margin: 0 }}>
+                <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
                   Purchaser assumes full responsibility for use, handling, and distribution.
                 </p>
               </div>
@@ -160,12 +160,12 @@ export function AgeVerificationModal() {
                   checked={agreed}
                   onCheckedChange={(checked) => setAgreed(checked === true)}
                   data-testid="checkbox-age-verification"
-                  className="pointer-events-none flex-shrink-0"
+                  className="pointer-events-none flex-shrink-0 h-[18px] w-[18px]"
                 />
                 <label
                   htmlFor="age-terms"
-                  className="text-xs font-medium cursor-pointer flex-1 pointer-events-none"
-                  style={{ color: '#ffffff', lineHeight: 1.5 }}
+                  className="font-medium cursor-pointer flex-1 pointer-events-none"
+                  style={{ color: '#ffffff', fontSize: '14px', lineHeight: 1.5 }}
                 >
                   I am 21 or older and I understand the terms above.
                 </label>

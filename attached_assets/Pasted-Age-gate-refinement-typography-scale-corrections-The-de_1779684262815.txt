@@ -1,0 +1,52 @@
+Age gate refinement — typography scale corrections
+The deployed age gate is structurally correct but the typography proportions need adjustment for the desktop modal width. Here are the specific changes needed:
+1. Headline — slightly reduce
+Current rendering appears around 44-48px. Bring it down to:
+cssfont-size: 36px;
+line-height: 1.15;
+letter-spacing: -0.8px;
+On mobile (≤640px), scale to 28px.
+2. Sub-copy — increase size AND adjust max-width to fix the awkward wrap
+Currently rendering small with "Walk" orphaned on line 1. Update to:
+cssfont-size: 16px;
+line-height: 1.5;
+max-width: 440px;
+margin: 0 auto;
+The max-width should force the sentence to wrap at "different." instead of after "Walk" — read more naturally.
+3. Spacing between headline and sub-copy — tighten
+Reduce the margin between the h1 and the sub-copy paragraph to ~14px (probably currently 18-20px). They should feel like one connected thought.
+4. RUO block — make the section header more prominent
+Currently the "RESEARCH USE ONLY" label looks faint. Update to:
+css/* "RESEARCH USE ONLY" label */
+font-size: 11px;          /* was 10px */
+font-weight: 600;         /* was 500 */
+letter-spacing: 2px;      /* was 1.5px */
+Also increase the icon size from 16px to 18px.
+5. RUO compliance text — increase size
+The two compliance sentences inside the box should be more readable. Update:
+cssfont-size: 13px;          /* was 12px */
+line-height: 1.6;
+Keep the 8px gap between the two sentences.
+6. RUO box padding — increase
+The box feels cramped right now. Update:
+csspadding: 16px 18px;       /* was 14px 16px */
+7. Checkbox label text — increase
+"I am 21 or older and I understand the terms above." should be visually weightier since the user has to interact with it:
+cssfont-size: 14px;          /* was 12px */
+line-height: 1.5;
+Also bump checkbox size from ~16px to 18px for better tap target / visual balance.
+8. Vertical rhythm — increase breathing room between major sections
+Update the margin-bottom values:
+
+After headline + sub-copy block → 32px before RUO box (was ~28-32px, keep)
+After RUO box → 24px before checkbox row (was ~20px)
+After checkbox row → 24px before primary button (was ~22px)
+Between primary and secondary buttons → 10px (keep)
+
+The goal is for each section (brand, legal, action) to feel like its own contained zone with intentional space between them.
+9. Footer "You must be 21+..." line
+Looks fine, no change needed.
+
+Mobile verification
+After applying these changes, test at 375px width specifically. The headline should reflow to fit without horizontal overflow. The RUO box and buttons should remain at full content width with comfortable padding.
+Send another screenshot once deployed.
