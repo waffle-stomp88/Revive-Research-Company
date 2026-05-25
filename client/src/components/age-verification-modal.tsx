@@ -84,14 +84,14 @@ export function AgeVerificationModal() {
             transition={{ delay: 0.1, duration: 0.4 }}
             className="age-modal-card"
           >
-            <div className="p-4 sm:p-8">
+            <div className="p-3 sm:p-8">
 
               {/* 1. Logo */}
-              <div className="flex items-center justify-center mb-6 sm:mb-8">
+              <div className="flex items-center justify-center mb-2 sm:mb-6">
                 <motion.img
                   src={logoUrl}
                   alt="Revive Research"
-                  className="h-12 sm:h-20 object-contain"
+                  className="h-10 sm:h-20 object-contain"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
@@ -99,15 +99,15 @@ export function AgeVerificationModal() {
               </div>
 
               {/* 2. Headline + sub-copy */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-3 sm:mb-8">
                 <h1
                   className="text-white"
                   style={{
-                    fontSize: 'clamp(28px, 5vw, 36px)',
+                    fontSize: 'clamp(22px, 5vw, 36px)',
                     fontWeight: 500,
                     letterSpacing: '-0.8px',
                     lineHeight: 1.15,
-                    marginBottom: '14px',
+                    marginBottom: '8px',
                     textWrap: 'balance',
                   } as React.CSSProperties}
                 >
@@ -115,9 +115,9 @@ export function AgeVerificationModal() {
                 </h1>
                 <p
                   style={{
-                    fontSize: '16px',
+                    fontSize: 'clamp(13px, 3.5vw, 16px)',
                     color: '#b0b0b5',
-                    lineHeight: 1.5,
+                    lineHeight: 1.45,
                     margin: '0 auto',
                     maxWidth: '370px',
                     textWrap: 'pretty',
@@ -133,8 +133,8 @@ export function AgeVerificationModal() {
                   border: '1px solid rgba(239, 68, 68, 0.35)',
                   background: 'rgba(239, 68, 68, 0.08)',
                   borderRadius: '8px',
-                  padding: '16px 18px',
-                  marginBottom: '24px',
+                  padding: '12px 14px',
+                  marginBottom: '16px',
                 }}
               >
                 <motion.div
@@ -168,21 +168,21 @@ export function AgeVerificationModal() {
                   </p>
                 </motion.div>
 
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '7px' }}>
                   <span style={{ color: '#ef4444', fontSize: '14px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>01</span>
-                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                  <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
                     For lawful research use only. Not intended for human or animal use of any kind — including ingestion, injection, inhalation, or topical application.
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '7px' }}>
                   <span style={{ color: '#ef4444', fontSize: '14px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>02</span>
-                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                  <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
                     Purchaser assumes full responsibility for use, handling, and distribution.
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '7px' }}>
                   <span style={{ color: '#ef4444', fontSize: '14px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>03</span>
-                  <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
+                  <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
                     The compounds are not FDA-approved or evaluated for safety or efficacy.
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export function AgeVerificationModal() {
               {/* 4. Checkbox + attestation */}
               <div
                 className="flex flex-col items-center gap-3 cursor-pointer"
-                style={{ marginBottom: '24px' }}
+                style={{ marginBottom: '14px' }}
                 onClick={() => setAgreed(!agreed)}
                 data-testid="button-age-terms"
               >
@@ -278,7 +278,7 @@ export function AgeVerificationModal() {
 
               {/* 7. Footer */}
               <p
-                className="text-center mt-5"
+                className="text-center mt-2"
                 style={{
                   color: '#555',
                   fontSize: '10px',

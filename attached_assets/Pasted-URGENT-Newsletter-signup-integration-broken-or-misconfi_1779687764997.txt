@@ -1,0 +1,50 @@
+URGENT: Newsletter signup integration broken or misconfigured
+Issue:
+The footer email signup form on reviveresearch.co is not landing new subscribers in our Zoho Campaigns "Research List." I just submitted my own email through the footer form and it never appeared in Zoho. This is blocking our welcome sequence launch — the workflow trigger ("ON LIST ENTRY" to Research List) can't fire if subscribers never get added to that list.
+What I need from you — a full audit of the signup data flow:
+Please trace exactly what happens when someone submits an email through the footer form on the live site (or any signup form on the site). Specifically:
+1. What does the form submission actually do?
+
+What API endpoint or service does it call?
+Does it write to Supabase? Zoho? Both? Somewhere else?
+If Supabase, what table?
+If Zoho, which list ID?
+
+Send me the actual code that handles the form submission. Network tab evidence helps too — what API call fires when the form is submitted.
+2. Verify the data path is currently working
+Test the form yourself with a unique email. Confirm:
+
+Does the form submission succeed (200 response)?
+Does the email show up in Supabase (if applicable)?
+Does the email show up in Zoho's Research List?
+If there's a sync between Supabase and Zoho, is the sync running? When did it last run?
+
+3. Identify what's broken (or what was never built)
+Possible root causes to check:
+
+The form is writing to Supabase but the Supabase→Zoho sync was never built or is broken
+The form is writing to Zoho but to a different list than "Research List" (e.g. "Newsletter Subscribers", a pre-migration list, etc.)
+The Zoho API integration broke during a recent deploy (color swap, Supabase migration, etc.)
+The form requires double opt-in confirmation and contacts are stuck in unconfirmed status
+The Zoho API credentials expired or were rotated
+
+4. Show me the current state of all our Zoho lists
+Pull the list of all Zoho Campaigns lists in our account, with contact counts. I want to see if subscribers are landing in some other list that I'm not aware of. Specifically check for any lists named:
+
+Newsletter Subscribers
+Research List
+Existing Subscribers
+OOS Notifications
+Any other lists with members
+
+5. What needs to happen for new footer signups to feed the Research List automatically
+Once you identify what's broken, propose the fix. Either:
+
+Direct Zoho API integration (form → Research List directly)
+Supabase → Zoho sync (form → Supabase → automated sync → Research List)
+Whatever the original intended architecture was
+
+CONTEXT (so you have the full picture):
+We have a 4-email welcome series in Zoho Campaigns set up to trigger when contacts enter the "Research List." All 4 emails are approved and ready. The workflow is active. But the trigger never fires because new signups aren't actually landing in Research List.
+This is currently a launch blocker. Please prioritize.
+Send me your diagnosis as soon as you have it — I don't need a fix yet, just a clear picture of what's happening and what's broken.
