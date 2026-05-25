@@ -406,8 +406,8 @@ export default function CognitivePeptidesGuide() {
       canonicalPath="/systems/cognitive"
       badgeText="Cognitive System"
       badgeColor={COGNITIVE_COLOR}
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-10-22"
+      modifiedDate="2025-10-22"
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["cognitive"]}
       introText={
         <>

@@ -264,8 +264,8 @@ export default function MetabolicPeptidesGuide() {
       canonicalPath="/systems/metabolic"
       badgeText="Metabolic System"
       badgeColor={METABOLIC_COLOR}
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-11-10"
+      modifiedDate="2025-11-10"
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["metabolic"]}
       introText={
         <>

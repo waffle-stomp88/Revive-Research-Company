@@ -277,8 +277,8 @@ export default function LongevityPeptidesGuide() {
       canonicalPath="/systems/longevity"
       badgeText="Longevity System"
       badgeColor={LONGEVITY_COLOR}
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-11-14"
+      modifiedDate="2025-11-14"
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["longevity"]}
       introText={
         <>

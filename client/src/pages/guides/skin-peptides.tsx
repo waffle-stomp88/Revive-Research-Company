@@ -254,8 +254,8 @@ export default function SkinPeptidesGuide() {
       badgeText="Skin System"
       badgeColor={SKIN_COLOR}
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["skin"]}
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-10-31"
+      modifiedDate="2025-10-31"
       introText={
         <>
           <p className="mb-4">

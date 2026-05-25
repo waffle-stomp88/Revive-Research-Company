@@ -556,8 +556,8 @@ export default function HormonalPeptidesGuide() {
       canonicalPath="/systems/hormonal"
       badgeText="Hormonal System"
       badgeColor="#f43f5e"
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-10-15"
+      modifiedDate="2025-10-15"
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["hormonal"]}
       introText={
         <>

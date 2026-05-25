@@ -288,8 +288,8 @@ export default function GrowthPeptidesGuide() {
       canonicalPath="/systems/growth"
       badgeText="Growth System"
       badgeColor={GROWTH_COLOR}
-      publishDate="2026-05-06"
-      modifiedDate="2026-05-06"
+      publishDate="2025-11-03"
+      modifiedDate="2025-11-03"
       systemHub={BODY_SYSTEM_HUBS_BY_SLUG["growth"]}
       introText={
         <>
