@@ -18,6 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
+import { pushToZohoList, ZOHO_RESEARCH_LIST, ZOHO_WAITLIST_LIST } from "./zoho-optin";
 import { 
   createPaypalOrder, 
   capturePaypalOrder, 
@@ -1851,7 +1852,17 @@ export async function registerRoutes(
           console.error("[Waitlist] Failed to send pre-launch confirmation email:", err);
         });
       }
-      
+
+      // Push to Zoho Campaigns Waitlist list (if configured)
+      if (ZOHO_WAITLIST_LIST) {
+        const zohoResult = await pushToZohoList(email.toLowerCase(), ZOHO_WAITLIST_LIST);
+        if (!zohoResult.success && !zohoResult.duplicate) {
+          console.error(`[Zoho] Waitlist push failed for ${email}: ${zohoResult.error}`);
+        }
+      } else {
+        console.warn("[Zoho] Waitlist list not configured — set ZOHO_WAITLIST_ZCLD, ZOHO_WAITLIST_ZCTD, ZOHO_WAITLIST_FORMIX to enable.");
+      }
+
       res.json({ success: true, foundingMember: signup.foundingMember, foundingMemberNumber: signup.foundingMemberNumber, totalCount });
     } catch (error) {
       console.error("Error creating waitlist signup:", error);
@@ -4985,38 +4996,9 @@ Return ONLY valid JSON in this exact format:
 
       const subscriber = await storage.subscribeToNewsletter(parsed.data);
 
-      // Push to Zoho Campaigns Research List (fire-and-forget)
-      const zohoParams = new URLSearchParams({
-        CONTACT_EMAIL: email,
-        submitType: "optinCustomView",
-        emailReportId: "",
-        formType: "QuickForm",
-        zx: "1362ec729",
-        zcvers: "3.0",
-        oldListIds: "",
-        mode: "OptinCreateView",
-        zcld: "116f2aaf916892a61",
-        zctd: "116f2aaf91688fb89",
-        document_domain: "",
-        zc_Url: "zgnp-zngp.maillist-manage.com",
-        new_optin_response_in: "0",
-        duplicate_optin_response_in: "0",
-        zc_trackCode: "ZCFORMVIEW",
-        zc_formIx: "3zdab2956038849aa36b47c12c2c5f75da1e9fdac8f7047c0dc5431cf360b83bb7",
-        viewFrom: "URL_ACTION",
-        scriptless: "yes",
-        zc_spmSubmit: "ZCSPMSUBMIT",
-      });
-      fetch("https://zgnp-zngp.maillist-manage.com/weboptin.zc", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: zohoParams.toString(),
-      }).then(async r => {
-        const body = await r.text();
-        console.log(`[Zoho] Subscriber pushed: ${email} — status ${r.status} — body: ${body.slice(0, 500)}`);
-      }).catch(err => {
-        console.error("[Zoho] Failed to push subscriber:", err);
-      });
+      // Zoho Campaigns push is handled client-side (browser form submission) to pass
+      // Zoho's bot detection. Server-side POSTs to weboptin.zc are blocked by their
+      // spmSubmit fingerprinting regardless of headers — see zoho-form-submit.ts.
 
       res.status(201).json({ success: true, message: "Successfully subscribed to newsletter!", subscriber });
     } catch (error: any) {

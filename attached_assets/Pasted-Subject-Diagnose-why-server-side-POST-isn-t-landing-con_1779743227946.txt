@@ -1,0 +1,34 @@
+Subject: Diagnose why server-side POST isn't landing contacts in Zoho
+Update on the newsletter signup integration. We've confirmed a lot today and narrowed the problem significantly. Here's where we stand and what I need you to investigate.
+What works:
+
+Zoho's own hosted form (at https://zgnp-zngp.maillist-manage.com/ua/Optin?od=...) accepts submissions and lands contacts in Research List correctly. Tested in incognito today with a real email, contact landed as Opt-In, workflow fired, welcome email delivered.
+Welcome workflow is Active and firing on list entry correctly.
+Domain auth (SPF/DKIM) is green.
+
+What doesn't work:
+
+Our server-side POST to weboptin.zc from reviveresearch.co's footer form. Zoho returns 200 OK with ZC_NEWOPTINRESPONSE: 0 and isNewContact: false on every submission, including brand-new temp-mail addresses Zoho has definitely never seen. Contacts never land in Research List, form submission counter doesn't increment from our server's POSTs.
+
+The difference between the two paths:
+Zoho's hosted form runs client-side JavaScript (optin.min.js) that handles anti-bot validation, timing checks, and hidden field manipulation before submission. Our server is doing a raw HTTP POST with the form fields and scriptless=yes, which bypasses all of that.
+What I need you to investigate:
+
+Compare our server's POST headers and body to what Zoho's hosted form actually sends (open browser dev tools on the hosted form, submit a test, capture the actual outgoing request, compare field-by-field and header-by-header to our server's outgoing call).
+Specifically check:
+
+Are we missing any User-Agent or Referer headers Zoho expects?
+Is zc_spmSubmit field handling correct (should it be present, absent, or modified)?
+Are there any timing-sensitive parameters (timestamps, session tokens) the JS adds that our server isn't sending?
+Is scriptless=yes actually being honored, or does Zoho treat scriptless submissions differently in 2026 than when this code was written?
+
+
+If you find the gap, test the fix on dev with a temp-mail address. Verify the contact lands in Research List, the form's submission counter increments, AND the welcome workflow fires.
+
+What I don't need:
+
+OAuth/REST API rebuild (free tier blocks it, already confirmed)
+Disabling double opt-in (already done)
+Token swap of zctd/zcld (already confirmed correct against the live embed code)
+
+This is specifically about why the server-side POST gets accepted but does nothing. Send me what you find, plus a recommendation on whether to fix the existing POST or pivot to a browser-based submission architecture.

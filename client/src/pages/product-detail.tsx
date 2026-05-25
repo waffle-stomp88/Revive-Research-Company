@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { queryClient } from "@/lib/queryClient";
+import { submitToZohoResearchList } from "@/lib/zoho-form-submit";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useCart } from "@/contexts/CartContext";
@@ -1366,6 +1367,7 @@ export default function ProductDetail() {
                                 email: notifyEmail, 
                                 source: "product_early_access" 
                               });
+                              submitToZohoResearchList(notifyEmail);
                             } catch (err) {
                               console.error("Early access signup error:", err);
                             }

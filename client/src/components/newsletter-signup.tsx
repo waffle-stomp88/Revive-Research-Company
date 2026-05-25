@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
+import { submitToZohoResearchList } from "@/lib/zoho-form-submit";
 
 interface NewsletterSignupProps {
   compact?: boolean;
@@ -44,6 +45,7 @@ export function NewsletterSignup({ compact = false, source = "footer", placehold
 
       setIsSubmitted(true);
       trackEvent('newsletter_signup', 'conversion', email);
+      submitToZohoResearchList(email);
       if (onSuccess) onSuccess();
       toast({
         title: "Success!",
