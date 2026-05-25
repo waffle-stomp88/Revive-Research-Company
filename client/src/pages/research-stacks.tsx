@@ -3824,7 +3824,7 @@ function ResearchStacks() {
               transition={{ duration: 0.2 }}
             >
               {/* Category Filter */}
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <div className="hidden md:flex flex-wrap justify-center gap-2 mb-8">
                 {(["All" as const, ...STACK_CATEGORIES]).map((cat) => {
                   const chipColor = CATEGORY_CHIP_COLORS[cat] ?? "#a855f7";
                   const count = cat === "All" ? researchStacks.length : researchStacks.filter((s) => s.category === cat).length;
@@ -3910,9 +3910,6 @@ function ResearchStacks() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
-                                <p className="text-[10px] font-medium leading-none mb-0.5" style={{ color: stack.color }}>
-                                  {stack.subtitle}
-                                </p>
                                 <h3 className="font-display font-bold text-white text-base leading-tight truncate">
                                   {stack.name}
                                 </h3>
