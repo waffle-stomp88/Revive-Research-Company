@@ -98,7 +98,7 @@ export function AgeVerificationModal() {
                 <motion.img
                   src={logoUrl}
                   alt="Revive Research"
-                  className="h-10 sm:h-20 object-contain"
+                  className="h-14 sm:h-20 object-contain"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
@@ -271,17 +271,6 @@ export function AgeVerificationModal() {
                 </Button>
               </div>
 
-              {/* 7. Footer */}
-              <p
-                className="text-center mt-2"
-                style={{
-                  color: '#555',
-                  fontSize: '10px',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                You must be 21+ to access this website.
-              </p>
 
             </div>
           </motion.div>
