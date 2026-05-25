@@ -27,32 +27,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { SoftGateBanner } from "@/components/soft-gate-banner";
 
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
-import {
-  GonadorelinVisual,
-  TriptorelinVisual,
-  EnclomipheneVisual,
-  OxytocinVisual,
-  KisspeptinVisual,
-  MelanotanReceptorVisual,
-  BPC157AngiogenesisVisual,
-  TB500ActinVisual,
-  GLOWSynergyVisual,
-  KLOWSynergyVisual,
-  SemaxNeuralVisual,
-  EpithalonTelomeraseVisual,
-  GHKCuCopperVisual,
-  Amino1MQNADVisual,
-  IpamorelinComparison,
-  CJC1295DACMechanism,
-  SelankVisual,
-  AOD9604Visual,
-  PT141Visual,
-  GHAmplifierDualReceptorVisual,
-  GHPulseWaveformVisual,
-  CognitiveEdgeSynergyVisual,
-  HPGAxisRestoreSynergyVisual,
-  MelanocortinArousalSynergyVisual,
-} from "@/components/education";
 
 interface StackPeptideDetail { name: string; description: string; }
 interface StackEducationLink { articleUrl: string; peptideName: string; articleTitle: string; }
@@ -182,21 +156,6 @@ export default function ResearchStackDetail() {
   const isHealingStack = stack.peptides.length > 0 && stack.peptides.every(
     p => HEALING_PEPTIDES.has(p.name.toLowerCase())
   );
-
-  const STACK_VISUALS: Record<string, React.FC[]> = {
-    "gonadorelin-kisspeptin-hpg-cascade": [GonadorelinVisual, KisspeptinVisual],
-    "triptorelin-enclomiphene-hpg-axis": [TriptorelinVisual, EnclomipheneVisual],
-    "melanocortin-arousal-stack": [MelanocortinArousalSynergyVisual],
-    "hpg-axis-restore-stack": [HPGAxisRestoreSynergyVisual],
-    "recovery-tissue-stack": [BPC157AngiogenesisVisual, TB500ActinVisual],
-    "glow-protocol": [GLOWSynergyVisual, KLOWSynergyVisual],
-    "cognitive-edge-stack": [CognitiveEdgeSynergyVisual],
-    "longevity-protocol": [EpithalonTelomeraseVisual, GHKCuCopperVisual],
-    "fat-burner": [AOD9604Visual, Amino1MQNADVisual],
-    "gh-amplifier": [GHAmplifierDualReceptorVisual, CJC1295DACMechanism, GHPulseWaveformVisual],
-  };
-
-  const stackVisuals = STACK_VISUALS[stack.id] ?? [];
 
   const getBasePrice = () => pricing?.stackPrice ?? 0;
 
@@ -602,28 +561,6 @@ export default function ResearchStackDetail() {
                 </div>
               )}
 
-              {stackVisuals.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                  className="mb-8 space-y-10"
-                  data-testid="section-compound-infographics"
-                >
-                  <div className="h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
-                  <div className="flex items-center gap-3 mb-6">
-                    <FlaskConical className="h-5 w-5 text-[#9d4edd]" />
-                    <h3 className="font-display font-semibold text-lg">Compound Mechanism Visuals</h3>
-                  </div>
-                  {stackVisuals.map((VisualComponent, idx) => (
-                    <div key={idx} data-testid={`compound-visual-${idx}`}>
-                      <VisualComponent />
-                    </div>
-                  ))}
-                  <div className="h-px bg-gradient-to-r from-[#21d8ff]/40 via-[#9d4edd]/30 to-transparent" />
-                </motion.div>
-              )}
-
               <div data-testid="section-storage-overview">
                 <div className="flex items-center gap-3 mb-3">
                   <BookOpen className="h-5 w-5 text-[#21d8ff]" />
@@ -651,26 +588,26 @@ export default function ResearchStackDetail() {
                 >
                   <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-8" />
                   <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
-                    <Card className="p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
-                      <div className="flex items-start gap-4">
-                        <div className="p-2.5 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
-                          <FlaskConical className="h-5 w-5 text-[#22c55e]" />
+                    <Card className="p-3 md:p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
+                          <FlaskConical className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e]" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                             <Badge className="bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 text-xs no-default-hover-elevate no-default-active-elevate">
                               Deep Dive
                             </Badge>
-                            <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
+                            <span className="hidden md:inline text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
                           </div>
-                          <h4 className="font-display text-base md:text-lg font-bold leading-snug mb-1">
+                          <h4 className="font-display text-sm md:text-base font-bold leading-snug">
                             Learn the Science Behind This Stack
                           </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
+                          <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mt-1">
                             Explore the tissue repair cascade, angiogenesis signaling, and how the peptides in this stack interact at the molecular level.
                           </p>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                        <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-[#22c55e] flex-shrink-0" />
                       </div>
                     </Card>
                   </Link>
