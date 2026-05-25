@@ -734,8 +734,6 @@ body.modal-open {
   box-shadow: 0 0 40px rgba(212, 255, 31, 0.3), 0 0 60px rgba(33, 216, 255, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  /* Start invisible at CSS level so Framer Motion has no pre-paint flash gap */
-  opacity: 0;
 }
 
 /* Age gate CTA button — CSS-only glow, no JS event handlers */
