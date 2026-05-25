@@ -30,7 +30,7 @@ const productCategories = [
     href: "/peptides",
     label: "Peptides",
     icon: FlaskConical,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     description: "Individual research vials",
     details: "Our flagship catalog of premium research peptides. Each vial comes with batch-specific COA and 98%+ verified purity.",
     features: ["Individual vials", "Full COA access", "Multiple dosage options"],
@@ -72,9 +72,9 @@ export default function ProductsHub() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-4">
-            <Sparkles className="h-4 w-4 text-[#E7FB10]" />
-            <span className="text-sm font-medium text-[#E7FB10]">Research Compounds</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 mb-4">
+            <Sparkles className="h-4 w-4 text-[#D4FF1F]" />
+            <span className="text-sm font-medium text-[#D4FF1F]">Research Compounds</span>
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
             Shop All Products
@@ -90,7 +90,7 @@ export default function ProductsHub() {
               <span className="text-muted-foreground">{inStockCount} products in stock</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#E7FB10]" />
+              <div className="w-2 h-2 rounded-full bg-[#D4FF1F]" />
               <span className="text-muted-foreground">{totalProducts} total compounds</span>
             </div>
           </div>
@@ -191,14 +191,14 @@ export default function ProductsHub() {
                 <a 
                   key={product.id} 
                   href={`/peptides/${product.slug || product.id}`}
-                  className="block p-4 cursor-pointer transition-all duration-300 border border-border/50 md:hover:border-[#E7FB10]/50 md:hover:scale-105 md:active:scale-105 group rounded-lg bg-card focus:outline-none focus-visible:ring-2"
+                  className="block p-4 cursor-pointer transition-all duration-300 border border-border/50 md:hover:border-[#D4FF1F]/50 md:hover:scale-105 md:active:scale-105 group rounded-lg bg-card focus:outline-none focus-visible:ring-2"
                   data-testid={`card-featured-${product.id}`}
                 >
                   <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 flex items-center justify-center">
-                    <FlaskConical className="h-12 w-12 text-muted-foreground/50 group-hover:text-[#E7FB10] transition-colors" />
+                    <FlaskConical className="h-12 w-12 text-muted-foreground/50 group-hover:text-[#D4FF1F] transition-colors" />
                   </div>
                   <h3 className="font-semibold text-sm truncate mb-1">{product.name}</h3>
-                  <p className="text-lg font-display font-bold text-[#E7FB10]">
+                  <p className="text-lg font-display font-bold text-[#D4FF1F]">
                     ${Math.round(Number(product.price))}
                   </p>
                   {product.inStock === false && (

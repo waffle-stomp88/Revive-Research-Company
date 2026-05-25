@@ -19,7 +19,7 @@ function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'te
         <defs>
           <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ec4899" />
-            <stop offset="100%" stopColor="#E7FB10" />
+            <stop offset="100%" stopColor="#D4FF1F" />
           </linearGradient>
           <linearGradient id="flatGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#f97316" />
@@ -204,7 +204,7 @@ export function TesomorelinPulseVisual() {
         >
           <Activity className="h-5 w-5" style={{ color: data.color, filter: `drop-shadow(0 0 4px ${data.color})` }} />
           <span className="text-sm font-bold" style={{ 
-            background: `linear-gradient(90deg, ${data.color}, #E7FB10)`,
+            background: `linear-gradient(90deg, ${data.color}, #D4FF1F)`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>

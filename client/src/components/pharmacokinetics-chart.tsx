@@ -55,7 +55,7 @@ function routeLabel(route: string): string {
   return ROUTE_LABELS[route.toLowerCase()] ?? route.charAt(0).toUpperCase() + route.slice(1);
 }
 
-const PK_CURVE_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
+const PK_CURVE_COLORS = ["#21d8ff", "#D4FF1F", "#22c55e", "#f59e0b", "#a855f7"];
 
 const CHART = {
   vbW: 500, vbH: 195,

@@ -52,7 +52,7 @@ export function SupportStatus({ variant = "inline", showAll = false }: SupportSt
       icon: Clock,
       label: "Typical Response",
       value: responseTime,
-      color: "#E7FB10",
+      color: "#D4FF1F",
     },
   ];
 

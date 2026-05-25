@@ -173,7 +173,7 @@ export default function ComingSoon() {
               The Future of
             </motion.span>
             <motion.span
-              className="block bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent"
+              className="block bg-gradient-to-r from-[#21d8ff] via-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -276,7 +276,7 @@ export default function ComingSoon() {
               <span>99.9% Purity</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#D4FF1F]" />
               <span>Lab Tested</span>
             </div>
             <div className="flex items-center gap-2">

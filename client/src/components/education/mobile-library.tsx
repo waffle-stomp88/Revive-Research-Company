@@ -152,7 +152,7 @@ const TRUST_GUIDES = [
   { slug: "what-research-use-only-means", title: "What 'Research Use Only' Means", description: "Clear explanation of RUO labeling and compliance.", href: "/guides/what-research-use-only-means", icon: AlertTriangle, color: "#22c55e", readTime: 6 },
   { slug: "how-to-verify-peptide-quality", title: "How to Verify Peptide Quality", description: "Independent verification without trusting the seller.", href: "/guides/how-to-verify-peptide-quality", icon: Search, color: "#ec4899", readTime: 9 },
   { slug: "peptide-purity-explained", title: "What Purity Percentages Mean", description: "Understanding HPLC results and why higher isn't always better.", href: "/guides/peptide-purity-explained", icon: FlaskConical, color: "#f97316", readTime: 7 },
-  { slug: "why-cheap-peptides-are-cheap", title: "Why Cheap Peptides Are Cheap", description: "Where low-price vendors cut corners and when price matters.", href: "/guides/why-cheap-peptides-are-cheap", icon: Shield, color: "#E7FB10", readTime: 8 },
+  { slug: "why-cheap-peptides-are-cheap", title: "Why Cheap Peptides Are Cheap", description: "Where low-price vendors cut corners and when price matters.", href: "/guides/why-cheap-peptides-are-cheap", icon: Shield, color: "#D4FF1F", readTime: 8 },
 ];
 
 // ─── Section definitions ──────────────────────────────────────────────────────
@@ -229,7 +229,7 @@ function ArticlePosterCard({ article, systemColor, inStock, onSelect, reducedMot
           className="leading-none font-display select-none block"
           style={{
             fontSize: top.length > 5 ? 32 : top.length > 3 ? 38 : 46,
-            color: "#E7FB10",
+            color: "#D4FF1F",
             fontFamily: "'Bebas Neue', cursive",
             lineHeight: 1,
             textShadow: `0 0 20px ${systemColor}60`,
@@ -1070,7 +1070,7 @@ function MobileBodySystemScroll({ inStockCountPerSystem }: { inStockCountPerSyst
       data-testid="mobile-body-system-scroll"
     >
       {/* Section header */}
-      <div className="mb-4 pl-3" style={{ borderLeft: "2px solid #E7FB10" }}>
+      <div className="mb-4 pl-3" style={{ borderLeft: "2px solid #D4FF1F" }}>
         <h2 className="text-xl font-bold mb-0.5">Browse by Body System</h2>
         <p className="text-xs text-muted-foreground">
           Explore all {Object.keys(PEPTIDE_PATHWAYS).length} compounds organized by research application

@@ -524,7 +524,7 @@ export default function Dashboard() {
       title: "Research Initiated",
       description: "Placed your first order",
       icon: Zap,
-      color: "#E7FB10",
+      color: "#D4FF1F",
       earned: orderCount >= 1,
       progress: Math.min(orderCount, 1),
       target: 1,
@@ -554,7 +554,7 @@ export default function Dashboard() {
       title: "Sustained Engagement",
       description: "Consistent research activity",
       icon: Crown,
-      color: "#E7FB10",
+      color: "#D4FF1F",
       earned: orderCount >= 3 && uniqueProducts >= 2,
       progress: Math.min(orderCount, 3),
       target: 3,
@@ -711,13 +711,13 @@ export default function Dashboard() {
           {/* Top left cyan glow */}
           <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#21d8ff]/8 rounded-full blur-[120px]" />
           {/* Top right yellow glow */}
-          <div className="absolute -top-20 -right-40 w-80 h-80 bg-[#E7FB10]/6 rounded-full blur-[100px]" />
+          <div className="absolute -top-20 -right-40 w-80 h-80 bg-[#D4FF1F]/6 rounded-full blur-[100px]" />
           {/* Middle left purple glow */}
           <div className="absolute top-1/3 -left-20 w-72 h-72 bg-[#9d4edd]/8 rounded-full blur-[100px]" />
           {/* Bottom right cyan/teal glow */}
           <div className="absolute bottom-20 -right-32 w-96 h-96 bg-[#21d8ff]/6 rounded-full blur-[120px]" />
           {/* Center subtle warm glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#E7FB10]/3 rounded-full blur-[150px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#D4FF1F]/3 rounded-full blur-[150px]" />
         </div>
         
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
@@ -725,7 +725,7 @@ export default function Dashboard() {
             {/* Stylish Header with Gradient Accent */}
             <motion.div variants={itemVariants} className="relative mb-8">
               {/* Decorative gradient line */}
-              <div className="absolute -top-4 left-0 right-0 h-1 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#9d4edd] rounded-full opacity-60" />
+              <div className="absolute -top-4 left-0 right-0 h-1 bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#9d4edd] rounded-full opacity-60" />
               
               <div className="flex items-center justify-between gap-4 pt-4 pb-6">
                 <div className="flex items-center gap-4">
@@ -734,7 +734,7 @@ export default function Dashboard() {
                       {user?.profileImageUrl && (
                         <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                       )}
-                      <AvatarFallback className={`text-xl font-bold ${affiliate?.id ? 'bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/30' : 'bg-gradient-to-br from-[#E7FB10]/30 to-[#21d8ff]/30'}`}>
+                      <AvatarFallback className={`text-xl font-bold ${affiliate?.id ? 'bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/30' : 'bg-gradient-to-br from-[#D4FF1F]/30 to-[#21d8ff]/30'}`}>
                         {getInitials()}
                       </AvatarFallback>
                     </Avatar>
@@ -776,7 +776,7 @@ export default function Dashboard() {
                       {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <Badge className="bg-[#E7FB10]/15 border-[#E7FB10]/50 text-[#E7FB10] badge-glow-yellow text-xs px-2 py-0.5">
+                            <Badge className="bg-[#D4FF1F]/15 border-[#D4FF1F]/50 text-[#D4FF1F] badge-glow-yellow text-xs px-2 py-0.5">
                               <Rocket className="h-3 w-3 mr-1" />
                               Early Access
                             </Badge>
@@ -882,14 +882,14 @@ export default function Dashboard() {
                 <TabsContent value="general" className="space-y-6">
                   {/* Quick Stats - Glassmorphism Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#E7FB10]/5 to-transparent border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-all duration-300 group">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#E7FB10]/10 rounded-full blur-2xl group-hover:bg-[#E7FB10]/20 transition-colors" />
+                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-all duration-300 group">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#D4FF1F]/10 rounded-full blur-2xl group-hover:bg-[#D4FF1F]/20 transition-colors" />
                       <div className="relative flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-[#E7FB10]/15 shadow-lg shadow-[#E7FB10]/10">
-                          <ShoppingBag className="h-5 w-5 text-[#E7FB10]" />
+                        <div className="p-2.5 rounded-xl bg-[#D4FF1F]/15 shadow-lg shadow-[#D4FF1F]/10">
+                          <ShoppingBag className="h-5 w-5 text-[#D4FF1F]" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold text-[#E7FB10]" data-testid="text-order-count">{orderCount}</p>
+                          <p className="text-2xl font-bold text-[#D4FF1F]" data-testid="text-order-count">{orderCount}</p>
                           <p className="text-xs text-muted-foreground">Orders</p>
                         </div>
                       </div>
@@ -950,18 +950,18 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           {/* Orders Link */}
                           <div 
-                            className="flex items-center gap-3 p-3 rounded-xl border border-[#E7FB10]/30 bg-[#E7FB10]/5 cursor-pointer hover-elevate transition-all"
+                            className="flex items-center gap-3 p-3 rounded-xl border border-[#D4FF1F]/30 bg-[#D4FF1F]/5 cursor-pointer hover-elevate transition-all"
                             onClick={() => setActiveTab("orders")}
                             data-testid="nav-orders"
                           >
-                            <div className="p-2 rounded-full bg-[#E7FB10]/20">
-                              <ShoppingBag className="h-5 w-5 text-[#E7FB10]" />
+                            <div className="p-2 rounded-full bg-[#D4FF1F]/20">
+                              <ShoppingBag className="h-5 w-5 text-[#D4FF1F]" />
                             </div>
                             <div className="flex-1">
                               <p className="font-medium text-sm">My Orders</p>
                               <p className="text-xs text-muted-foreground">{orders?.length || 0} order{orders?.length !== 1 ? 's' : ''} • View history & track</p>
                             </div>
-                            <ChevronRight className="h-4 w-4 text-[#E7FB10]" />
+                            <ChevronRight className="h-4 w-4 text-[#D4FF1F]" />
                           </div>
                           
                           {/* Academy Link */}
@@ -1050,18 +1050,18 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           {/* First Order Achievement */}
                           <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#D4FF1F]/10 border-[#D4FF1F]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
                             data-testid="achievement-first-order"
                           >
                             <motion.div 
-                              className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}
+                              className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#D4FF1F]/20' : 'bg-muted/30'}`}
                               animate={orders && orders.length > 0 ? { 
                                 scale: [1, 1.15, 1],
                                 boxShadow: ['0 0 0px rgba(231, 251, 16, 0)', '0 0 15px rgba(231, 251, 16, 0.6)', '0 0 0px rgba(231, 251, 16, 0)']
                               } : {}}
                               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                             >
-                              <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                              <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
                             </motion.div>
                             <div className="flex-1">
                               <div className="flex items-center gap-1.5">
@@ -1077,7 +1077,7 @@ export default function Dashboard() {
                               </div>
                               <p className="text-xs text-muted-foreground">{orders && orders.length > 0 ? 'Unlocked!' : 'Make your first purchase'}</p>
                             </div>
-                            {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
+                            {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#D4FF1F]" />}
                           </div>
 
                           {/* Loyal Customer Achievement */}
@@ -1266,17 +1266,17 @@ export default function Dashboard() {
                         {/* Academy Graduate Reward */}
                         <div className={`flex items-center gap-3 p-3 rounded-xl border ${
                           graduateReward?.isGraduate
-                            ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10'
+                            ? 'border-[#D4FF1F]/40 bg-[#D4FF1F]/10'
                             : 'border-muted/20 bg-muted/5'
                         }`}>
-                          <div className={`p-2 rounded-full ${graduateReward?.isGraduate ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
-                            <GraduationCap className={`h-4 w-4 ${graduateReward?.isGraduate ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                          <div className={`p-2 rounded-full ${graduateReward?.isGraduate ? 'bg-[#D4FF1F]/20' : 'bg-muted/20'}`}>
+                            <GraduationCap className={`h-4 w-4 ${graduateReward?.isGraduate ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Academy Graduate Reward</p>
                             <p className="text-xs text-muted-foreground">
                               {graduateReward?.discountCode
-                                ? <>Your code: <span className="font-mono font-semibold text-[#E7FB10] select-text">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
+                                ? <>Your code: <span className="font-mono font-semibold text-[#D4FF1F] select-text">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
                                 : graduateReward?.isGraduate
                                   ? 'You earned it — claim your 15% discount below'
                                   : `Complete all ${graduateReward?.totalLessons || 17} Academy lessons to earn 15% off (${graduateReward?.completedCount || 0}/${graduateReward?.totalLessons || 17})`}
@@ -1293,13 +1293,13 @@ export default function Dashboard() {
                                 toast({ title: "Copied", description: "Discount code copied to clipboard" });
                               }}
                             >
-                              <Copy className="h-4 w-4 text-[#E7FB10]" />
+                              <Copy className="h-4 w-4 text-[#D4FF1F]" />
                             </Button>
                           ) : graduateReward?.isGraduate ? (
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-xs shrink-0 min-h-[44px] border-[#E7FB10]/40 text-[#E7FB10]"
+                              className="text-xs shrink-0 min-h-[44px] border-[#D4FF1F]/40 text-[#D4FF1F]"
                               onClick={() => claimGraduateRewardMutation.mutate()}
                               disabled={claimGraduateRewardMutation.isPending}
                               data-testid="button-claim-graduate-reward"
@@ -1318,11 +1318,11 @@ export default function Dashboard() {
                         {/* Loyalty: Early Access */}
                         <div className={`flex items-center gap-3 p-3 rounded-xl border ${
                           (orders?.length || 0) >= 5
-                            ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10'
+                            ? 'border-[#D4FF1F]/40 bg-[#D4FF1F]/10'
                             : 'border-muted/20 bg-muted/5'
                         }`}>
-                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 5 ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
-                            <Rocket className={`h-4 w-4 ${(orders?.length || 0) >= 5 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 5 ? 'bg-[#D4FF1F]/20' : 'bg-muted/20'}`}>
+                            <Rocket className={`h-4 w-4 ${(orders?.length || 0) >= 5 ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Early Access to New Launches</p>
@@ -1332,7 +1332,7 @@ export default function Dashboard() {
                                 : `Place ${Math.max(0, 5 - (orders?.length || 0))} more order${Math.max(0, 5 - (orders?.length || 0)) === 1 ? '' : 's'} to unlock`}
                             </p>
                           </div>
-                          {(orders?.length || 0) >= 5 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
+                          {(orders?.length || 0) >= 5 && <CheckCircle className="h-4 w-4 text-[#D4FF1F]" />}
                         </div>
 
                         {/* Affiliate Program */}
@@ -1466,7 +1466,7 @@ export default function Dashboard() {
                           <CardDescription>View and track your orders</CardDescription>
                         </div>
                         <Link href="/products">
-                          <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-shop-more">
+                          <Button size="sm" className="bg-[#D4FF1F] text-black" data-testid="button-shop-more">
                             Shop More
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
@@ -1481,7 +1481,7 @@ export default function Dashboard() {
                       ) : orders && orders.length > 0 ? (
                         <div className="space-y-4">
                           {orders.map((order, idx) => {
-                            const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
+                            const colors = ['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
                             const color = colors[idx % colors.length];
                             const statusStep = getStatusStep(order);
                             return (
@@ -1564,7 +1564,7 @@ export default function Dashboard() {
                           <h3 className="font-medium mb-2">No orders yet</h3>
                           <p className="text-sm text-muted-foreground mb-4">Start shopping to see your order history</p>
                           <Link href="/products">
-                            <Button className="bg-[#E7FB10] text-black" data-testid="button-browse-products-history">Browse Products</Button>
+                            <Button className="bg-[#D4FF1F] text-black" data-testid="button-browse-products-history">Browse Products</Button>
                           </Link>
                         </div>
                       )}
@@ -1804,18 +1804,18 @@ export default function Dashboard() {
                 <TabsContent value="education" className="space-y-6">
                   {/* Research Progress */}
                   {researchProfile && (
-                    <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+                    <Card className="border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
                       <CardHeader>
                         <div className="flex items-center justify-between flex-wrap gap-3">
                           <div>
                             <CardTitle className="flex items-center gap-2">
-                              <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                              <GraduationCap className="h-5 w-5 text-[#D4FF1F]" />
                               Research Progress
                             </CardTitle>
                             <CardDescription>Your learning journey</CardDescription>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
+                            <Badge variant="outline" className="bg-[#D4FF1F]/10 border-[#D4FF1F]/40 text-[#D4FF1F]">
                               {researchProfile.phase}
                             </Badge>
                             <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
@@ -1828,7 +1828,7 @@ export default function Dashboard() {
                         {/* Stats Grid */}
                         <div className="grid grid-cols-3 gap-4">
                           <div className="text-center p-3 rounded-lg bg-muted/30">
-                            <div className="text-2xl font-bold text-[#E7FB10]">{researchProfile.educationCount}</div>
+                            <div className="text-2xl font-bold text-[#D4FF1F]">{researchProfile.educationCount}</div>
                             <div className="text-xs text-muted-foreground">Articles Read</div>
                           </div>
                           <div className="text-center p-3 rounded-lg bg-muted/30">
@@ -1854,8 +1854,8 @@ export default function Dashboard() {
                               const isCurrent = phase === researchProfile.phase;
                               return (
                                 <div key={phase} className="flex-1">
-                                  <div className={`h-2 rounded-full transition-all ${isActive ? isCurrent ? "bg-[#E7FB10]" : "bg-[#E7FB10]/50" : "bg-muted"}`} />
-                                  <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#E7FB10] font-medium" : "text-muted-foreground"}`}>
+                                  <div className={`h-2 rounded-full transition-all ${isActive ? isCurrent ? "bg-[#D4FF1F]" : "bg-[#D4FF1F]/50" : "bg-muted"}`} />
+                                  <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#D4FF1F] font-medium" : "text-muted-foreground"}`}>
                                     {phase}
                                   </div>
                                 </div>
@@ -1999,22 +1999,22 @@ export default function Dashboard() {
                   {/* Quick Links */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href="/academy" data-testid="link-academy-education">
-                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#E7FB10]/30 hover:border-[#E7FB10]/60 bg-gradient-to-r from-[#E7FB10]/10 via-[#E7FB10]/5 to-transparent transition-all duration-300 group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#D4FF1F]/30 hover:border-[#D4FF1F]/60 bg-gradient-to-r from-[#D4FF1F]/10 via-[#D4FF1F]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4FF1F]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="p-3 rounded-xl bg-[#E7FB10]/20 shadow-lg shadow-[#E7FB10]/10 group-hover:shadow-[#E7FB10]/30 transition-shadow">
-                              <GraduationCap className="h-6 w-6 text-[#E7FB10]" />
+                            <div className="p-3 rounded-xl bg-[#D4FF1F]/20 shadow-lg shadow-[#D4FF1F]/10 group-hover:shadow-[#D4FF1F]/30 transition-shadow">
+                              <GraduationCap className="h-6 w-6 text-[#D4FF1F]" />
                             </div>
                             <div>
-                              <p className="font-semibold group-hover:text-[#E7FB10] transition-colors">Research Academy</p>
+                              <p className="font-semibold group-hover:text-[#D4FF1F] transition-colors">Research Academy</p>
                               <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Zap className="h-3 w-3 text-[#E7FB10]" />
+                                <Zap className="h-3 w-3 text-[#D4FF1F]" />
                                 Learn and earn XP
                               </p>
                             </div>
                           </div>
-                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#E7FB10] group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#D4FF1F] group-hover:translate-x-1 transition-all" />
                         </div>
                       </Card>
                     </Link>
@@ -2098,7 +2098,7 @@ export default function Dashboard() {
                     <CardContent className="p-5">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <motion.div 
-                          className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#E7FB10]/20 shadow-lg"
+                          className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#D4FF1F]/20 shadow-lg"
                           animate={{ rotate: [0, 5, -5, 0] }}
                           transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
                         >
@@ -2107,7 +2107,7 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
                             Research Knowledge Quiz
-                            <Badge variant="outline" className="bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/40 text-xs">Coming Soon</Badge>
+                            <Badge variant="outline" className="bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/40 text-xs">Coming Soon</Badge>
                           </h3>
                           <p className="text-sm text-muted-foreground">Test your peptide research knowledge and earn bonus XP for your progress.</p>
                         </div>
@@ -2163,7 +2163,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <Link href="/account-settings">
-                        <Button className="w-full bg-[#E7FB10] text-black" data-testid="button-account-settings">
+                        <Button className="w-full bg-[#D4FF1F] text-black" data-testid="button-account-settings">
                           Edit Profile
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
@@ -2289,16 +2289,16 @@ export default function Dashboard() {
                     {/* Right Column */}
                     <div className="space-y-6">
                   {/* Saved Addresses */}
-                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-transparent">
+                  <Card className="border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 via-transparent to-transparent">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
-                          <div className="p-2 rounded-lg bg-[#E7FB10]/20">
-                            <MapPin className="h-5 w-5 text-[#E7FB10]" />
+                          <div className="p-2 rounded-lg bg-[#D4FF1F]/20">
+                            <MapPin className="h-5 w-5 text-[#D4FF1F]" />
                           </div>
                           <span>Saved Addresses</span>
                         </CardTitle>
-                        <Button size="sm" variant="outline" className="border-[#E7FB10]/40" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-address">
+                        <Button size="sm" variant="outline" className="border-[#D4FF1F]/40" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-address">
                           <Plus className="h-4 w-4 mr-1" />
                           Add
                         </Button>
@@ -2312,12 +2312,12 @@ export default function Dashboard() {
                       ) : savedAddresses && savedAddresses.length > 0 ? (
                         <div className="space-y-3">
                           {savedAddresses.map((addr) => (
-                            <div key={addr.id} className="p-4 rounded-lg border border-[#E7FB10]/20 bg-[#E7FB10]/5 flex items-start justify-between gap-3 group" data-testid={`address-${addr.id}`}>
+                            <div key={addr.id} className="p-4 rounded-lg border border-[#D4FF1F]/20 bg-[#D4FF1F]/5 flex items-start justify-between gap-3 group" data-testid={`address-${addr.id}`}>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
                                   <p className="font-medium">{addr.label || "Address"}</p>
                                   {addr.isDefault && (
-                                    <Badge className="bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30 text-xs">Default</Badge>
+                                    <Badge className="bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/30 text-xs">Default</Badge>
                                   )}
                                 </div>
                                 <p className="text-sm text-muted-foreground">
@@ -2527,7 +2527,7 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <motion.div 
-                className="p-2 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#E7FB10]/10"
+                className="p-2 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#D4FF1F]/10"
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -2542,7 +2542,7 @@ export default function Dashboard() {
           {viewOrderDetails && (
             <div className="space-y-4 py-2">
               {/* Order Status Banner */}
-              <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-transparent border border-[#21d8ff]/20">
+              <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 via-[#D4FF1F]/5 to-transparent border border-[#21d8ff]/20">
                 <span className="text-sm text-muted-foreground">Status</span>
                 <Badge variant={getStatusColor(viewOrderDetails.status)} className="capitalize">
                   {viewOrderDetails.status || "pending"}
@@ -2551,10 +2551,10 @@ export default function Dashboard() {
               
               {/* Product Info with Image */}
               <Link href={`/peptides/${viewOrderDetails.productId}`}>
-                <div className="p-4 rounded-lg border border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent cursor-pointer hover-elevate transition-all">
+                <div className="p-4 rounded-lg border border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent cursor-pointer hover-elevate transition-all">
                   <div className="flex items-start gap-4">
                     {/* Product Image */}
-                    <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#E7FB10]/20 flex items-center justify-center shrink-0 overflow-hidden border border-white/10">
+                    <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#D4FF1F]/20 flex items-center justify-center shrink-0 overflow-hidden border border-white/10">
                       {(() => {
                         const product = products?.find(p => p.id === viewOrderDetails.productId);
                         return product?.imageUrl ? (
@@ -2569,7 +2569,7 @@ export default function Dashboard() {
                       <p className="font-medium text-white truncate">{getProductName(viewOrderDetails.productId)}</p>
                       <div className="flex items-center justify-between gap-3 mt-2 text-sm">
                         <span className="text-muted-foreground">Qty: {viewOrderDetails.quantity || 1}</span>
-                        <span className="font-bold text-[#E7FB10]">${Number(viewOrderDetails.totalAmount).toFixed(2)}</span>
+                        <span className="font-bold text-[#D4FF1F]">${Number(viewOrderDetails.totalAmount).toFixed(2)}</span>
                       </div>
                       <p className="text-xs text-[#21d8ff] mt-2 flex items-center gap-1">
                         View product <ExternalLink className="h-3 w-3" />
@@ -2608,7 +2608,7 @@ export default function Dashboard() {
                     
                     {/* Animated Progress Line */}
                     <motion.div 
-                      className="absolute top-4 left-8 h-0.5 bg-gradient-to-r from-[#21d8ff] to-[#E7FB10]"
+                      className="absolute top-4 left-8 h-0.5 bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F]"
                       initial={{ width: "0%" }}
                       animate={{ 
                         width: viewOrderDetails.fulfillmentStatus === 'delivered' ? "calc(100% - 64px)" : 
@@ -2620,7 +2620,7 @@ export default function Dashboard() {
                     
                     {/* Timeline Steps */}
                     {[
-                      { id: 'pending', label: 'Confirmed', icon: CheckCircle, color: '#E7FB10' },
+                      { id: 'pending', label: 'Confirmed', icon: CheckCircle, color: '#D4FF1F' },
                       { id: 'preparing', label: 'Preparing', icon: Package, color: '#21d8ff' },
                       { id: 'ready', label: 'Shipped', icon: Truck, color: '#9d4edd' },
                       { id: 'delivered', label: 'Delivered', icon: CheckCircle, color: '#22c55e' }

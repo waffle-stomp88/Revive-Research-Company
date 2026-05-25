@@ -41,7 +41,7 @@ function HexGrid() {
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="hexagons" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(0.5)">
-            <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z" fill="none" stroke="#E7FB10" strokeWidth="0.5" opacity="0.06"/>
+            <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z" fill="none" stroke="#D4FF1F" strokeWidth="0.5" opacity="0.06"/>
             <path d="M28 116L0 100L0 66L28 50L56 66L56 100L28 116Z" fill="none" stroke="#21d8ff" strokeWidth="0.5" opacity="0.04"/>
           </pattern>
         </defs>
@@ -262,10 +262,10 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
         />
       )}
       <HexGrid />
-      <FloatingParticle color="#E7FB10" delay={0} x="15%" y="20%" size={4} />
+      <FloatingParticle color="#D4FF1F" delay={0} x="15%" y="20%" size={4} />
       <FloatingParticle color="#21d8ff" delay={0.5} x="80%" y="30%" size={3} />
       {!isMobile && <FloatingParticle color="#a78bfa" delay={1} x="60%" y="70%" size={3} />}
-      {!isMobile && <FloatingParticle color="#E7FB10" delay={1.5} x="25%" y="75%" size={2} />}
+      {!isMobile && <FloatingParticle color="#D4FF1F" delay={1.5} x="25%" y="75%" size={2} />}
 
       <div className="relative z-10 flex flex-col items-center text-center gap-5 p-6 sm:p-8">
         <motion.div
@@ -310,7 +310,7 @@ function SuccessState({ handleClose }: { handleClose: () => void }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="font-display text-4xl bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent"
+          className="font-display text-4xl bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent"
           data-testid="text-prelaunch-success"
         >
           YOU'RE ON THE LIST
@@ -394,13 +394,13 @@ function PreLaunchState({
       {!isMobile && <ScanLine />}
       {!isMobile && (
         <>
-          <FloatingParticle color="#E7FB10" delay={0} x="10%" y="15%" size={3} />
+          <FloatingParticle color="#D4FF1F" delay={0} x="10%" y="15%" size={3} />
           <FloatingParticle color="#21d8ff" delay={0.8} x="85%" y="25%" size={4} />
           <FloatingParticle color="#a78bfa" delay={1.6} x="90%" y="60%" size={3} />
         </>
       )}
       <FloatingParticle color="#21d8ff" delay={2.4} x="8%" y="70%" size={2} />
-      <FloatingParticle color="#E7FB10" delay={3.2} x="50%" y="85%" size={2} />
+      <FloatingParticle color="#D4FF1F" delay={3.2} x="50%" y="85%" size={2} />
       <button
         onClick={handleClose}
         className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors z-20"
@@ -416,7 +416,7 @@ function PreLaunchState({
             transition={{ delay: 0.1 }}
             className="font-display text-3xl sm:text-4xl text-white leading-tight"
           >
-            We know why you're <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">here.</span>
+            We know why you're <span className="bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">here.</span>
           </motion.h3>
         </div>
 
@@ -433,17 +433,17 @@ function PreLaunchState({
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
           <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b] whitespace-nowrap text-center">
-            We built <span className="text-[#E7FB10]">REVIVE</span> to change all of that.
+            We built <span className="text-[#D4FF1F]">REVIVE</span> to change all of that.
           </p>
         </motion.div>
 
         <div className="space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-xs sm:text-sm uppercase tracking-widest font-semibold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent text-center">Why us?</span>
+            <span className="text-xs sm:text-sm uppercase tracking-widest font-semibold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent text-center">Why us?</span>
             <span className="text-[10px] sm:text-xs text-white/25 italic">live on this site</span>
           </div>
           <div className="grid grid-cols-1 gap-2.5 sm:gap-2">
-            <ShimmerCard delay={0.3} accentColor="#E7FB10">
+            <ShimmerCard delay={0.3} accentColor="#D4FF1F">
               <div
                 className="h-11 w-11 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
@@ -464,7 +464,7 @@ function PreLaunchState({
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
-                  <GraduationCap className="h-5 w-5 sm:h-4 sm:w-4 text-[#E7FB10]" />
+                  <GraduationCap className="h-5 w-5 sm:h-4 sm:w-4 text-[#D4FF1F]" />
                 </motion.div>
               </div>
               <div className="min-w-0">
@@ -547,7 +547,7 @@ function PreLaunchState({
           }}
         >
           <div className="space-y-1 text-center">
-            <h4 className="font-display text-2xl sm:text-2xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
+            <h4 className="font-display text-2xl sm:text-2xl bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
               LAUNCHING SOON
             </h4>
             <p className="text-sm sm:text-base text-white/60 leading-snug">
@@ -583,8 +583,8 @@ function PreLaunchState({
                 disabled={loading}
                 className="no-default-hover-elevate w-full font-bold text-sm sm:text-base uppercase tracking-wide text-black h-10 sm:h-11"
                 style={{
-                  background: "linear-gradient(90deg, #E7FB10, #b8e600)",
-                  border: "1px solid #E7FB10",
+                  background: "linear-gradient(90deg, #D4FF1F, #b8e600)",
+                  border: "1px solid #D4FF1F",
                 }}
                 data-testid="button-prelaunch-submit"
               >
@@ -737,9 +737,9 @@ export function ExitIntentPopup() {
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       className="inline-block"
                     >
-                      <AlertTriangle className="h-8 w-8 text-[#E7FB10] mx-auto" />
+                      <AlertTriangle className="h-8 w-8 text-[#D4FF1F] mx-auto" />
                     </motion.div>
-                    <h3 className="font-display text-3xl sm:text-4xl bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] bg-clip-text text-transparent">
+                    <h3 className="font-display text-3xl sm:text-4xl bg-gradient-to-r from-[#D4FF1F] via-white to-[#21d8ff] bg-clip-text text-transparent">
                       BEFORE YOU GO
                     </h3>
                   </div>
@@ -783,8 +783,8 @@ export function ExitIntentPopup() {
                           disabled={loading}
                           className="no-default-hover-elevate w-full font-bold text-sm uppercase tracking-wide text-black h-10"
                           style={{
-                            background: "linear-gradient(90deg, #E7FB10, #b8e600)",
-                            border: "1px solid #E7FB10",
+                            background: "linear-gradient(90deg, #D4FF1F, #b8e600)",
+                            border: "1px solid #D4FF1F",
                           }}
                           data-testid="button-exit-submit"
                         >
@@ -806,7 +806,7 @@ export function ExitIntentPopup() {
                     </div>
                     <div className="h-3 w-px bg-white/10" />
                     <div className="flex items-center gap-1.5 text-xs text-white/40">
-                      <FlaskConical className="h-3.5 w-3.5 text-[#E7FB10] flex-shrink-0" />
+                      <FlaskConical className="h-3.5 w-3.5 text-[#D4FF1F] flex-shrink-0" />
                       <span>Synergy Engine</span>
                     </div>
                     <div className="h-3 w-px bg-white/10" />

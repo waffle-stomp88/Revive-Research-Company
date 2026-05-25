@@ -61,7 +61,7 @@ export function Footer({ className }: FooterProps) {
     <footer className={`bg-card border-t border-border ${className || ""}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-4 pb-16 md:pb-24">
         {/* Newsletter Signup - Prominent at top */}
-        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/10 via-[#D4FF1F]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/30 mb-1">
@@ -115,7 +115,7 @@ export function Footer({ className }: FooterProps) {
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">
+                    <span className="text-sm text-muted-foreground hover:text-[#D4FF1F] transition-colors cursor-pointer">
                       {link.label}
                     </span>
                   </Link>
@@ -225,19 +225,19 @@ export function Footer({ className }: FooterProps) {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
               <Link href="/privacy">
-                <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Privacy Policy</span>
+                <span className="text-muted-foreground hover:text-[#D4FF1F] transition-colors cursor-pointer">Privacy Policy</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>
               <Link href="/terms-of-service">
-                <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Terms & Conditions</span>
+                <span className="text-muted-foreground hover:text-[#D4FF1F] transition-colors cursor-pointer">Terms & Conditions</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>
               <Link href="/disclaimer">
-                <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Disclaimer</span>
+                <span className="text-muted-foreground hover:text-[#D4FF1F] transition-colors cursor-pointer">Disclaimer</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>
               <Link href="/coa/verify-certificate-of-analysis">
-                <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">COA Verification</span>
+                <span className="text-muted-foreground hover:text-[#D4FF1F] transition-colors cursor-pointer">COA Verification</span>
               </Link>
             </div>
             <p className="text-xs text-muted-foreground/60">

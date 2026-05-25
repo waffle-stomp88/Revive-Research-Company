@@ -31,7 +31,7 @@ const checklistItems = [
   },
   {
     category: "Product Information",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     items: [
       { question: "Is there a batch/lot number on every vial?", critical: true, explanation: "This allows traceability back to specific testing results." },
       { question: "Are storage recommendations clearly provided?", critical: false, explanation: "Proper handling info shows the vendor understands product stability." },
@@ -90,9 +90,9 @@ export default function BuyerChecklist() {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <Card className="p-6 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+          <Card className="p-6 border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
             <div className="flex items-start gap-4">
-              <ClipboardCheck className="h-8 w-8 text-[#E7FB10] flex-shrink-0" />
+              <ClipboardCheck className="h-8 w-8 text-[#D4FF1F] flex-shrink-0" />
               <div>
                 <h2 className="font-display text-xl font-bold mb-2">Why This Matters</h2>
                 <p className="text-muted-foreground">
@@ -186,7 +186,7 @@ export default function BuyerChecklist() {
                   </Button>
                 </Link>
                 <Link href="/guides/peptide-quality-assurance-process">
-                  <Button variant="outline" className="gap-2 border-[#E7FB10]/30 text-[#E7FB10] hover:bg-[#E7FB10]/10" data-testid="button-see-process">
+                  <Button variant="outline" className="gap-2 border-[#D4FF1F]/30 text-[#D4FF1F] hover:bg-[#D4FF1F]/10" data-testid="button-see-process">
                     <Shield className="h-4 w-4" />
                     See Our Process
                   </Button>

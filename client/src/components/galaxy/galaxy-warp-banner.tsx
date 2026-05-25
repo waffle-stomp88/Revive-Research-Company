@@ -52,13 +52,13 @@ export function WarpBanner({ warpingToNode, warpNonce }: WarpBannerProps) {
             fontSize: "13px",
             fontWeight: 700,
             letterSpacing: "0.1em",
-            color: "#E7FB10",
+            color: "#D4FF1F",
             background: "rgba(0,0,0,0.6)",
-            border: "0.5px solid #E7FB10",
+            border: "0.5px solid #D4FF1F",
             padding: "8px 18px",
             borderRadius: "2px",
             whiteSpace: "nowrap",
-            textShadow: "0 0 12px #E7FB10",
+            textShadow: "0 0 12px #D4FF1F",
           }}
           data-testid="galaxy-warp-banner"
         >

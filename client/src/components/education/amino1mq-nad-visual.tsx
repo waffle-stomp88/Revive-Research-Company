@@ -13,7 +13,7 @@ interface PathwayStep {
 
 const pathwaySteps: PathwayStep[] = [
   { id: 0, label: "NNMT Active", icon: Activity, color: "#ef4444", description: "NNMT depletes NAD+ by methylating nicotinamide" },
-  { id: 1, label: "5-Amino-1MQ", icon: Zap, color: "#E7FB10", description: "5-Amino-1MQ inhibits NNMT (IC₅₀ = 1.2 μM)" },
+  { id: 1, label: "5-Amino-1MQ", icon: Zap, color: "#D4FF1F", description: "5-Amino-1MQ inhibits NNMT (IC₅₀ = 1.2 μM)" },
   { id: 2, label: "NAD+ Preserved", icon: Battery, color: "#21d8ff", description: "NAD+ levels restored for cellular energy" },
   { id: 3, label: "Metabolism Boost", icon: Flame, color: "#ec4899", description: "Enhanced mitochondrial function and fat oxidation" },
 ];
@@ -39,7 +39,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
           </filter>
           <linearGradient id="nadGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ef4444" />
-            <stop offset="33%" stopColor="#E7FB10" />
+            <stop offset="33%" stopColor="#D4FF1F" />
             <stop offset="66%" stopColor="#21d8ff" />
             <stop offset="100%" stopColor="#ec4899" />
           </linearGradient>
@@ -72,7 +72,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
         <motion.circle
           cx="160" cy="95" r="25"
           fill="rgba(231, 251, 16, 0.2)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="3"
           filter="url(#nadGlow)"
           initial={{ scale: 0 }}
@@ -82,13 +82,13 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
           transition={{ duration: 1.5, repeat: activeStep === 1 ? Infinity : 0 }}
           style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.6))' }}
         />
-        <motion.text x="160" y="90" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+        <motion.text x="160" y="90" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView && activeStep >= 1 ? { opacity: 1 } : {}}
         >
           5-AMINO
         </motion.text>
-        <motion.text x="160" y="102" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold"
+        <motion.text x="160" y="102" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView && activeStep >= 1 ? { opacity: 1 } : {}}
         >
@@ -97,7 +97,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.path
           d="M 95 95 L 130 95"
-          stroke={activeStep >= 1 ? "#E7FB10" : "hsl(var(--foreground) / 0.3)"}
+          stroke={activeStep >= 1 ? "#D4FF1F" : "hsl(var(--foreground) / 0.3)"}
           strokeWidth="2"
           strokeDasharray={activeStep >= 1 ? "0" : "5,5"}
           fill="none"
@@ -211,7 +211,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
         <motion.text
           x="200" y="175"
           textAnchor="middle"
-          fill="#E7FB10"
+          fill="#D4FF1F"
           fontSize="11"
           fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -261,12 +261,12 @@ export function Amino1MQNADVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <Battery className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <Battery className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             NAD+ Salvage Pathway
           </span>
         </div>
@@ -294,7 +294,7 @@ export function Amino1MQNADVisual() {
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
                 backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
-                color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
+                color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
                 border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"

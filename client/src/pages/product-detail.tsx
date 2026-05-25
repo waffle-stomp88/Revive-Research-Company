@@ -139,7 +139,7 @@ function getProductBadges(
     badges.push({
       type: "selling-fast",
       label: "Selling Fast",
-      className: "bg-[#E7FB10] text-black font-semibold",
+      className: "bg-[#D4FF1F] text-black font-semibold",
       icon: TrendingUp
     });
   }
@@ -669,7 +669,7 @@ export default function ProductDetail() {
           ? `${effectiveQty}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
           : `${effectiveQty}x ${product.name} (${selectedDosage}) added to your cart.`,
         action: (
-          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
+          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#D4FF1F] text-black border-[#D4FF1F] hover:bg-[#D4FF1F]/90 font-semibold">
             View Cart
           </ToastAction>
         ),
@@ -1025,7 +1025,7 @@ export default function ProductDetail() {
                 <>
                   <div
                     className="h-[3px] mt-2 mb-3 rounded-full -mx-4 md:-mx-6"
-                    style={{ background: "linear-gradient(to right, #21d8ff, #E7FB10)" }}
+                    style={{ background: "linear-gradient(to right, #21d8ff, #D4FF1F)" }}
                     data-testid="separator-gradient"
                   />
                   {profile?.mechanismDescriptor && (
@@ -1040,7 +1040,7 @@ export default function ProductDetail() {
             <div className="mb-2" data-testid="text-product-price">
               {(!softGateEnabled || isAuthenticated) && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">
+                  <span className="font-display text-2xl md:text-3xl font-bold text-[#D4FF1F]">
                     ${Math.round(getBasePrice())}
                   </span>
                   <span className="text-xs text-muted-foreground">/ vial</span>
@@ -1226,7 +1226,7 @@ export default function ProductDetail() {
                     aria-hidden="true"
                     data-testid="stack-cta"
                   >
-                    <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                    <div className="w-full h-11 rounded-md bg-[#D4FF1F] flex items-center justify-center gap-2">
                       <ShoppingCart className="h-5 w-5 text-black" />
                       <span className="font-display font-bold text-black">Buy Now</span>
                     </div>
@@ -1243,7 +1243,7 @@ export default function ProductDetail() {
                   className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                     purchaseType === "subscription"
                       ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                      : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
+                      : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
                   }`}
                   onClick={handleBuyNow}
                   data-testid="button-buy-now"
@@ -1358,7 +1358,7 @@ export default function ProductDetail() {
                       <input 
                         type="checkbox" 
                         id="early-access-signup" 
-                        className="rounded border-[#E7FB10]/30 bg-black/20"
+                        className="rounded border-[#D4FF1F]/30 bg-black/20"
                         onChange={async (e) => {
                           if (e.target.checked && notifyEmail) {
                             try {
@@ -1381,7 +1381,7 @@ export default function ProductDetail() {
                 <p className="text-[10px] text-muted-foreground mt-3">
                   We'll send you one email when this product is restocked. No spam, ever.
                 </p>
-                <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[#E7FB10]/60">
+                <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[#D4FF1F]/60">
                   <Sparkles className="h-3 w-3" />
                   <span>Launching in 2-3 weeks after third-party testing</span>
                 </div>
@@ -1393,15 +1393,15 @@ export default function ProductDetail() {
 
             {/* Reconstitution Wizard callout */}
             <Link href="/reconstitution-wizard" data-testid="link-reconstitution-wizard-callout">
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#E7FB10]/5 border border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-all cursor-pointer group mb-3">
-                <div className="p-1.5 rounded-md bg-[#E7FB10]/10 flex-shrink-0">
-                  <FlaskConical className="h-4 w-4 text-[#E7FB10]" />
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#D4FF1F]/5 border border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-all cursor-pointer group mb-3">
+                <div className="p-1.5 rounded-md bg-[#D4FF1F]/10 flex-shrink-0">
+                  <FlaskConical className="h-4 w-4 text-[#D4FF1F]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-[#E7FB10]">Reconstitution Calculator</p>
+                  <p className="text-xs font-medium text-[#D4FF1F]">Reconstitution Calculator</p>
                   <p className="text-[10px] text-muted-foreground leading-tight">Calculate exact BAC water &amp; dose per syringe</p>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-[#E7FB10]/50 group-hover:text-[#E7FB10] transition-colors flex-shrink-0" />
+                <ChevronRight className="h-3.5 w-3.5 text-[#D4FF1F]/50 group-hover:text-[#D4FF1F] transition-colors flex-shrink-0" />
               </div>
             </Link>
 
@@ -1521,7 +1521,7 @@ export default function ProductDetail() {
                       onClick={() => setActiveResearchTab(tab.key)}
                       className={`px-4 py-3 min-h-[44px] text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
                         activeResearchTab === tab.key
-                          ? "border-[#E7FB10] text-foreground"
+                          ? "border-[#D4FF1F] text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
                       }`}
                       style={{ scrollSnapAlign: "start" }}
@@ -1616,7 +1616,7 @@ export default function ProductDetail() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {benefits.map((benefit, index) => (
                         <div key={index} className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-border bg-card text-sm">
-                          <CheckCircle className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#D4FF1F] flex-shrink-0" />
                           <span>{benefit}</span>
                         </div>
                       ))}
@@ -2115,7 +2115,7 @@ export default function ProductDetail() {
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           {[
-                            { name: "BPC-157", tier: { label: "Legendary", color: "#E7FB10", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }, score: 92, mechanism: "Synergistic tissue repair via GH receptor upregulation and angiogenic co-activation." },
+                            { name: "BPC-157", tier: { label: "Legendary", color: "#D4FF1F", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }, score: 92, mechanism: "Synergistic tissue repair via GH receptor upregulation and angiogenic co-activation." },
                             { name: "TB-500", tier: { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }, score: 87, mechanism: "Complementary actin-binding pathway enhances systemic recovery and anti-inflammatory response." },
                             { name: "Ipamorelin", tier: { label: "Good", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" }, score: 80, mechanism: "Pulse GH release amplified by combined GHRH and ghrelin receptor co-agonism." },
                           ].map((partner) => (
@@ -2135,7 +2135,7 @@ export default function ProductDetail() {
                                     {partner.mechanism}
                                   </p>
                                   <div className="flex items-center justify-between mt-2 gap-2">
-                                    <p className="text-sm font-bold text-[#E7FB10]">From $XX.XX</p>
+                                    <p className="text-sm font-bold text-[#D4FF1F]">From $XX.XX</p>
                                     <Button variant="outline" size="sm" className="flex-shrink-0 gap-1">
                                       <ShoppingBag className="h-3 w-3" />
                                       + Add
@@ -2188,7 +2188,7 @@ export default function ProductDetail() {
                           const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
                           const score = partnerSynergy?.synergyBonus ?? 0;
                           const tier = score >= 90
-                            ? { label: "Legendary", color: "#E7FB10", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }
+                            ? { label: "Legendary", color: "#D4FF1F", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }
                             : score >= 85
                             ? { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }
                             : score >= 75
@@ -2237,7 +2237,7 @@ export default function ProductDetail() {
                                     )}
                                     {!pairingReason && <div className="flex-1" />}
                                     <div className="flex items-center justify-between mt-2 gap-2">
-                                      <p className="text-sm font-bold text-[#E7FB10]" data-testid={`text-synergy-price-${partnerProduct.id}`}>
+                                      <p className="text-sm font-bold text-[#D4FF1F]" data-testid={`text-synergy-price-${partnerProduct.id}`}>
                                         {(() => {
                                           const displayPrice = Number(partnerProduct.price) > 0
                                             ? Number(partnerProduct.price)
@@ -2326,10 +2326,10 @@ export default function ProductDetail() {
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-sm text-muted-foreground">{selectedDosage}</span>
                 <span className="text-sm text-muted-foreground">{`${effectiveQty} vial${effectiveQty > 1 ? "s" : ""}`}</span>
-                <span className="font-bold text-[#E7FB10]">${effectiveTotal}</span>
+                <span className="font-bold text-[#D4FF1F]">${effectiveTotal}</span>
                 <Button
                   onClick={handleAddToCart}
-                  className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+                  className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
                   data-testid="button-sticky-purchase-add-to-cart"
                 >
                   <ShoppingBag className="h-4 w-4" />
@@ -2347,11 +2347,11 @@ export default function ProductDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{product.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">${effectiveTotal}</p>
+              <p className="text-lg font-bold text-[#D4FF1F]">${effectiveTotal}</p>
             </div>
             <Button
               size="lg"
-              className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
               onClick={handleAddToCart}
               data-testid="button-sticky-add-to-cart"
             >

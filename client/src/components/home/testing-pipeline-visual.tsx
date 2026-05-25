@@ -19,7 +19,7 @@ const pipelineSteps = [
     title: "Sourcing",
     subtitle: "Premium Raw Materials",
     description: "Carefully selected ingredients from certified suppliers",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     glowColor: "rgba(231, 251, 16, 0.4)",
     details: [
       "Pharmaceutical-grade amino acids",
@@ -240,7 +240,7 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
           className="absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold z-20"
           style={{ 
             backgroundColor: step.color,
-            color: step.color === "#E7FB10" || step.color === "#22c55e" ? "#000" : "#fff",
+            color: step.color === "#D4FF1F" || step.color === "#22c55e" ? "#000" : "#fff",
             boxShadow: `0 0 15px ${step.glowColor}`
           }}
           initial={{ scale: 0 }}
@@ -442,7 +442,7 @@ export function TestingPipelineVisual() {
             <motion.div
               className="h-full rounded-full"
               style={{
-                background: 'linear-gradient(90deg, #E7FB10, #21d8ff, #9d4edd, #ec4899, #22c55e)',
+                background: 'linear-gradient(90deg, #D4FF1F, #21d8ff, #9d4edd, #ec4899, #22c55e)',
                 opacity: 0.3
               }}
               initial={{ scaleX: 0 }}

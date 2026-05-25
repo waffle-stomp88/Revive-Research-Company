@@ -213,9 +213,9 @@ export function CompoundFinder({ products, onAddToCart }: CompoundFinderProps) {
 
   if (step === 0) {
     return (
-      <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 via-[#E7FB10]/3 to-transparent" data-testid="compound-finder-intro">
+      <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 via-[#D4FF1F]/3 to-transparent" data-testid="compound-finder-intro">
         <CardContent className="p-6 sm:p-8 text-center">
-          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[#21d8ff]/20 to-[#E7FB10]/10 mb-5">
+          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[#21d8ff]/20 to-[#D4FF1F]/10 mb-5">
             <Lightbulb className="h-8 w-8 text-[#21d8ff]" />
           </div>
           <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.02em" }}>
@@ -424,7 +424,7 @@ export function CompoundFinder({ products, onAddToCart }: CompoundFinderProps) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Zap className="h-5 w-5 text-[#E7FB10]" />
+              <Zap className="h-5 w-5 text-[#D4FF1F]" />
               Your Recommendations
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -468,7 +468,7 @@ export function CompoundFinder({ products, onAddToCart }: CompoundFinderProps) {
                         </Badge>
                       )}
                       {product.inStock && idx === 0 && (
-                        <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-[10px]">
+                        <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30 text-[10px]">
                           Top Pick
                         </Badge>
                       )}

@@ -12,9 +12,9 @@ interface VesselBranch {
 
 function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; activePhase: number }) {
   const vesselBranches: VesselBranch[] = [
-    { id: 1, path: "M 150 180 Q 150 140 150 100", delay: 0, color: "#E7FB10" },
-    { id: 2, path: "M 150 100 Q 120 80 90 60", delay: 0.3, color: "#E7FB10" },
-    { id: 3, path: "M 150 100 Q 180 80 210 60", delay: 0.4, color: "#E7FB10" },
+    { id: 1, path: "M 150 180 Q 150 140 150 100", delay: 0, color: "#D4FF1F" },
+    { id: 2, path: "M 150 100 Q 120 80 90 60", delay: 0.3, color: "#D4FF1F" },
+    { id: 3, path: "M 150 100 Q 180 80 210 60", delay: 0.4, color: "#D4FF1F" },
     { id: 4, path: "M 90 60 Q 60 50 40 30", delay: 0.7, color: "#21d8ff" },
     { id: 5, path: "M 90 60 Q 80 40 70 20", delay: 0.8, color: "#21d8ff" },
     { id: 6, path: "M 210 60 Q 230 50 250 30", delay: 0.9, color: "#21d8ff" },
@@ -44,7 +44,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
             </feMerge>
           </filter>
           <linearGradient id="vesselGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#E7FB10" />
+            <stop offset="0%" stopColor="#D4FF1F" />
             <stop offset="50%" stopColor="#21d8ff" />
             <stop offset="100%" stopColor="#ec4899" />
           </linearGradient>
@@ -54,7 +54,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
           cx="150"
           cy="185"
           r="12"
-          fill="#E7FB10"
+          fill="#D4FF1F"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: [1, 1.2, 1] } : {}}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -122,7 +122,7 @@ function AnimatedBloodVessels({ isInView, activePhase }: { isInView: boolean; ac
           x="150"
           y="12"
           textAnchor="middle"
-          fill="#E7FB10"
+          fill="#D4FF1F"
           fontSize="10"
           fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -144,7 +144,7 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
         <defs>
           <linearGradient id="noGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#21d8ff" />
-            <stop offset="100%" stopColor="#E7FB10" />
+            <stop offset="100%" stopColor="#D4FF1F" />
           </linearGradient>
         </defs>
         
@@ -167,7 +167,7 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
           <motion.circle
             key={i}
             r="4"
-            fill="#E7FB10"
+            fill="#D4FF1F"
             initial={{ opacity: 0 }}
             animate={isInView && isActive ? {
               cx: [60, 100, 140],
@@ -199,7 +199,7 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
         <motion.circle
           cx="165" cy="50" r="20"
           fill="rgba(231, 251, 16, 0.1)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { 
@@ -207,13 +207,13 @@ function NOPathwayVisual({ isInView, isActive }: { isInView: boolean; isActive: 
           } : {}}
           transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
         />
-        <motion.text x="165" y="46" textAnchor="middle" fill="#E7FB10" fontSize="7" fontWeight="bold"
+        <motion.text x="165" y="46" textAnchor="middle" fill="#D4FF1F" fontSize="7" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           VESSEL
         </motion.text>
-        <motion.text x="165" y="56" textAnchor="middle" fill="#E7FB10" fontSize="6"
+        <motion.text x="165" y="56" textAnchor="middle" fill="#D4FF1F" fontSize="6"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -230,7 +230,7 @@ const phases = [
     name: "VEGF Release", 
     icon: Zap, 
     description: "BPC-157 upregulates vascular endothelial growth factor",
-    color: "#E7FB10"
+    color: "#D4FF1F"
   },
   { 
     id: 1, 
@@ -290,12 +290,12 @@ export function BPC157AngiogenesisVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <Heart className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <Heart className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Angiogenesis Mechanism
           </span>
         </div>
@@ -323,7 +323,7 @@ export function BPC157AngiogenesisVisual() {
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
                 backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
-                color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
+                color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
                 border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"

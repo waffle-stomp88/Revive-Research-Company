@@ -58,7 +58,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       title: "Added to Cart",
       description: `${quantity}x ${product.name} added to your cart.`,
       action: (
-        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
+        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#D4FF1F] text-black border-[#D4FF1F] hover:bg-[#D4FF1F]/90 font-semibold">
           View Cart
         </ToastAction>
       ),
@@ -104,7 +104,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               </p>
 
               <div className="flex items-baseline gap-3 mb-4">
-                <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-quickview-price">
+                <span className="font-display text-3xl font-bold text-[#D4FF1F]" data-testid="text-quickview-price">
                   {product.minPrice && product.maxPrice
                     ? `$${Math.round(Number(product.minPrice))}–$${Math.round(Number(product.maxPrice))}`
                     : `$${Math.round(Number(product.price))}`

@@ -29,7 +29,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Orders & Shipping",
     icon: Truck,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     questions: [
       {
         question: "How quickly will my order ship?",
@@ -78,7 +78,7 @@ const FAQ_CATEGORIES = [
                   <p>Email support within 48 hours of delivery.</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="font-bold text-[#E7FB10]">2. Document</p>
+                  <p className="font-bold text-[#D4FF1F]">2. Document</p>
                   <p>Provide order # and clear photos of the issue.</p>
                 </div>
                 <div className="space-y-1">
@@ -238,7 +238,7 @@ export default function FAQ() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#9d4edd]/20 flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D4FF1F]/20 via-[#21d8ff]/20 to-[#9d4edd]/20 flex items-center justify-center mx-auto mb-6">
             <HelpCircle className="h-8 w-8 text-white" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-faq-title">
@@ -366,8 +366,8 @@ export default function FAQ() {
                 </div>
               </Link>
               <Link href="/guides/peptide-package-arrived-warm">
-                <div className="p-4 rounded-lg border border-border hover:border-[#E7FB10]/50 hover:bg-[#E7FB10]/5 transition-colors cursor-pointer group" data-testid="link-package-warm-guide">
-                  <p className="font-medium text-sm mb-1 group-hover:text-[#E7FB10]">Warm Package Guide</p>
+                <div className="p-4 rounded-lg border border-border hover:border-[#D4FF1F]/50 hover:bg-[#D4FF1F]/5 transition-colors cursor-pointer group" data-testid="link-package-warm-guide">
+                  <p className="font-medium text-sm mb-1 group-hover:text-[#D4FF1F]">Warm Package Guide</p>
                   <p className="text-xs text-muted-foreground">Package arrived warm? Don't worry</p>
                 </div>
               </Link>
@@ -390,7 +390,7 @@ export default function FAQ() {
               <Link href="/peptide-shipping-and-handling">
                 <Button 
                   variant="outline" 
-                  className="border-[#E7FB10]/30 hover:border-[#E7FB10] text-[#E7FB10]"
+                  className="border-[#D4FF1F]/30 hover:border-[#D4FF1F] text-[#D4FF1F]"
                   data-testid="link-shipping-info"
                 >
                   <Truck className="h-4 w-4 mr-2" />

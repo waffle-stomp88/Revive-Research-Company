@@ -21,7 +21,7 @@ export function BlurredGate({ previewContent, title, description, testId, custom
         boxShadow: "0 0 20px rgba(231,251,16,0.06)",
       }}
     >
-      <Lock className="w-4 h-4 mx-auto mb-1.5" style={{ color: "#E7FB10" }} />
+      <Lock className="w-4 h-4 mx-auto mb-1.5" style={{ color: "#D4FF1F" }} />
       <p className="text-sm font-semibold text-white leading-snug mb-0.5">{title}</p>
       {description && (
         <p className="text-xs text-white/50 mb-2 leading-snug">{description}</p>
@@ -31,7 +31,7 @@ export function BlurredGate({ previewContent, title, description, testId, custom
           setLocation(`/login?returnTo=${encodeURIComponent(location)}&mode=signup`)
         }
         className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-black"
-        style={{ background: "#E7FB10" }}
+        style={{ background: "#D4FF1F" }}
         data-testid="button-blurred-gate-signin"
       >
         Create Free Account

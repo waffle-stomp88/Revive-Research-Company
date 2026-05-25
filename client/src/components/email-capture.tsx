@@ -109,10 +109,10 @@ export function EmailCapture({
   if (variant === "academy") {
     return (
       <div className={className} data-testid="email-capture-academy">
-        <Card className="p-5 border-[#E7FB10]/20 bg-[#E7FB10]/5">
+        <Card className="p-5 border-[#D4FF1F]/20 bg-[#D4FF1F]/5">
           <div className="flex items-start gap-3 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0">
-              <FlaskConical className="h-4 w-4 text-[#E7FB10]" />
+            <div className="w-9 h-9 rounded-lg bg-[#D4FF1F]/10 flex items-center justify-center flex-shrink-0">
+              <FlaskConical className="h-4 w-4 text-[#D4FF1F]" />
             </div>
             <div>
               <p className="font-semibold text-sm">{heading}</p>
@@ -126,14 +126,14 @@ export function EmailCapture({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1 bg-background/50 border-[#E7FB10]/20 focus:border-[#E7FB10]/50 h-9 text-sm"
+              className="flex-1 bg-background/50 border-[#D4FF1F]/20 focus:border-[#D4FF1F]/50 h-9 text-sm"
               data-testid="input-email-capture-academy"
             />
             <Button
               type="submit"
               size="sm"
               disabled={!email || subscribeMutation.isPending}
-              className="bg-[#E7FB10] text-black font-medium"
+              className="bg-[#D4FF1F] text-black font-medium"
               data-testid="button-email-capture-academy"
             >
               {subscribeMutation.isPending ? (

@@ -152,7 +152,7 @@ Understanding exactly how TB-500 works is still an active area of research, with
 
   "what-is-rr-a1-peptide": {
     icon: Target,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `RR-A1 is a GLP-1 receptor agonist - a peptide that mimics a hormone your body naturally produces after eating. The natural hormone (GLP-1) breaks down in just minutes, but scientists modified RR-A1 to last much longer, making it valuable for metabolic research.`,
     sections: [
       {
@@ -388,7 +388,7 @@ The selectivity and predictable response make ipamorelin a clean research tool f
 
   "what-is-tesamorelin-peptide": {
     icon: Zap,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `Tesamorelin is another GHRH analog like CJC-1295, but with a different modification strategy. It uses a unique chemical group attached to its structure that helps it resist breakdown. Researchers study tesamorelin particularly for its effects on body composition.`,
     sections: [
       {
@@ -577,7 +577,7 @@ GHK-Cu represents one of the more accessible peptides for research - it's small,
 
   "what-is-glow-peptide-complex": {
     icon: Sparkles,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `GLOW Peptide Complex represents a multi-peptide approach to skin research. Rather than using a single peptide, it combines several bioactive peptides that work through different pathways. The idea is that targeting multiple mechanisms simultaneously might produce more comprehensive effects than any single peptide alone.`,
     sections: [
       {
@@ -1015,7 +1015,7 @@ Think of it like instant coffee versus brewed coffee. Instant coffee (the powder
 
   "how-to-read-coas": {
     icon: FileCheck,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `A Certificate of Analysis (COA) is essentially a report card for your peptide. It's third-party proof that what's in the vial is actually what the label says, and that it meets quality standards. Learning to read a COA is an essential skill for any researcher.`,
     sections: [
       {
@@ -1373,7 +1373,7 @@ Kisspeptin-54 is unique because it sits at the very beginning of this race. By g
 
   "what-is-5-amino-1mq-peptide": {
     icon: Zap,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `5-Amino-1MQ is a small molecule that inhibits an enzyme called NNMT (nicotinamide N-methyltransferase). This enzyme plays a role in how your body processes NAD+, a crucial molecule for cellular energy. By blocking NNMT, researchers study how cells might have more NAD+ available for energy production.`,
     sections: [
       {
@@ -1756,7 +1756,7 @@ Think of it like a radio station that broadcasts on two frequencies at once — 
 
   "what-is-slu-pp-332-peptide": {
     icon: Zap,
-    iconColor: "#E7FB10",
+    iconColor: "#D4FF1F",
     intro: `SLU-PP-332 is a first-in-class research compound known as an "exercise mimetic." While most peptides work like traditional hormones, SLU-PP-332 works like a "fitness switch" for your cells. It tells your body to act as if it's undergoing intense endurance training, triggering metabolic pathways usually reserved for high-intensity physical exertion even when the subject is at rest.`,
     sections: [
       {

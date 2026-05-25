@@ -523,7 +523,7 @@ const _research:  LucideIcon = getSystemIcon("research")  ?? Beaker;
 // Canonical system colors resolved from the same body-systems source so that a single
 // color change in body-systems.ts propagates everywhere automatically.
 const _healingColor   = getSystemColor("healing")   ?? "#22c55e";
-const _metabolicColor = getSystemColor("metabolic") ?? "#E7FB10";
+const _metabolicColor = getSystemColor("metabolic") ?? "#D4FF1F";
 const _growthColor    = getSystemColor("growth")    ?? "#f59e0b";
 const _cognitiveColor = getSystemColor("cognitive") ?? "#21d8ff";
 const _skinColor      = getSystemColor("skin")      ?? "#ec4899";
@@ -2087,7 +2087,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           variant="outline" 
           size="sm" 
           onClick={() => navigate("/cart")}
-          className="border-[#E7FB10] text-[#E7FB10] hover:bg-[#E7FB10]/10"
+          className="border-[#D4FF1F] text-[#D4FF1F] hover:bg-[#D4FF1F]/10"
           data-testid="button-toast-view-cart"
         >
           View Cart
@@ -2101,10 +2101,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3 flex-wrap rounded-md border border-[#E7FB10]/25 bg-[#E7FB10]/[0.04] px-4 py-3">
+      <div className="flex items-center justify-between gap-3 flex-wrap rounded-md border border-[#D4FF1F]/25 bg-[#D4FF1F]/[0.04] px-4 py-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-md bg-[#E7FB10]/10 border border-[#E7FB10]/30 flex items-center justify-center shrink-0">
-            <Sparkles className="h-4 w-4 text-[#E7FB10]" />
+          <div className="w-9 h-9 rounded-md bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 flex items-center justify-center shrink-0">
+            <Sparkles className="h-4 w-4 text-[#D4FF1F]" />
           </div>
           <div className="min-w-0">
             <h4 className="text-sm font-semibold text-white tracking-wide">Synergy Galaxy</h4>
@@ -2115,7 +2115,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </div>
         <Link href="/galaxy">
           <Button
-            className="gap-1.5 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            className="gap-1.5 bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
             data-testid="button-launch-synergy-galaxy"
           >
             <Sparkles className="h-4 w-4" />
@@ -2351,7 +2351,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               cy="50"
                               r="42"
                               fill="none"
-                              stroke={knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}
+                              stroke={knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#D4FF1F" : "#21d8ff"}
                               strokeWidth="7"
                               strokeLinecap="round"
                               initial={{ strokeDasharray: "0 264" }}
@@ -2585,14 +2585,14 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           </span>
                                           <Badge className="text-[9px] shrink-0" style={{ 
                                             backgroundColor: `${({
-                                              Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                              Healing: "#22c55e", Metabolic: "#D4FF1F", Growth: "#f59e0b", Cognitive: "#21d8ff",
                                               Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                              Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                              Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#D4FF1F",
                                             } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
                                             color: ({
-                                              Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                              Healing: "#22c55e", Metabolic: "#D4FF1F", Growth: "#f59e0b", Cognitive: "#21d8ff",
                                               Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                              Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                              Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#D4FF1F",
                                             } as Record<string, string>)[pairing.boost] || '#21d8ff'
                                           }}>
                                             {pairing.boost}
@@ -2820,7 +2820,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             <AccordionItem value="popular" className="border-b-0" data-testid="accordion-popular-stacks">
                               <AccordionTrigger className="text-muted-foreground">
                                 <div className="flex items-center gap-2">
-                                  <Users className="h-3.5 w-3.5 text-[#E7FB10]" />
+                                  <Users className="h-3.5 w-3.5 text-[#D4FF1F]" />
                                   <span className="text-xs font-semibold">POPULAR COMBOS</span>
                                 </div>
                               </AccordionTrigger>
@@ -2833,7 +2833,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                     return (
                                     <div key={i} className="space-y-1">
                                       <div 
-                                        className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
+                                        className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#D4FF1F]/40 transition-colors"
                                         onClick={() => {
                                           if (products) {
                                             const matchedPeptides = combo.peptideNames
@@ -2951,7 +2951,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         const pillKnownStack = checkKnownStack(pillPeptideNames, knownStacks);
         const pillSynergyColor = pillKnownStack
           ? pillKnownStack.color
-          : pillSynergyScore > 70 ? "#22c55e" : pillSynergyScore > 50 ? "#E7FB10" : "#21d8ff";
+          : pillSynergyScore > 70 ? "#22c55e" : pillSynergyScore > 50 ? "#D4FF1F" : "#21d8ff";
         const pillSharedPathways = findSharedPathways(pillPeptideNames);
         const pillActiveSystems = getActiveSystems(pillPeptideNames);
         const pillPathwayOverlaps = detectPathwayOverlaps(
@@ -3142,7 +3142,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
             <div className="flex items-center gap-2 sm:gap-3">
               {selectedPeptides.length >= 2 && (
-                <span className="hidden sm:inline font-display text-lg font-bold text-[#E7FB10]">${Math.round(getRetailTotal())}</span>
+                <span className="hidden sm:inline font-display text-lg font-bold text-[#D4FF1F]">${Math.round(getRetailTotal())}</span>
               )}
               {selectedPeptides.length >= 2 && (
                 <Button
@@ -3179,7 +3179,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     size="sm"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
                     disabled={notEnough || hasOutOfStock}
-                    className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)] text-xs sm:text-sm"
+                    className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)] text-xs sm:text-sm"
                     data-testid="button-add-custom-stack"
                   >
                     <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
@@ -3289,7 +3289,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               .map((p) => p.slug)
                               .filter((s): s is string => Boolean(s)),
                           );
-                          const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
+                          const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#D4FF1F" : "#21d8ff";
                           return (
                             <div className="lg:hidden space-y-2 pt-2 border-t border-[#2a2a32]" data-testid="mobile-synergy-summary">
                               <div className="flex items-center justify-between gap-2">
@@ -3317,7 +3317,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                     )}
                                   </div>
                                 </div>
-                                <span className="font-display text-lg font-bold text-[#E7FB10]">${Math.round(getRetailTotal())}</span>
+                                <span className="font-display text-lg font-bold text-[#D4FF1F]">${Math.round(getRetailTotal())}</span>
                               </div>
                               {activeSystems.length > 0 && (
                                 <div className="flex flex-wrap gap-1">
@@ -3699,7 +3699,7 @@ function ResearchStacks() {
                   <span className="text-sm font-medium text-[#9d4edd]">Custom Stack Builder</span>
                 </div>
                 <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="heading-research-stacks">
-                  Create Your <span className="text-[#E7FB10]">Perfect</span> Stack
+                  Create Your <span className="text-[#D4FF1F]">Perfect</span> Stack
                 </h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
                   Select 2-4 peptides and discover synergies with our AI-powered analysis.
@@ -3773,17 +3773,17 @@ function ResearchStacks() {
                     transition={{ duration: 0.35, ease: "easeOut" }}
                     className="relative w-full max-w-sm"
                   >
-                    <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/40 via-[#21d8ff]/20 to-[#E7FB10]/10 blur-sm" />
+                    <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#D4FF1F]/40 via-[#21d8ff]/20 to-[#D4FF1F]/10 blur-sm" />
                     <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-8 overflow-hidden text-center">
-                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E7FB10]/50 to-transparent" />
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4FF1F]/50 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#21d8ff]/30 to-transparent" />
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
-                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#E7FB10]/20 to-[#E7FB10]/5 border border-[#E7FB10]/30 flex items-center justify-center mx-auto mb-4"
+                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4FF1F]/20 to-[#D4FF1F]/5 border border-[#D4FF1F]/30 flex items-center justify-center mx-auto mb-4"
                       >
-                        <Lock className="w-7 h-7 text-[#E7FB10]" />
+                        <Lock className="w-7 h-7 text-[#D4FF1F]" />
                       </motion.div>
                       <h2
                         className="text-2xl font-bold text-white tracking-wide mb-2"
@@ -3797,7 +3797,7 @@ function ResearchStacks() {
                       </p>
                       <Button
                         onClick={() => setLocation(`/login?returnTo=${encodeURIComponent("/research-stacks?tab=custom")}&mode=signup`)}
-                        className="w-full h-11 text-sm font-semibold bg-[#E7FB10] text-black rounded-xl mb-3"
+                        className="w-full h-11 text-sm font-semibold bg-[#D4FF1F] text-black rounded-xl mb-3"
                         data-testid="button-synergy-gate-create"
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
@@ -3902,7 +3902,7 @@ function ResearchStacks() {
                         className="absolute top-3 right-3 z-10"
                         style={{
                           backgroundColor: stack.badgeColor,
-                          color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
+                          color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
                         }}
                       >
                         {stack.badge}
@@ -4058,7 +4058,7 @@ function ResearchStacks() {
                             >
                               <span
                                 className="text-xs font-semibold px-2 py-1 rounded-md border"
-                                style={{ color: "#E7FB10", borderColor: "rgba(231,251,16,0.4)", background: "rgba(26,26,31,0.85)" }}
+                                style={{ color: "#D4FF1F", borderColor: "rgba(231,251,16,0.4)", background: "rgba(26,26,31,0.85)" }}
                               >
                                 Sign in to see pricing
                               </span>
@@ -4106,7 +4106,7 @@ function ResearchStacks() {
                         className="group"
                         style={{
                           backgroundColor: stack.color,
-                          color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
+                          color: stack.color === "#D4FF1F" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
                         }}
                         data-testid={`button-view-stack-${stack.id}`}
                       >
@@ -4194,7 +4194,7 @@ function ResearchStacks() {
                     <div className="flex-shrink-0">
                       <Button
                         className="font-semibold px-6"
-                        style={{ backgroundColor: "#E7FB10", color: "#000" }}
+                        style={{ backgroundColor: "#D4FF1F", color: "#000" }}
                         onClick={(e) => { e.stopPropagation(); setActiveTab("custom"); }}
                       >
                         Build Your Own
@@ -4211,7 +4211,7 @@ function ResearchStacks() {
                 transition={{ delay: 0.6 }}
                 className="mt-12 text-center"
               >
-                <Card className="p-8 bg-gradient-to-r from-[#a855f7]/10 via-[#21d8ff]/10 to-[#E7FB10]/10 border-[#2a2a32]">
+                <Card className="p-8 bg-gradient-to-r from-[#a855f7]/10 via-[#21d8ff]/10 to-[#D4FF1F]/10 border-[#2a2a32]">
                   <h3 className="font-display text-2xl font-bold mb-3">
                     Looking for Individual Peptides?
                   </h3>
@@ -4227,7 +4227,7 @@ function ResearchStacks() {
                       </Button>
                     </Link>
                     <Link href="/shop">
-                      <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90">
+                      <Button className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90">
                         Shop All Products
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>

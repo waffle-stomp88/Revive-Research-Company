@@ -789,10 +789,10 @@ export default function Checkout() {
                   <p className="text-xs text-muted-foreground leading-tight">Not for human consumption or therapeutic use.</p>
                 </div>
               </div>
-              <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-md p-2.5 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+              <div className="bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 rounded-md p-2.5 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-[#D4FF1F] flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-xs text-[#E7FB10]">Age Requirement</p>
+                  <p className="font-semibold text-xs text-[#D4FF1F]">Age Requirement</p>
                   <p className="text-xs text-muted-foreground leading-tight">You must be 21 years or older to purchase.</p>
                 </div>
               </div>
@@ -801,7 +801,7 @@ export default function Checkout() {
               className="flex items-start gap-2 cursor-pointer group mb-4"
               onClick={() => { setRuoAcknowledged(!ruoAcknowledged); setAgeConfirmed(!ruoAcknowledged); }}
             >
-              <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-[#E7FB10] border-[#E7FB10]' : 'border-white/40'}`}>
+              <div className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${ruoAcknowledged ? 'bg-[#D4FF1F] border-[#D4FF1F]' : 'border-white/40'}`}>
                 {ruoAcknowledged && (
                   <svg className="w-2.5 h-2.5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -809,13 +809,13 @@ export default function Checkout() {
                 )}
               </div>
               <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-snug" data-testid="checkbox-ruo-acknowledge">
-                I confirm I am <span className="text-[#E7FB10] font-medium">21+</span> and understand these products are for <span className="text-red-400 font-medium">research purposes only</span>, not for human use
+                I confirm I am <span className="text-[#D4FF1F] font-medium">21+</span> and understand these products are for <span className="text-red-400 font-medium">research purposes only</span>, not for human use
               </span>
             </div>
             <Button
               onClick={handleRuoAcknowledge}
               disabled={!ruoAcknowledged}
-              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50"
+              className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 disabled:opacity-50"
               data-testid="button-confirm-ruo"
             >
               Continue to Checkout
@@ -877,7 +877,7 @@ export default function Checkout() {
               <div className="flex items-center gap-2">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${
                   checkoutStep === 1
-                    ? 'bg-[#E7FB10] text-[#0a0a0a]'
+                    ? 'bg-[#D4FF1F] text-[#0a0a0a]'
                     : 'bg-green-500 text-white'
                 }`}>
                   {checkoutStep > 1 ? (
@@ -896,7 +896,7 @@ export default function Checkout() {
               <div className="flex items-center gap-2">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${
                   checkoutStep === 2
-                    ? 'bg-[#E7FB10] text-[#0a0a0a]'
+                    ? 'bg-[#D4FF1F] text-[#0a0a0a]'
                     : 'bg-[#2a2a2f] text-muted-foreground'
                 }`}>
                   2
@@ -938,8 +938,8 @@ export default function Checkout() {
                     ) : isAuthenticated ? (
                       <>
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <div className="w-7 h-7 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
+                          <div className="w-7 h-7 rounded-full bg-[#D4FF1F]/20 flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="h-3.5 w-3.5 text-[#D4FF1F]" />
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium leading-none">{user?.firstName || 'Researcher'}</p>
@@ -1077,7 +1077,7 @@ export default function Checkout() {
                               setCheckoutStep(2);
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
-                            className="w-full font-display text-base gap-2 bg-[#E7FB10] text-[#0a0a0a] hover:bg-[#E7FB10]/90"
+                            className="w-full font-display text-base gap-2 bg-[#D4FF1F] text-[#0a0a0a] hover:bg-[#D4FF1F]/90"
                             data-testid="button-express-checkout"
                           >
                             Express Checkout →
@@ -1312,7 +1312,7 @@ export default function Checkout() {
                             onClick={() => setSaveToProfile(v => !v)}
                             data-testid="checkbox-save-to-profile-wrapper"
                           >
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${saveToProfile ? "bg-[#E7FB10] border-[#E7FB10]" : "border-white/30"}`}>
+                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${saveToProfile ? "bg-[#D4FF1F] border-[#D4FF1F]" : "border-white/30"}`}>
                               {saveToProfile && (
                                 <svg className="w-2.5 h-2.5 text-[#1a1a1f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -1429,8 +1429,8 @@ export default function Checkout() {
                   disabled={!shippingValid}
                   className={`w-full font-display text-base gap-2 transition-all ${
                     shippingValid
-                      ? 'bg-[#E7FB10] text-[#0a0a0a] hover:bg-[#E7FB10]/90'
-                      : 'bg-[#E7FB10]/20 text-[#E7FB10]/50 cursor-not-allowed'
+                      ? 'bg-[#D4FF1F] text-[#0a0a0a] hover:bg-[#D4FF1F]/90'
+                      : 'bg-[#D4FF1F]/20 text-[#D4FF1F]/50 cursor-not-allowed'
                   }`}
                   data-testid="button-continue-to-payment"
                 >
@@ -1803,7 +1803,7 @@ export default function Checkout() {
                         className="flex items-center gap-3"
                       >
                         {/* Small 36px thumbnail */}
-                        <div className="w-9 h-9 rounded-md bg-muted/40 flex items-center justify-center flex-shrink-0 overflow-hidden ring-1 ring-[#E7FB10]/15">
+                        <div className="w-9 h-9 rounded-md bg-muted/40 flex items-center justify-center flex-shrink-0 overflow-hidden ring-1 ring-[#D4FF1F]/15">
                           <img
                             src={item.image || productImage}
                             alt={item.name}
@@ -1813,7 +1813,7 @@ export default function Checkout() {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium leading-tight truncate">
                             {item.name}
-                            {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
+                            {item.packSize && <span className="text-[#D4FF1F] ml-1 text-xs">({item.packSize}-Pack)</span>}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
                             {item.dosage} × {item.quantity}
@@ -1822,7 +1822,7 @@ export default function Checkout() {
                             )}
                           </p>
                         </div>
-                        <p className="text-sm font-semibold text-[#E7FB10] tabular-nums flex-shrink-0">
+                        <p className="text-sm font-semibold text-[#D4FF1F] tabular-nums flex-shrink-0">
                           {item.isFree ? 'FREE' : `$${Math.round(item.price * item.quantity)}`}
                         </p>
                       </div>
@@ -1866,7 +1866,7 @@ export default function Checkout() {
 
                   <div className="flex justify-between items-center">
                     <span className="font-display text-base font-semibold">Total</span>
-                    <span className="font-display text-2xl font-bold text-[#E7FB10]" data-testid="text-order-total">
+                    <span className="font-display text-2xl font-bold text-[#D4FF1F]" data-testid="text-order-total">
                       ${cartTotal.toFixed(2)}
                     </span>
                   </div>
@@ -1888,11 +1888,11 @@ export default function Checkout() {
 
                 {/* ── Early Access Notice ── */}
                 {EARLY_ACCESS_MODE && (
-                  <div className="mb-3 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
+                  <div className="mb-3 p-3 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/30" data-testid="early-access-checkout-notice">
                     <div className="flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <AlertTriangle className="h-4 w-4 text-[#D4FF1F] mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-[#E7FB10]">Purchasing disabled during Early Access</p>
+                        <p className="text-sm font-medium text-[#D4FF1F]">Purchasing disabled during Early Access</p>
                         {emailSubmitted ? (
                           <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
                             <CheckCircle className="h-3 w-3" />
@@ -1913,7 +1913,7 @@ export default function Checkout() {
                               />
                               <Button
                                 size="sm"
-                                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 h-8"
+                                className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 h-8"
                                 onClick={() => notifyEmail && newsletterMutation.mutate(notifyEmail)}
                                 disabled={!notifyEmail || newsletterMutation.isPending}
                                 data-testid="button-notify-me"
@@ -1967,7 +1967,7 @@ export default function Checkout() {
                       {!hasValidZip ? (
                         <Button
                           size="lg"
-                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          className="w-full font-display text-lg gap-2 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed"
                           disabled
                           data-testid="button-enter-zip-required"
                         >
@@ -2038,7 +2038,7 @@ export default function Checkout() {
                       {!hasValidZip ? (
                         <Button
                           size="lg"
-                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          className="w-full font-display text-lg gap-2 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed"
                           disabled
                           data-testid="button-enter-zip-required-paypal"
                         >
@@ -2092,7 +2092,7 @@ export default function Checkout() {
                       {!hasValidZip ? (
                         <Button
                           size="lg"
-                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          className="w-full font-display text-lg gap-2 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed"
                           disabled
                           data-testid="button-enter-zip-required-manual"
                         >
@@ -2168,7 +2168,7 @@ export default function Checkout() {
                     </div>
                     <div className="w-px h-3 bg-white/15" />
                     <div className="flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-[#E7FB10]" />
+                      <ShieldCheck className="h-3.5 w-3.5 text-[#D4FF1F]" />
                       <span className="text-[11px] font-medium text-zinc-300 tracking-wide">Secure Payment</span>
                     </div>
                     <div className="w-px h-3 bg-white/15" />
@@ -2203,7 +2203,7 @@ export default function Checkout() {
               {/* Card payment sticky button */}
               {selectedPaymentMethod === "card" && (
                 !hasValidZip ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required">
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required">
                     <AlertTriangle className="h-4 w-4" />
                     Enter ZIP
                   </Button>
@@ -2232,7 +2232,7 @@ export default function Checkout() {
               {/* PayPal sticky button — scrolls to the inline PayPal button */}
               {selectedPaymentMethod === "paypal" && (
                 !hasValidZip ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-paypal">
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-paypal">
                     <AlertTriangle className="h-4 w-4" />
                     Enter ZIP
                   </Button>
@@ -2257,7 +2257,7 @@ export default function Checkout() {
               {/* Manual payment sticky button */}
               {['cashapp', 'zelle', 'venmo', 'bank'].includes(selectedPaymentMethod || '') && (
                 !hasValidZip ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-manual">
+                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-[#D4FF1F]/20 text-[#D4FF1F] border border-[#D4FF1F]/30 cursor-not-allowed" disabled data-testid="button-sticky-zip-required-manual">
                     <AlertTriangle className="h-4 w-4" />
                     Enter ZIP
                   </Button>

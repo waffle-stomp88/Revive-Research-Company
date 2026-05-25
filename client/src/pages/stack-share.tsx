@@ -307,7 +307,7 @@ export default function StackShare() {
           <div className="flex flex-wrap gap-3 pt-1" data-testid="action-row">
             <Button
               onClick={handleAddToCart}
-              className="bg-[#E7FB10] text-black font-semibold"
+              className="bg-[#D4FF1F] text-black font-semibold"
               data-testid="button-add-to-cart"
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
@@ -371,7 +371,7 @@ export default function StackShare() {
                   data-testid={`row-peptide-${i}`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${isUnavailable ? "bg-red-500/10 border border-red-500/30 text-red-400" : "bg-[#E7FB10]/10 border border-[#E7FB10]/30 text-[#E7FB10]"}`}>{i + 1}</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${isUnavailable ? "bg-red-500/10 border border-red-500/30 text-red-400" : "bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 text-[#D4FF1F]"}`}>{i + 1}</span>
                     <span className={`text-sm font-medium ${isUnavailable ? "line-through text-muted-foreground" : "text-white"}`} data-testid={`text-peptide-name-${i}`}>{name}</span>
                   </div>
                   {isUnavailable ? (
@@ -389,7 +389,7 @@ export default function StackShare() {
             </div>
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs text-muted-foreground">Synergy Score</span>
-              <span className="text-sm font-bold text-[#E7FB10]" data-testid="text-synergy-score">{synergyScore}%</span>
+              <span className="text-sm font-bold text-[#D4FF1F]" data-testid="text-synergy-score">{synergyScore}%</span>
             </div>
           </div>
 

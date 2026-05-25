@@ -540,7 +540,7 @@ export function GalaxySidePanel({ node, onClose, knownStacks }: GalaxySidePanelP
             <Link href={`/peptides/${node.slug}`}>
               <Button
                 size="default"
-                className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
                 data-testid="galaxy-panel-view-product"
               >
                 View {node.name} product

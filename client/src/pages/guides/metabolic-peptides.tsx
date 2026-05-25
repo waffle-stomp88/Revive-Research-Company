@@ -12,7 +12,7 @@ import {
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
 import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 
-const METABOLIC_COLOR = "#E7FB10";
+const METABOLIC_COLOR = "#D4FF1F";
 const METABOLIC_COLOR_DIM = "#b8c80d";
 
 function MetabolicPathwayDiagram() {
@@ -23,7 +23,7 @@ function MetabolicPathwayDiagram() {
     {
       label: "Incretin / GLP-1 Axis",
       sublabel: "Insulin secretion, gastric emptying, satiety",
-      color: "#E7FB10",
+      color: "#D4FF1F",
       peptides: ["Semaglutide", "Tirzepatide", "Retatrutide", "RR-A3", "Mazdutide"],
     },
     {

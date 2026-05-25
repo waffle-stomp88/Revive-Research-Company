@@ -76,7 +76,7 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
           // Mist colors with transparency - overlay effect
           vec3 mistColor = vec3(0.12, 0.14, 0.18); // dark blue-gray mist
           vec3 accentColor1 = vec3(0.13, 0.85, 1.0); // #21d8ff - cyan accent
-          vec3 accentColor2 = vec3(0.906, 0.984, 0.063); // #E7FB10 - gold/yellow accent
+          vec3 accentColor2 = vec3(0.906, 0.984, 0.063); // #D4FF1F - gold/yellow accent
 
           // Base fog with varying density
           float fogDensity = f * 0.6;

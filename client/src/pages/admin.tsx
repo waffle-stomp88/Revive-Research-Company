@@ -419,10 +419,10 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
 
       {/* A) Top KPI Row - exactly 4 cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="border-[#E7FB10]/30">
+        <Card className="border-[#D4FF1F]/30">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Revenue</p>
-            <p className="text-xl font-bold text-[#E7FB10]" data-testid="text-total-revenue">
+            <p className="text-xl font-bold text-[#D4FF1F]" data-testid="text-total-revenue">
               {formatCurrency(metrics.totalRevenue)}
             </p>
           </CardContent>
@@ -458,10 +458,10 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
 
       {/* B) Alert Strip - actionable items only */}
       {alertItems.length > 0 && (
-        <Card className="border-[#E7FB10]/20 bg-[#E7FB10]/5">
+        <Card className="border-[#D4FF1F]/20 bg-[#D4FF1F]/5">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="h-4 w-4 text-[#E7FB10]" />
+              <AlertCircle className="h-4 w-4 text-[#D4FF1F]" />
               <span className="text-sm font-medium">Needs Attention</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -521,14 +521,14 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
             <CardHeader className="pb-2 pt-4 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
+                  <TrendingUp className="h-4 w-4 text-[#D4FF1F]" />
                   Top Products
                 </CardTitle>
                 <div className="flex gap-1">
                   <Button
                     size="sm"
                     variant={topProductSort === 'revenue' ? 'default' : 'ghost'}
-                    className={`h-6 px-2 text-xs ${topProductSort === 'revenue' ? 'bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90' : ''}`}
+                    className={`h-6 px-2 text-xs ${topProductSort === 'revenue' ? 'bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90' : ''}`}
                     onClick={() => setTopProductSort('revenue')}
                     data-testid="button-sort-revenue"
                   >
@@ -551,7 +551,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 {topProducts.map((product, index) => {
                   const value = topProductSort === 'revenue' ? product.revenue : product.totalSold;
                   const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
-                  const barColor = topProductSort === 'revenue' ? '#E7FB10' : '#21d8ff';
+                  const barColor = topProductSort === 'revenue' ? '#D4FF1F' : '#21d8ff';
                   return (
                     <div key={product.productId} className="flex items-center gap-2" data-testid={`top-product-${index}`}>
                       <span className="text-xs text-muted-foreground w-4 shrink-0">{index + 1}</span>
@@ -598,7 +598,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-7 text-xs border-[#E7FB10] text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] shadow-[0_0_8px_rgba(231,251,16,0.3)]"
+                className="h-7 text-xs border-[#D4FF1F] text-[#D4FF1F] hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] shadow-[0_0_8px_rgba(231,251,16,0.3)]"
                 onClick={() => onNavigateToTab("orders")}
                 data-testid="button-view-all-orders"
               >
@@ -634,13 +634,13 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                           order.status === "completed" || order.status === "shipped" 
                             ? "bg-green-500/20 text-green-400" 
                             : order.status === "pending" 
-                            ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                            ? "bg-[#D4FF1F]/20 text-[#D4FF1F]"
                             : "bg-[#21d8ff]/20 text-[#21d8ff]"
                         }`}
                       >
                         {order.status}
                       </Badge>
-                      <p className="text-sm font-bold text-[#E7FB10]">{formatCurrency(parseFloat(order.totalAmount))}</p>
+                      <p className="text-sm font-bold text-[#D4FF1F]">{formatCurrency(parseFloat(order.totalAmount))}</p>
                     </div>
                   </button>
                 ))}
@@ -750,13 +750,13 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-[#E7FB10]" />
+                    <Heart className="h-4 w-4 text-[#D4FF1F]" />
                     <h3 className="font-display text-sm font-bold">Product Demand</h3>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 text-[10px] text-[#E7FB10] px-2"
+                    className="h-6 text-[10px] text-[#D4FF1F] px-2"
                     onClick={() => onNavigateToTab("products:demand")}
                     data-testid="button-view-all-demand"
                   >
@@ -771,7 +771,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                       {!product.inStock && (
                         <span className="text-[9px] px-1 py-0.5 rounded bg-red-500/20 text-red-400 shrink-0">OOS</span>
                       )}
-                      <span className="text-xs font-bold text-[#E7FB10] shrink-0">{product.votes}</span>
+                      <span className="text-xs font-bold text-[#D4FF1F] shrink-0">{product.votes}</span>
                     </div>
                   ))}
                 </div>
@@ -811,7 +811,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                     selectedOrder.status === "completed" || selectedOrder.status === "shipped" 
                       ? "bg-green-500/20 text-green-400" 
                       : selectedOrder.status === "pending" 
-                      ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                      ? "bg-[#D4FF1F]/20 text-[#D4FF1F]"
                       : "bg-[#21d8ff]/20 text-[#21d8ff]"
                   }`}
                 >
@@ -821,7 +821,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               
               <div className="p-3 rounded-lg bg-muted/50">
                 <p className="text-sm text-muted-foreground mb-1">Order Total</p>
-                <p className="text-2xl font-bold text-[#E7FB10]">
+                <p className="text-2xl font-bold text-[#D4FF1F]">
                   {formatCurrency(parseFloat(selectedOrder.totalAmount))}
                 </p>
               </div>
@@ -898,8 +898,8 @@ function ProductsTab() {
       return <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground" />;
     }
     return sortDirection === "asc" 
-      ? <ArrowUp className="ml-2 h-4 w-4 text-[#E7FB10]" />
-      : <ArrowDown className="ml-2 h-4 w-4 text-[#E7FB10]" />;
+      ? <ArrowUp className="ml-2 h-4 w-4 text-[#D4FF1F]" />
+      : <ArrowDown className="ml-2 h-4 w-4 text-[#D4FF1F]" />;
   };
 
   // Helper to check product stock status
@@ -1492,7 +1492,7 @@ function ProductsTab() {
                               value={ds.stockAmount}
                               onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
                               onFocus={(e) => e.target.select()}
-                              className="w-20 h-9 text-center text-sm bg-background/50 border-[#E7FB10]/20"
+                              className="w-20 h-9 text-center text-sm bg-background/50 border-[#D4FF1F]/20"
                               data-testid={`input-stock-${index}`}
                             />
                           </div>
@@ -1600,7 +1600,7 @@ function ProductsTab() {
                     <div
                       className="w-2 h-4 rounded-full flex-shrink-0"
                       style={{
-                        backgroundColor: form.watch("stripeAccentColor") || "#E7FB10",
+                        backgroundColor: form.watch("stripeAccentColor") || "#D4FF1F",
                       }}
                     />
                     <p className="text-sm font-semibold">Category Stripe</p>
@@ -1730,19 +1730,19 @@ function ProductsTab() {
                         <FormItem className={`flex items-start gap-3 p-3 rounded-lg border ${
                           isDisabled 
                             ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
-                            : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
+                            : "border-[#D4FF1F]/30 bg-[#D4FF1F]/5"
                         }`}>
                           <FormControl>
                             <Checkbox
                               checked={isOutOfStock ? false : (field.value ?? false)}
                               onCheckedChange={field.onChange}
                               disabled={isDisabled}
-                              className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10] disabled:opacity-50"
+                              className="mt-0.5 border-[#D4FF1F]/50 data-[state=checked]:bg-[#D4FF1F] data-[state=checked]:border-[#D4FF1F] disabled:opacity-50"
                               data-testid="checkbox-landing-page"
                             />
                           </FormControl>
                           <div className="flex flex-col gap-0.5">
-                            <FormLabel className={`!mt-0 font-semibold flex items-center gap-2 ${isDisabled ? "text-muted-foreground" : "text-[#E7FB10]"}`}>
+                            <FormLabel className={`!mt-0 font-semibold flex items-center gap-2 ${isDisabled ? "text-muted-foreground" : "text-[#D4FF1F]"}`}>
                               <Star className="h-4 w-4" />
                               Show on Landing Page
                             </FormLabel>
@@ -1887,7 +1887,7 @@ function ProductsTab() {
                   <Button 
                     type="submit" 
                     disabled={createMutation.isPending || updateMutation.isPending}
-                    className={form.formState.isDirty ? "bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" : ""}
+                    className={form.formState.isDirty ? "bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90" : ""}
                     data-testid="button-save-product"
                   >
                     {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Product"}
@@ -2088,7 +2088,7 @@ function ProductsTab() {
                         )
                       )}
                       {product.featured && <Badge className="bg-[#21d8ff] text-black">Featured</Badge>}
-                      {product.showOnLandingPage && anyInStock && <Badge className="bg-[#E7FB10] text-black">Landing</Badge>}
+                      {product.showOnLandingPage && anyInStock && <Badge className="bg-[#D4FF1F] text-black">Landing</Badge>}
                     </div>
                   </TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
@@ -3283,8 +3283,8 @@ function CoasTab() {
                       <div className="relative">
                         {coaIsPdf ? (
                           <a href={coaImageUrl} target="_blank" rel="noopener noreferrer" className="block">
-                            <div className="w-24 h-24 rounded-md border bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-[#E7FB10]/50 transition-colors cursor-pointer">
-                              <FileCheck className="h-8 w-8 text-[#E7FB10]" />
+                            <div className="w-24 h-24 rounded-md border bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-[#D4FF1F]/50 transition-colors cursor-pointer">
+                              <FileCheck className="h-8 w-8 text-[#D4FF1F]" />
                               <span className="text-[10px] text-muted-foreground font-medium">PDF</span>
                             </div>
                           </a>
@@ -3755,13 +3755,13 @@ function OrdersTab() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
-        <Card data-testid="card-orders-revenue" className="border-[#E7FB10]/30 bg-[#E7FB10]/5">
+        <Card data-testid="card-orders-revenue" className="border-[#D4FF1F]/30 bg-[#D4FF1F]/5">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gross Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-[#E7FB10]" />
+            <DollarSign className="h-4 w-4 text-[#D4FF1F]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#E7FB10]">{formatCurrency(orderStats?.grossRevenue || 0)}</div>
+            <div className="text-2xl font-bold text-[#D4FF1F]">{formatCurrency(orderStats?.grossRevenue || 0)}</div>
             <p className="text-xs text-muted-foreground">Paid orders (30d)</p>
           </CardContent>
         </Card>
@@ -3803,17 +3803,17 @@ function OrdersTab() {
       </div>
 
       {needsAttentionOrders.length > 0 && (
-        <Card className="border-[#E7FB10]/30 bg-[#E7FB10]/5" data-testid="card-needs-attention">
+        <Card className="border-[#D4FF1F]/30 bg-[#D4FF1F]/5" data-testid="card-needs-attention">
           <CardContent className="py-3">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-[#E7FB10]" />
+                <AlertTriangle className="h-4 w-4 text-[#D4FF1F]" />
                 <span className="font-medium">{needsAttentionOrders.length} orders need attention</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="text-[#E7FB10]"
+                className="text-[#D4FF1F]"
                 onClick={() => setActiveFilter("needs-attention")}
                 data-testid="button-filter-needs-attention"
               >
@@ -3835,7 +3835,7 @@ function OrdersTab() {
         {needsAttentionOrders.length > 0 && (
           <Button 
             variant={activeFilter === "needs-attention" ? "default" : "outline"}
-            className={activeFilter !== "needs-attention" ? "border-[#E7FB10]/50 text-[#E7FB10]" : ""}
+            className={activeFilter !== "needs-attention" ? "border-[#D4FF1F]/50 text-[#D4FF1F]" : ""}
             onClick={() => setActiveFilter("needs-attention")}
             data-testid="button-filter-needs-attention"
           >
@@ -3946,7 +3946,7 @@ function OrdersTab() {
                 <TableRow 
                   key={order.id} 
                   data-testid={`row-order-${order.id}`}
-                  className={`cursor-pointer hover-elevate ${fulfillmentBgClass} ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""} ${selectedOrderIds.has(order.id) ? "bg-muted/50" : ""}`}
+                  className={`cursor-pointer hover-elevate ${fulfillmentBgClass} ${orderNeedsAttention ? "border-l-2 border-l-[#D4FF1F]" : ""} ${selectedOrderIds.has(order.id) ? "bg-muted/50" : ""}`}
                   onClick={() => handleViewOrder(order)}
                 >
                   <TableCell onClick={(e) => e.stopPropagation()}>
@@ -3961,7 +3961,7 @@ function OrdersTab() {
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
                         {orderNeedsAttention && (
-                          <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
+                          <AlertTriangle className="h-3 w-3 text-[#D4FF1F]" />
                         )}
                         <span className="font-mono text-sm">{order.id.slice(-8).toUpperCase()}</span>
                       </div>
@@ -4471,8 +4471,8 @@ function CustomersTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[#E7FB10]/10">
-              <Users className="h-5 w-5 text-[#E7FB10]" />
+            <div className="p-2 rounded-lg bg-[#D4FF1F]/10">
+              <Users className="h-5 w-5 text-[#D4FF1F]" />
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.total}</p>
@@ -4630,7 +4630,7 @@ function CustomersTab() {
 
           <div className="grid grid-cols-3 gap-4 py-4">
             <Card className="p-3 text-center">
-              <p className="text-2xl font-bold text-[#E7FB10]">{selectedCustomer?.orderCount || 0}</p>
+              <p className="text-2xl font-bold text-[#D4FF1F]">{selectedCustomer?.orderCount || 0}</p>
               <p className="text-xs text-muted-foreground">Orders</p>
             </Card>
             <Card className="p-3 text-center">
@@ -4809,7 +4809,7 @@ function ContactsTab() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "new":
-        return <Badge className="bg-[#E7FB10] text-black">New</Badge>;
+        return <Badge className="bg-[#D4FF1F] text-black">New</Badge>;
       case "responded":
         return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Responded</Badge>;
       case "archived":
@@ -4921,12 +4921,12 @@ function ContactsTab() {
           variant={activeFilter === "new" ? "default" : "outline"}
           size="sm"
           onClick={() => setActiveFilter("new")}
-          className={activeFilter !== "new" && stats.new > 0 ? "border-[#E7FB10]/50" : ""}
+          className={activeFilter !== "new" && stats.new > 0 ? "border-[#D4FF1F]/50" : ""}
           data-testid="button-filter-new"
         >
           New ({stats.new})
           {stats.new > 0 && activeFilter !== "new" && (
-            <span className="ml-1 h-2 w-2 rounded-full bg-[#E7FB10]" />
+            <span className="ml-1 h-2 w-2 rounded-full bg-[#D4FF1F]" />
           )}
         </Button>
       </div>
@@ -4946,7 +4946,7 @@ function ContactsTab() {
                     selectedContact?.id === contact.id
                       ? "bg-[#21d8ff]/10 border-l-2 border-l-[#21d8ff]"
                       : contact.status === "new"
-                        ? "bg-[#E7FB10]/5 hover:bg-[#E7FB10]/10 border-l-2 border-l-[#E7FB10]"
+                        ? "bg-[#D4FF1F]/5 hover:bg-[#D4FF1F]/10 border-l-2 border-l-[#D4FF1F]"
                         : "hover:bg-muted/50 border-l-2 border-l-transparent"
                   }`}
                   data-testid={`contact-item-${contact.id}`}
@@ -4969,7 +4969,7 @@ function ContactsTab() {
                         <div className="flex items-center gap-1 mt-0.5">
                           {getTypeBadge(contact.type)}
                           {contact.status === "new" && (
-                            <Badge className="bg-[#E7FB10] text-black text-[10px] px-1.5 py-0">New</Badge>
+                            <Badge className="bg-[#D4FF1F] text-black text-[10px] px-1.5 py-0">New</Badge>
                           )}
                           {contact.isTest && (
                             <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0">TEST</Badge>
@@ -5041,7 +5041,7 @@ function ContactsTab() {
                         <p className="text-sm text-muted-foreground truncate">{selectedContact.email}</p>
                         {selectedContact.topic && (
                           <p className="text-xs text-muted-foreground mt-1" data-testid="text-contact-topic">
-                            Topic: <span className="text-[#E7FB10]">{selectedContact.topic.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</span>
+                            Topic: <span className="text-[#D4FF1F]">{selectedContact.topic.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</span>
                           </p>
                         )}
                         {selectedContact.companyName && (
@@ -6318,7 +6318,7 @@ function DiscountCodesTab() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black" data-testid="btn-create-discount-code">
+            <Button className="bg-[#D4FF1F] hover:bg-[#D4FF1F]/90 text-black" data-testid="btn-create-discount-code">
               <Plus className="h-4 w-4 mr-2" />
               Create Code
             </Button>
@@ -6533,7 +6533,7 @@ function DiscountCodesTab() {
                     {code.description || "-"}
                   </TableCell>
                   <TableCell className="select-none">
-                    <Badge variant="secondary" className="bg-[#E7FB10]/20 text-[#E7FB10]">
+                    <Badge variant="secondary" className="bg-[#D4FF1F]/20 text-[#D4FF1F]">
                       {code.discountPercent}% OFF
                     </Badge>
                   </TableCell>
@@ -6885,7 +6885,7 @@ function AffiliatesTab() {
                       <TableCell className="text-green-500">
                         ${(parseFloat(affiliate.totalEarnedTier1 || "0") + parseFloat(affiliate.totalEarnedTier2 || "0")).toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-[#E7FB10]">
+                      <TableCell className="text-[#D4FF1F]">
                         ${parseFloat(affiliate.pendingBalance || "0").toFixed(2)}
                       </TableCell>
                       <TableCell>
@@ -6956,8 +6956,8 @@ function AffiliatesTab() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 rounded-lg bg-[#E7FB10]/10">
-                          <DollarSign className="h-5 w-5 text-[#E7FB10]" />
+                        <div className="p-2 rounded-lg bg-[#D4FF1F]/10">
+                          <DollarSign className="h-5 w-5 text-[#D4FF1F]" />
                         </div>
                         <div>
                           <p className="font-semibold text-lg">${parseFloat(payout.amount).toFixed(2)}</p>
@@ -7648,7 +7648,7 @@ function PricingOptimizerTab() {
                     {group.dosageSignals.length} dosage{group.dosageSignals.length !== 1 ? 's' : ''}
                   </Badge>
                   {group.dosageSignals.some(s => s.suggestedPrice !== null) && (
-                    <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs">
+                    <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30 text-xs">
                       Has Suggestions
                     </Badge>
                   )}
@@ -7768,7 +7768,7 @@ function PricingOptimizerTab() {
                               isDisabled: signal.isDisabled,
                             })}
                             disabled={updateDosagePriceMutation.isPending || signal.isDisabled}
-                            className="border-[#E7FB10]/50"
+                            className="border-[#D4FF1F]/50"
                             data-testid={`button-apply-price-${signal.dosageStockId}`}
                           >
                             Apply
@@ -7943,7 +7943,7 @@ function ProductsCombinedTab({ activeSubTab, onSubTabChange }: { activeSubTab: s
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-[#E7FB10]" />
+                <Heart className="h-5 w-5 text-[#D4FF1F]" />
                 <h2 className="font-display text-lg font-bold">Product Demand</h2>
               </div>
               <span className="text-xs text-muted-foreground">"Want This" votes from customers</span>
@@ -7969,12 +7969,12 @@ function ProductsCombinedTab({ activeSubTab, onSubTabChange }: { activeSubTab: s
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#E7FB10] rounded-full transition-all duration-500"
+                            className="h-full bg-[#D4FF1F] rounded-full transition-all duration-500"
                             style={{ width: `${barWidth}%` }}
                           />
                         </div>
                       </div>
-                      <span className="text-lg font-bold text-[#E7FB10] w-12 text-right">{product.votes}</span>
+                      <span className="text-lg font-bold text-[#D4FF1F] w-12 text-right">{product.votes}</span>
                     </div>
                   );
                 })}
@@ -8141,7 +8141,7 @@ function StripePresetsTab() {
   const [editingPreset, setEditingPreset] = useState<StripePreset | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState("");
-  const [newColor, setNewColor] = useState("#E7FB10");
+  const [newColor, setNewColor] = useState("#D4FF1F");
   const [editLabel, setEditLabel] = useState("");
   const [editColor, setEditColor] = useState("");
 
@@ -8156,7 +8156,7 @@ function StripePresetsTab() {
       queryClient.invalidateQueries({ queryKey: ["/api/stripe-presets"] });
       setIsAdding(false);
       setNewLabel("");
-      setNewColor("#E7FB10");
+      setNewColor("#D4FF1F");
       toast({ title: "Preset created" });
     },
     onError: (err) => toast({ title: extractApiError(err, "Failed to create preset"), variant: "destructive" }),
@@ -8226,7 +8226,7 @@ function StripePresetsTab() {
                 <Input
                   value={newColor}
                   onChange={(e) => setNewColor(e.target.value)}
-                  placeholder="#E7FB10"
+                  placeholder="#D4FF1F"
                   data-testid="input-new-preset-color"
                 />
                 {HEX_RE.test(newColor) && (

@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Zap, Activity } from "lucide-react";
 
-const IPAMORELIN_COLOR = "#E7FB10";
+const IPAMORELIN_COLOR = "#D4FF1F";
 const CJC_COLOR = "#21d8ff";
 const SOMATOTROPH_COLOR = "#9d4edd";
 const GH_COLOR = "#22c55e";

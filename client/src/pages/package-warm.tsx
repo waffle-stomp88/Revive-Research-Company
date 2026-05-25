@@ -154,13 +154,13 @@ export default function PackageWarm() {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Thermometer className="h-6 w-6 text-[#E7FB10]" />
+              <Thermometer className="h-6 w-6 text-[#D4FF1F]" />
               <h2 className="font-display text-xl font-bold">What To Do Next</h2>
             </div>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="font-display font-bold text-[#E7FB10]">1</span>
+                <div className="w-8 h-8 rounded-full bg-[#D4FF1F]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="font-display font-bold text-[#D4FF1F]">1</span>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Transfer to Storage Immediately</h4>
@@ -171,8 +171,8 @@ export default function PackageWarm() {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="font-display font-bold text-[#E7FB10]">2</span>
+                <div className="w-8 h-8 rounded-full bg-[#D4FF1F]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="font-display font-bold text-[#D4FF1F]">2</span>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Inspect the Vials</h4>
@@ -183,8 +183,8 @@ export default function PackageWarm() {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="font-display font-bold text-[#E7FB10]">3</span>
+                <div className="w-8 h-8 rounded-full bg-[#D4FF1F]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="font-display font-bold text-[#D4FF1F]">3</span>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Document If Concerned</h4>

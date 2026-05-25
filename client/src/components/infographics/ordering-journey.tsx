@@ -18,7 +18,7 @@ const journeySteps = [
     id: 1,
     title: "Browse & Select",
     icon: ShoppingCart,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     shortDesc: "Explore products",
     details: ["View product details", "Check availability", "Read COAs & specs"],
     timeline: "Instant"
@@ -94,7 +94,7 @@ export function OrderingJourney() {
         transition={{ duration: 0.5 }}
         className="mb-12 text-center"
       >
-        <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-[#E7FB10]">
+        <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-[#D4FF1F]">
           Your Research Supply Journey
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -110,7 +110,7 @@ export function OrderingJourney() {
             <motion.div
               className="absolute inset-x-0 top-0 w-full rounded-full"
               style={{
-                background: "linear-gradient(180deg, #E7FB10, #21d8ff, #9d4edd, #22c55e, #f97316, #ec4899, #06b6d4)",
+                background: "linear-gradient(180deg, #D4FF1F, #21d8ff, #9d4edd, #22c55e, #f97316, #ec4899, #06b6d4)",
               }}
               initial={{ height: "0%" }}
               animate={isInView ? { height: "100%" } : {}}
@@ -243,7 +243,7 @@ export function OrderingJourney() {
       >
         <h3 className="font-display font-semibold text-[#21d8ff] mb-2">Total Delivery Time</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          <span className="text-[#E7FB10] font-bold">3–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">${FREE_SHIPPING_THRESHOLD}</span>
+          <span className="text-[#D4FF1F] font-bold">3–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">${FREE_SHIPPING_THRESHOLD}</span>
         </p>
         <p className="text-xs text-muted-foreground">
           Every order includes QR-verified analysis and full tracking. Shipped via UPS Ground. Your package integrity is guaranteed.

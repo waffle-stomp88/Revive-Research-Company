@@ -31,7 +31,7 @@ export default function EthicalPricing() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <Badge className="mb-4 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+          <Badge className="mb-4 bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30">
             Transparency
           </Badge>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-pricing-title">
@@ -49,10 +49,10 @@ export default function EthicalPricing() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+          <Card className="p-8 border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
-                <DollarSign className="h-7 w-7 text-[#E7FB10]" />
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[#D4FF1F]/20 flex items-center justify-center">
+                <DollarSign className="h-7 w-7 text-[#D4FF1F]" />
               </div>
               <div>
                 <h2 className="font-display text-xl font-bold mb-2">The Bottom Line</h2>
@@ -85,10 +85,10 @@ export default function EthicalPricing() {
           transition={{ delay: 0.3 }}
           className="mb-12"
         >
-          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+          <Card className="p-8 border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
-                <TrendingUp className="h-7 w-7 text-[#E7FB10]" />
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[#D4FF1F]/20 flex items-center justify-center">
+                <TrendingUp className="h-7 w-7 text-[#D4FF1F]" />
               </div>
               <div>
                 <h2 className="font-display text-xl font-bold mb-3">Market Pricing Analysis & Stability</h2>
@@ -103,7 +103,7 @@ export default function EthicalPricing() {
                     our research partners. To balance market responsiveness with stability, we implement a 
                     deliberate pricing policy:
                   </p>
-                  <div className="bg-background/50 border border-[#E7FB10]/20 rounded-lg p-4 mt-4">
+                  <div className="bg-background/50 border border-[#D4FF1F]/20 rounded-lg p-4 mt-4">
                     <p className="font-semibold text-foreground mb-2">Price updates occur only on the first of each month</p>
                     <p className="text-sm">
                       This 30-day minimum window between price changes gives you predictability in your research 

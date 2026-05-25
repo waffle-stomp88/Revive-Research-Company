@@ -79,7 +79,7 @@ export default function Disclaimer() {
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <Shield className="h-6 w-6 text-[#E7FB10]" />
+                  <Shield className="h-6 w-6 text-[#D4FF1F]" />
                   <h2 className="font-display text-2xl font-bold">FDA Compliance Notice</h2>
                 </div>
                 <p className="text-muted-foreground leading-relaxed mb-4">

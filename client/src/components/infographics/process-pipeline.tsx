@@ -17,7 +17,7 @@ const pipelineSteps = [
     id: 1,
     title: "Synthesis",
     icon: FlaskConical,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     shortDesc: "Solid-phase peptide synthesis",
     details: ["High-purity amino acids", "Automated protocols", "Real-time monitoring"],
   },
@@ -77,7 +77,7 @@ export function ProcessPipeline() {
           <motion.div
             className="absolute inset-y-0 left-0 rounded-full"
             style={{
-              background: "linear-gradient(90deg, #E7FB10, #21d8ff, #22c55e, #9d4edd, #f97316, #ec4899)",
+              background: "linear-gradient(90deg, #D4FF1F, #21d8ff, #22c55e, #9d4edd, #f97316, #ec4899)",
             }}
             initial={{ width: "0%" }}
             animate={isInView ? { width: "100%" } : {}}
@@ -244,7 +244,7 @@ export function ProcessPipelineVertical() {
         <motion.div
           className="absolute top-0 left-0 right-0"
           style={{
-            background: "linear-gradient(180deg, #E7FB10, #21d8ff, #22c55e, #9d4edd, #f97316, #ec4899)",
+            background: "linear-gradient(180deg, #D4FF1F, #21d8ff, #22c55e, #9d4edd, #f97316, #ec4899)",
           }}
           initial={{ height: "0%" }}
           animate={isInView ? { height: "100%" } : {}}

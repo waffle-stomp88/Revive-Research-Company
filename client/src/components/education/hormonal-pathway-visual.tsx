@@ -31,7 +31,7 @@ const hcgPathway = [
     name: 'Steroid Production',
     role: 'Hormone Synthesis',
     description: 'Testosterone/Estrogen',
-    color: '#E7FB10',
+    color: '#D4FF1F',
     icon: Zap
   },
   { 

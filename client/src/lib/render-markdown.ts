@@ -120,7 +120,7 @@ export const renderMarkdown = (content: string): string => {
   // Blockquote: match "&gt; " (escaped "> ") at line start.
   processedContent = processedContent.replace(
     /^&gt; (.+)$/gm,
-    '<div class="my-3 pl-3 border-l-2 border-[#E7FB10]/50 bg-[#E7FB10]/5 py-2 pr-3 rounded-r text-sm italic text-muted-foreground">$1</div>'
+    '<div class="my-3 pl-3 border-l-2 border-[#D4FF1F]/50 bg-[#D4FF1F]/5 py-2 pr-3 rounded-r text-sm italic text-muted-foreground">$1</div>'
   );
 
   processedContent = processedContent.replace(/^---$/gm, '<hr class="my-6 border-border/50" />');

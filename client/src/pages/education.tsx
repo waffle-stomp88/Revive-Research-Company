@@ -341,14 +341,14 @@ const TRUST_GUIDES = [
     description: "Where low-price vendors cut corners and when price matters.",
     href: "/guides/why-cheap-peptides-are-cheap",
     icon: Shield,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     readTime: 8
   },
 ];
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic", color: "#E7FB10", slugs: ["rr-a1", "rr-a2", "rr-a3", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
+  { id: "metabolic", label: "Metabolic", color: "#D4FF1F", slugs: ["rr-a1", "rr-a2", "rr-a3", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3", "igf-des"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "klow-peptide-complex", "melanotan"] },
@@ -1373,7 +1373,7 @@ export default function Education() {
                                           />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <h4 className="font-display font-bold text-[#E7FB10] truncate">{product.name}</h4>
+                                          <h4 className="font-display font-bold text-[#D4FF1F] truncate">{product.name}</h4>
                                           <p className="text-xs text-muted-foreground truncate">{product.shortDescription}</p>
                                         </div>
                                         <ArrowRight className="h-5 w-5 text-[#21d8ff]" />

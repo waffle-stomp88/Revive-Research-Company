@@ -14,7 +14,9 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 ## Color System
 
 **Primary Colors**:
-- Primary Neon Yellow: #E7FB10 (bright, energetic, glowing)
+- Primary Chartreuse: #D4FF1F (bright, energetic, glowing — updated from #E7FB10)
+
+> **Preservation note:** `exports/` email GIFs and `scripts/compose-synergy-reel.cjs` intentionally retain `#E7FB10`. Those assets were rendered before the brand color update and are preserved for consistency with already-sent email campaigns. This is not a bug.
 - Dark Background: #222222 (deep charcoal)
 - Accent Dark: #0A0F1A (very dark navy for contrast)
 
@@ -24,7 +26,7 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - Cards: Slightly elevated dark surfaces with subtle glow
 
 **Neon Glow Effects**:
-- Primary elements glow with neon yellow light (box-shadow with #E7FB10)
+- Primary elements glow with neon yellow light (box-shadow with #D4FF1F)
 - Hover states intensify the glow
 - Active states create dramatic neon lighting effect
 - Icons and buttons have subtle backlit appearance
@@ -75,7 +77,7 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - Mobile: Full-screen overlay with neon-lit menu
 
 ### Buttons & CTAs
-- Primary: Vibrant neon yellow (#E7FB10) with glowing box-shadow
+- Primary: Vibrant neon yellow (#D4FF1F) with glowing box-shadow
 - Hover: Intensified glow effect
 - Active: Dramatic neon lighting
 - All interactive elements have subtle glow
@@ -109,7 +111,7 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - `.glow-text`: Text with subtle glow effect
 
 **Implementation**:
-- Use box-shadow with neon yellow (#E7FB10) at various blur radii
+- Use box-shadow with neon yellow (#D4FF1F) at various blur radii
 - Color: rgba(231, 251, 16, 0.4) to rgba(231, 251, 16, 0.8)
 - Blur: 10px to 30px depending on intensity
 - Multiple layers for depth effect

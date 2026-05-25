@@ -70,7 +70,7 @@ export default function VerifyQuality() {
       metaDescription="Don't take anyone's word for it. Learn how to independently verify peptide quality through COAs, third-party testing, and smart evaluation practices."
       canonicalPath="/guides/how-to-verify-peptide-quality"
       badgeText="Independent Verification"
-      badgeColor="#E7FB10"
+      badgeColor="#D4FF1F"
       introText={
         <>
           <p className="mb-4">

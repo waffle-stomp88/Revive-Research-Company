@@ -79,13 +79,13 @@ export function NewsletterSignup({ compact = false, source = "footer", placehold
           >
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
-                <Mail className="absolute left-3 top-3 h-5 w-5 text-[#E7FB10] opacity-50" />
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-[#D4FF1F] opacity-50" />
                 <Input
                   type="email"
                   placeholder={placeholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11 bg-black/40 backdrop-blur-sm border-[#E7FB10]/30 text-white placeholder:text-gray-400 focus:border-[#E7FB10] focus:ring-[#E7FB10]/20"
+                  className="pl-10 h-11 bg-black/40 backdrop-blur-sm border-[#D4FF1F]/30 text-white placeholder:text-gray-400 focus:border-[#D4FF1F] focus:ring-[#D4FF1F]/20"
                   data-testid="input-newsletter-email"
                   disabled={isLoading}
                 />
@@ -93,7 +93,7 @@ export function NewsletterSignup({ compact = false, source = "footer", placehold
               <Button
                 type="submit"
                 disabled={isLoading || !email}
-                className="h-11 px-6 bg-[#E7FB10] text-black font-bold border-0 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300"
+                className="h-11 px-6 bg-[#D4FF1F] text-black font-bold border-0 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300"
                 data-testid="button-newsletter-subscribe"
               >
                 {isLoading ? "Joining..." : buttonLabel}
@@ -120,15 +120,15 @@ export function NewsletterSignup({ compact = false, source = "footer", placehold
             key="success"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-[#E7FB10]/30"
+            className="text-center bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-[#D4FF1F]/30"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", delay: 0.1 }}
-              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#E7FB10]/20 border-2 border-[#E7FB10] mb-2"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#D4FF1F]/20 border-2 border-[#D4FF1F] mb-2"
             >
-              <CheckCircle className="w-6 h-6 text-[#E7FB10]" />
+              <CheckCircle className="w-6 h-6 text-[#D4FF1F]" />
             </motion.div>
             <p className="text-sm font-semibold text-white mb-1">You're on the list!</p>
             <p className="text-xs text-gray-400">Check your email for confirmation</p>

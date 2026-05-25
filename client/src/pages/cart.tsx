@@ -119,7 +119,7 @@ function CrossSellCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 flex-wrap">
           <span className="font-semibold text-sm">{suggestedProduct.name}</span>
-          <span className="text-sm font-bold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
+          <span className="text-sm font-bold text-[#D4FF1F]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
             ${Math.round(displayPrice)}
           </span>
         </div>
@@ -368,7 +368,7 @@ export default function CartPage() {
               Looks like you haven't added any research compounds yet. Browse our catalog to find premium peptides.
             </p>
             <Link href="/products">
-              <Button size="lg" className="bg-[#E7FB10] text-black gap-2">
+              <Button size="lg" className="bg-[#D4FF1F] text-black gap-2">
                 <Package className="h-5 w-5" />
                 Browse Products
               </Button>
@@ -494,7 +494,7 @@ export default function CartPage() {
                             {item.name}
                           </h3>
                           {item.packSize && (
-                            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
+                            <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
                               <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
                             </Badge>
                           )}
@@ -516,7 +516,7 @@ export default function CartPage() {
                           </Badge>
                         ) : (
                           <span
-                            className="font-display font-bold text-lg text-[#E7FB10] flex-shrink-0"
+                            className="font-display font-bold text-lg text-[#D4FF1F] flex-shrink-0"
                             data-testid={`cart-item-total-${item.productId}`}
                           >
                             ${Math.round(item.price * item.quantity)}
@@ -587,7 +587,7 @@ export default function CartPage() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <h3 className="font-display font-bold text-xl" data-testid={`cart-item-name-${item.productId}`}>{item.name}</h3>
                         {item.packSize && (
-                          <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
+                          <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-pack-${item.productId}-${item.packSize}`}>
                             <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
                           </Badge>
                         )}
@@ -617,7 +617,7 @@ export default function CartPage() {
                       ) : (
                         <>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-display font-bold text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                            <span className="font-display font-bold text-2xl text-[#D4FF1F]" data-testid={`cart-item-total-${item.productId}`}>
                               ${Math.round(item.price * item.quantity)}
                             </span>
                             <Button
@@ -799,7 +799,7 @@ export default function CartPage() {
                 <div className="flex justify-between items-center pt-2 border-t border-border/40">
                   <span className="font-display font-bold text-base">Total</span>
                   <div className="text-right">
-                    <div className="font-display font-bold text-2xl text-[#E7FB10]" data-testid="text-total">${Math.round(total)}</div>
+                    <div className="font-display font-bold text-2xl text-[#D4FF1F]" data-testid="text-total">${Math.round(total)}</div>
                     <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Tax calculated at checkout</p>
                   </div>
                 </div>
@@ -809,7 +809,7 @@ export default function CartPage() {
               <Button
                 ref={inlineCTARef}
                 size="lg"
-                className="w-full bg-[#E7FB10] text-black font-display font-bold text-base gap-2 shadow-glow-sm"
+                className="w-full bg-[#D4FF1F] text-black font-display font-bold text-base gap-2 shadow-glow-sm"
                 onClick={handleCheckout}
                 data-testid="button-checkout"
               >
@@ -824,7 +824,7 @@ export default function CartPage() {
                   <span>Secure checkout</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Truck className="h-3.5 w-3.5 text-[#E7FB10]" />
+                  <Truck className="h-3.5 w-3.5 text-[#D4FF1F]" />
                   <span>Same-day shipping</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -945,11 +945,11 @@ export default function CartPage() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-shrink-0">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Total</p>
-              <p className="font-display font-bold text-xl text-[#E7FB10]" data-testid="text-total-sticky">${Math.round(total)}</p>
+              <p className="font-display font-bold text-xl text-[#D4FF1F]" data-testid="text-total-sticky">${Math.round(total)}</p>
             </div>
             <Button
               size="lg"
-              className="flex-1 bg-[#E7FB10] text-black font-display font-bold gap-2 shadow-glow-sm"
+              className="flex-1 bg-[#D4FF1F] text-black font-display font-bold gap-2 shadow-glow-sm"
               onClick={handleCheckout}
               data-testid="button-checkout-sticky"
             >

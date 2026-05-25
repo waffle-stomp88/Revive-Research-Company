@@ -115,20 +115,20 @@ function AlbuminBindingAnimation({ isInView, showDAC }: { isInView: boolean; sho
               rx="50"
               ry="35"
               fill="rgba(231, 251, 16, 0.1)"
-              stroke="#E7FB10"
+              stroke="#D4FF1F"
               strokeWidth="2"
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ duration: 0.5 }}
               style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.4))' }}
             />
-            <motion.text x="160" y="95" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold"
+            <motion.text x="160" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
             >
               Albumin
             </motion.text>
-            <motion.text x="160" y="108" textAnchor="middle" fill="#E7FB10" fontSize="7"
+            <motion.text x="160" y="108" textAnchor="middle" fill="#D4FF1F" fontSize="7"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
             >
@@ -329,7 +329,7 @@ export function CJC1295AlbuminVisual() {
           }}
         >
           <Shield className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F] bg-clip-text text-transparent">
             Drug Affinity Complex (DAC) Technology
           </span>
         </div>
@@ -403,7 +403,7 @@ export function CJC1295AlbuminVisual() {
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
             { icon: Zap, title: "Extended Action", desc: "120+ hour half-life", color: "#21d8ff" },
-            { icon: Activity, title: "Sustained Release", desc: "Steady GH stimulation", color: "#E7FB10" },
+            { icon: Activity, title: "Sustained Release", desc: "Steady GH stimulation", color: "#D4FF1F" },
             { icon: TrendingUp, title: "Weekly Dosing", desc: "Less frequent administration", color: "#22c55e" },
           ].map((item, idx) => {
             const Icon = item.icon;

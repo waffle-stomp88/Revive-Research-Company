@@ -12,7 +12,7 @@ export function SyringeSVG({
   fillUnits,
   maxUnits,
   className = "",
-  highlightColor = "#E7FB10",
+  highlightColor = "#D4FF1F",
   liquidColor = "#21d8ff",
 }: SyringeSVGProps) {
   const clampedUnits = Math.max(0, Math.min(fillUnits, maxUnits));

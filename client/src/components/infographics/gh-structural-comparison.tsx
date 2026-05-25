@@ -6,7 +6,7 @@ import { Clock, MapPin, Activity, Zap, Target, Layers } from "lucide-react";
 const C = {
   dac: "#21d8ff",      // CJC-1295 with DAC (cyan)
   nonDac: "#f97316",   // Mod GRF 1-29 / non-DAC (orange)
-  lr3: "#E7FB10",      // IGF-1 LR3 (neon yellow)
+  lr3: "#D4FF1F",      // IGF-1 LR3 (neon yellow)
   des: "#a78bfa",      // IGF-DES (violet)
   igfbp: "#ef4444",    // IGFBP binding (red)
   free: "#22c55e",     // Free fraction (green)

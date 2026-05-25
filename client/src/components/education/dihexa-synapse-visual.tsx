@@ -12,7 +12,7 @@ interface SynapsePhase {
 }
 
 const synapsePhases: SynapsePhase[] = [
-  { id: 0, label: "HGF Binding", icon: Zap, color: "#E7FB10", description: "Dihexa binds HGF with ultra-high affinity (Kd ≈ 65 pM)" },
+  { id: 0, label: "HGF Binding", icon: Zap, color: "#D4FF1F", description: "Dihexa binds HGF with ultra-high affinity (Kd ≈ 65 pM)" },
   { id: 1, label: "c-Met Activation", icon: Network, color: "#21d8ff", description: "Potentiates c-Met receptor phosphorylation" },
   { id: 2, label: "Synaptogenesis", icon: Sparkles, color: "#9d4edd", description: "New synaptic connections form in hippocampus" },
   { id: 3, label: "Neuroprotection", icon: Shield, color: "#ec4899", description: "Enhanced neuronal survival and cognitive function" },
@@ -110,7 +110,7 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
             {activePhase >= 3 && (
               <motion.circle
                 cx={spine.cx} cy={spine.cy} r="3"
-                fill="#E7FB10"
+                fill="#D4FF1F"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ delay: spine.delay + 0.5, duration: 1, repeat: Infinity }}
@@ -124,20 +124,20 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
           <motion.circle
             cx="50" cy="100" r="18"
             fill="rgba(231, 251, 16, 0.2)"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="2"
             initial={{ scale: 0 }}
             animate={isInView && activePhase >= 0 ? { scale: 1 } : {}}
             transition={{ delay: 0.3 }}
             filter="url(#synapseGlow)"
           />
-          <motion.text x="50" y="98" textAnchor="middle" fill="#E7FB10" fontSize="7" fontWeight="bold"
+          <motion.text x="50" y="98" textAnchor="middle" fill="#D4FF1F" fontSize="7" fontWeight="bold"
             initial={{ opacity: 0 }}
             animate={isInView && activePhase >= 0 ? { opacity: 1 } : {}}
           >
             DIHEXA
           </motion.text>
-          <motion.text x="50" y="107" textAnchor="middle" fill="#E7FB10" fontSize="5"
+          <motion.text x="50" y="107" textAnchor="middle" fill="#D4FF1F" fontSize="5"
             initial={{ opacity: 0 }}
             animate={isInView && activePhase >= 0 ? { opacity: 1 } : {}}
           >
@@ -166,7 +166,7 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
         {activePhase >= 0 && (
           <motion.path
             d="M 70 100 Q 100 80 130 90"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="2"
             strokeDasharray="4,4"
             fill="none"

@@ -85,7 +85,7 @@ export function MobileBottomNav() {
               href={href}
               className={`flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors ${
                 active 
-                  ? "text-[#E7FB10]" 
+                  ? "text-[#D4FF1F]" 
                   : "text-muted-foreground hover:text-white"
               }`}
               data-testid={`nav-${item.label.toLowerCase()}`}
@@ -94,7 +94,7 @@ export function MobileBottomNav() {
                 <Icon className={`h-5 w-5 ${active ? "stroke-[2.5]" : ""}`} />
                 {isCart && itemCount > 0 && (
                   <span 
-                    className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-[#E7FB10] text-black rounded-full px-1"
+                    className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-[#D4FF1F] text-black rounded-full px-1"
                     data-testid="cart-badge-count"
                   >
                     {itemCount > 99 ? "99+" : itemCount}

@@ -242,7 +242,7 @@ export function BatchTestingPipeline() {
     { label: "Sample Pull", icon: TestTube, color: "#f59e0b", detail: "Representative samples from batch" },
     { label: "Lab Testing", icon: Microscope, color: "#21d8ff", detail: "Independent third-party HPLC + MS analysis" },
     { label: "Approval", icon: CheckCircle2, color: "#22c55e", detail: "Batch passes quality thresholds" },
-    { label: "Ship", icon: Truck, color: "#E7FB10", detail: "Discreet protective packaging to your door" },
+    { label: "Ship", icon: Truck, color: "#D4FF1F", detail: "Discreet protective packaging to your door" },
   ];
 
   return (
@@ -252,7 +252,7 @@ export function BatchTestingPipeline() {
         <div className="hidden md:flex items-center justify-between relative">
           <div className="absolute top-5 left-8 right-8 h-0.5 bg-muted">
             <motion.div 
-              className="h-full bg-gradient-to-r from-[#a855f7] via-[#21d8ff] to-[#E7FB10]"
+              className="h-full bg-gradient-to-r from-[#a855f7] via-[#21d8ff] to-[#D4FF1F]"
               initial={{ width: 0 }}
               animate={isInView ? { width: "100%" } : {}}
               transition={{ duration: 2, ease: "easeOut" }}
@@ -493,7 +493,7 @@ export function VerificationStepper() {
   return (
     <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-verification-stepper">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Your 5-Step Verification Process</h3>
-      <Card className="p-4 sm:p-6 border-[#E7FB10]/20 bg-[#E7FB10]/5">
+      <Card className="p-4 sm:p-6 border-[#D4FF1F]/20 bg-[#D4FF1F]/5">
         <div className="space-y-3">
           {steps.map((step, i) => {
             const isActive = i <= activeStep;
@@ -854,7 +854,7 @@ export function PriceValueMatrix() {
   return (
     <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-price-value">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Price vs. Documentation Quality</h3>
-      <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5">
+      <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#D4FF1F]/5">
         <div className="relative" style={{ height: 260 }}>
           <p className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 text-[9px] sm:text-[10px] text-[#21d8ff]/70 font-medium -rotate-90 whitespace-nowrap">Doc Quality</p>
 

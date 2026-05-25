@@ -4,7 +4,7 @@ import { Atom, Sparkles, Dna, Shield, Zap, Activity } from "lucide-react";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; activeGene: number }) {
-  const geneColors = ['#f97316', '#E7FB10', '#21d8ff', '#ec4899'];
+  const geneColors = ['#f97316', '#D4FF1F', '#21d8ff', '#ec4899'];
   
   return (
     <div className="relative w-full h-64 flex items-center justify-center overflow-hidden">
@@ -31,7 +31,7 @@ function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; a
           </radialGradient>
           <linearGradient id="peptideGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#21d8ff" />
-            <stop offset="50%" stopColor="#E7FB10" />
+            <stop offset="50%" stopColor="#D4FF1F" />
             <stop offset="100%" stopColor="#21d8ff" />
           </linearGradient>
         </defs>
@@ -108,7 +108,7 @@ function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; a
                 y1="100"
                 x2={x}
                 y2={y}
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="3"
                 strokeLinecap="round"
                 initial={{ pathLength: 0 }}
@@ -122,7 +122,7 @@ function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; a
                 cy={y}
                 r="18"
                 fill="rgba(231, 251, 16, 0.15)"
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="2"
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
@@ -133,7 +133,7 @@ function CopperBindingAnimation({ isInView, activeGene }: { isInView: boolean; a
                 x={x}
                 y={y + 4}
                 textAnchor="middle"
-                fill="#E7FB10"
+                fill="#D4FF1F"
                 fontSize="10"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -258,7 +258,7 @@ const geneCategories = [
     gene: 'SOD/GPX',
     icon: Sparkles,
     description: 'Activates superoxide dismutase and antioxidant enzyme systems',
-    color: '#E7FB10',
+    color: '#D4FF1F',
     count: '623 genes'
   },
   {
@@ -361,7 +361,7 @@ export function GHKCuCopperVisual() {
           }}
         >
           <Atom className="h-5 w-5 text-[#f97316]" style={{ filter: 'drop-shadow(0 0 4px rgba(249, 115, 22, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#f97316] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#f97316] to-[#D4FF1F] bg-clip-text text-transparent">
             Copper Ion Binding & Gene Activation
           </span>
         </div>
@@ -441,8 +441,8 @@ export function GHKCuCopperVisual() {
               <span className="w-3 h-3 rounded-full bg-[#f97316]" style={{ boxShadow: '0 0 8px #f97316' }}></span>
               Cu²⁺ Ion
             </span>
-            <span className="flex items-center gap-2 text-[#E7FB10]">
-              <span className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 8px #E7FB10' }}></span>
+            <span className="flex items-center gap-2 text-[#D4FF1F]">
+              <span className="w-3 h-3 rounded-full bg-[#D4FF1F]" style={{ boxShadow: '0 0 8px #D4FF1F' }}></span>
               Tripeptide
             </span>
           </div>

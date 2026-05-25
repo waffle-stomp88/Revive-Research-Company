@@ -47,7 +47,7 @@ const RESEARCH_DOMAINS = [
     title: "Supply Chain Flow",
     subtitle: "From sourcing to delivery—what to expect",
     icon: Truck,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     slug: "ordering-expectations",
   },
 ];

@@ -81,13 +81,13 @@ export default function SystemHub() {
           description="This body system hub does not exist. Browse all peptide research systems."
           canonicalPath="/systems"
         />
-        <FlaskConical className="w-12 h-12 text-[#E7FB10] opacity-60" />
+        <FlaskConical className="w-12 h-12 text-[#D4FF1F] opacity-60" />
         <h1 className="text-2xl font-bold text-white">System Not Found</h1>
         <p className="text-gray-400 max-w-md">
-          The body system <span className="font-mono text-[#E7FB10]">{slug}</span> doesn't exist in our research hub.
+          The body system <span className="font-mono text-[#D4FF1F]">{slug}</span> doesn't exist in our research hub.
         </p>
         <Link href="/guides/peptide-education-center">
-          <Button variant="outline" className="border-[#E7FB10]/40 text-[#E7FB10]">
+          <Button variant="outline" className="border-[#D4FF1F]/40 text-[#D4FF1F]">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Education Center
           </Button>
@@ -110,7 +110,7 @@ export default function SystemHub() {
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-500" aria-label="Breadcrumb">
-          <Link href="/guides/peptide-education-center" className="hover:text-[#E7FB10] transition-colors">
+          <Link href="/guides/peptide-education-center" className="hover:text-[#D4FF1F] transition-colors">
             Education Center
           </Link>
           <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
@@ -249,7 +249,7 @@ export default function SystemHub() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#E7FB10]/40 text-[#E7FB10]"
+                className="border-[#D4FF1F]/40 text-[#D4FF1F]"
                 data-testid="button-build-stack"
               >
                 Build your own
@@ -264,7 +264,7 @@ export default function SystemHub() {
                 No pre-built stacks available for this system yet.
               </p>
               <Link href="/custom-stack">
-                <Button variant="outline" size="sm" className="border-[#E7FB10]/40 text-[#E7FB10]">
+                <Button variant="outline" size="sm" className="border-[#D4FF1F]/40 text-[#D4FF1F]">
                   Build a custom stack <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
               </Link>

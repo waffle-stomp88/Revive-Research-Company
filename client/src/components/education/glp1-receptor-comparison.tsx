@@ -31,7 +31,7 @@ const peptideComparison: ReceptorData[] = [
   {
     name: "RR-A2",
     type: "Dual Agonist",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     receptors: [
       { name: "GLP-1", active: true, effect: "Incretin pathway modulation" },
       { name: "GIP", active: true, effect: "Secondary incretin signaling" },

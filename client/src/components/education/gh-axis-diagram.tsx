@@ -40,7 +40,7 @@ const ghAxisNodes: AxisNode[] = [
     name: "Liver",
     fullName: "Liver / Tissues",
     description: "Converts GH to IGF-1; GH acts directly on tissues",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     position: { y: 70 }
   }
 ];
@@ -55,7 +55,7 @@ const peptideTargets: PeptideTarget[] = [
   {
     name: "Ipamorelin",
     target: "pituitary",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     mechanism: "Ghrelin mimetic - directly stimulates GH secretion"
   },
   {
@@ -102,7 +102,7 @@ export function GHAxisDiagram() {
                 <linearGradient id="axisGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#9d4edd" stopOpacity="0.5" />
                   <stop offset="50%" stopColor="#21d8ff" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.5" />
+                  <stop offset="100%" stopColor="#D4FF1F" stopOpacity="0.5" />
                 </linearGradient>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                   <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" fillOpacity="0.3" />
@@ -282,10 +282,10 @@ export function GHAxisDiagram() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 1.4 }}
-          className="mt-6 p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/20"
+          className="mt-6 p-4 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/20"
         >
           <div className="flex items-start gap-3">
-            <Info className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+            <Info className="h-4 w-4 text-[#D4FF1F] mt-0.5 flex-shrink-0" />
             <div className="text-sm text-muted-foreground">
               <strong className="text-foreground">Key concept:</strong> GHRH analogs (CJC-1295, Tesamorelin) 
               mimic the hypothalamus signal, while secretagogues (Ipamorelin) directly stimulate the pituitary. 

@@ -275,7 +275,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
               <h3 className="font-display text-lg font-bold mb-1" data-testid={`compare-name-${product.id}`}>
                 {product.name}
               </h3>
-              <p className="text-2xl font-bold text-[#E7FB10] mb-2">
+              <p className="text-2xl font-bold text-[#D4FF1F] mb-2">
                 ${Math.round(Number(product.price))}
               </p>
               

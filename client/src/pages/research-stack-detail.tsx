@@ -248,7 +248,7 @@ export default function ResearchStackDetail() {
       title: "Added to Cart",
       description: `${stack.name} has been added to your cart.`,
       action: (
-        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
+        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#D4FF1F] text-black border-[#D4FF1F] hover:bg-[#D4FF1F]/90 font-semibold">
           View Cart
         </ToastAction>
       ),
@@ -301,7 +301,7 @@ export default function ResearchStackDetail() {
                     className="absolute top-4 right-4 z-30"
                     style={{
                       backgroundColor: stack.badgeColor ?? undefined,
-                      color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
+                      color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
                     }}
                     data-testid="badge-stack-type"
                   >
@@ -402,7 +402,7 @@ export default function ResearchStackDetail() {
 
             <div
               className="h-[3px] mt-2 mb-3 rounded-full -mx-4 md:-mx-6"
-              style={{ background: "linear-gradient(to right, #21d8ff, #E7FB10)" }}
+              style={{ background: "linear-gradient(to right, #21d8ff, #D4FF1F)" }}
               data-testid="separator-gradient"
             />
             {stack.subtitle && (
@@ -413,13 +413,13 @@ export default function ResearchStackDetail() {
 
             <div className="mb-2 md:mb-3">
               {softGated ? (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "#E7FB100d", border: "1px solid #E7FB1025" }} data-testid="text-stack-price">
-                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "#D4FF1F0d", border: "1px solid #D4FF1F25" }} data-testid="text-stack-price">
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#D4FF1F80" }} />
                   <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
-                  <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
+                  <span className="font-display text-2xl md:text-3xl font-bold text-[#D4FF1F]" data-testid="text-stack-price">
                     ${Math.round(getBasePrice())}
                   </span>
                 </div>
@@ -464,7 +464,7 @@ export default function ResearchStackDetail() {
               <div className="grid grid-cols-2 gap-2">
                 <div
                   className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "one-time" ? "border-[#E7FB10] bg-[#E7FB10]/5" : "border-border hover:border-border/80"
+                    purchaseType === "one-time" ? "border-[#D4FF1F] bg-[#D4FF1F]/5" : "border-border hover:border-border/80"
                   }`}
                   onClick={() => setPurchaseType("one-time")}
                   data-testid="option-one-time"
@@ -477,7 +477,7 @@ export default function ResearchStackDetail() {
                     {!softGated && <p className="text-xs text-muted-foreground mt-0.5">${Math.round(getBasePrice())}</p>}
                   </div>
                   {purchaseType === "one-time" && (
-                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
+                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#D4FF1F] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
                       <Check className="h-3 w-3 text-black" />
                     </div>
                   )}
@@ -570,7 +570,7 @@ export default function ResearchStackDetail() {
 
             {softGated ? (
               <div className="blur-sm pointer-events-none select-none opacity-40 flex flex-col gap-2" aria-hidden="true" data-testid="auth-gate-inline">
-                <div className="w-full h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                <div className="w-full h-11 rounded-md bg-[#D4FF1F] flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5 text-black" />
                   <span className="font-display font-bold text-black">Buy Now</span>
                 </div>
@@ -587,7 +587,7 @@ export default function ResearchStackDetail() {
                     className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                       purchaseType === "subscription"
                         ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                        : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
+                        : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
                     }`}
                     onClick={handleBuyNow}
                     disabled={!canAddToCart}
@@ -712,7 +712,7 @@ export default function ResearchStackDetail() {
                   onClick={() => setActiveResearchTab(tab.key)}
                   className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
                     activeResearchTab === tab.key
-                      ? "border-[#E7FB10] text-foreground"
+                      ? "border-[#D4FF1F] text-foreground"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -745,7 +745,7 @@ export default function ResearchStackDetail() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {stack.keyBenefits.map((benefit, index) => (
                       <div key={index} className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-border bg-card text-sm">
-                        <CheckCircle className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#D4FF1F] flex-shrink-0" />
                         <span>{benefit}</span>
                       </div>
                     ))}
@@ -1027,7 +1027,7 @@ export default function ResearchStackDetail() {
                                 <span className="text-xs">Sign in for price</span>
                               </div>
                             ) : (
-                              <p className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto">
+                              <p className="text-sm font-bold text-[#D4FF1F] mt-2 mt-auto">
                                 ${Math.round(Number(partnerProduct.price))}
                               </p>
                             )}
@@ -1060,11 +1060,11 @@ export default function ResearchStackDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{stack.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${Math.round(getBasePrice())}` : "—"}</p>
+              <p className="text-lg font-bold text-[#D4FF1F]">{pricingReady ? `$${Math.round(getBasePrice())}` : "—"}</p>
             </div>
             <Button
               size="lg"
-              className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
               onClick={handleAddToCart}
               disabled={!canAddToCart}
               data-testid="button-sticky-add-to-cart-stack"

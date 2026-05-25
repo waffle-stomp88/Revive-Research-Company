@@ -126,11 +126,11 @@ export function QuizSlide({
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${
-            isPerfect ? "bg-[#E7FB10]/20 border-2 border-[#E7FB10]/40" : "bg-[#21d8ff]/20 border-2 border-[#21d8ff]/40"
+            isPerfect ? "bg-[#D4FF1F]/20 border-2 border-[#D4FF1F]/40" : "bg-[#21d8ff]/20 border-2 border-[#21d8ff]/40"
           }`}
         >
           {isPerfect ? (
-            <Award className="w-12 h-12 text-[#E7FB10]" />
+            <Award className="w-12 h-12 text-[#D4FF1F]" />
           ) : (
             <CheckCircle2 className="w-12 h-12 text-[#21d8ff]" />
           )}
@@ -148,7 +148,7 @@ export function QuizSlide({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="text-3xl font-bold mb-4"
-          style={{ color: isPerfect ? "#E7FB10" : "#21d8ff" }}
+          style={{ color: isPerfect ? "#D4FF1F" : "#21d8ff" }}
         >
           {score} / {questions.length}
         </motion.p>
@@ -168,7 +168,7 @@ export function QuizSlide({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <Badge className="mt-4 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+            <Badge className="mt-4 bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30">
               <Sparkles className="w-3 h-3 mr-1" />
               Perfect Score Achievement!
             </Badge>
@@ -255,7 +255,7 @@ export function QuizSlide({
         >
           <Button
             onClick={handleNext}
-            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
             data-testid="button-quiz-next"
           >
             {currentQuestion < questions.length - 1 ? "Next Question" : "See Results"}
@@ -542,7 +542,7 @@ function SlideQuiz({
 
 function PeptideChainVisual() {
   const aminoAcids = [
-    { letter: "A", name: "Ala", color: "#E7FB10" },
+    { letter: "A", name: "Ala", color: "#D4FF1F" },
     { letter: "G", name: "Gly", color: "#21d8ff" },
     { letter: "S", name: "Ser", color: "#22c55e" },
     { letter: "T", name: "Thr", color: "#9d4edd" },
@@ -584,7 +584,7 @@ function PeptideChainVisual() {
 
 function MolecularSizeComparisonVisual() {
   const molecules = [
-    { name: "Amino Acid", size: 1.5, color: "#E7FB10", label: "~100 Da" },
+    { name: "Amino Acid", size: 1.5, color: "#D4FF1F", label: "~100 Da" },
     { name: "Peptide", size: 3, color: "#21d8ff", label: "500-5000 Da" },
     { name: "Protein", size: 5, color: "#9d4edd", label: ">10,000 Da" },
   ];
@@ -630,9 +630,9 @@ function PeptideBondFormationVisual() {
         <motion.div
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="flex items-center gap-2 p-5 rounded-xl bg-[#E7FB10]/10 border border-[#E7FB10]/30"
+          className="flex items-center gap-2 p-5 rounded-xl bg-[#D4FF1F]/10 border border-[#D4FF1F]/30"
         >
-          <span className="text-[#E7FB10] font-mono text-lg">NH₂-CHR-</span>
+          <span className="text-[#D4FF1F] font-mono text-lg">NH₂-CHR-</span>
           <span className="text-[#ef4444] font-mono text-lg font-bold">COOH</span>
         </motion.div>
         <motion.div
@@ -667,7 +667,7 @@ function PeptideBondFormationVisual() {
         transition={{ delay: 0.7 }}
         className="p-6 rounded-xl bg-[#22c55e]/10 border-2 border-[#22c55e]/40"
       >
-        <span className="text-[#E7FB10] font-mono text-xl">NH₂-CHR-</span>
+        <span className="text-[#D4FF1F] font-mono text-xl">NH₂-CHR-</span>
         <span className="text-[#22c55e] font-mono text-xl font-bold">CO-NH</span>
         <span className="text-[#21d8ff] font-mono text-xl">-CHR-COOH</span>
       </motion.div>
@@ -681,7 +681,7 @@ function BiologicalRolesVisual() {
     { icon: Heart, label: "Hormones", example: "Insulin, Oxytocin", color: "#ef4444" },
     { icon: Brain, label: "Neurotransmitters", example: "Endorphins", color: "#9d4edd" },
     { icon: Shield, label: "Antimicrobials", example: "Defensins", color: "#22c55e" },
-    { icon: Zap, label: "Signaling", example: "Growth factors", color: "#E7FB10" },
+    { icon: Zap, label: "Signaling", example: "Growth factors", color: "#D4FF1F" },
   ];
 
   return (
@@ -710,7 +710,7 @@ function BiologicalRolesVisual() {
 function RUOComplianceFlowchartVisual() {
   const steps = [
     { icon: ShoppingCart, label: "Acquire RUO Compound", desc: "Purchase from verified supplier", color: "#21d8ff" },
-    { icon: FileCheck, label: "Verify COA & Labels", desc: "Check purity and documentation", color: "#E7FB10" },
+    { icon: FileCheck, label: "Verify COA & Labels", desc: "Check purity and documentation", color: "#D4FF1F" },
     { icon: Building2, label: "Use in Lab Setting Only", desc: "Never for human/animal use", color: "#9d4edd" },
     { icon: ClipboardList, label: "Document All Usage", desc: "Maintain detailed records", color: "#22c55e" },
   ];
@@ -757,7 +757,7 @@ function RUOComplianceFlowchartVisual() {
 function RegulatoryPyramidVisual() {
   const levels = [
     { label: "FDA Approved Drugs", status: "Clinical Use", color: "#22c55e", width: "40%" },
-    { label: "Investigational New Drugs", status: "Clinical Trials", color: "#E7FB10", width: "60%" },
+    { label: "Investigational New Drugs", status: "Clinical Trials", color: "#D4FF1F", width: "60%" },
     { label: "Research Use Only (RUO)", status: "Laboratory Only", color: "#21d8ff", width: "80%" },
     { label: "Raw Materials", status: "Synthesis", color: "#9d4edd", width: "100%" },
   ];
@@ -792,7 +792,7 @@ function RegulatoryPyramidVisual() {
 function OrderProcessFlowVisual() {
   const steps = [
     { icon: Search, label: "Research", desc: "Select peptide", color: "#9d4edd" },
-    { icon: ShoppingCart, label: "Order", desc: "Place order", color: "#E7FB10" },
+    { icon: ShoppingCart, label: "Order", desc: "Place order", color: "#D4FF1F" },
     { icon: CreditCard, label: "Payment", desc: "Secure checkout", color: "#21d8ff" },
     { icon: Truck, label: "Ship", desc: "Fast & discreet", color: "#22c55e" },
     { icon: Box, label: "Receive", desc: "Inspect & store", color: "#f97316" },
@@ -832,7 +832,7 @@ function OrderProcessFlowVisual() {
 function PurityScaleVisual() {
   const grades = [
     { pct: 95, label: "Standard", color: "#f97316" },
-    { pct: 98, label: "Research", color: "#E7FB10" },
+    { pct: 98, label: "Research", color: "#D4FF1F" },
     { pct: 99, label: "High", color: "#22c55e" },
   ];
 
@@ -845,7 +845,7 @@ function PurityScaleVisual() {
           animate={{ width: "98%" }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           className="absolute left-0 top-0 h-full rounded-full"
-          style={{ background: "linear-gradient(90deg, #f97316 0%, #E7FB10 50%, #22c55e 100%)" }}
+          style={{ background: "linear-gradient(90deg, #f97316 0%, #D4FF1F 50%, #22c55e 100%)" }}
         />
       </div>
       <div className="flex justify-between w-full">
@@ -964,7 +964,7 @@ function LyophilizationVisual() {
   const stages = [
     { icon: Droplets, label: "Solution", color: "#21d8ff" },
     { icon: Snowflake, label: "Frozen", color: "#60a5fa" },
-    { icon: TrendingUp, label: "Vacuum", color: "#E7FB10" },
+    { icon: TrendingUp, label: "Vacuum", color: "#D4FF1F" },
     { icon: Sparkles, label: "Powder", color: "#22c55e" },
   ];
 
@@ -1020,7 +1020,7 @@ function LyophilizationDetailedVisual() {
       label: "Secondary Drying", 
       temp: "+20°C",
       desc: "Removal of bound water",
-      color: "#E7FB10" 
+      color: "#D4FF1F" 
     },
     { 
       icon: Sparkles, 
@@ -1108,7 +1108,7 @@ function ReconstitutionStepsVisual() {
   const steps = [
     { num: 1, text: "Allow vial to reach room temp", icon: Timer, color: "#9d4edd" },
     { num: 2, text: "Add solvent down vial wall", icon: Syringe, color: "#21d8ff" },
-    { num: 3, text: "Let peptide dissolve (2-5 min)", icon: Clock, color: "#E7FB10" },
+    { num: 3, text: "Let peptide dissolve (2-5 min)", icon: Clock, color: "#D4FF1F" },
     { num: 4, text: "Swirl gently - never shake", icon: Waves, color: "#22c55e" },
   ];
 
@@ -1144,7 +1144,7 @@ function ReconstitutionStepsVisual() {
 
 function COAAnatomyVisual() {
   const sections = [
-    { label: "Product ID", desc: "Name, catalog #, batch", color: "#E7FB10", y: 10 },
+    { label: "Product ID", desc: "Name, catalog #, batch", color: "#D4FF1F", y: 10 },
     { label: "Specifications", desc: "Expected values", color: "#21d8ff", y: 35 },
     { label: "Test Results", desc: "Actual measurements", color: "#22c55e", y: 60 },
     { label: "QC Approval", desc: "Signatures, dates", color: "#9d4edd", y: 85 },
@@ -1159,7 +1159,7 @@ function COAAnatomyVisual() {
           animate={{ opacity: 1, x: 0 }}
           className="w-56 h-72 rounded-xl bg-white/5 border border-white/20 relative overflow-hidden"
         >
-          <div className="absolute top-3 left-3 right-3 h-3 bg-[#E7FB10]/30 rounded" />
+          <div className="absolute top-3 left-3 right-3 h-3 bg-[#D4FF1F]/30 rounded" />
           <div className="absolute top-8 left-3 right-3 space-y-1.5">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-1.5 bg-white/10 rounded" />
@@ -1213,13 +1213,13 @@ function MassSpecVisual() {
             initial={{ height: 0 }}
             animate={{ height: 20 }}
             transition={{ delay: 0.5 }}
-            x="100" y="65" width="8" fill="#E7FB10" opacity="0.7"
+            x="100" y="65" width="8" fill="#D4FF1F" opacity="0.7"
           />
           <motion.rect
             initial={{ height: 0 }}
             animate={{ height: 16 }}
             transition={{ delay: 0.6 }}
-            x="180" y="69" width="8" fill="#E7FB10" opacity="0.7"
+            x="180" y="69" width="8" fill="#D4FF1F" opacity="0.7"
           />
           <motion.rect
             initial={{ height: 0 }}
@@ -1243,7 +1243,7 @@ function MassSpecVisual() {
           <span className="text-[#22c55e]">●</span> Target mass
         </span>
         <span className="text-base text-white/70">
-          <span className="text-[#E7FB10]">●</span> Adducts
+          <span className="text-[#D4FF1F]">●</span> Adducts
         </span>
         <span className="text-base text-white/70">
           <span className="text-[#f97316]">●</span> Fragments
@@ -1257,7 +1257,7 @@ function SafetyEquipmentVisual() {
   const items = [
     { icon: Eye, label: "Safety Goggles", color: "#21d8ff" },
     { icon: Shield, label: "Lab Gloves", color: "#22c55e" },
-    { icon: ShieldCheck, label: "Lab Coat", color: "#E7FB10" },
+    { icon: ShieldCheck, label: "Lab Coat", color: "#D4FF1F" },
   ];
 
   return (
@@ -1287,7 +1287,7 @@ function LabSetupVisual() {
   const zones = [
     { label: "Clean Zone", desc: "Peptide handling", color: "#22c55e", icon: Sparkles },
     { label: "Prep Zone", desc: "Reconstitution", color: "#21d8ff", icon: FlaskConical },
-    { label: "Storage Zone", desc: "Refrigeration", color: "#E7FB10", icon: Snowflake },
+    { label: "Storage Zone", desc: "Refrigeration", color: "#D4FF1F", icon: Snowflake },
     { label: "Waste Zone", desc: "Disposal", color: "#ef4444", icon: AlertTriangle },
   ];
 
@@ -1319,7 +1319,7 @@ function LabSetupVisual() {
 function DocumentationTemplateVisual() {
   const fields = [
     { label: "Date", value: "2024-01-15", color: "#21d8ff" },
-    { label: "Product", value: "BPC-157 5mg", color: "#E7FB10" },
+    { label: "Product", value: "BPC-157 5mg", color: "#D4FF1F" },
     { label: "Batch #", value: "RR-2024-0115", color: "#9d4edd" },
     { label: "Storage Temp", value: "-20°C ✓", color: "#22c55e" },
     { label: "COA Verified", value: "Yes ✓", color: "#22c55e" },
@@ -1334,7 +1334,7 @@ function DocumentationTemplateVisual() {
         className="w-full p-6 rounded-xl bg-white/5 border border-white/10"
       >
         <div className="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
-          <ClipboardList className="w-7 h-7 text-[#E7FB10]" />
+          <ClipboardList className="w-7 h-7 text-[#D4FF1F]" />
           <span className="text-white text-lg font-semibold">Research Log Entry</span>
         </div>
         <div className="space-y-4">
@@ -1360,7 +1360,7 @@ function DocumentationTemplateVisual() {
 function ResearchWorkflowVisual() {
   const steps = [
     { icon: Search, label: "Plan", color: "#9d4edd" },
-    { icon: ShoppingCart, label: "Acquire", color: "#E7FB10" },
+    { icon: ShoppingCart, label: "Acquire", color: "#D4FF1F" },
     { icon: Thermometer, label: "Store", color: "#21d8ff" },
     { icon: Droplets, label: "Prepare", color: "#22c55e" },
     { icon: Microscope, label: "Research", color: "#f97316" },
@@ -1408,7 +1408,7 @@ function TroubleshootingFlowVisual() {
     { 
       problem: "Cloudy solution", 
       solutions: ["Check concentration", "Adjust pH", "Filter"],
-      color: "#E7FB10" 
+      color: "#D4FF1F" 
     },
     { 
       problem: "No activity", 
@@ -1457,9 +1457,9 @@ function CompletionBadgeVisual() {
         transition={{ type: "spring", duration: 0.8 }}
         className="relative"
       >
-        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#22c55e] to-[#E7FB10] p-1">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#22c55e] to-[#D4FF1F] p-1">
           <div className="w-full h-full rounded-full bg-[#1a1a1f] flex items-center justify-center">
-            <Award className="w-16 h-16 text-[#E7FB10]" />
+            <Award className="w-16 h-16 text-[#D4FF1F]" />
           </div>
         </div>
         <motion.div
@@ -1516,7 +1516,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Four Modules to Mastery"
           items={[
             { icon: Compass, title: "Orientation", description: "Understand peptides, compliance, and legal frameworks", color: "#21d8ff" },
-            { icon: BookOpen, title: "Core Foundations", description: "Master purity, storage, stability, and reconstitution", color: "#E7FB10" },
+            { icon: BookOpen, title: "Core Foundations", description: "Master purity, storage, stability, and reconstitution", color: "#D4FF1F" },
             { icon: FlaskConical, title: "Research Skills", description: "Learn COA interpretation, safety, and documentation", color: "#9d4edd" },
             { icon: Award, title: "Lab Confidence", description: "Apply everything in real research workflows", color: "#22c55e" },
           ]}
@@ -1529,7 +1529,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           title="Earn XP & Achievements"
           items={[
-            { icon: Zap, title: "+25 XP per Lesson", description: "Complete lessons to accumulate experience points", color: "#E7FB10" },
+            { icon: Zap, title: "+25 XP per Lesson", description: "Complete lessons to accumulate experience points", color: "#D4FF1F" },
             { icon: Award, title: "Achievement Badges", description: "Unlock special badges for milestones reached", color: "#22c55e" },
             { icon: TrendingUp, title: "Track Progress", description: "Visual progress rings show your advancement", color: "#21d8ff" },
           ]}
@@ -1562,7 +1562,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           icon={Beaker}
           title="What is a Peptide?"
           subtitle="Discover the molecular building blocks that drive biological processes."
-          color="#E7FB10"
+          color="#D4FF1F"
         />
       ),
     },
@@ -1617,7 +1617,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           title="What Makes Peptides Special"
           items={[
-            { icon: Target, title: "High Specificity", description: "Each peptide targets specific receptors with precision", color: "#E7FB10" },
+            { icon: Target, title: "High Specificity", description: "Each peptide targets specific receptors with precision", color: "#D4FF1F" },
             { icon: Zap, title: "Rapid Action", description: "Small size allows quick cellular uptake and signaling", color: "#21d8ff" },
             { icon: FlaskConical, title: "Synthesizable", description: "Can be manufactured with precise amino acid sequences", color: "#22c55e" },
           ]}
@@ -1699,7 +1699,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           title="RUO Product Labels Must Include"
           items={[
-            { icon: FileText, title: "Clear RUO Statement", description: "\"For Research Use Only. Not for use in diagnostic procedures.\"", color: "#E7FB10" },
+            { icon: FileText, title: "Clear RUO Statement", description: "\"For Research Use Only. Not for use in diagnostic procedures.\"", color: "#D4FF1F" },
             { icon: AlertTriangle, title: "Not for Human Use", description: "Explicit statement prohibiting human/animal consumption", color: "#ef4444" },
             { icon: Package, title: "Product Identification", description: "Batch number, lot number, and manufacturing date", color: "#21d8ff" },
           ]}
@@ -1768,7 +1768,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="FDA & Research Peptides"
           items={[
             { icon: X, title: "Not FDA Approved", description: "Research peptides have not been evaluated for safety or efficacy", color: "#ef4444" },
-            { icon: FileCheck, title: "RUO Classification", description: "Legal for sale and use strictly in research settings", color: "#E7FB10" },
+            { icon: FileCheck, title: "RUO Classification", description: "Legal for sale and use strictly in research settings", color: "#D4FF1F" },
             { icon: ShieldCheck, title: "Supplier Compliance", description: "Quality vendors follow GMP-like manufacturing standards", color: "#22c55e" },
           ]}
         />
@@ -1781,7 +1781,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: ClipboardList, title: "Maintain Records", description: "Document purchase, storage, and usage of all compounds", color: "#21d8ff" },
             { icon: Building2, title: "Appropriate Setting", description: "Use only in legitimate research environments", color: "#9d4edd" },
-            { icon: Lock, title: "Secure Storage", description: "Prevent unauthorized access to research compounds", color: "#E7FB10" },
+            { icon: Lock, title: "Secure Storage", description: "Prevent unauthorized access to research compounds", color: "#D4FF1F" },
             { icon: FileText, title: "Proper Disposal", description: "Follow local regulations for chemical waste disposal", color: "#22c55e" },
           ]}
         />
@@ -1832,7 +1832,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Before You Order"
           items={[
             { icon: Search, title: "Research First", description: "Review literature to select appropriate peptides for your study", color: "#9d4edd" },
-            { icon: FileCheck, title: "Check Specifications", description: "Verify purity levels meet your research requirements", color: "#E7FB10" },
+            { icon: FileCheck, title: "Check Specifications", description: "Verify purity levels meet your research requirements", color: "#D4FF1F" },
             { icon: Package, title: "Quantity Planning", description: "Order appropriate amounts to minimize waste and maximize stability", color: "#21d8ff" },
           ]}
         />
@@ -1845,7 +1845,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Discreet Protective Packaging"
           items={[
             { icon: Package, title: "Dry Protective Packaging", description: "Lyophilized peptides ship in discreet dry packaging — stable without ice packs", color: "#21d8ff" },
-            { icon: Truck, title: "UPS Ground & 2-Day Air", description: "Standard 3–5 business days or express 1–2 business days via UPS", color: "#E7FB10" },
+            { icon: Truck, title: "UPS Ground & 2-Day Air", description: "Standard 3–5 business days or express 1–2 business days via UPS", color: "#D4FF1F" },
             { icon: Snowflake, title: "Stable During Transit", description: "Freeze-dried powder form resists degradation at ambient temperature", color: "#22c55e" },
           ]}
         />
@@ -1858,7 +1858,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Receiving Your Order"
           items={[
             { icon: Eye, title: "Inspect Packaging", description: "Check for damage, temperature indicator status", color: "#21d8ff" },
-            { icon: FileCheck, title: "Verify Contents", description: "Match order confirmation against received items", color: "#E7FB10" },
+            { icon: FileCheck, title: "Verify Contents", description: "Match order confirmation against received items", color: "#D4FF1F" },
             { icon: Thermometer, title: "Store Immediately", description: "Transfer to appropriate temperature storage within 30 minutes", color: "#22c55e" },
             { icon: ClipboardList, title: "Log Receipt", description: "Record batch numbers, receipt date, and condition", color: "#9d4edd" },
           ]}
@@ -1916,7 +1916,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           icon={FlaskConical}
           title="Purity Basics"
           subtitle="Why purity is the single most important factor in peptide research."
-          color="#E7FB10"
+          color="#D4FF1F"
         />
       ),
     },
@@ -1987,7 +1987,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Target, title: "Main Peak Area", description: "The percentage under the main HPLC peak represents purity", color: "#22c55e" },
             { icon: Eye, title: "Impurity Peaks", description: "Minor peaks indicate synthesis byproducts or degradation", color: "#f97316" },
-            { icon: FileCheck, title: "COA Verification", description: "Always verify stated purity against COA chromatogram", color: "#E7FB10" },
+            { icon: FileCheck, title: "COA Verification", description: "Always verify stated purity against COA chromatogram", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2079,7 +2079,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
       content: (
         <SlideInfoCard
           items={[
-            { icon: Timer, title: "Equilibrate First", description: "Let vial reach room temp before opening to prevent condensation", color: "#E7FB10" },
+            { icon: Timer, title: "Equilibrate First", description: "Let vial reach room temp before opening to prevent condensation", color: "#D4FF1F" },
             { icon: Lock, title: "Minimize Exposure", description: "Open vials in a dry environment, reseal quickly", color: "#9d4edd" },
             { icon: Thermometer, title: "Return to Cold", description: "If not reconstituting immediately, return to -20°C storage", color: "#21d8ff" },
           ]}
@@ -2156,7 +2156,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           items={[
             { icon: Eye, title: "UV Damage", description: "Ultraviolet light causes oxidation and cross-linking reactions", color: "#ef4444" },
-            { icon: Shield, title: "Amber Vials", description: "Tinted containers block harmful wavelengths", color: "#E7FB10" },
+            { icon: Shield, title: "Amber Vials", description: "Tinted containers block harmful wavelengths", color: "#D4FF1F" },
             { icon: Lock, title: "Dark Storage", description: "Keep peptides in dark refrigerators or wrapped in foil", color: "#9d4edd" },
           ]}
         />
@@ -2221,7 +2221,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Droplets, title: "Bacteriostatic Water", description: "Most common — contains 0.9% benzyl alcohol as preservative", color: "#21d8ff" },
             { icon: FlaskConical, title: "Sterile Water", description: "For immediate use when preservative-free is needed", color: "#22c55e" },
-            { icon: Activity, title: "Sterile Saline (0.9%)", description: "Physiological pH, good for sensitive peptides", color: "#E7FB10" },
+            { icon: Activity, title: "Sterile Saline (0.9%)", description: "Physiological pH, good for sensitive peptides", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2262,7 +2262,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
       content: (
         <SlideInfoCard
           items={[
-            { icon: Timer, title: "Aliquot Immediately", description: "Divide into single-use portions to prevent freeze-thaw damage", color: "#E7FB10" },
+            { icon: Timer, title: "Aliquot Immediately", description: "Divide into single-use portions to prevent freeze-thaw damage", color: "#D4FF1F" },
             { icon: FileText, title: "Label Everything", description: "Date, peptide name, concentration, expiration", color: "#21d8ff" },
             { icon: Thermometer, title: "Refrigerate at 2-8°C", description: "Use within 2-4 weeks for optimal activity", color: "#22c55e" },
           ]}
@@ -2312,7 +2312,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           icon={FileCheck}
           title="Reading COAs"
           subtitle="Certificates of Analysis are your proof of peptide quality — learn to interpret them."
-          color="#E7FB10"
+          color="#D4FF1F"
         />
       ),
     },
@@ -2361,7 +2361,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Target, title: "Purity (HPLC)", description: "Should be ≥98% for research-grade; main peak clearly dominant", color: "#22c55e" },
             { icon: Activity, title: "Molecular Weight", description: "Must match expected mass ± 0.1%; confirms correct peptide", color: "#21d8ff" },
-            { icon: FileCheck, title: "Batch/Lot Number", description: "Links to manufacturing records; essential for traceability", color: "#E7FB10" },
+            { icon: FileCheck, title: "Batch/Lot Number", description: "Links to manufacturing records; essential for traceability", color: "#D4FF1F" },
             { icon: Eye, title: "Appearance", description: "Should describe white/off-white powder; discoloration may indicate issues", color: "#9d4edd" },
           ]}
         />
@@ -2417,7 +2417,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Primary Research Databases"
           items={[
             { icon: Globe, title: "PubMed (NCBI)", description: "The gold standard for biomedical literature — over 35 million citations", color: "#21d8ff" },
-            { icon: BookOpen, title: "Google Scholar", description: "Broader scope including preprints and conference papers", color: "#E7FB10" },
+            { icon: BookOpen, title: "Google Scholar", description: "Broader scope including preprints and conference papers", color: "#D4FF1F" },
             { icon: Microscope, title: "PubChem", description: "Compound-specific data, bioassay results, and structural information", color: "#9d4edd" },
           ]}
         />
@@ -2431,7 +2431,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Target, title: "Use Peptide Names", description: "Search by both common name and sequence (e.g., BPC-157, Pentadecarginine)", color: "#22c55e" },
             { icon: FileCheck, title: "Add \"In Vitro\"", description: "Filter for relevant research context matching RUO use", color: "#21d8ff" },
-            { icon: Users, title: "Check Citations", description: "Key papers reference other important work — follow the trail", color: "#E7FB10" },
+            { icon: Users, title: "Check Citations", description: "Key papers reference other important work — follow the trail", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2460,7 +2460,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           items={[
             { icon: ClipboardList, title: "Create a Reference Library", description: "Save PDFs organized by peptide and topic", color: "#21d8ff" },
-            { icon: FileText, title: "Annotate Key Findings", description: "Note concentrations, conditions, and outcomes for each study", color: "#E7FB10" },
+            { icon: FileText, title: "Annotate Key Findings", description: "Note concentrations, conditions, and outcomes for each study", color: "#D4FF1F" },
             { icon: Target, title: "Track Relevance", description: "Mark which papers directly inform your research protocols", color: "#22c55e" },
           ]}
         />
@@ -2525,7 +2525,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Eye, title: "Safety Glasses/Goggles", description: "Protect eyes from splashes and powder aerosolization", color: "#21d8ff" },
             { icon: Shield, title: "Nitrile Gloves", description: "Prevent skin contact; change frequently, especially between compounds", color: "#22c55e" },
-            { icon: ShieldCheck, title: "Lab Coat", description: "Protects clothing and skin; removes easily if contaminated", color: "#E7FB10" },
+            { icon: ShieldCheck, title: "Lab Coat", description: "Protects clothing and skin; removes easily if contaminated", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2538,7 +2538,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
             { icon: AlertTriangle, title: "No Food or Drink", description: "Never in the research area — contamination risk is real", color: "#ef4444" },
             { icon: Droplets, title: "Work Over Trays", description: "Contain spills; use disposable bench covers", color: "#21d8ff" },
             { icon: Lock, title: "Secure Storage", description: "Prevent unauthorized access to research compounds", color: "#9d4edd" },
-            { icon: ClipboardList, title: "Document Incidents", description: "Record any spills, exposure, or safety concerns", color: "#E7FB10" },
+            { icon: ClipboardList, title: "Document Incidents", description: "Record any spills, exposure, or safety concerns", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2569,7 +2569,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           icon={ClipboardList}
           title="Documentation"
           subtitle="The backbone of reproducible research and regulatory compliance."
-          color="#E7FB10"
+          color="#D4FF1F"
         />
       ),
     },
@@ -2602,7 +2602,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Package, title: "Product Information", description: "Name, batch number, vendor, purity, purchase date", color: "#21d8ff" },
             { icon: Thermometer, title: "Storage Records", description: "Location, temperature logs, date of storage", color: "#22c55e" },
-            { icon: Droplets, title: "Reconstitution Details", description: "Date, solvent used, final concentration, aliquot information", color: "#E7FB10" },
+            { icon: Droplets, title: "Reconstitution Details", description: "Date, solvent used, final concentration, aliquot information", color: "#D4FF1F" },
             { icon: FlaskConical, title: "Usage Records", description: "Date, amount used, purpose, researcher name", color: "#9d4edd" },
           ]}
         />
@@ -2616,7 +2616,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           left={{
             label: "Paper Lab Notebook",
             items: ["Permanent ink required", "Date and sign each page", "No erasures (line through)", "Witnessed for legal validity"],
-            color: "#E7FB10"
+            color: "#D4FF1F"
           }}
           right={{
             label: "Electronic Lab Notebook",
@@ -2633,7 +2633,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: FileCheck, title: "Save Every COA", description: "Create a folder for each compound with all associated documents", color: "#22c55e" },
             { icon: Target, title: "Cross-Reference", description: "Link COA batch numbers to your usage records", color: "#21d8ff" },
-            { icon: Timer, title: "Retention Period", description: "Keep records for at least 5 years after last use", color: "#E7FB10" },
+            { icon: Timer, title: "Retention Period", description: "Keep records for at least 5 years after last use", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2721,7 +2721,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Before You Order"
           items={[
             { icon: Search, title: "Literature Review", description: "Research your peptide's properties, protocols, and published findings", color: "#9d4edd" },
-            { icon: Target, title: "Define Objectives", description: "Know exactly what you're investigating and why", color: "#E7FB10" },
+            { icon: Target, title: "Define Objectives", description: "Know exactly what you're investigating and why", color: "#D4FF1F" },
             { icon: ClipboardList, title: "Prepare Materials", description: "Ensure storage, solvents, and equipment are ready", color: "#21d8ff" },
           ]}
         />
@@ -2733,7 +2733,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           title="Ordering & Receiving"
           items={[
-            { icon: ShoppingCart, title: "Order with Purpose", description: "Select purity level appropriate for your research needs", color: "#E7FB10" },
+            { icon: ShoppingCart, title: "Order with Purpose", description: "Select purity level appropriate for your research needs", color: "#D4FF1F" },
             { icon: FileCheck, title: "Verify COA", description: "Review documentation before product arrives", color: "#22c55e" },
             { icon: Box, title: "Inspect on Arrival", description: "Check packaging, verify contents, store immediately", color: "#21d8ff" },
           ]}
@@ -2748,7 +2748,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Thermometer, title: "Proper Storage", description: "Lyophilized at -20°C, protected from light", color: "#21d8ff" },
             { icon: Droplets, title: "Careful Reconstitution", description: "Gentle technique, correct solvent, accurate concentration", color: "#22c55e" },
-            { icon: Package, title: "Aliquot & Label", description: "Divide into single-use portions, label completely", color: "#E7FB10" },
+            { icon: Package, title: "Aliquot & Label", description: "Divide into single-use portions, label completely", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2761,7 +2761,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Shield, title: "Safety First", description: "Full PPE, clean workspace, proper handling", color: "#22c55e" },
             { icon: Microscope, title: "Execute Protocol", description: "Follow your planned methodology precisely", color: "#9d4edd" },
-            { icon: ClipboardList, title: "Document Everything", description: "Record all observations, conditions, and results", color: "#E7FB10" },
+            { icon: ClipboardList, title: "Document Everything", description: "Record all observations, conditions, and results", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2824,7 +2824,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Peptide Won't Dissolve"
           items={[
             { icon: Timer, title: "Give It Time", description: "Some peptides need 5-10 minutes to fully dissolve — be patient", color: "#21d8ff" },
-            { icon: Thermometer, title: "Warm Slightly", description: "Room temperature helps; never use hot water", color: "#E7FB10" },
+            { icon: Thermometer, title: "Warm Slightly", description: "Room temperature helps; never use hot water", color: "#D4FF1F" },
             { icon: Activity, title: "Try Different Solvent", description: "Acidic (0.1% acetic acid) or basic solutions may work better", color: "#22c55e" },
             { icon: Droplets, title: "Increase Volume", description: "Peptide may be near solubility limit — use more solvent", color: "#9d4edd" },
           ]}
@@ -2838,7 +2838,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Precipitation Issues"
           items={[
             { icon: Eye, title: "Check Concentration", description: "You may have exceeded the peptide's solubility limit", color: "#21d8ff" },
-            { icon: Activity, title: "Verify pH", description: "Extreme pH can cause aggregation — aim for neutral", color: "#E7FB10" },
+            { icon: Activity, title: "Verify pH", description: "Extreme pH can cause aggregation — aim for neutral", color: "#D4FF1F" },
             { icon: Snowflake, title: "Avoid Cold", description: "Some peptides precipitate when refrigerated; let warm before use", color: "#f97316" },
           ]}
         />
@@ -2850,7 +2850,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideInfoCard
           title="Research Not Working as Expected"
           items={[
-            { icon: FileCheck, title: "Verify COA", description: "Confirm peptide identity and purity match your requirements", color: "#E7FB10" },
+            { icon: FileCheck, title: "Verify COA", description: "Confirm peptide identity and purity match your requirements", color: "#D4FF1F" },
             { icon: Thermometer, title: "Check Storage History", description: "Was temperature maintained? How long since reconstitution?", color: "#21d8ff" },
             { icon: Target, title: "Review Protocol", description: "Compare your method to published literature — any deviations?", color: "#22c55e" },
             { icon: FlaskConical, title: "Fresh Sample", description: "If in doubt, reconstitute a fresh aliquot and test again", color: "#9d4edd" },
@@ -2908,7 +2908,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Single-Use Aliquot Strategy"
           items={[
             { icon: Package, title: "Calculate Precisely", description: "Determine exact amounts needed per experiment before aliquoting", color: "#21d8ff" },
-            { icon: Timer, title: "Work Quickly", description: "Minimize time peptide spends at room temperature during division", color: "#E7FB10" },
+            { icon: Timer, title: "Work Quickly", description: "Minimize time peptide spends at room temperature during division", color: "#D4FF1F" },
             { icon: Snowflake, title: "Flash Freeze", description: "Snap-freeze aliquots in liquid nitrogen if available", color: "#22c55e" },
             { icon: ClipboardList, title: "Label Everything", description: "Date, concentration, volume, and aliquot number on each", color: "#9d4edd" },
           ]}
@@ -2923,7 +2923,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Shield, title: "Displace Oxygen", description: "Purge vials with inert gas before sealing to prevent oxidation", color: "#21d8ff" },
             { icon: FlaskConical, title: "Use After Opening", description: "Re-purge stock vials after each access", color: "#22c55e" },
-            { icon: Target, title: "Best for Sensitive Peptides", description: "Especially important for methionine/cysteine-containing sequences", color: "#E7FB10" },
+            { icon: Target, title: "Best for Sensitive Peptides", description: "Especially important for methionine/cysteine-containing sequences", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -2935,7 +2935,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Verify Before Full Use"
           items={[
             { icon: Eye, title: "Visual Inspection", description: "Check appearance matches expected lyophilized cake", color: "#21d8ff" },
-            { icon: Droplets, title: "Dissolution Test", description: "Small aliquot should dissolve properly before committing full batch", color: "#E7FB10" },
+            { icon: Droplets, title: "Dissolution Test", description: "Small aliquot should dissolve properly before committing full batch", color: "#D4FF1F" },
             { icon: Activity, title: "Activity Check", description: "Run a positive control experiment with known conditions", color: "#22c55e" },
           ]}
         />
@@ -2949,7 +2949,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           left={{
             label: "Standard Practice",
             items: ["-20°C storage", "Original vials", "Ambient atmosphere", "Standard labeling"],
-            color: "#E7FB10"
+            color: "#D4FF1F"
           }}
           right={{
             label: "Optimized Practice",
@@ -3005,7 +3005,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           items={[
             { icon: Compass, title: "Peptide Fundamentals", description: "Structure, function, and research classification", color: "#21d8ff" },
             { icon: Scale, title: "Legal Framework", description: "RUO regulations and researcher responsibilities", color: "#9d4edd" },
-            { icon: FlaskConical, title: "Core Techniques", description: "Purity, storage, lyophilization, and reconstitution", color: "#E7FB10" },
+            { icon: FlaskConical, title: "Core Techniques", description: "Purity, storage, lyophilization, and reconstitution", color: "#D4FF1F" },
             { icon: FileCheck, title: "Quality Assessment", description: "COA interpretation and documentation practices", color: "#22c55e" },
           ]}
         />
@@ -3019,7 +3019,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
             { icon: Shield, title: "Safety Awareness", description: "Lab safety, PPE requirements, and emergency procedures", color: "#22c55e" },
             { icon: Microscope, title: "Research Workflow", description: "Complete process from planning through documentation", color: "#9d4edd" },
             { icon: Wrench, title: "Troubleshooting", description: "Systematic problem-solving for common issues", color: "#f97316" },
-            { icon: Sparkles, title: "Best Practices", description: "Practical techniques for research success", color: "#E7FB10" },
+            { icon: Sparkles, title: "Best Practices", description: "Practical techniques for research success", color: "#D4FF1F" },
           ]}
         />
       ),
@@ -3044,7 +3044,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
           title="Continue Your Learning"
           items={[
             { icon: BookOpen, title: "Education Center", description: "Browse our reference library for in-depth articles on specific topics", color: "#21d8ff" },
-            { icon: Search, title: "Peptide Profiles", description: "Explore detailed guides for specific research compounds", color: "#E7FB10" },
+            { icon: Search, title: "Peptide Profiles", description: "Explore detailed guides for specific research compounds", color: "#D4FF1F" },
             { icon: Users, title: "Support Resources", description: "Our team is here to help with questions along the way", color: "#9d4edd" },
           ]}
         />

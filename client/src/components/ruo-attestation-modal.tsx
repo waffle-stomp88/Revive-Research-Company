@@ -49,9 +49,9 @@ export function RuoAttestationModal() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="relative w-full max-w-lg"
         >
-          <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/30 via-[#21d8ff]/20 to-red-500/20 blur-sm" />
+          <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#D4FF1F]/30 via-[#21d8ff]/20 to-red-500/20 blur-sm" />
           <div className="relative rounded-2xl bg-[#1a1a1f] border border-white/10 p-8 overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E7FB10]/40 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4FF1F]/40 to-transparent" />
 
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center flex-shrink-0">
@@ -98,7 +98,7 @@ export function RuoAttestationModal() {
                 <div
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
                     checked
-                      ? "bg-[#E7FB10] border-[#E7FB10]"
+                      ? "bg-[#D4FF1F] border-[#D4FF1F]"
                       : "border-zinc-600 bg-transparent group-hover:border-zinc-400"
                   }`}
                 >
@@ -111,7 +111,7 @@ export function RuoAttestationModal() {
             </label>
 
             <Button
-              className="w-full h-11 font-semibold bg-[#E7FB10] text-black"
+              className="w-full h-11 font-semibold bg-[#D4FF1F] text-black"
               disabled={!checked || attestMutation.isPending}
               onClick={() => attestMutation.mutate()}
               data-testid="button-submit-attestation"

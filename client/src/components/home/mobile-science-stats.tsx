@@ -6,7 +6,7 @@ const stats = [
     icon: FlaskConical,
     value: "99%+",
     label: "Purity",
-    color: "#E7FB10",
+    color: "#D4FF1F",
   },
   {
     icon: Atom,

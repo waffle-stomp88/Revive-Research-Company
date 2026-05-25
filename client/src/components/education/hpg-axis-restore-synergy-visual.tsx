@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { FlaskConical, Activity } from "lucide-react";
 
-const KISSPEPTIN_COLOR = "#E7FB10";
+const KISSPEPTIN_COLOR = "#D4FF1F";
 const MELANOTAN_COLOR = "#f472b6";
 const GnRH_CELL_COLOR = "#9d4edd";
 const OUTPUT_COLOR = "#22c55e";

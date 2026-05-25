@@ -296,7 +296,7 @@ export function GalaxyScene({
           style={{ left: edgeHover.pointer.x + 12, top: edgeHover.pointer.y + 12 }}
           data-testid="galaxy-edge-tooltip"
         >
-          <div className="px-3 py-1.5 rounded-md bg-background/90 border border-[#E7FB10]/40 text-xs shadow-lg max-w-xs">
+          <div className="px-3 py-1.5 rounded-md bg-background/90 border border-[#D4FF1F]/40 text-xs shadow-lg max-w-xs">
             {edgeHover.edge.stacks.length > 1 ? (
               <div className="space-y-0.5">
                 <div className="text-muted-foreground text-[0.7rem] uppercase tracking-wide font-mono">
@@ -304,7 +304,7 @@ export function GalaxyScene({
                 </div>
                 {edgeHover.edge.stacks.map((s, i) => (
                   <div key={`${s.name}-${i}`} className="flex items-center gap-2 font-mono">
-                    <span className="font-medium text-[#E7FB10]">{s.name}</span>
+                    <span className="font-medium text-[#D4FF1F]">{s.name}</span>
                     <span className="text-muted-foreground">·</span>
                     <span className="text-muted-foreground">synergy {s.synergyBonus}</span>
                   </div>
@@ -312,7 +312,7 @@ export function GalaxyScene({
               </div>
             ) : (
               <div className="flex items-center gap-2 font-mono">
-                <span className="font-medium text-[#E7FB10]">{edgeHover.edge.stackName}</span>
+                <span className="font-medium text-[#D4FF1F]">{edgeHover.edge.stackName}</span>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-muted-foreground">synergy {edgeHover.edge.synergyBonus}</span>
               </div>

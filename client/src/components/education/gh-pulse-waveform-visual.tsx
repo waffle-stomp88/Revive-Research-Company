@@ -2,7 +2,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { TrendingUp, Zap, Info, SlidersHorizontal } from "lucide-react";
 
-const IPAMORELIN_COLOR = "#E7FB10";
+const IPAMORELIN_COLOR = "#D4FF1F";
 const CJC_COLOR = "#21d8ff";
 const COMBINED_COLOR = "#22c55e";
 

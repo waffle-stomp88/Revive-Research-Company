@@ -95,17 +95,17 @@ function HormonalAxisAnimation({ isInView, isActive }: { isInView: boolean; isAc
           rx="45"
           ry="25"
           fill="rgba(231, 251, 16, 0.2)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.6 }}
           style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
         />
-        <motion.text x="160" y="182" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold">
+        <motion.text x="160" y="182" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold">
           Gonads
         </motion.text>
-        <motion.text x="160" y="193" textAnchor="middle" fill="#E7FB10" fontSize="7">
+        <motion.text x="160" y="193" textAnchor="middle" fill="#D4FF1F" fontSize="7">
           Testosterone/Estrogen
         </motion.text>
         
@@ -223,7 +223,7 @@ const hcgApplications = [
     title: 'Testicular Function',
     description: 'Maintains testicular size and function by providing direct gonadal stimulation',
     icon: Activity,
-    color: '#E7FB10'
+    color: '#D4FF1F'
   },
   {
     title: 'Hormonal Support',

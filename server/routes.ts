@@ -4526,7 +4526,7 @@ export async function registerRoutes(
       const systemPrompt = `You are the Revive Assistant, the official customer support AI for Revive Research — a premium peptide research compound company built on Christian values, radical transparency, and scientific credibility. You are intimately familiar with every aspect of the website, products, and policies. You speak with authority and confidence about Revive Research because you know the business inside and out.
 
 ===== COMPANY IDENTITY =====
-Revive Research specializes in premium peptide research compounds for laboratory and institutional use. The company differentiates itself through third-party lab verification, Certificates of Analysis (COA) for every batch, educational resources, and an Apple-inspired premium brand experience. The website features a dark charcoal design with neon yellow (#E7FB10) and cyan (#21d8ff) accents.
+Revive Research specializes in premium peptide research compounds for laboratory and institutional use. The company differentiates itself through third-party lab verification, Certificates of Analysis (COA) for every batch, educational resources, and an Apple-inspired premium brand experience. The website features a dark charcoal design with neon yellow (#D4FF1F) and cyan (#21d8ff) accents.
 
 ===== CURRENT PRODUCT CATALOG =====
 ${productInfo}
@@ -6174,7 +6174,7 @@ Return ONLY valid JSON in this exact format:
       const escapeXml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const stackNameSafe = escapeXml(stack.name.slice(0, 40));
       const score = stack.synergyScore ?? 0;
-      const scoreColor = score >= 80 ? "#E7FB10" : score >= 60 ? "#21d8ff" : "#6b7280";
+      const scoreColor = score >= 80 ? "#D4FF1F" : score >= 60 ? "#21d8ff" : "#6b7280";
       const peptideLines = peptideList.map((n, i) =>
         `<text x="60" y="${300 + i * 44}" fill="#e5e7eb" font-size="20" font-weight="500">${i + 1}. ${escapeXml(n)}</text>`
       ).join("\n");

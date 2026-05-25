@@ -11,7 +11,7 @@ const resources = [
     description: "Browse and verify Certificates of Analysis for all our peptide batches. Find detailed testing results, purity data, and analysis verification.",
     href: "/coa-library",
     icon: FileCheck,
-    color: "#E7FB10",
+    color: "#D4FF1F",
   },
   {
     title: "Education Center",

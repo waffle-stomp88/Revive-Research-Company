@@ -166,7 +166,7 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
         <div className="relative">
           <div className="hidden md:block absolute top-8 left-0 right-0 h-0.5 bg-white/10">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#22c55e]"
+              className="h-full bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#22c55e]"
               initial={{ width: "0%" }}
               animate={isInView ? { width: "100%" } : {}}
               transition={{ duration: 1.5, ease: "easeOut" }}
@@ -262,7 +262,7 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
       <div className="relative">
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white/10">
           <motion.div
-            className="w-full bg-gradient-to-b from-[#E7FB10] via-[#21d8ff] to-[#22c55e]"
+            className="w-full bg-gradient-to-b from-[#D4FF1F] via-[#21d8ff] to-[#22c55e]"
             initial={{ height: "0%" }}
             animate={isInView ? { height: "100%" } : {}}
             transition={{ duration: 1.5, ease: "easeOut" }}
@@ -320,8 +320,8 @@ export function ProcessStoryboard({ title, subtitle, steps, layout = "vertical" 
                   )}
 
                   {step.tip && (
-                    <div className="flex items-start gap-2 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/20">
-                      <Lightbulb className="w-4 h-4 text-[#E7FB10] flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/20">
+                      <Lightbulb className="w-4 h-4 text-[#D4FF1F] flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-white/70">{step.tip}</p>
                     </div>
                   )}
@@ -440,7 +440,7 @@ export function HandsOnLab({ title, sections }: HandsOnLabProps) {
       case "supplies":
         return { bg: "bg-[#21d8ff]/10", border: "border-[#21d8ff]/20", icon: FlaskConical, color: "#21d8ff" };
       default:
-        return { bg: "bg-[#E7FB10]/10", border: "border-[#E7FB10]/20", icon: CheckCircle2, color: "#E7FB10" };
+        return { bg: "bg-[#D4FF1F]/10", border: "border-[#D4FF1F]/20", icon: CheckCircle2, color: "#D4FF1F" };
     }
   };
 
@@ -593,7 +593,7 @@ export function KnowledgeCheck({ title = "Knowledge Check", questions, onComplet
               percentage >= 80
                 ? "bg-[#22c55e]/20 text-[#22c55e]"
                 : percentage >= 60
-                ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                ? "bg-[#D4FF1F]/20 text-[#D4FF1F]"
                 : "bg-red-500/20 text-red-400"
             }`}
           >
@@ -690,7 +690,7 @@ export function KnowledgeCheck({ title = "Knowledge Check", questions, onComplet
         )}
 
         {showResult && (
-          <Button onClick={handleNext} className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90">
+          <Button onClick={handleNext} className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90">
             {currentQuestion < questions.length - 1 ? "Next Question" : "See Results"}
             <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
@@ -708,7 +708,7 @@ export interface CalloutProps {
 
 export function Callout({ type, title, children }: CalloutProps) {
   const styles = {
-    tip: { bg: "bg-[#E7FB10]/10", border: "border-[#E7FB10]/20", icon: Lightbulb, color: "#E7FB10" },
+    tip: { bg: "bg-[#D4FF1F]/10", border: "border-[#D4FF1F]/20", icon: Lightbulb, color: "#D4FF1F" },
     warning: { bg: "bg-red-500/10", border: "border-red-500/20", icon: AlertTriangle, color: "#ef4444" },
     info: { bg: "bg-[#21d8ff]/10", border: "border-[#21d8ff]/20", icon: Info, color: "#21d8ff" },
     success: { bg: "bg-[#22c55e]/10", border: "border-[#22c55e]/20", icon: CheckCircle2, color: "#22c55e" },

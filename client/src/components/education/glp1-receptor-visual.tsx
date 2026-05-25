@@ -10,7 +10,7 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
 }) {
   const receptorData = [
     { id: 'glp1', name: 'GLP-1R', x: 80, color: '#21d8ff' },
-    { id: 'gip', name: 'GIPR', x: 160, color: '#E7FB10' },
+    { id: 'gip', name: 'GIPR', x: 160, color: '#D4FF1F' },
     { id: 'glucagon', name: 'GCGR', x: 240, color: '#ec4899' },
   ];
   
@@ -227,7 +227,7 @@ const peptideProfiles = [
     name: 'RR-A2',
     type: 'Dual Agonist',
     receptors: ['glp1', 'gip'],
-    color: '#E7FB10',
+    color: '#D4FF1F',
     halfLife: '~5 days',
     mechanism: 'Imbalanced dual agonism for synergistic incretin signaling',
     benefits: ['Enhanced glycemic effects', 'Weight research', 'Metabolic studies']
@@ -273,7 +273,7 @@ export function GLP1ReceptorVisual() {
           }}
         >
           <Target className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#ec4899] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] via-[#D4FF1F] to-[#ec4899] bg-clip-text text-transparent">
             Incretin Receptor Binding Mechanism
           </span>
         </div>

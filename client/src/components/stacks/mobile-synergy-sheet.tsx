@@ -36,7 +36,7 @@ interface MobileSynergySheepProps {
 
 const BOOST_COLORS: Record<string, string> = {
   Healing: "#22c55e",
-  Metabolic: "#E7FB10",
+  Metabolic: "#D4FF1F",
   Growth: "#f59e0b",
   Cognitive: "#21d8ff",
   Skin: "#ec4899",
@@ -45,7 +45,7 @@ const BOOST_COLORS: Record<string, string> = {
   Sleep: "#8b5cf6",
   Hormonal: "#f59e0b",
   Vascular: "#ef4444",
-  Weight: "#E7FB10",
+  Weight: "#D4FF1F",
 };
 
 export function MobileSynergySheet({
@@ -69,7 +69,7 @@ export function MobileSynergySheet({
     : synergyScore > 70
     ? "#22c55e"
     : synergyScore > 50
-    ? "#E7FB10"
+    ? "#D4FF1F"
     : "#21d8ff";
 
   const touchStartY = useRef<number>(0);

@@ -14,7 +14,7 @@ const pathwaySteps = [
     id: 'igf1',
     label: 'IGF-1 LR3',
     description: 'Extended half-life analog',
-    color: '#E7FB10',
+    color: '#D4FF1F',
     icon: Dna,
   },
   {
@@ -42,7 +42,7 @@ const pathwaySteps = [
 
 const comparisonData = [
   { name: 'IGF-1', halfLife: '~20 min', bioavailability: 'Low', binding: 'Normal', color: '#6b7280' },
-  { name: 'IGF-1 LR3', halfLife: '~20 hrs', bioavailability: 'High', binding: 'Reduced', color: '#E7FB10' },
+  { name: 'IGF-1 LR3', halfLife: '~20 hrs', bioavailability: 'High', binding: 'Reduced', color: '#D4FF1F' },
 ];
 
 const cellularEffects = [
@@ -62,27 +62,27 @@ export function IGF1PathwayVisual() {
       <div 
         className="rounded-xl border p-6 mb-6"
         style={{ 
-          borderColor: '#E7FB1030',
-          background: 'linear-gradient(135deg, #E7FB1008 0%, transparent 50%)'
+          borderColor: '#D4FF1F30',
+          background: 'linear-gradient(135deg, #D4FF1F08 0%, transparent 50%)'
         }}
       >
         <div className="flex items-center gap-4 mb-6">
           <motion.div
             className="w-16 h-16 rounded-xl flex items-center justify-center"
             style={{ 
-              backgroundColor: '#E7FB1020',
-              boxShadow: '0 0 20px #E7FB1030'
+              backgroundColor: '#D4FF1F20',
+              boxShadow: '0 0 20px #D4FF1F30'
             }}
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : {}}
             transition={{ type: "spring", delay: 0.2 }}
           >
-            <Dna className="h-8 w-8 text-[#E7FB10]" />
+            <Dna className="h-8 w-8 text-[#D4FF1F]" />
           </motion.div>
           <div>
-            <h3 className="text-xl font-bold text-[#E7FB10]">IGF-1 LR3</h3>
+            <h3 className="text-xl font-bold text-[#D4FF1F]">IGF-1 LR3</h3>
             <p className="text-sm text-muted-foreground">Long R3 Insulin-like Growth Factor-1</p>
-            <span className="text-xs px-2 py-0.5 rounded-full mt-1 inline-block bg-[#E7FB10]/20 text-[#E7FB10]">
+            <span className="text-xs px-2 py-0.5 rounded-full mt-1 inline-block bg-[#D4FF1F]/20 text-[#D4FF1F]">
               83 Amino Acid Analog
             </span>
           </div>
@@ -93,7 +93,7 @@ export function IGF1PathwayVisual() {
         </h4>
 
         <div className="relative mb-8">
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] via-[#9d4edd] to-[#ec4899] -translate-y-1/2 rounded-full opacity-30" />
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] via-[#9d4edd] to-[#ec4899] -translate-y-1/2 rounded-full opacity-30" />
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
             {pathwaySteps.map((step, index) => {

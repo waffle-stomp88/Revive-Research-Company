@@ -38,7 +38,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                     ? "rgba(200,255,0,0.04)"
                     : "#111118",
                 border: isSelected
-                  ? "1.5px solid #E7FB10"
+                  ? "1.5px solid #D4FF1F"
                   : tier.popular
                     ? "1.5px solid #2a3a1a"
                     : "1.5px solid #1e1e2a",
@@ -50,8 +50,8 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               <span
                 className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200"
                 style={{
-                  borderColor: isSelected ? "#E7FB10" : "#3a3a4a",
-                  background: isSelected ? "#E7FB10" : "transparent",
+                  borderColor: isSelected ? "#D4FF1F" : "#3a3a4a",
+                  background: isSelected ? "#D4FF1F" : "transparent",
                 }}
               >
                 {isSelected && (
@@ -74,7 +74,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               {tier.popular && (
                 <span
                   className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm flex-shrink-0"
-                  style={{ background: "#E7FB10", color: "#000" }}
+                  style={{ background: "#D4FF1F", color: "#000" }}
                   data-testid="badge-popular"
                 >
                   POPULAR

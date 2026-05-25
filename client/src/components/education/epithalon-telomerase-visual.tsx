@@ -27,7 +27,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
           </filter>
           <linearGradient id="telomereGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#22c55e" />
-            <stop offset="50%" stopColor="#E7FB10" />
+            <stop offset="50%" stopColor="#D4FF1F" />
             <stop offset="100%" stopColor="#ef4444" />
           </linearGradient>
           <linearGradient id="chromosomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -88,7 +88,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
         {[[100, 35], [140, 35], [100, 165], [140, 165]].map(([x, y], idx) => {
           const isTop = y < 100;
           const telomereLengthPx = 8 + (telomereLength / 100) * 15;
-          const color = telomereLength > 70 ? '#22c55e' : telomereLength > 40 ? '#E7FB10' : '#ef4444';
+          const color = telomereLength > 70 ? '#22c55e' : telomereLength > 40 ? '#D4FF1F' : '#ef4444';
           
           return (
             <motion.g key={idx}>
@@ -115,7 +115,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
                   cx={x}
                   cy={isTop ? y - telomereLengthPx - 5 : y + telomereLengthPx + 5}
                   r="4"
-                  fill="#E7FB10"
+                  fill="#D4FF1F"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ 
                     scale: [0, 1.5, 1],
@@ -144,7 +144,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
             rx="35"
             ry="25"
             fill="rgba(231, 251, 16, 0.15)"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="2"
             animate={isExtending ? { 
               scale: [1, 1.05, 1],
@@ -152,16 +152,16 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
             transition={{ duration: 1.5, repeat: Infinity }}
             style={{ filter: 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.5))' }}
           />
-          <motion.text x="220" y="95" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold">
+          <motion.text x="220" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold">
             Telomerase
           </motion.text>
-          <motion.text x="220" y="108" textAnchor="middle" fill="#E7FB10" fontSize="7">
+          <motion.text x="220" y="108" textAnchor="middle" fill="#D4FF1F" fontSize="7">
             TERT + TERC
           </motion.text>
           
           <motion.path
             d="M 185 100 Q 170 90 155 100"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="2"
             strokeDasharray="4,2"
             fill="none"
@@ -210,7 +210,7 @@ function ChromosomeWithTelomeres({ isInView, telomereLength, isExtending }: {
 function TelomereTimeline({ isInView, currentStage }: { isInView: boolean; currentStage: number }) {
   const stages = [
     { age: "Young", length: 100, color: "#22c55e" },
-    { age: "Middle", length: 65, color: "#E7FB10" },
+    { age: "Middle", length: 65, color: "#D4FF1F" },
     { age: "Aged", length: 35, color: "#f97316" },
     { age: "Critical", length: 15, color: "#ef4444" },
   ];
@@ -357,7 +357,7 @@ export function EpithalonTelomeraseVisual() {
           }}
         >
           <Dna className="h-5 w-5 text-[#9d4edd]" style={{ filter: 'drop-shadow(0 0 4px rgba(157, 78, 221, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#9d4edd] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#9d4edd] to-[#D4FF1F] bg-clip-text text-transparent">
             Telomerase Activation & Telomere Extension
           </span>
         </div>
@@ -400,7 +400,7 @@ export function EpithalonTelomeraseVisual() {
           
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-3">
-              <Activity className="h-4 w-4 text-[#E7FB10]" />
+              <Activity className="h-4 w-4 text-[#D4FF1F]" />
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Research Applications
               </span>
@@ -408,7 +408,7 @@ export function EpithalonTelomeraseVisual() {
             
             {[
               { icon: Shield, title: "Cellular Longevity", desc: "Maintained telomeres may extend cellular lifespan", color: "#22c55e" },
-              { icon: Zap, title: "Telomerase Activation", desc: "Epithalon may stimulate TERT gene expression", color: "#E7FB10" },
+              { icon: Zap, title: "Telomerase Activation", desc: "Epithalon may stimulate TERT gene expression", color: "#D4FF1F" },
               { icon: TrendingUp, title: "Anti-Aging Research", desc: "Focus on cellular regeneration mechanisms", color: "#9d4edd" },
             ].map((item, idx) => {
               const Icon = item.icon;

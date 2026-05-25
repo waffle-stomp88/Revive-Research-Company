@@ -21,7 +21,7 @@ const courseModules = [
     slug: "what-research-use-only-means",
     description: "Understanding the legal framework",
     icon: BookOpen,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     duration: "5 min",
     topics: ["Legal requirements", "Researcher responsibilities", "Compliance basics"],
   },
@@ -85,7 +85,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
         <motion.div
           className="absolute inset-y-0 left-0"
           style={{
-            background: "linear-gradient(90deg, #E7FB10, #21d8ff, #9d4edd, #f97316, #ec4899)",
+            background: "linear-gradient(90deg, #D4FF1F, #21d8ff, #9d4edd, #f97316, #ec4899)",
           }}
           initial={{ width: "0%" }}
           animate={isInView ? { width: "100%" } : {}}
@@ -291,7 +291,7 @@ export function LearningProgress({ completedCount = 0, totalCount = 5 }: { compl
         <motion.div
           className="h-full rounded-full"
           style={{
-            background: "linear-gradient(90deg, #E7FB10, #21d8ff, #9d4edd, #f97316, #ec4899)",
+            background: "linear-gradient(90deg, #D4FF1F, #21d8ff, #9d4edd, #f97316, #ec4899)",
           }}
           initial={{ width: "0%" }}
           animate={{ width: `${percentage}%` }}

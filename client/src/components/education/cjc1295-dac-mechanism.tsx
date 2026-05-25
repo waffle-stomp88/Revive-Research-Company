@@ -22,7 +22,7 @@ const dacAspects: DACAspect[] = [
     id: "dac",
     title: "CJC-1295 with DAC",
     description: "Drug Affinity Complex extends duration through albumin binding",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     icon: <Zap className="h-5 w-5" />
   }
 ];
@@ -109,7 +109,7 @@ export function CJC1295DACMechanism() {
                   animate={activeCard === aspect.id ? { opacity: 1 } : { opacity: 0.5 }}
                   className="space-y-2 text-xs"
                 >
-                  <p className="font-semibold text-[#E7FB10]">Advantages:</p>
+                  <p className="font-semibold text-[#D4FF1F]">Advantages:</p>
                   <ul className="space-y-1 text-muted-foreground">
                     <li>• Albumin binding protects from breakdown</li>
                     <li>• Extended half-life (~120 hours)</li>
@@ -130,7 +130,7 @@ export function CJC1295DACMechanism() {
         style={{ borderColor: "hsl(var(--border))" }}
       >
         <p className="text-xs text-muted-foreground text-center">
-          <span className="font-semibold text-[#E7FB10]">Result:</span> CJC-1295 with DAC allows for less frequent dosing (typically 1-2x weekly) while maintaining steady GH stimulation
+          <span className="font-semibold text-[#D4FF1F]">Result:</span> CJC-1295 with DAC allows for less frequent dosing (typically 1-2x weekly) while maintaining steady GH stimulation
         </p>
       </motion.div>
     </div>

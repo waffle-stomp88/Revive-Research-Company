@@ -12,7 +12,7 @@ const EMAIL_CONFIG = {
   replyTo: 'support@reviveresearch.co',
   brand: {
     name: 'Revive Research',
-    primaryColor: '#E7FB10',
+    primaryColor: '#D4FF1F',
     accentColor: '#21d8ff',
     backgroundColor: '#1a1a1f',
     cardColor: '#252529',
@@ -1280,7 +1280,7 @@ export function isEmailConfigured(): boolean {
 function getNewsletterWelcomeTemplate(email: string): { subject: string; text: string; html: string } {
   // Premium color palette matching website
   const colors = {
-    neonYellow: '#E7FB10',
+    neonYellow: '#D4FF1F',
     cyan: '#21d8ff',
     purple: '#9d4edd',
     pink: '#ec4899',
@@ -1930,7 +1930,7 @@ ${getSharedFooterText(affiliate.email, 'order')}`;
           <!-- Header -->
           <tr>
             <td style="padding: 40px 40px 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08);">
-              <p style="margin: 0 0 16px; font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #E7FB10;">AFFILIATE PROGRAM</p>
+              <p style="margin: 0 0 16px; font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #D4FF1F;">AFFILIATE PROGRAM</p>
               <h1 style="margin: 0 0 8px; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">You're Approved.</h1>
               <p style="margin: 0; font-size: 16px; color: #999999;">Welcome to the ${brand.name} affiliate team.</p>
             </td>
@@ -1948,7 +1948,7 @@ ${getSharedFooterText(affiliate.email, 'order')}`;
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.08) 0%, rgba(33,216,255,0.06) 100%); border: 1px solid rgba(231,251,16,0.2); border-radius: 12px; overflow: hidden;">
                 <tr>
                   <td style="padding: 24px 28px;">
-                    <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #E7FB10;">Your Referral Code</p>
+                    <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #D4FF1F;">Your Referral Code</p>
                     <p style="margin: 0 0 16px; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 2px;">${affiliate.referralCode}</p>
                     <p style="margin: 0 0 4px; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999999;">Your Referral Link</p>
                     <p style="margin: 0; font-size: 13px; color: #21d8ff; word-break: break-all;">${referralUrl}</p>
@@ -1964,12 +1964,12 @@ ${getSharedFooterText(affiliate.email, 'order')}`;
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">10%</span> commission on every qualifying purchase you refer</p>
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #D4FF1F; font-weight: 700;">10%</span> commission on every qualifying purchase you refer</p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">10%</span> discount automatically applied for your referred customers</p>
+                    <p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #D4FF1F; font-weight: 700;">10%</span> discount automatically applied for your referred customers</p>
                   </td>
                 </tr>
                 <tr>
@@ -1988,7 +1988,7 @@ ${getSharedFooterText(affiliate.email, 'order')}`;
           <!-- CTA -->
           <tr>
             <td style="padding: 0 40px 40px; text-align: center;">
-              <a href="${dashboardUrl}" style="display: inline-block; padding: 14px 32px; background-color: #E7FB10; color: #0a0a0c; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">View Affiliate Dashboard</a>
+              <a href="${dashboardUrl}" style="display: inline-block; padding: 14px 32px; background-color: #D4FF1F; color: #0a0a0c; font-size: 15px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">View Affiliate Dashboard</a>
             </td>
           </tr>
           <!-- Footer -->
@@ -2069,7 +2069,7 @@ You received this invitation because someone at Revive Research shared it with y
           <tr>
             <td style="padding: 40px 40px 32px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%);">
               <img src="${logoUrl}" alt="${brand.name}" width="220" style="display: block; margin: 0 auto 24px auto; max-width: 220px; height: auto;" />
-              <p style="margin: 0 0 12px; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #E7FB10;">INVITATION</p>
+              <p style="margin: 0 0 12px; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #D4FF1F;">INVITATION</p>
               <h1 style="margin: 0 0 10px; font-size: 34px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; line-height: 1.15;">You're Invited.</h1>
               <p style="margin: 0; font-size: 16px; color: #999999; line-height: 1.5;">Join the ${brand.name} platform for premium peptide research compounds.</p>
             </td>
@@ -2088,11 +2088,11 @@ You received this invitation because someone at Revive Research shared it with y
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, rgba(231,251,16,0.06) 0%, rgba(33,216,255,0.04) 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
                 <tr>
                   <td style="padding: 24px 28px;">
-                    <p style="margin: 0 0 20px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #E7FB10;">What You Get</p>
+                    <p style="margin: 0 0 20px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #D4FF1F;">What You Get</p>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                      <tr><td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">COA-verified</span> peptide research compounds with full lab documentation</p></td></tr>
+                      <tr><td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #D4FF1F; font-weight: 700;">COA-verified</span> peptide research compounds with full lab documentation</p></td></tr>
                       <tr><td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #21d8ff; font-weight: 700;">Research Stacks</span> — curated compound bundles with synergy insights</p></td></tr>
-                      <tr><td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #E7FB10; font-weight: 700;">Free shipping</span> on orders over $250</p></td></tr>
+                      <tr><td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #D4FF1F; font-weight: 700;">Free shipping</span> on orders over $250</p></td></tr>
                       <tr><td style="padding: 10px 0;"><p style="margin: 0; font-size: 15px; color: #cccccc; line-height: 1.5;"><span style="color: #21d8ff; font-weight: 700;">AI-powered</span> reconstitution calculator and research tools</p></td></tr>
                     </table>
                   </td>
@@ -2103,7 +2103,7 @@ You received this invitation because someone at Revive Research shared it with y
           <!-- CTA -->
           <tr>
             <td style="padding: 0 40px 16px; text-align: center;">
-              <a href="${inviteUrl}" style="display: inline-block; padding: 15px 40px; background-color: #E7FB10; color: #0a0a0c; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">Create Your Account</a>
+              <a href="${inviteUrl}" style="display: inline-block; padding: 15px 40px; background-color: #D4FF1F; color: #0a0a0c; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.3px;">Create Your Account</a>
             </td>
           </tr>
           <tr>

@@ -147,7 +147,7 @@ export function ObjectUploader({
       <div
         className={`relative rounded-md border-2 border-dashed transition-colors ${
           isDragOver
-            ? "border-[#E7FB10] bg-[#E7FB10]/5"
+            ? "border-[#D4FF1F] bg-[#D4FF1F]/5"
             : "border-muted-foreground/25 hover:border-muted-foreground/50"
         } ${disabled || isUploading ? "opacity-50 pointer-events-none" : ""}`}
         onDragEnter={handleDragEnter}
@@ -167,13 +167,13 @@ export function ObjectUploader({
         <div className="flex flex-col items-center justify-center gap-3 p-6">
           {isUploading ? (
             <>
-              <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#D4FF1F]" />
               <span className="text-sm text-muted-foreground">Uploading...</span>
             </>
           ) : isDragOver ? (
             <>
-              <Upload className="h-8 w-8 text-[#E7FB10]" />
-              <span className="text-sm text-[#E7FB10] font-medium">Drop file to upload</span>
+              <Upload className="h-8 w-8 text-[#D4FF1F]" />
+              <span className="text-sm text-[#D4FF1F] font-medium">Drop file to upload</span>
             </>
           ) : (
             <>

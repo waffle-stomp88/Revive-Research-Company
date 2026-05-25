@@ -42,7 +42,7 @@ const getCategoryColor = (category: string) => {
   switch (category) {
     case "Testing": return "#ef4444";
     case "Process": return "#21d8ff";
-    case "Quality": return "#E7FB10";
+    case "Quality": return "#D4FF1F";
     case "Storage": return "#ec4899";
     default: return "#9d4edd";
   }

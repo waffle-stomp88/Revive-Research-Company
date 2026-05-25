@@ -91,7 +91,7 @@ function getResponseTimeByTimeZone(): string {
 
 const FEEDBACK_TYPES = [
   { value: "bug", label: "Report a Bug", description: "Found an issue on the site", icon: Bug, color: "#ef4444" },
-  { value: "feature", label: "Suggest a Feature", description: "Share an idea for improvement", icon: Lightbulb, color: "#E7FB10" },
+  { value: "feature", label: "Suggest a Feature", description: "Share an idea for improvement", icon: Lightbulb, color: "#D4FF1F" },
   { value: "general", label: "General Feedback", description: "Tell us what you think", icon: ThumbsUp, color: "#22c55e" },
 ] as const;
 
@@ -460,8 +460,8 @@ export default function Contact() {
                       </div>
                     </Link>
                     <Link href="/peptide-research-faq">
-                      <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#E7FB10]/40 hover:bg-[#E7FB10]/5 transition-colors cursor-pointer" data-testid="link-faq">
-                        <HelpCircle className="h-4 w-4 text-[#E7FB10]" />
+                      <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#D4FF1F]/40 hover:bg-[#D4FF1F]/5 transition-colors cursor-pointer" data-testid="link-faq">
+                        <HelpCircle className="h-4 w-4 text-[#D4FF1F]" />
                         <span className="text-sm font-medium">FAQ</span>
                         <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
                       </div>
@@ -656,14 +656,14 @@ export default function Contact() {
 
               <FeedbackWidget />
 
-              <div className="p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                <h4 className="font-medium text-[#E7FB10] mb-2 flex items-center gap-2">
+              <div className="p-4 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/30">
+                <h4 className="font-medium text-[#D4FF1F] mb-2 flex items-center gap-2">
                   <Truck className="h-4 w-4" />
                   Shipping Status
                 </h4>
                 <p className="text-sm text-muted-foreground">
                   Orders placed before 12 PM CT ship same-day. 
-                  <Link href="/dashboard" className="text-[#E7FB10] hover:underline ml-1">Track my order →</Link>
+                  <Link href="/dashboard" className="text-[#D4FF1F] hover:underline ml-1">Track my order →</Link>
                 </p>
               </div>
 

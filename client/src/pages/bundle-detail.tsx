@@ -139,7 +139,7 @@ export default function BundleDetail() {
         title: "Added to cart",
         description: `${quantity}x ${bundle.name} added to your cart.`,
         action: (
-          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
+          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#D4FF1F] text-black border-[#D4FF1F] hover:bg-[#D4FF1F]/90 font-semibold">
             View Cart
           </ToastAction>
         ),
@@ -193,10 +193,10 @@ export default function BundleDetail() {
             <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden">
               <div className="flex flex-col items-center justify-center gap-4 p-8">
                 <div className={`w-24 h-24 rounded-full flex items-center justify-center ${
-                  bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
+                  bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#D4FF1F]/10"
                 }`}>
                   <BundleIcon className={`h-12 w-12 ${
-                    bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                    bundle.color === "cyan" ? "text-cyan-400" : "text-[#D4FF1F]"
                   }`} />
                 </div>
               </div>
@@ -224,13 +224,13 @@ export default function BundleDetail() {
 
             <div className="mb-3">
               {softGated ? (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "#E7FB100d", border: "1px solid #E7FB1025" }} data-testid="text-bundle-price">
-                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#E7FB1080" }} />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "#D4FF1F0d", border: "1px solid #D4FF1F25" }} data-testid="text-bundle-price">
+                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#D4FF1F80" }} />
                   <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-3">
-                  <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
+                  <span className="font-display text-3xl font-bold text-[#D4FF1F]" data-testid="text-bundle-price">
                     ${Math.round(getDiscountedPrice())}
                   </span>
                 </div>
@@ -276,7 +276,7 @@ export default function BundleDetail() {
                 <div 
                   className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     purchaseType === "one-time" 
-                      ? "border-[#E7FB10] bg-[#E7FB10]/5" 
+                      ? "border-[#D4FF1F] bg-[#D4FF1F]/5" 
                       : "border-border hover:border-border/80"
                   }`}
                   onClick={() => setPurchaseType("one-time")}
@@ -364,7 +364,7 @@ export default function BundleDetail() {
                   <ShoppingBag className="h-5 w-5 text-foreground" />
                   <span className="font-display text-foreground">Add to Cart</span>
                 </div>
-                <div className="flex-1 h-11 rounded-md bg-[#E7FB10] flex items-center justify-center gap-2">
+                <div className="flex-1 h-11 rounded-md bg-[#D4FF1F] flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5 text-black" />
                   <span className="font-display font-bold text-black">Buy Now</span>
                 </div>
@@ -388,7 +388,7 @@ export default function BundleDetail() {
                     className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
                       purchaseType === "subscription"
                         ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
-                        : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                        : "bg-[#D4FF1F] border-[#D4FF1F] md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                     }`}
                     onClick={handleBuyNow}
                     disabled={!pricingReady}
@@ -436,7 +436,7 @@ export default function BundleDetail() {
                 <ul className="space-y-3">
                   {benefits.map((benefit, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-5 w-5 text-[#D4FF1F] mt-0.5 flex-shrink-0" />
                       <span className="text-muted-foreground">{benefit}</span>
                     </li>
                   ))}
@@ -472,11 +472,11 @@ export default function BundleDetail() {
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{bundle.name}</p>
-              <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${Math.round(getDiscountedPrice())}` : "—"}</p>
+              <p className="text-lg font-bold text-[#D4FF1F]">{pricingReady ? `$${Math.round(getDiscountedPrice())}` : "—"}</p>
             </div>
             <Button
               size="lg"
-              className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              className="bg-[#D4FF1F] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
               onClick={handleAddToCart}
               disabled={!pricingReady}
               data-testid="button-sticky-add-to-cart-bundle"

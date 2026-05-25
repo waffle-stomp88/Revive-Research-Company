@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Brain, Activity } from "lucide-react";
 
-const SEMAX_COLOR = "#E7FB10";
+const SEMAX_COLOR = "#D4FF1F";
 const SELANK_COLOR = "#21d8ff";
 const NEURON_COLOR = "#9d4edd";
 const OUTPUT_COLOR = "#22c55e";

@@ -16,7 +16,7 @@ const verificationSteps = [
     title: "Scan QR Code",
     subtitle: "On Your Vial",
     description: "Every vial has a unique QR code linking to its specific batch",
-    color: "#E7FB10",
+    color: "#D4FF1F",
   },
   {
     id: 2,
@@ -112,7 +112,7 @@ export function VerificationJourney() {
                   className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
                   style={{ 
                     backgroundColor: step.color,
-                    color: step.color === "#E7FB10" ? "#000" : "#fff"
+                    color: step.color === "#D4FF1F" ? "#000" : "#fff"
                   }}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}

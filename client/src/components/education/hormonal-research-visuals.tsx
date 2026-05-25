@@ -70,10 +70,10 @@ function GonadorelinAnimation({ isInView }: { isInView: boolean }) {
 
         {/* LH box */}
         <motion.rect x="95" y="163" width="55" height="28" rx="6"
-          fill="rgba(231,251,16,0.2)" stroke="#E7FB10" strokeWidth="1.5"
+          fill="rgba(231,251,16,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
           initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.9 }}
           style={{ filter: "drop-shadow(0 0 8px rgba(231,251,16,0.4))" }} />
-        <motion.text x="122" y="179" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold"
+        <motion.text x="122" y="179" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.0 }}>
           LH Release
         </motion.text>
@@ -133,7 +133,7 @@ function GonadorelinAnimation({ isInView }: { isInView: boolean }) {
 const gonadorelinFeatures = [
   { title: "GnRHR Agonism", description: "Binds Gq-coupled GnRH receptors on pituitary gonadotrophs, triggering PLC/IP3-mediated calcium mobilization and LH/FSH exocytosis", icon: Zap, color: "#9d4edd" },
   { title: "Pulse Encoding", description: "GnRH pulse frequency and amplitude determine the LH:FSH ratio — a frequency-encoding mechanism researchers can study under controlled conditions", icon: Activity, color: "#21d8ff" },
-  { title: "Rapid Degradation", description: "Short half-life (~2–4 min) due to proteolytic degradation enables studies of acute GnRHR activation without the receptor desensitization caused by long-acting analogs", icon: TrendingUp, color: "#E7FB10" },
+  { title: "Rapid Degradation", description: "Short half-life (~2–4 min) due to proteolytic degradation enables studies of acute GnRHR activation without the receptor desensitization caused by long-acting analogs", icon: TrendingUp, color: "#D4FF1F" },
 ];
 
 export function GonadorelinVisual() {
@@ -604,7 +604,7 @@ function OxytocinAnimation({ isInView }: { isInView: boolean }) {
             <polygon points="0 0, 8 3, 0 6" fill="#21d8ff" />
           </marker>
           <marker id="oxtArrowYellow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="#E7FB10" />
+            <polygon points="0 0, 8 3, 0 6" fill="#D4FF1F" />
           </marker>
         </defs>
 
@@ -641,12 +641,12 @@ function OxytocinAnimation({ isInView }: { isInView: boolean }) {
 
         {/* VTA */}
         <motion.ellipse cx="170" cy="148" rx="48" ry="20"
-          fill="rgba(231,251,16,0.2)" stroke="#E7FB10" strokeWidth="1.5"
+          fill="rgba(231,251,16,0.2)" stroke="#D4FF1F" strokeWidth="1.5"
           initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.5 }}
           style={{ filter: "drop-shadow(0 0 8px rgba(231,251,16,0.4))" }} />
-        <motion.text x="170" y="145" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+        <motion.text x="170" y="145" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>VTA</motion.text>
-        <motion.text x="170" y="156" textAnchor="middle" fill="#E7FB10" fontSize="7"
+        <motion.text x="170" y="156" textAnchor="middle" fill="#D4FF1F" fontSize="7"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>Reward Modulation</motion.text>
 
         {/* Amygdala */}
@@ -687,7 +687,7 @@ function OxytocinAnimation({ isInView }: { isInView: boolean }) {
         {/* Animated release dots */}
         {[
           { tx: 75, ty: 108, color: "#21d8ff" },
-          { tx: 170, ty: 128, color: "#E7FB10" },
+          { tx: 170, ty: 128, color: "#D4FF1F" },
           { tx: 268, ty: 108, color: "#9d4edd" },
         ].map((dot, i) => (
           <motion.circle key={`oxt-dot-${i}`} r="4" fill={dot.color}

@@ -16,7 +16,7 @@ const pricingFactors = [
     label: "Synthesis",
     percentage: 35,
     icon: FlaskConical,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     description: "Raw materials, amino acids, specialized equipment, and skilled technician time for solid-phase peptide synthesis.",
     details: ["High-grade amino acids", "Automated synthesis", "Sequence optimization"],
   },
@@ -77,7 +77,7 @@ export function PricingBreakdownInfographic() {
             <div 
               className="absolute inset-0 opacity-10"
               style={{
-                background: "radial-gradient(circle at 30% 30%, #E7FB10 0%, transparent 50%)",
+                background: "radial-gradient(circle at 30% 30%, #D4FF1F 0%, transparent 50%)",
               }}
             />
 
@@ -302,11 +302,11 @@ export function PricingBreakdownInfographic() {
             >
               <div className="flex items-center gap-3 mb-4">
                 <motion.div
-                  className="w-12 h-12 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center"
+                  className="w-12 h-12 rounded-xl bg-[#D4FF1F]/20 flex items-center justify-center"
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <DollarSign className="h-6 w-6 text-[#E7FB10]" />
+                  <DollarSign className="h-6 w-6 text-[#D4FF1F]" />
                 </motion.div>
                 <div>
                   <h4 className="font-display text-lg font-bold">Transparent Pricing</h4>
@@ -323,7 +323,7 @@ export function PricingBreakdownInfographic() {
               <div className="mt-4 pt-4 border-t border-border/30">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Quality Investment</span>
-                  <span className="font-bold text-[#E7FB10]">
+                  <span className="font-bold text-[#D4FF1F]">
                     {pricingFactors.slice(0, 4).reduce((sum, f) => sum + f.percentage, 0)}%
                   </span>
                 </div>

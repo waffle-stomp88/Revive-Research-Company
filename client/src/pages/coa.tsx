@@ -252,7 +252,7 @@ export default function CoaVerification() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="font-display gap-2 h-12 bg-[#E7FB10] border-2 border-[#E7FB10] shadow-glow-sm md:hover:shadow-glow-lg transition-shadow duration-300"
+                  className="font-display gap-2 h-12 bg-[#D4FF1F] border-2 border-[#D4FF1F] shadow-glow-sm md:hover:shadow-glow-lg transition-shadow duration-300"
                   disabled={searchMutation.isPending}
                   data-testid="button-verify-coa"
                 >

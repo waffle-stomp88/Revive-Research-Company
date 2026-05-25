@@ -139,9 +139,9 @@ export default function BatchArchive() {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 border-[#E7FB10]/20">
+          <Card className="p-6 border-[#D4FF1F]/20">
             <div className="text-center">
-              <div className="text-3xl font-display font-bold text-[#E7FB10] mb-1">
+              <div className="text-3xl font-display font-bold text-[#D4FF1F] mb-1">
                 {coas.length}
               </div>
               <div className="text-sm text-muted-foreground">Total Batches</div>
@@ -312,11 +312,11 @@ export default function BatchArchive() {
           </Link>
 
           <Link href="/batch">
-            <Card className="p-6 border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-colors cursor-pointer group" data-testid="link-verify-batch">
+            <Card className="p-6 border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-colors cursor-pointer group" data-testid="link-verify-batch">
               <div className="flex items-start gap-4">
-                <FileCheck className="h-8 w-8 text-[#E7FB10]" />
+                <FileCheck className="h-8 w-8 text-[#D4FF1F]" />
                 <div>
-                  <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#E7FB10] transition-colors">
+                  <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#D4FF1F] transition-colors">
                     Verify a Batch
                   </h3>
                   <p className="text-sm text-muted-foreground">

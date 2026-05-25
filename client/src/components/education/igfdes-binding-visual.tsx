@@ -4,7 +4,7 @@ import { Scissors, Target, Zap, Activity } from "lucide-react";
 
 const COLORS = {
   native: "#21d8ff",
-  lr3: "#E7FB10",
+  lr3: "#D4FF1F",
   des: "#f97316",
   receptor: "#9d4edd",
   igfbp: "#ef4444",

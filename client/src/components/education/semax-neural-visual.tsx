@@ -4,7 +4,7 @@ import { Brain, Zap, Activity, Sparkles, TrendingUp } from "lucide-react";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function NeuralSynapseAnimation({ isInView, activeFactor }: { isInView: boolean; activeFactor: number }) {
-  const neurotransmitters = ['#E7FB10', '#21d8ff', '#ec4899', '#9d4edd'];
+  const neurotransmitters = ['#D4FF1F', '#21d8ff', '#ec4899', '#9d4edd'];
   
   return (
     <div className="relative w-full h-64 flex items-center justify-center overflow-hidden">
@@ -135,7 +135,7 @@ function NeuralSynapseAnimation({ isInView, activeFactor }: { isInView: boolean;
         {[0, 1, 2].map((i) => {
           const y = 85 + i * 15;
           const isActive = activeFactor === i;
-          const colors = ['#21d8ff', '#E7FB10', '#ec4899'];
+          const colors = ['#21d8ff', '#D4FF1F', '#ec4899'];
           
           return (
             <motion.g key={`receptor-${i}`}>
@@ -237,7 +237,7 @@ const neurotrophicFactors = [
     fullName: 'Nerve Growth Factor',
     icon: Sparkles,
     description: 'Essential for development and maintenance of sympathetic and sensory neurons',
-    color: '#E7FB10',
+    color: '#D4FF1F',
     effects: ['Neuron survival', 'Axon growth', 'Cholinergic function']
   },
   {

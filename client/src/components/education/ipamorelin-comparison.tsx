@@ -80,7 +80,7 @@ export function IpamorelinComparison() {
                         animate={isInView ? { scale: 1 } : {}}
                         transition={{ delay: 0.4 + idx * 0.1 }}
                       >
-                        <Check className="h-5 w-5 text-[#E7FB10]" />
+                        <Check className="h-5 w-5 text-[#D4FF1F]" />
                       </motion.div>
                     ) : (
                       <X className="h-5 w-5 text-muted-foreground/40" />
@@ -115,7 +115,7 @@ export function IpamorelinComparison() {
           <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
             <div></div>
             <div className="text-center">
-              <p className="text-xs font-bold text-[#E7FB10]">Ipamorelin</p>
+              <p className="text-xs font-bold text-[#D4FF1F]">Ipamorelin</p>
               <p className="text-xs text-muted-foreground">Selective</p>
             </div>
             <div className="text-center">

@@ -4,7 +4,7 @@ import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boolean; activeMechanism: string }) {
-  const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
+  const filamentColors = ['#21d8ff', '#D4FF1F', '#9d4edd'];
   const isActin = activeMechanism === 'actin';
   const isMigration = activeMechanism === 'migration';
   const isDifferentiation = activeMechanism === 'differentiation';
@@ -29,10 +29,10 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
             </filter>
             <linearGradient id="cellGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#D4FF1F" stopOpacity="0.3" />
             </linearGradient>
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0, 10 3.5, 0 7" fill="#E7FB10" />
+              <polygon points="0 0, 10 3.5, 0 7" fill="#D4FF1F" />
             </marker>
           </defs>
           
@@ -173,7 +173,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
                 rx="55"
                 ry="45"
                 fill="url(#cellGradient)"
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="2"
                 strokeDasharray="5,3"
                 initial={{ opacity: 0 }}
@@ -184,7 +184,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               <motion.text
                 x="220" y="88"
                 textAnchor="middle"
-                fill="#E7FB10"
+                fill="#D4FF1F"
                 fontSize="7"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
@@ -194,7 +194,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               <motion.text
                 x="220" y="97"
                 textAnchor="middle"
-                fill="#E7FB10"
+                fill="#D4FF1F"
                 fontSize="7"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -210,7 +210,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               <motion.text
                 x="175" y="65"
                 textAnchor="middle"
-                fill="#E7FB10"
+                fill="#D4FF1F"
                 fontSize="7"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -221,7 +221,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               </motion.text>
               <motion.path
                 d="M 155 85 Q 175 75 195 85"
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="2"
                 fill="none"
                 strokeDasharray="4,2"
@@ -483,7 +483,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
           <span>Actin Monomers</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></span>
+          <span className="w-2.5 h-2.5 rounded-full bg-[#D4FF1F]" style={{ boxShadow: '0 0 6px #D4FF1F' }}></span>
           <span>G-Actin Subunits</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -491,7 +491,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
           <span>F-Actin Chains</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-6 h-0.5 border border-dashed border-[#E7FB10]"></span>
+          <span className="w-6 h-0.5 border border-dashed border-[#D4FF1F]"></span>
           <span>Migration Direction</span>
         </div>
       </div>
@@ -610,7 +610,7 @@ const mechanisms = [
     name: 'Cell Migration',
     icon: Move,
     description: 'Enhances cellular motility by regulating actin dynamics, enabling cells to move toward injury sites',
-    color: '#E7FB10'
+    color: '#D4FF1F'
   },
   {
     id: 'differentiation',
@@ -712,7 +712,7 @@ export function TB500ActinVisual() {
           }}
         >
           <Activity className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F] bg-clip-text text-transparent">
             Actin Cytoskeleton Regulation
           </span>
         </div>

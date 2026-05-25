@@ -49,7 +49,7 @@ function PeptideChainVisual() {
   const isInView = useInView(ref, { once: true });
 
   const aminoAcids = [
-    { letter: "A", name: "Ala", color: "#E7FB10" },
+    { letter: "A", name: "Ala", color: "#D4FF1F" },
     { letter: "G", name: "Gly", color: "#21d8ff" },
     { letter: "S", name: "Ser", color: "#22c55e" },
     { letter: "T", name: "Thr", color: "#9d4edd" },
@@ -97,7 +97,7 @@ function ResearchPurposeVisual() {
 
   const purposes = [
     { icon: Beaker, label: "In-vitro studies", color: "#21d8ff" },
-    { icon: Target, label: "Mechanism research", color: "#E7FB10" },
+    { icon: Target, label: "Mechanism research", color: "#D4FF1F" },
     { icon: TrendingUp, label: "Pathway analysis", color: "#22c55e" },
   ];
 
@@ -106,7 +106,7 @@ function ResearchPurposeVisual() {
       <div
         className="w-24 h-24 rounded-full flex items-center justify-center"
         style={{
-          background: "linear-gradient(135deg, #E7FB10 0%, #21d8ff 50%, #22c55e 100%)",
+          background: "linear-gradient(135deg, #D4FF1F 0%, #21d8ff 50%, #22c55e 100%)",
           opacity: 0.2,
         }}
       >
@@ -160,9 +160,9 @@ function LegalFrameworkVisual() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={isInView ? { scale: 1, opacity: 1 } : {}}
             transition={{ delay: 0.2 }}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#E7FB10]/10 border border-[#E7FB10]/20"
+            className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#D4FF1F]/10 border border-[#D4FF1F]/20"
           >
-            <FileCheck className="w-8 h-8 text-[#E7FB10]" />
+            <FileCheck className="w-8 h-8 text-[#D4FF1F]" />
             <span className="text-xs text-white/60 text-center">RUO Labeled</span>
           </motion.div>
           <motion.div
@@ -185,7 +185,7 @@ function OrderingJourneyMini() {
   const isInView = useInView(ref, { once: true });
 
   const steps = [
-    { icon: ShoppingCart, label: "Order", color: "#E7FB10" },
+    { icon: ShoppingCart, label: "Order", color: "#D4FF1F" },
     { icon: Package, label: "Ship", color: "#21d8ff" },
     { icon: Eye, label: "Inspect", color: "#22c55e" },
     { icon: Thermometer, label: "Store", color: "#9d4edd" },
@@ -230,7 +230,7 @@ function PurityScaleVisual() {
 
   const grades = [
     { pct: 95, label: "Standard", color: "#f97316" },
-    { pct: 98, label: "Research", color: "#E7FB10" },
+    { pct: 98, label: "Research", color: "#D4FF1F" },
     { pct: 99, label: "High", color: "#22c55e" },
   ];
 
@@ -242,7 +242,7 @@ function PurityScaleVisual() {
           animate={isInView ? { width: "98%" } : {}}
           transition={{ duration: 1.5, ease: "easeOut" }}
           className="absolute left-0 top-0 h-full rounded-full"
-          style={{ background: "linear-gradient(90deg, #f97316 0%, #E7FB10 50%, #22c55e 100%)" }}
+          style={{ background: "linear-gradient(90deg, #f97316 0%, #D4FF1F 50%, #22c55e 100%)" }}
         />
       </div>
       <div className="flex justify-between w-full">
@@ -270,7 +270,7 @@ function LyophilizationProcessVisual() {
   const stages = [
     { icon: Droplets, label: "Solution", color: "#21d8ff" },
     { icon: Snowflake, label: "Frozen", color: "#60a5fa" },
-    { icon: TrendingUp, label: "Vacuum", color: "#E7FB10" },
+    { icon: TrendingUp, label: "Vacuum", color: "#D4FF1F" },
     { icon: Sparkles, label: "Powder", color: "#22c55e" },
   ];
 
@@ -358,7 +358,7 @@ function ReconstitutionStepsVisual() {
         transition={{ delay: 0.2 }}
         className="flex flex-col items-center"
       >
-        <div className="w-10 h-14 rounded-lg bg-[#E7FB10]/20 border border-[#E7FB10]/30 flex items-center justify-center">
+        <div className="w-10 h-14 rounded-lg bg-[#D4FF1F]/20 border border-[#D4FF1F]/30 flex items-center justify-center">
           <div className="w-4 h-4 rounded-sm bg-white/30" />
         </div>
         <span className="text-[10px] text-white/50 mt-1">Powder</span>
@@ -417,14 +417,14 @@ function COADocumentVisual() {
         className="w-32 p-3 rounded-lg bg-white/5 border border-white/10"
       >
         <div className="flex items-center gap-2 mb-2">
-          <FileCheck className="w-4 h-4 text-[#E7FB10]" />
+          <FileCheck className="w-4 h-4 text-[#D4FF1F]" />
           <span className="text-[10px] font-bold text-white/70">COA</span>
         </div>
         <div className="space-y-1">
           {[
             { label: "Purity", value: "98.7%", color: "#22c55e" },
             { label: "Mass", value: "1024.5", color: "#21d8ff" },
-            { label: "Batch", value: "RR-2024", color: "#E7FB10" },
+            { label: "Batch", value: "RR-2024", color: "#D4FF1F" },
           ].map((item, idx) => (
             <motion.div
               key={idx}
@@ -481,7 +481,7 @@ function SafetyEquipmentVisual() {
   const items = [
     { icon: Eye, label: "Goggles", color: "#21d8ff" },
     { icon: Shield, label: "Gloves", color: "#22c55e" },
-    { icon: ShieldCheck, label: "Coat", color: "#E7FB10" },
+    { icon: ShieldCheck, label: "Coat", color: "#D4FF1F" },
   ];
 
   return (
@@ -537,7 +537,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: BookOpen,
               title: "Core Foundations",
               description: "Master purity, storage, and reconstitution fundamentals",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: FlaskConical,
@@ -567,8 +567,8 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
         <HeroVisual
           title="What is a Peptide?"
           subtitle="Discover the fascinating world of peptides — nature's signaling molecules that drive biological processes."
-          icon={<Beaker className="w-10 h-10 text-[#E7FB10]" />}
-          color="#E7FB10"
+          icon={<Beaker className="w-10 h-10 text-[#D4FF1F]" />}
+          color="#D4FF1F"
           illustration={<PeptideChainVisual />}
         />
 
@@ -580,7 +580,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Target,
               title: "2-50 Amino Acids",
               description: "Peptides are short chains — smaller than proteins but highly active",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: TrendingUp,
@@ -608,7 +608,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Growth Hormone Secretagogues",
               description: "Peptides that influence GH release pathways",
               icon: TrendingUp,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["GHRH analogs", "Ghrelin mimetics", "Combined approaches"],
             },
             {
@@ -676,7 +676,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: FileCheck,
               title: "Documentation Required",
               description: "Proper records of research use must be maintained",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
           ]}
         />
@@ -748,7 +748,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: FileCheck,
               title: "RUO Classification",
               description: "Must be clearly labeled and sold as research chemicals only",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: ShieldCheck,
@@ -778,7 +778,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Maintain Documentation",
               description: "Keep detailed records of all purchases and research use",
               icon: ClipboardList,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Save all invoices", "Document batch numbers", "Log research activities"],
             },
             {
@@ -824,7 +824,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Place Your Order",
               description: "Select your compounds, verify quantities, and complete checkout",
               icon: ShoppingCart,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Choose research compounds", "Select appropriate quantities", "Apply any discount codes"],
               tip: `Orders over $${FREE_SHIPPING_THRESHOLD} ship free!`,
             },
@@ -909,8 +909,8 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
         <HeroVisual
           title="Understanding Purity"
           subtitle="Learn what purity means for research peptides and why it's the most critical quality indicator you'll evaluate."
-          icon={<FlaskConical className="w-10 h-10 text-[#E7FB10]" />}
-          color="#E7FB10"
+          icon={<FlaskConical className="w-10 h-10 text-[#D4FF1F]" />}
+          color="#D4FF1F"
           stats={[
             { label: "Target Purity", value: "98%+" },
             { label: "Testing Method", value: "HPLC" },
@@ -962,7 +962,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Research Grade (98-99%)",
               description: "The standard for most in-vitro research applications",
               icon: FlaskConical,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Most common choice", "Reliable results", "Recommended starting point"],
               tip: "This is what Revive Research provides as standard",
             },
@@ -1013,7 +1013,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Primary Drying",
               description: "Vacuum applied, ice sublimates directly to vapor (no liquid phase)",
               icon: TrendingUp,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Sublimation process", "Low pressure environment", "Removes bulk water"],
             },
             {
@@ -1058,7 +1058,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Thermometer,
               title: "Extended Shelf Life",
               description: "Properly stored lyophilized peptides last much longer",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: Droplets,
@@ -1117,7 +1117,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: AlertTriangle,
               title: "Freeze-Thaw Cycles",
               description: "Repeated freezing and thawing damages peptide structure",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
           ]}
         />
@@ -1201,7 +1201,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Calculate Volume",
               description: "Determine how much solvent to add for desired concentration",
               icon: Target,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Check peptide amount (mg)", "Decide target concentration", "Use reconstitution calculator"],
               tip: "Common concentration: 2mg/mL (add 5mL to a 10mg vial)",
             },
@@ -1248,7 +1248,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Beaker,
               title: "Acetic Acid (0.6%)",
               description: "Helps dissolve peptides that are difficult to reconstitute in water.",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
           ]}
         />
@@ -1305,8 +1305,8 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
         <HeroVisual
           title="Reading COAs"
           subtitle="Master the art of interpreting Certificates of Analysis — your key to verifying peptide quality and authenticity."
-          icon={<FileCheck className="w-10 h-10 text-[#E7FB10]" />}
-          color="#E7FB10"
+          icon={<FileCheck className="w-10 h-10 text-[#D4FF1F]" />}
+          color="#D4FF1F"
           stats={[
             { label: "Key Sections", value: "5" },
             { label: "Critical Data", value: "Purity %" },
@@ -1331,7 +1331,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "HPLC Purity Results",
               description: "The main indicator of peptide quality — look for 98%+ purity",
               icon: FlaskConical,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Purity percentage", "Peak analysis", "Retention time", "Method specifications"],
               tip: "HPLC (High-Performance Liquid Chromatography) separates and quantifies compounds",
             },
@@ -1395,7 +1395,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Globe,
               title: "Google Scholar",
               description: "Broad academic search engine that indexes journals, theses, and conference papers.",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: BookOpen,
@@ -1503,7 +1503,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Handle With Care",
               description: "Treat all research compounds as potentially hazardous",
               icon: AlertTriangle,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Never taste or inhale", "Avoid skin contact", "Work in well-lit area", "Stay focused — no distractions"],
             },
             {
@@ -1546,7 +1546,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Package,
               title: "Inventory Records",
               description: "Track all compounds: batch numbers, quantities, storage locations, expiration dates",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: FlaskConical,
@@ -1638,7 +1638,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               title: "Order & Verify",
               description: "Place order, verify COA, inspect upon delivery",
               icon: ShoppingCart,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               details: ["Check purity on COA", "Verify batch numbers", "Inspect packaging"],
             },
             {
@@ -1707,7 +1707,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: Eye,
               title: "Cloudy Solution",
               description: "May indicate aggregation or contamination. Try filtering or reconstituting fresh vial.",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: AlertTriangle,
@@ -1765,8 +1765,8 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
         <HeroVisual
           title="Advanced Research Tips"
           subtitle="Level up your research with professional techniques and optimization strategies."
-          icon={<Sparkles className="w-10 h-10 text-[#E7FB10]" />}
-          color="#E7FB10"
+          icon={<Sparkles className="w-10 h-10 text-[#D4FF1F]" />}
+          color="#D4FF1F"
           stats={[
             { label: "Pro Tips", value: "8+" },
             { label: "Level", value: "Advanced" },
@@ -1793,7 +1793,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: FileCheck,
               title: "Batch Tracking",
               description: "Keep detailed records of which batch you use for each experiment for reproducibility.",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: Shield,
@@ -1868,7 +1868,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: BookOpen,
               title: "Core Foundations",
               description: "Purity, lyophilization, storage, stability, and reconstitution",
-              color: "#E7FB10",
+              color: "#D4FF1F",
             },
             {
               icon: FlaskConical,

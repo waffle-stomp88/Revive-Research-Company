@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Heart, Activity } from "lucide-react";
 
-const PT141_COLOR = "#E7FB10";
+const PT141_COLOR = "#D4FF1F";
 const OXYTOCIN_COLOR = "#21d8ff";
 const HYPOTHALAMUS_COLOR = "#f472b6";
 const OUTPUT_COLOR = "#fb923c";

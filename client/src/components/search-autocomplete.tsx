@@ -187,7 +187,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setIsOpen(true)}
-          className="pl-10 pr-8 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#E7FB10] transition-colors text-sm"
+          className="pl-10 pr-8 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#D4FF1F] transition-colors text-sm"
           data-testid="input-search-autocomplete"
         />
         <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -332,7 +332,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                       <div
                         className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
                           index === selectedIndex 
-                            ? "bg-[#E7FB10]/10" 
+                            ? "bg-[#D4FF1F]/10" 
                             : "hover:bg-[#2a2a32]"
                         }`}
                         data-testid={`search-result-${result.id}`}
@@ -357,7 +357,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                               {isArticle ? `Article - ${(result as any).category}` : (result as any).category}
                             </Badge>
                             {isProduct && (
-                              <span className="text-xs text-[#E7FB10] font-semibold">
+                              <span className="text-xs text-[#D4FF1F] font-semibold">
                                 ${Math.round(Number((result as any).price))}
                               </span>
                             )}

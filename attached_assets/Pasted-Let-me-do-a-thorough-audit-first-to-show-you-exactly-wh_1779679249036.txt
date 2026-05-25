@@ -1,0 +1,34 @@
+Let me do a thorough audit first to show you exactly what will change.
+
+
+8 actions
+Good — massive list. Let me now check how the color is actually defined (CSS var vs hardcoded) and what the Galaxy page uses specifically, since that's the one to verify before touching.
+
+
+5 actions
+Good scope established. Let me check the Galaxy data/layout files (node coloring concern) and count the hardcoded instances outside Tailwind config:
+
+
+4 actions
+Now I have everything I need. Here's the full pre-apply diff summary:
+
+What will change:
+
+Location	Type	Count
+tailwind.config.ts	Central definitions — DEFAULT + opacity variants 50–500 + yellow alias	8 hits
+client/src/index.css	Hardcoded in border rule + gradient stops	4 hits
+client/src/pages/*.tsx (40+ pages)	Arbitrary Tailwind values text-[#E7FB10], bg-[#E7FB10], border-[#E7FB10]	~120 hits
+client/src/components/**/*.tsx (50+ components)	Same pattern — inline styles + Tailwind arbitrary values	~180 hits
+client/src/data/, client/src/lib/, server/	Scattered hex literals	~30 hits
+design_guidelines.md, replit.md	Brand color documentation	update to match
+The opacity hex suffixes are safe — #E7FB100D → #D4FF1F0D (the suffix appends after the 6-digit hex, so a simple find-replace on #E7FB10 handles them correctly).
+
+Galaxy verdict: safe to update. The Galaxy data files (peptide-pathways.ts, galaxy-layout.ts) have zero occurrences — the yellow there comes purely from Tailwind/UI chrome (HUD brackets, warp banner text, onboarding button). No specific node coloring uses it. All galaxy component hits are UI elements that should match brand.
+
+What will NOT change (explicitly excluded):
+
+File	Reason
+artifacts/galaxy-vfx-variants/public/email-assets/*.html	Rendered email assets — stay on old yellow per your instructions
+scripts/compose-synergy-reel.cjs (const YELLOW = '#E7FB10')	Email GIF generation script — changing it would shift future email re-renders; leave it so the email series stays consistent
+attached_assets/	Source design documents, not live site code
+Approach in Build mode: single sed -i 's/#[Ee]7[Ff][Bb]10/#D4FF1F/g' pass across all .ts, .tsx, .css source files, excluding the email asset paths — then a verification pass to confirm zero remaining occurrences in live code. Switch me to Build mode and I'll apply and confirm.

@@ -53,9 +53,9 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <circle cx="420" cy="80" r="18" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
+          <circle cx="420" cy="80" r="18" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
           <text x="420" y="85" textAnchor="middle" fill="black" fontSize="9" fontWeight="700">GK</text>
-          <text x="420" y="125" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="600">GHK-Cu</text>
+          <text x="420" y="125" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="600">GHK-Cu</text>
           <text x="420" y="140" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7">Collagen Boost</text>
           <text x="420" y="150" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6.5">Copper peptide</text>
         </motion.g>
@@ -100,7 +100,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             {activationLevel < 45 ? (
               <motion.path
                 d="M 420 165 L 420 200"
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="2"
                 fill="none"
                 initial={{ pathLength: 0 }}
@@ -110,7 +110,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             ) : (
               <motion.path
                 d="M 420 165 Q 420 190 340 220"
-                stroke="#E7FB10"
+                stroke="#D4FF1F"
                 strokeWidth="2"
                 fill="none"
                 initial={{ pathLength: 0 }}
@@ -202,8 +202,8 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <ellipse cx="250" cy="320" rx="140" ry="35" fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4" opacity="0.6" />
-            <text x="250" y="330" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="700">
+            <ellipse cx="250" cy="320" rx="140" ry="35" fill="none" stroke="#D4FF1F" strokeWidth="2" strokeDasharray="4,4" opacity="0.6" />
+            <text x="250" y="330" textAnchor="middle" fill="#D4FF1F" fontSize="10" fontWeight="700">
               RESULT: Firmer, More Radiant Skin
             </text>
           </motion.g>
@@ -265,12 +265,12 @@ export function GLOWSynergyVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.2)'
           }}
         >
-          <Sparkles className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold text-[#E7FB10]">
+          <Sparkles className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold text-[#D4FF1F]">
             Multi-Peptide Synergy Explained
           </span>
         </div>
@@ -341,8 +341,8 @@ export function GLOWSynergyVisual() {
             }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></div>
-              <span className="text-xs font-bold text-[#E7FB10]">GHK-Cu (Copper Tripeptide)</span>
+              <div className="w-3 h-3 rounded-full bg-[#D4FF1F]" style={{ boxShadow: '0 0 6px #D4FF1F' }}></div>
+              <span className="text-xs font-bold text-[#D4FF1F]">GHK-Cu (Copper Tripeptide)</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Directly stimulates collagen I, III, and IV synthesis. Enhances skin firmness, elasticity, and promotes fibroblast proliferation.

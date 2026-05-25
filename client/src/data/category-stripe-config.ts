@@ -4,9 +4,9 @@ export interface StripeConfig {
 }
 
 const slugOverrides: Record<string, StripeConfig> = {
-  "bpc-157": { label: "Regenerative Peptide · Research Grade", accentColor: "#E7FB10" },
-  "tb-500": { label: "Regenerative Peptide · Research Grade", accentColor: "#E7FB10" },
-  "bpc-157-tb-500-stack": { label: "Regenerative Blend · Research Grade", accentColor: "#E7FB10" },
+  "bpc-157": { label: "Regenerative Peptide · Research Grade", accentColor: "#D4FF1F" },
+  "tb-500": { label: "Regenerative Peptide · Research Grade", accentColor: "#D4FF1F" },
+  "bpc-157-tb-500-stack": { label: "Regenerative Blend · Research Grade", accentColor: "#D4FF1F" },
   "glow-peptide-complex": { label: "Skin & Regenerative Blend · Research Grade", accentColor: "#ec4899" },
   "klow-peptide-complex": { label: "Immune & Regenerative Blend · Research Grade", accentColor: "#22c55e" },
 
@@ -71,18 +71,18 @@ const slugOverrides: Record<string, StripeConfig> = {
 };
 
 const categoryFallbacks: Record<string, StripeConfig> = {
-  peptides: { label: "Research Peptide · Research Grade", accentColor: "#E7FB10" },
+  peptides: { label: "Research Peptide · Research Grade", accentColor: "#D4FF1F" },
   "research compounds": { label: "Research Compound · Research Grade", accentColor: "#64748b" },
   supplements: { label: "Supplement · Research Grade", accentColor: "#f59e0b" },
 };
 
 const DEFAULT_STRIPE: StripeConfig = {
   label: "Research Compound · Research Grade",
-  accentColor: "#E7FB10",
+  accentColor: "#D4FF1F",
 };
 
 export const STRIPE_ACCENT_PRESETS: { label: string; value: string }[] = [
-  { label: "Yellow-Green (Default / Regenerative)", value: "#E7FB10" },
+  { label: "Yellow-Green (Default / Regenerative)", value: "#D4FF1F" },
   { label: "Cyan (Cognitive / Neuro)", value: "#21d8ff" },
   { label: "Purple (GH / IGF-1 / Longevity)", value: "#9d4edd" },
   { label: "Violet (Longevity / Senolytic)", value: "#a855f7" },

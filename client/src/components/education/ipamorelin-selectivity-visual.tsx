@@ -5,7 +5,7 @@ import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolean; showIpamorelin: boolean }) {
   const receptors = [
-    { id: 'ghrelin', name: 'Ghrelin Receptor', x: 80, ipaActive: true, otherActive: true, color: '#E7FB10' },
+    { id: 'ghrelin', name: 'Ghrelin Receptor', x: 80, ipaActive: true, otherActive: true, color: '#D4FF1F' },
     { id: 'cortisol', name: 'Cortisol Path', x: 160, ipaActive: false, otherActive: true, color: '#ef4444' },
     { id: 'prolactin', name: 'Prolactin Path', x: 240, ipaActive: false, otherActive: true, color: '#f97316' },
   ];
@@ -58,7 +58,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
         
         {receptors.map((receptor, idx) => {
           const isActive = showIpamorelin ? receptor.ipaActive : receptor.otherActive;
-          const activeColor = showIpamorelin && receptor.ipaActive ? '#E7FB10' : 
+          const activeColor = showIpamorelin && receptor.ipaActive ? '#D4FF1F' : 
                              !showIpamorelin && receptor.otherActive ? receptor.color : 
                              'hsl(var(--foreground) / 0.2)';
           
@@ -173,13 +173,13 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
           height="22"
           rx="4"
           fill={showIpamorelin ? "rgba(231, 251, 16, 0.2)" : "rgba(157, 78, 221, 0.2)"}
-          stroke={showIpamorelin ? "#E7FB10" : "#9d4edd"}
+          stroke={showIpamorelin ? "#D4FF1F" : "#9d4edd"}
           strokeWidth="1.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           style={{ filter: `drop-shadow(0 0 8px ${showIpamorelin ? 'rgba(231, 251, 16, 0.4)' : 'rgba(157, 78, 221, 0.4)'})` }}
         />
-        <motion.text x="160" y="19" textAnchor="middle" fill={showIpamorelin ? "#E7FB10" : "#9d4edd"} fontSize="9" fontWeight="bold"
+        <motion.text x="160" y="19" textAnchor="middle" fill={showIpamorelin ? "#D4FF1F" : "#9d4edd"} fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -287,12 +287,12 @@ export function IpamorelinSelectivityVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <Target className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <Target className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Selective GH Secretagogue Action
           </span>
         </div>
@@ -314,8 +314,8 @@ export function IpamorelinSelectivityVisual() {
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
               backgroundColor: showIpamorelin ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.03)',
-              border: `1.5px solid ${showIpamorelin ? '#E7FB10' : 'hsl(var(--foreground) / 0.1)'}`,
-              color: showIpamorelin ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
+              border: `1.5px solid ${showIpamorelin ? '#D4FF1F' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: showIpamorelin ? '#D4FF1F' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showIpamorelin ? '0 0 15px rgba(231, 251, 16, 0.3)' : 'none'
             }}
             whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
@@ -347,7 +347,7 @@ export function IpamorelinSelectivityVisual() {
               className="h-full rounded-full"
               style={{ 
                 width: `${progress}%`,
-                backgroundColor: showIpamorelin ? '#E7FB10' : '#9d4edd'
+                backgroundColor: showIpamorelin ? '#D4FF1F' : '#9d4edd'
               }}
             />
           </div>
@@ -378,11 +378,11 @@ export function IpamorelinSelectivityVisual() {
             <motion.div 
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-[#E7FB10]"
+              className="text-[#D4FF1F]"
             >
               👆
             </motion.div>
-            <span className="text-sm text-[#E7FB10]/90">
+            <span className="text-sm text-[#D4FF1F]/90">
               Click or hover each row below to learn more
             </span>
           </motion.div>
@@ -391,7 +391,7 @@ export function IpamorelinSelectivityVisual() {
           <div className="grid grid-cols-3 gap-4 mb-2 pb-2 border-b" style={{ borderColor: 'hsl(var(--border))' }}>
             <div></div>
             <div className="text-center">
-              <span className="text-xs font-bold text-[#E7FB10]">Ipamorelin</span>
+              <span className="text-xs font-bold text-[#D4FF1F]">Ipamorelin</span>
             </div>
             <div className="text-center">
               <span className="text-xs font-bold text-[#9d4edd]">Other GHRPs</span>
@@ -477,7 +477,7 @@ export function IpamorelinSelectivityVisual() {
           <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
             <div></div>
             <div className="text-center">
-              <span className="text-xs font-bold text-[#E7FB10]">Ipamorelin</span>
+              <span className="text-xs font-bold text-[#D4FF1F]">Ipamorelin</span>
               <p className="text-[10px] text-muted-foreground">Selective</p>
             </div>
             <div className="text-center">

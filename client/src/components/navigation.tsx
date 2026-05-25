@@ -41,7 +41,7 @@ const coaLinks = [
 
 const resourceLinks = [
   { href: "/guides/peptide-education-center", label: "Education Center", icon: BookOpen, description: "Learn about peptides & research", color: "#ec4899" },
-  { href: "/academy", label: "Research Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#E7FB10" },
+  { href: "/academy", label: "Research Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#D4FF1F" },
   { href: "/tools/peptide-reconstitution-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#21d8ff" },
   { href: "/peptide-research-faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
   { href: "/contact", label: "Support & Contact", icon: Mail, description: "Reach out for research support", color: "#9d4edd" },
@@ -207,8 +207,8 @@ export function Navigation() {
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           productLinks.some(p => location === p.href || location.startsWith(p.href + "/"))
-                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
-                            : "text-white hover:text-[#E7FB10] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
+                            ? "text-[#D4FF1F] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
+                            : "text-white hover:text-[#D4FF1F] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
                         }`}
                         data-testid="link-nav-products"
                       >
@@ -244,12 +244,12 @@ export function Navigation() {
                   </DropdownMenu>
                   {productLinks.some(p => location === p.href || location.startsWith(p.href + "/")) && (
                     <motion.div
-                      className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)] pointer-events-none"
+                      className="absolute inset-0 bg-[#D4FF1F]/10 rounded-md border border-[#D4FF1F]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)] pointer-events-none"
                       layoutId="products-highlight"
                     />
                   )}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#D4FF1F] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                   />
                 </div>
 
@@ -391,13 +391,13 @@ export function Navigation() {
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
+                      className="relative hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] transition-all duration-300" 
                       data-testid="button-cart"
                       aria-label="View shopping cart"
                     >
                       <ShoppingCart className="h-5 w-5" />
                       {cartItemCount > 0 && (
-                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black border-0">
+                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#D4FF1F] text-black border-0">
                           {cartItemCount > 9 ? "9+" : cartItemCount}
                         </Badge>
                       )}
@@ -432,15 +432,15 @@ export function Navigation() {
                                 {item.image ? (
                                   <img src={item.image} alt={`${item.name} ${item.dosage} research peptide`} className="w-full h-full object-contain p-1" />
                                 ) : (
-                                  <div className="flex items-center justify-center h-full bg-[#E7FB10]/10">
-                                    <Package className="h-5 w-5 text-[#E7FB10]" />
+                                  <div className="flex items-center justify-center h-full bg-[#D4FF1F]/10">
+                                    <Package className="h-5 w-5 text-[#D4FF1F]" />
                                   </div>
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">
                                   {item.name}
-                                  {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
+                                  {item.packSize && <span className="text-[#D4FF1F] ml-1 text-xs">({item.packSize}-Pack)</span>}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                   {item.dosage} × {item.quantity}
@@ -457,7 +457,7 @@ export function Navigation() {
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               ) : (
-                                <p className="text-sm font-semibold text-[#E7FB10]">
+                                <p className="text-sm font-semibold text-[#D4FF1F]">
                                   ${Math.round(item.price * item.quantity)}
                                 </p>
                               )}
@@ -513,10 +513,10 @@ export function Navigation() {
                         <div className="p-4 border-t border-border bg-muted/20">
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-sm text-muted-foreground">Subtotal</span>
-                            <span className="font-semibold text-[#E7FB10]">${Math.round(getSubtotal())}</span>
+                            <span className="font-semibold text-[#D4FF1F]">${Math.round(getSubtotal())}</span>
                           </div>
                           <Link href="/cart">
-                            <Button className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" size="sm">
+                            <Button className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90" size="sm">
                               View Cart
                             </Button>
                           </Link>
@@ -530,7 +530,7 @@ export function Navigation() {
                   <Link href="/login">
                     <Button 
                       variant="outline" 
-                      className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
+                      className="hidden md:inline-flex border-[#D4FF1F]/50 text-[#D4FF1F] hover:bg-[#D4FF1F]/10 hover:border-[#D4FF1F] transition-all duration-300"
                       data-testid="button-sign-in"
                     >
                       <LogIn className="h-4 w-4 mr-2" />
@@ -621,7 +621,7 @@ export function Navigation() {
                 
                 <Link href="/peptides">
                   <Button
-                    className="hidden md:inline-flex font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_15px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] md:hover:bg-[#E7FB10] transition-all duration-300"
+                    className="hidden md:inline-flex font-display bg-[#D4FF1F] text-black border-2 border-[#D4FF1F] shadow-[0_0_15px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] md:hover:bg-[#D4FF1F] transition-all duration-300"
                     data-testid="button-shop-products"
                   >
                     Shop Peptides
@@ -630,7 +630,7 @@ export function Navigation() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300"
+                  className="md:hidden hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] transition-all duration-300"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   data-testid="button-mobile-menu"
                   aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
@@ -821,7 +821,7 @@ export function Navigation() {
 
               {/* COA Library */}
               {(() => {
-                const color = "#E7FB10";
+                const color = "#D4FF1F";
                 const isActive = location.startsWith("/coa");
                 return (
                   <Link href="/coa-library" onClick={() => setIsMobileMenuOpen(false)}>
@@ -893,7 +893,7 @@ export function Navigation() {
                     href: "/affiliate",
                     label: "Affiliates",
                     Icon: Sparkles,
-                    color: "#E7FB10",
+                    color: "#D4FF1F",
                     isActive: location === "/affiliate" || location.startsWith("/affiliate/"),
                     testId: "link-mobile-panel-affiliates-grid",
                   },

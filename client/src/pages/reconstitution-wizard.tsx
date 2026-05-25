@@ -78,7 +78,7 @@ const STEP_TITLES = [
   { id: 1, title: "Peptide", icon: Search, color: "#a855f7" },
   { id: 2, title: "Vial & Water", icon: Droplet, color: "#21d8ff" },
   { id: 3, title: "Syringe & Dose", icon: Syringe, color: "#22c55e" },
-  { id: 4, title: "Result", icon: Sparkles, color: "#E7FB10" },
+  { id: 4, title: "Result", icon: Sparkles, color: "#D4FF1F" },
 ];
 
 export default function ReconstitutionWizard() {
@@ -229,7 +229,7 @@ export default function ReconstitutionWizard() {
 
       {/* Ambient background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/8 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4FF1F]/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#21d8ff]/8 rounded-full blur-[100px]" />
       </div>
 
@@ -253,10 +253,10 @@ export default function ReconstitutionWizard() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/20 mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4FF1F]/10 border border-[#D4FF1F]/20 mb-4"
           >
-            <Sparkles className="h-4 w-4 text-[#E7FB10]" />
-            <span className="text-sm text-[#E7FB10]">Guided Reconstitution Wizard</span>
+            <Sparkles className="h-4 w-4 text-[#D4FF1F]" />
+            <span className="text-sm text-[#D4FF1F]">Guided Reconstitution Wizard</span>
           </motion.div>
           <h1 className="font-display text-3xl md:text-5xl font-bold uppercase tracking-tighter mb-2" data-testid="heading-wizard">
             Reconstitute With Confidence
@@ -368,7 +368,7 @@ export default function ReconstitutionWizard() {
                   size="sm"
                   onClick={goNext}
                   disabled={!canAdvance}
-                  className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-display"
+                  className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-display"
                   data-testid="button-next"
                 >
                   Next: {STEP_TITLES[step].title}
@@ -432,11 +432,11 @@ export default function ReconstitutionWizard() {
       {/* Mobile bottom summary bar */}
       {step === 4 && result && (
         <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-4">
-          <Card className="border-[#E7FB10]/30 bg-background/95 backdrop-blur-md p-3 shadow-2xl">
+          <Card className="border-[#D4FF1F]/30 bg-background/95 backdrop-blur-md p-3 shadow-2xl">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Draw to</p>
-                <p className="font-display text-xl font-bold text-[#E7FB10]" data-testid="text-mobile-units">
+                <p className="font-display text-xl font-bold text-[#D4FF1F]" data-testid="text-mobile-units">
                   {result.unitsToDraw.toFixed(1)} units
                 </p>
               </div>
@@ -444,7 +444,7 @@ export default function ReconstitutionWizard() {
                 size="sm"
                 onClick={handleDownloadPDF}
                 disabled={isGeneratingPDF}
-                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
                 data-testid="button-mobile-download"
               >
                 <Download className="h-4 w-4 mr-1" />
@@ -496,7 +496,7 @@ function SummaryRows({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs uppercase tracking-wider">Draw</span>
-            <span className="font-display font-bold text-[#E7FB10] text-base">{result.unitsToDraw.toFixed(1)} u</span>
+            <span className="font-display font-bold text-[#D4FF1F] text-base">{result.unitsToDraw.toFixed(1)} u</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs uppercase tracking-wider">Doses / vial</span>
@@ -801,10 +801,10 @@ function Step3SyringeAndDose({
             />
             <Tabs value={state.doseUnit} onValueChange={(v) => update({ doseUnit: v as DoseUnit })}>
               <TabsList className="h-12">
-                <TabsTrigger value="mcg" className="px-4 data-[state=active]:bg-[#E7FB10]/20 data-[state=active]:text-[#E7FB10]" data-testid="tab-mcg">
+                <TabsTrigger value="mcg" className="px-4 data-[state=active]:bg-[#D4FF1F]/20 data-[state=active]:text-[#D4FF1F]" data-testid="tab-mcg">
                   mcg
                 </TabsTrigger>
-                <TabsTrigger value="mg" className="px-4 data-[state=active]:bg-[#E7FB10]/20 data-[state=active]:text-[#E7FB10]" data-testid="tab-mg">
+                <TabsTrigger value="mg" className="px-4 data-[state=active]:bg-[#D4FF1F]/20 data-[state=active]:text-[#D4FF1F]" data-testid="tab-mg">
                   mg
                 </TabsTrigger>
               </TabsList>
@@ -877,8 +877,8 @@ function Step4Result({
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-[#E7FB10]/10 flex items-center justify-center">
-          <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+        <div className="w-10 h-10 rounded-full bg-[#D4FF1F]/10 flex items-center justify-center">
+          <Sparkles className="h-5 w-5 text-[#D4FF1F]" />
         </div>
         <div>
           <h2 className="font-display text-2xl font-bold uppercase tracking-tight">Your draw</h2>
@@ -889,13 +889,13 @@ function Step4Result({
       </div>
 
       {/* Big draw callout */}
-      <div className="mt-4 p-6 rounded-xl bg-gradient-to-br from-[#E7FB10]/10 via-[#E7FB10]/5 to-transparent border-2 border-[#E7FB10]/30">
+      <div className="mt-4 p-6 rounded-xl bg-gradient-to-br from-[#D4FF1F]/10 via-[#D4FF1F]/5 to-transparent border-2 border-[#D4FF1F]/30">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Draw to</p>
         <div className="flex items-baseline gap-3 mt-1 flex-wrap">
-          <p className="font-display text-5xl md:text-7xl font-black text-[#E7FB10] leading-none" data-testid="text-units-to-draw">
+          <p className="font-display text-5xl md:text-7xl font-black text-[#D4FF1F] leading-none" data-testid="text-units-to-draw">
             {result.unitsToDraw.toFixed(1)}
           </p>
-          <p className="font-display text-2xl text-[#E7FB10]/80">units</p>
+          <p className="font-display text-2xl text-[#D4FF1F]/80">units</p>
           <p className="text-sm text-muted-foreground ml-2">
             ({result.volumeToDrawMl.toFixed(3)} mL)
           </p>
@@ -967,7 +967,7 @@ function Step4Result({
           size="lg"
           onClick={onDownload}
           disabled={isGeneratingPDF}
-          className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-display gap-2 shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+          className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-display gap-2 shadow-[0_0_20px_rgba(231,251,16,0.3)]"
           data-testid="button-download-pdf"
         >
           <Download className="h-5 w-5" />
@@ -1001,7 +1001,7 @@ function Step4Result({
         <Button
           variant="ghost"
           size="sm"
-          className="mt-1 w-full gap-2 text-[#E7FB10]/80 hover:text-[#E7FB10]"
+          className="mt-1 w-full gap-2 text-[#D4FF1F]/80 hover:text-[#D4FF1F]"
           data-testid="link-galaxy-from-wizard"
         >
           <Sparkles className="h-3.5 w-3.5" />

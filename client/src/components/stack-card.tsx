@@ -5,7 +5,7 @@ import type { TriggeredOverlap } from "@/lib/pathway-overlaps";
 import { getSystemIcon, getSystemColor, getSystemName } from "@/data/body-systems";
 
 function synergyRingColor(score: number): string {
-  if (score >= 88) return "#E7FB10";
+  if (score >= 88) return "#D4FF1F";
   if (score >= 75) return "#21d8ff";
   if (score >= 60) return "#a855f7";
   return "#6b7280";

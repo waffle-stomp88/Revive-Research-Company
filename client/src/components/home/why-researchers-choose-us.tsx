@@ -16,7 +16,7 @@ const reasons = [
     icon: FlaskConical,
     title: "Rigorous Testing Standards",
     description: "Every batch undergoes HPLC purity analysis and mass spectrometry confirmation.",
-    color: "#E7FB10",
+    color: "#D4FF1F",
   },
   {
     icon: Shield,
@@ -171,7 +171,7 @@ export function WhyResearchersChooseUs() {
           </motion.div>
           
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#9d4edd]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#21d8ff] via-[#D4FF1F] to-[#9d4edd]">
               Why Researchers Choose Us
             </span>
           </h2>

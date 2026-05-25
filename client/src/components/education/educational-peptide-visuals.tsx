@@ -149,14 +149,14 @@ function KisspeptinAxisAnimation({ isInView }: { isInView: boolean }) {
           />
         ))}
         
-        <motion.text x="45" y="100" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+        <motion.text x="45" y="100" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 1 }}
         >
           Leptin
         </motion.text>
-        <motion.text x="45" y="112" textAnchor="middle" fill="#E7FB10" fontSize="7"
+        <motion.text x="45" y="112" textAnchor="middle" fill="#D4FF1F" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 1 }}
@@ -165,7 +165,7 @@ function KisspeptinAxisAnimation({ isInView }: { isInView: boolean }) {
         </motion.text>
         <motion.path
           d="M 75 105 L 110 100"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="1.5"
           strokeDasharray="4,2"
           fill="none"
@@ -251,7 +251,7 @@ export function KisspeptinVisual() {
         <div className="mt-6 grid md:grid-cols-3 gap-4">
           {[
             { title: 'Puberty Initiation', desc: 'Essential for triggering puberty onset via GnRH activation', color: '#ec4899', icon: Sparkles },
-            { title: 'Metabolic Integration', desc: 'Links energy status (leptin) to reproductive function', color: '#E7FB10', icon: Activity },
+            { title: 'Metabolic Integration', desc: 'Links energy status (leptin) to reproductive function', color: '#D4FF1F', icon: Activity },
             { title: 'Feedback Hub', desc: 'Integrates sex steroid feedback to modulate GnRH release', color: '#22c55e', icon: TrendingUp },
           ].map((item, idx) => {
             const Icon = item.icon;
@@ -530,7 +530,7 @@ function ImmuneModulationAnimation({ isInView }: { isInView: boolean }) {
 
   const cells = [
     { name: 'T-Cell', color: '#21d8ff', x: 80, y: 90 },
-    { name: 'Dendritic Cell', color: '#E7FB10', x: 160, y: 140 },
+    { name: 'Dendritic Cell', color: '#D4FF1F', x: 160, y: 140 },
     { name: 'NK Cell', color: '#22c55e', x: 240, y: 90 },
   ];
 
@@ -677,7 +677,7 @@ export function ThymosinAlpha1Visual() {
         <div className="mt-6 grid md:grid-cols-3 gap-4">
           {[
             { title: 'T-Cell Maturation', desc: 'Promotes differentiation of T-cell precursors to mature T-cells', color: '#21d8ff' },
-            { title: 'Dendritic Cell Activation', desc: 'Activates DCs via TLR9 for enhanced antigen presentation', color: '#E7FB10' },
+            { title: 'Dendritic Cell Activation', desc: 'Activates DCs via TLR9 for enhanced antigen presentation', color: '#D4FF1F' },
             { title: 'NK Cell Enhancement', desc: 'Increases natural killer cell cytotoxicity against targets', color: '#22c55e' },
           ].map((item, idx) => (
             <motion.div
@@ -767,20 +767,20 @@ function SleepWaveAnimation({ isInView }: { isInView: boolean }) {
           height="40"
           rx="6"
           fill="rgba(231, 251, 16, 0.2)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.5 }}
           style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
         />
-        <motion.text x="260" y="75" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold"
+        <motion.text x="260" y="75" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           DSIP
         </motion.text>
-        <motion.text x="260" y="87" textAnchor="middle" fill="#E7FB10" fontSize="7"
+        <motion.text x="260" y="87" textAnchor="middle" fill="#D4FF1F" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -839,7 +839,7 @@ export function DSIPVisual() {
         <div className="mt-4 grid md:grid-cols-2 gap-4">
           {[
             { title: 'Sleep Regulation', desc: 'Promotes slow-wave sleep and modulates sleep architecture', color: '#9d4edd', icon: Moon },
-            { title: 'Stress Adaptation', desc: 'Normalizes HPA axis and reduces stress-induced cortisol', color: '#E7FB10', icon: Activity },
+            { title: 'Stress Adaptation', desc: 'Normalizes HPA axis and reduces stress-induced cortisol', color: '#D4FF1F', icon: Activity },
           ].map((item, idx) => {
             const Icon = item.icon;
             return (
@@ -958,20 +958,20 @@ function SelankNeuropeptideAnimation({ isInView }: { isInView: boolean }) {
           rx="50"
           ry="35"
           fill="rgba(231, 251, 16, 0.15)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.4 }}
           style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.4))' }}
         />
-        <motion.text x="240" y="105" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+        <motion.text x="240" y="105" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           Serotonin
         </motion.text>
-        <motion.text x="240" y="118" textAnchor="middle" fill="#E7FB10" fontSize="7"
+        <motion.text x="240" y="118" textAnchor="middle" fill="#D4FF1F" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -1126,19 +1126,19 @@ function LipolysisAnimation({ isInView }: { isInView: boolean }) {
           rx="55"
           ry="50"
           fill="rgba(231, 251, 16, 0.15)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           style={{ filter: 'drop-shadow(0 0 12px rgba(231, 251, 16, 0.4))' }}
         />
-        <motion.text x="80" y="95" textAnchor="middle" fill="#E7FB10" fontSize="9" fontWeight="bold"
+        <motion.text x="80" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           Adipocyte
         </motion.text>
-        <motion.text x="80" y="108" textAnchor="middle" fill="#E7FB10" fontSize="7"
+        <motion.text x="80" y="108" textAnchor="middle" fill="#D4FF1F" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -1279,7 +1279,7 @@ export function AOD9604Visual() {
           }}
         >
           <Droplets className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F] bg-clip-text text-transparent">
             Selective Lipolytic Action
           </span>
         </div>
@@ -1378,7 +1378,7 @@ function ZincBindingAnimation({ isInView }: { isInView: boolean }) {
           cy={zincBound ? 100 : 50}
           r="18"
           fill={zincBound ? "rgba(231, 251, 16, 0.3)" : "rgba(231, 251, 16, 0.15)"}
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           animate={{ 
             cx: zincBound ? 160 : 270,
@@ -1387,7 +1387,7 @@ function ZincBindingAnimation({ isInView }: { isInView: boolean }) {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.5))' }}
         />
-        <motion.text x={zincBound ? 160 : 270} y={zincBound ? 105 : 55} textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="bold"
+        <motion.text x={zincBound ? 160 : 270} y={zincBound ? 105 : 55} textAnchor="middle" fill="#D4FF1F" fontSize="10" fontWeight="bold"
           animate={{ 
             x: zincBound ? 160 : 270,
             y: zincBound ? 135 : 55 
@@ -1397,7 +1397,7 @@ function ZincBindingAnimation({ isInView }: { isInView: boolean }) {
         </motion.text>
         
         {!zincBound && (
-          <motion.text x="270" y="75" textAnchor="middle" fill="#E7FB10" fontSize="7"
+          <motion.text x="270" y="75" textAnchor="middle" fill="#D4FF1F" fontSize="7"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -1501,12 +1501,12 @@ export function ThymulinVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <Zap className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <Zap className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Zinc-Dependent Activation
           </span>
         </div>
@@ -1528,10 +1528,10 @@ export function ThymulinVisual() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 1.2 }}
-          className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/20"
+          className="mt-4 p-3 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/20"
         >
           <div className="flex items-start gap-2">
-            <TrendingUp className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+            <TrendingUp className="h-4 w-4 text-[#D4FF1F] mt-0.5 flex-shrink-0" />
             <p className="text-xs text-muted-foreground">
               <strong className="text-foreground">Aging connection:</strong> Thymulin levels decline with age, 
               mirroring thymic involution. This decline correlates with zinc status, making thymulin activity 

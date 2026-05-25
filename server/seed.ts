@@ -1875,7 +1875,7 @@ async function seedResearchStacks() {
       iconName: "Heart",
       color: "#22c55e",
       badge: "Most Popular",
-      badgeColor: "#E7FB10",
+      badgeColor: "#D4FF1F",
       category: "Recovery",
       synergyBonus: 95,
       showOnPage: true,

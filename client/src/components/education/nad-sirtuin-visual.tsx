@@ -24,7 +24,7 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
           </filter>
           <linearGradient id="mitoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#D4FF1F" stopOpacity="0.3" />
           </linearGradient>
         </defs>
         
@@ -67,7 +67,7 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
           <motion.circle
             key={`atp-${i}`}
             r="4"
-            fill="#E7FB10"
+            fill="#D4FF1F"
             initial={{ opacity: 0 }}
             animate={isInView ? {
               cx: [100 + i * 15, 120 + i * 15, 140 + i * 15],
@@ -92,14 +92,14 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
           height="30"
           rx="8"
           fill="rgba(231, 251, 16, 0.2)"
-          stroke="#E7FB10"
+          stroke="#D4FF1F"
           strokeWidth="2"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
           transition={{ delay: 0.8, type: "spring" }}
           style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.5))' }}
         />
-        <motion.text x="160" y="103" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="bold">
+        <motion.text x="160" y="103" textAnchor="middle" fill="#D4FF1F" fontSize="10" fontWeight="bold">
           NAD+
         </motion.text>
         
@@ -275,7 +275,7 @@ export function NADSirtuinVisual() {
           }}
         >
           <Battery className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F] bg-clip-text text-transparent">
             NAD+ & Sirtuin Activation Pathways
           </span>
         </div>

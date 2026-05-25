@@ -158,9 +158,9 @@ export default function Shipping() {
                   </p>
                 </div>
 
-                <div className="bg-[#E7FB10]/5 border border-[#E7FB10]/20 rounded-lg p-5">
+                <div className="bg-[#D4FF1F]/5 border border-[#D4FF1F]/20 rounded-lg p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <Clock className="h-5 w-5 text-[#E7FB10]" />
+                    <Clock className="h-5 w-5 text-[#D4FF1F]" />
                     <span className="font-semibold">Express — UPS 2-Day Air</span>
                   </div>
                   <p className="text-muted-foreground text-sm">

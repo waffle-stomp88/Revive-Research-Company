@@ -39,7 +39,7 @@ const coaSections: COASection[] = [
     title: "Batch/Lot Number",
     description: "Unique identifier for traceability",
     icon: Hash,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     details: [
       "Must match your vial label",
       "Links to production records",
@@ -128,12 +128,12 @@ function PeptideVial() {
           <stop offset="100%" stopColor="#1a1a20" />
         </linearGradient>
         <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.5" />
+          <stop offset="0%" stopColor="#D4FF1F" stopOpacity="0.5" />
           <stop offset="50%" stopColor="#d4e50e" stopOpacity="0.7" />
           <stop offset="100%" stopColor="#c4d40d" stopOpacity="0.8" />
         </linearGradient>
         <linearGradient id="capGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#E7FB10" />
+          <stop offset="0%" stopColor="#D4FF1F" />
           <stop offset="50%" stopColor="#d4e50e" />
           <stop offset="100%" stopColor="#a8b80a" />
         </linearGradient>
@@ -213,7 +213,7 @@ function PeptideVial() {
         cy="58"
         rx="16"
         ry="3"
-        fill="#E7FB10"
+        fill="#D4FF1F"
         opacity="0.4"
         animate={{ 
           ry: [3, 4, 3],

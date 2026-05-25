@@ -181,7 +181,7 @@ const trustMetrics = [
     icon: FlaskConical, 
     value: 98.5, 
     label: "Average Purity", 
-    color: "#E7FB10",
+    color: "#D4FF1F",
     description: "Verified via HPLC testing"
   },
   { 
@@ -208,7 +208,7 @@ const trustMetrics = [
 ];
 
 const qualityMetrics = [
-  { label: "Peptide Purity", value: 98.5, color: "#E7FB10" },
+  { label: "Peptide Purity", value: 98.5, color: "#D4FF1F" },
   { label: "Identity Confirmation", value: 99.2, color: "#21d8ff" },
   { label: "Sterility Testing", value: 99.8, color: "#9d4edd" },
   { label: "Endotoxin Levels", value: 98.9, color: "#22c55e" },
@@ -221,9 +221,9 @@ export function AnimatedTrustMeters() {
   return (
     <section ref={containerRef} className="relative py-16 md:py-24 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-[#E7FB10]/5 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[#D4FF1F]/5 to-background" />
         <motion.div 
-          className="absolute top-1/3 right-1/4 w-80 h-80 bg-[#E7FB10]/10 rounded-full blur-[120px]"
+          className="absolute top-1/3 right-1/4 w-80 h-80 bg-[#D4FF1F]/10 rounded-full blur-[120px]"
           animate={{ 
             opacity: [0.15, 0.3, 0.15],
             scale: [1, 1.1, 1]
@@ -258,14 +258,14 @@ export function AnimatedTrustMeters() {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
           >
-            <TrendingUp className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-            <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#22c55e] bg-clip-text text-transparent">
+            <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
               Trust Metrics
             </span>
           </motion.div>
           
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#22c55e]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#22c55e]">
               Quality You Can Verify
             </span>
           </h2>
@@ -300,8 +300,8 @@ export function AnimatedTrustMeters() {
           transition={{ delay: 1, duration: 0.6 }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <Beaker className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-            <h3 className="font-display text-lg font-bold text-[#E7FB10]">
+            <Beaker className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <h3 className="font-display text-lg font-bold text-[#D4FF1F]">
               Lab Testing Standards
             </h3>
           </div>
@@ -326,7 +326,7 @@ export function AnimatedTrustMeters() {
           transition={{ delay: 2 }}
         >
           {[
-            { text: "HPLC Analysis", color: "#E7FB10" },
+            { text: "HPLC Analysis", color: "#D4FF1F" },
             { text: "Mass Spectrometry", color: "#21d8ff" },
             { text: "Amino Acid Sequencing", color: "#9d4edd" },
             { text: "Endotoxin Testing", color: "#22c55e" },

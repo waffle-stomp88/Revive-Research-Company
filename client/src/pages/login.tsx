@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import logoPath from "@assets/Revive_PNG_1766012118069.png";
 
 const TRUST_POINTS = [
-  { icon: FlaskConical, color: "#E7FB10", title: "Research tools built into the platform.", subtitle: "Synergy scoring, pharmacokinetics charts, and a reconstitution wizard — tools for your research, not just your order." },
+  { icon: FlaskConical, color: "#D4FF1F", title: "Research tools built into the platform.", subtitle: "Synergy scoring, pharmacokinetics charts, and a reconstitution wizard — tools for your research, not just your order." },
   { icon: Shield, color: "#21d8ff", title: "Transparency you can verify.", subtitle: "Batch archive, COA library, and ethical pricing — published openly, not hidden behind a claim." },
   { icon: HeartHandshake, color: "#a855f7", title: "More than a vendor. A research partner.", subtitle: "Compound profiles, guided education, and stack analysis — the relationship doesn't end when the box ships." },
 ];
@@ -21,7 +21,7 @@ const TRUST_BADGES = [
   { icon: BellOff, label: "No Spam" },
 ];
 
-const AVATAR_COLORS = ["#E7FB10", "#21d8ff", "#a855f7", "#ec4899", "#22c55e"];
+const AVATAR_COLORS = ["#D4FF1F", "#21d8ff", "#a855f7", "#ec4899", "#22c55e"];
 
 function PKChartVisual() {
   return (
@@ -31,8 +31,8 @@ function PKChartVisual() {
       className="absolute inset-0 p-5 flex flex-col"
     >
       <div className="flex items-center gap-2.5 mb-3">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#E7FB1015", border: "1px solid #E7FB1030" }}>
-          <FlaskConical className="w-4 h-4" style={{ color: "#E7FB10" }} />
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#D4FF1F15", border: "1px solid #D4FF1F30" }}>
+          <FlaskConical className="w-4 h-4" style={{ color: "#D4FF1F" }} />
         </div>
         <span className="text-sm font-semibold text-white/80 tracking-wide">Pharmacokinetics</span>
         <span className="ml-auto text-[10px] font-mono text-gray-500">BPC-157</span>
@@ -44,18 +44,18 @@ function PKChartVisual() {
           <line x1="0" y1="10" x2="220" y2="10" stroke="#ffffff06" strokeWidth="1"/>
           <motion.path
             d="M 0 75 C 8 75 12 8 28 6 C 40 4 52 22 75 40 C 105 60 145 70 220 74"
-            fill="none" stroke="#E7FB10" strokeWidth="2.5" strokeLinecap="round"
+            fill="none" stroke="#D4FF1F" strokeWidth="2.5" strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 1.3, ease: "easeInOut" }}
           />
           <motion.path
             d="M 0 75 C 8 75 12 8 28 6 C 40 4 52 22 75 40 C 105 60 145 70 220 74 L 220 75 Z"
-            fill="#E7FB10" fillOpacity="0.08"
+            fill="#D4FF1F" fillOpacity="0.08"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.5 }}
           />
-          <motion.circle cx="28" cy="6" r="4" fill="#E7FB10"
+          <motion.circle cx="28" cy="6" r="4" fill="#D4FF1F"
             initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 400 }}
           />
@@ -63,9 +63,9 @@ function PKChartVisual() {
       </div>
       <div className="flex gap-2 mt-3">
         {[["T½", "4.2h"], ["Tmax", "1.8h"], ["Bio", "85%"]].map(([label, val]) => (
-          <div key={label} className="flex-1 rounded-xl px-3 py-2.5 text-center" style={{ background: "#E7FB1010", border: "1px solid #E7FB1020" }}>
+          <div key={label} className="flex-1 rounded-xl px-3 py-2.5 text-center" style={{ background: "#D4FF1F10", border: "1px solid #D4FF1F20" }}>
             <p className="text-[9px] text-gray-500 uppercase tracking-wider mb-0.5">{label}</p>
-            <p className="text-sm font-bold" style={{ color: "#E7FB10" }}>{val}</p>
+            <p className="text-sm font-bold" style={{ color: "#D4FF1F" }}>{val}</p>
           </div>
         ))}
       </div>
@@ -96,7 +96,7 @@ function COAVisual() {
         </motion.div>
       </div>
       <div className="space-y-3.5">
-        {[["Purity", 99.2, "#21d8ff"], ["Identity", 100, "#E7FB10"], ["Endotoxin", 97, "#a855f7"]].map(([label, val, color]) => (
+        {[["Purity", 99.2, "#21d8ff"], ["Identity", 100, "#D4FF1F"], ["Endotoxin", 97, "#a855f7"]].map(([label, val, color]) => (
           <div key={String(label)}>
             <div className="flex justify-between mb-1.5">
               <span className="text-sm text-gray-300">{String(label)}</span>
@@ -347,7 +347,7 @@ export default function LoginPage() {
               <br />
               <span
                 style={{
-                  background: "linear-gradient(90deg, #E7FB10, #21d8ff)",
+                  background: "linear-gradient(90deg, #D4FF1F, #21d8ff)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -430,7 +430,7 @@ export default function LoginPage() {
                 <p className="text-xs font-semibold text-white">Trusted by 1,000+ Researchers</p>
                 <div className="flex gap-0.5 mt-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="w-2.5 h-2.5 text-[#E7FB10]">
+                    <div key={i} className="w-2.5 h-2.5 text-[#D4FF1F]">
                       <svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 0l1.5 4.5H12L8.25 7.5 9.75 12 6 9l-3.75 3 1.5-4.5L0 4.5h4.5z" /></svg>
                     </div>
                   ))}
@@ -546,7 +546,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11 bg-white/5 border-white/15 text-white placeholder:text-zinc-600 focus:border-[#E7FB10]/50 focus:ring-[#E7FB10]/20"
+                    className="h-11 bg-white/5 border-white/15 text-white placeholder:text-zinc-600 focus:border-[#D4FF1F]/50 focus:ring-[#D4FF1F]/20"
                     data-testid="input-email"
                   />
                 </div>
@@ -564,7 +564,7 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                         minLength={8}
-                        className="h-11 bg-white/5 border-white/15 text-white placeholder:text-zinc-600 pr-10 focus:border-[#E7FB10]/50 focus:ring-[#E7FB10]/20"
+                        className="h-11 bg-white/5 border-white/15 text-white placeholder:text-zinc-600 pr-10 focus:border-[#D4FF1F]/50 focus:ring-[#D4FF1F]/20"
                         data-testid="input-password"
                       />
                       <button
@@ -607,7 +607,7 @@ export default function LoginPage() {
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
                           attestationChecked
-                            ? "bg-[#E7FB10] border-[#E7FB10]"
+                            ? "bg-[#D4FF1F] border-[#D4FF1F]"
                             : "border-zinc-600 bg-transparent group-hover:border-zinc-400"
                         }`}
                       >
@@ -623,7 +623,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={loading || googleLoading || (mode === "signup" && !attestationChecked)}
-                  className="w-full h-11 bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black font-semibold gap-2 mt-2"
+                  className="w-full h-11 bg-[#D4FF1F] hover:bg-[#D4FF1F]/90 text-black font-semibold gap-2 mt-2"
                   data-testid="button-submit-auth"
                 >
                   {loading ? (

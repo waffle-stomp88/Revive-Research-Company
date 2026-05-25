@@ -16,7 +16,7 @@ interface TissuePathwayVisualProps {
 const peptideData = {
   'bpc-157': {
     name: 'BPC-157',
-    color: '#E7FB10',
+    color: '#D4FF1F',
     fullName: 'Body Protection Compound',
     mechanism: 'Gastric Peptide',
     pathways: [

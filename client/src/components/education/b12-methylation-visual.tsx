@@ -13,7 +13,7 @@ interface B12Phase {
 
 const b12Phases: B12Phase[] = [
   { id: 0, label: "Absorption", icon: Droplets, color: "#ef4444", description: "B12 binds intrinsic factor in stomach for ileal absorption" },
-  { id: 1, label: "Methylation", icon: Dna, color: "#E7FB10", description: "Methylcobalamin transfers methyl groups for DNA synthesis" },
+  { id: 1, label: "Methylation", icon: Dna, color: "#D4FF1F", description: "Methylcobalamin transfers methyl groups for DNA synthesis" },
   { id: 2, label: "Homocysteine", icon: Heart, color: "#21d8ff", description: "Converts homocysteine to methionine, reducing CVD risk" },
   { id: 3, label: "Nerve Function", icon: Brain, color: "#ec4899", description: "Supports myelin synthesis and nerve signal transmission" },
 ];
@@ -39,7 +39,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
           </filter>
           <linearGradient id="b12Gradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ef4444" />
-            <stop offset="50%" stopColor="#E7FB10" />
+            <stop offset="50%" stopColor="#D4FF1F" />
             <stop offset="100%" stopColor="#ec4899" />
           </linearGradient>
         </defs>
@@ -104,7 +104,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
           <motion.circle
             cx="160" cy="100" r="28"
             fill={activePhase >= 1 ? "rgba(231, 251, 16, 0.2)" : "hsl(var(--foreground) / 0.05)"}
-            stroke={activePhase >= 1 ? "#E7FB10" : "hsl(var(--foreground) / 0.2)"}
+            stroke={activePhase >= 1 ? "#D4FF1F" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth={activePhase >= 1 ? 3 : 2}
             initial={{ scale: 0 }}
             animate={isInView ? { 
@@ -113,13 +113,13 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
             transition={{ duration: 1.5, repeat: activePhase === 1 ? Infinity : 0 }}
             filter={activePhase >= 1 ? "url(#b12Glow)" : undefined}
           />
-          <motion.text x="160" y="95" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+          <motion.text x="160" y="95" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
             initial={{ opacity: 0 }}
             animate={isInView && activePhase >= 1 ? { opacity: 1 } : {}}
           >
             METHYL
           </motion.text>
-          <motion.text x="160" y="107" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="bold"
+          <motion.text x="160" y="107" textAnchor="middle" fill="#D4FF1F" fontSize="8" fontWeight="bold"
             initial={{ opacity: 0 }}
             animate={isInView && activePhase >= 1 ? { opacity: 1 } : {}}
           >
@@ -130,7 +130,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         {activePhase >= 1 && (
           <motion.path
             d="M 95 100 L 128 100"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="2"
             fill="none"
             initial={{ pathLength: 0 }}
@@ -260,7 +260,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
           <motion.circle
             key={`methyl-${i}`}
             r="4"
-            fill="#E7FB10"
+            fill="#D4FF1F"
             initial={{ opacity: 0 }}
             animate={{
               cx: [188, 210, 235],

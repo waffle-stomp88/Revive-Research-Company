@@ -261,7 +261,7 @@ export function COASimplified() {
           transition={{ delay: 0.8 }}
           className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
         >
-          <Shield className="h-4 w-4 text-[#E7FB10]" />
+          <Shield className="h-4 w-4 text-[#D4FF1F]" />
           <span>We provide COAs for every batch</span>
         </motion.div>
       </div>

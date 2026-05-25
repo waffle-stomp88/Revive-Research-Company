@@ -51,7 +51,7 @@ export function generateCyclePDF(data: CycleReportData): Blob {
   doc.setTextColor("#71717a");
   doc.text("Research-use only · Personal logbook export", margin, y + 16);
 
-  doc.setDrawColor("#E7FB10");
+  doc.setDrawColor("#D4FF1F");
   doc.setLineWidth(2);
   doc.line(margin, y + 28, pageW - margin, y + 28);
 

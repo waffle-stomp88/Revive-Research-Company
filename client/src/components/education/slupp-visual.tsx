@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { Zap, Activity, Battery, Flame, Heart, TrendingUp, Dumbbell } from "lucide-react";
 
 const phases = [
-  { id: 0, label: "Compound", icon: Zap, color: "#E7FB10", description: "SLU-PP-332 binds to ERR receptors" },
+  { id: 0, label: "Compound", icon: Zap, color: "#D4FF1F", description: "SLU-PP-332 binds to ERR receptors" },
   { id: 1, label: "ERR Activation", icon: Activity, color: "#22c55e", description: "Pan-agonist activates ERR-α, β, and γ" },
   { id: 2, label: "Gene Expression", icon: Battery, color: "#21d8ff", description: "Upregulates mitochondrial & metabolic genes" },
   { id: 3, label: "Exercise Effects", icon: TrendingUp, color: "#f97316", description: "Mimics endurance training adaptations" },
@@ -26,7 +26,7 @@ export function SLUPP332Visual() {
   }, [isPlaying, isInView]);
 
   const researchFindings = [
-    { stat: "+70%", label: "Endurance", desc: "Treadmill running time in mice", color: "#E7FB10" },
+    { stat: "+70%", label: "Endurance", desc: "Treadmill running time in mice", color: "#D4FF1F" },
     { stat: "+45%", label: "Distance", desc: "Running distance improvement", color: "#22c55e" },
     { stat: "↓ Fat", label: "Body Composition", desc: "Decreased fat mass accumulation", color: "#f97316" },
     { stat: "↑ Type I", label: "Muscle Fibers", desc: "Slow-twitch oxidative conversion", color: "#21d8ff" },
@@ -51,12 +51,12 @@ export function SLUPP332Visual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <Dumbbell className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#22c55e] bg-clip-text text-transparent">
+          <Dumbbell className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
             Exercise in a Pill
           </span>
         </div>
@@ -77,14 +77,14 @@ export function SLUPP332Visual() {
           {/* Left: Mechanism Pathway */}
           <div className="p-6 border-r border-border/5">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-bold text-[#E7FB10]">Mechanism of Action</h4>
+              <h4 className="text-sm font-bold text-[#D4FF1F]">Mechanism of Action</h4>
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="text-[10px] px-2 py-1 rounded-full transition-all"
                 style={{
                   backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
-                  color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.6)',
-                  border: `1px solid ${isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.2)'}`
+                  color: isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.6)',
+                  border: `1px solid ${isPlaying ? '#D4FF1F' : 'hsl(var(--foreground) / 0.2)'}`
                 }}
               >
                 {isPlaying ? 'Pause' : 'Play'}
@@ -185,13 +185,13 @@ export function SLUPP332Visual() {
             
             {/* Key Insight */}
             <motion.div
-              className="mt-4 p-3 rounded-lg bg-[#E7FB10]/5 border border-[#E7FB10]/20"
+              className="mt-4 p-3 rounded-lg bg-[#D4FF1F]/5 border border-[#D4FF1F]/20"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 1 }}
             >
               <p className="text-[10px] text-muted-foreground leading-relaxed">
-                <span className="text-[#E7FB10] font-medium">Key finding:</span> Mice treated with SLU-PP-332 showed metabolic improvements 
+                <span className="text-[#D4FF1F] font-medium">Key finding:</span> Mice treated with SLU-PP-332 showed metabolic improvements 
                 <span className="text-[#22c55e]"> without any change in food intake</span>—pure metabolic enhancement.
               </p>
             </motion.div>
@@ -218,14 +218,14 @@ export function SLUPP332ComparisonTable() {
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
 
   const pathways = [
-    { label: "Mitochondrial Function", icon: Battery, color: "#E7FB10", percent: 85 },
+    { label: "Mitochondrial Function", icon: Battery, color: "#D4FF1F", percent: 85 },
     { label: "Fat Oxidation", icon: Flame, color: "#f97316", percent: 92 },
     { label: "Glucose Homeostasis", icon: Heart, color: "#21d8ff", percent: 78 },
     { label: "Exercise Capacity", icon: Activity, color: "#22c55e", percent: 88 },
   ];
 
   return (
-    <div ref={containerRef} className="relative p-6 rounded-xl border border-[#E7FB10]/20 bg-black/40 overflow-hidden">
+    <div ref={containerRef} className="relative p-6 rounded-xl border border-[#D4FF1F]/20 bg-black/40 overflow-hidden">
       <div 
         className="absolute inset-0 blur-3xl -z-10"
         style={{
@@ -234,8 +234,8 @@ export function SLUPP332ComparisonTable() {
       />
       
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30 shadow-[0_0_15px_rgba(231,251,16,0.2)]">
-          <Zap className="h-5 w-5 text-[#E7FB10]" />
+        <div className="p-2 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 shadow-[0_0_15px_rgba(231,251,16,0.2)]">
+          <Zap className="h-5 w-5 text-[#D4FF1F]" />
         </div>
         <div>
           <h4 className="text-sm font-bold text-foreground">ERR Activation Profile</h4>

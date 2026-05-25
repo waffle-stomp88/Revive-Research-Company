@@ -36,14 +36,14 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
         className="relative rounded-xl overflow-hidden"
         style={{
           background: "linear-gradient(145deg, #1c1c24, #141419)",
-          border: "1px solid #E7FB10",
-          boxShadow: "0 0 20px #E7FB1028, 0 0 60px #E7FB1010, inset 0 1px 0 #E7FB1030",
+          border: "1px solid #D4FF1F",
+          boxShadow: "0 0 20px #D4FF1F28, 0 0 60px #D4FF1F10, inset 0 1px 0 #D4FF1F30",
         }}
         data-testid="auth-gate-inline"
       >
         {/* Top glow line */}
         <div className="absolute top-0 inset-x-0 h-px" style={{
-          background: "linear-gradient(90deg, transparent 5%, #E7FB10cc 40%, #E7FB10 60%, transparent 95%)",
+          background: "linear-gradient(90deg, transparent 5%, #D4FF1Fcc 40%, #D4FF1F 60%, transparent 95%)",
         }} />
 
         <div className="relative px-4 py-4">
@@ -52,12 +52,12 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{
-                background: "#E7FB1015",
-                border: "1px solid #E7FB1045",
-                boxShadow: "0 0 10px #E7FB1020",
+                background: "#D4FF1F15",
+                border: "1px solid #D4FF1F45",
+                boxShadow: "0 0 10px #D4FF1F20",
               }}
             >
-              <Lock className="w-4 h-4" style={{ color: "#E7FB10" }} />
+              <Lock className="w-4 h-4" style={{ color: "#D4FF1F" }} />
             </div>
             <div className="flex-1 min-w-0">
               <p
@@ -78,7 +78,7 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
           <button
             onClick={handleCreateAccount}
             className="w-full h-10 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 transition-opacity hover:opacity-90 mb-2.5"
-            style={{ background: "#E7FB10" }}
+            style={{ background: "#D4FF1F" }}
             data-testid="button-inline-gate-create"
           >
             Create Free Account
@@ -92,7 +92,7 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
             data-testid="button-inline-gate-signin"
           >
             Already a researcher?{" "}
-            <span style={{ color: "#E7FB10" }} className="font-semibold">Sign in</span>
+            <span style={{ color: "#D4FF1F" }} className="font-semibold">Sign in</span>
           </button>
         </div>
       </motion.div>
@@ -107,15 +107,15 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="relative w-full max-w-md"
       >
-        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/40 via-[#21d8ff]/20 to-[#E7FB10]/10 blur-sm" />
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#E7FB10]/20 via-transparent to-[#21d8ff]/20" />
+        <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#D4FF1F]/40 via-[#21d8ff]/20 to-[#D4FF1F]/10 blur-sm" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#D4FF1F]/20 via-transparent to-[#21d8ff]/20" />
 
         <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-8 overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E7FB10]/50 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4FF1F]/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#21d8ff]/30 to-transparent" />
 
           <motion.div
-            className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#E7FB10]/5 blur-3xl"
+            className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#D4FF1F]/5 blur-3xl"
             animate={{ opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 4, repeat: Infinity }}
           />
@@ -126,9 +126,9 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E7FB10]/20 to-[#E7FB10]/5 border border-[#E7FB10]/30 flex items-center justify-center"
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4FF1F]/20 to-[#D4FF1F]/5 border border-[#D4FF1F]/30 flex items-center justify-center"
               >
-                <Lock className="w-5 h-5 text-[#E7FB10]" />
+                <Lock className="w-5 h-5 text-[#D4FF1F]" />
               </motion.div>
               <div>
                 <h2
@@ -166,7 +166,7 @@ export function AuthGate({ title, description, inline, inlineTitle, inlineDescri
             >
               <Button
                 onClick={handleCreateAccount}
-                className="w-full h-12 text-base font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
+                className="w-full h-12 text-base font-semibold bg-[#D4FF1F] hover:bg-[#D4FF1F]/90 text-black rounded-xl group"
                 data-testid="button-auth-gate-login"
               >
                 <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />

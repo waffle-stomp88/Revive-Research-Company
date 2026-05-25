@@ -178,9 +178,9 @@ export function GalaxyHoverHUD({
               fontFamily: "monospace",
               fontSize: "9px",
               lineHeight: 1.7,
-              color: "#E7FB10",
+              color: "#D4FF1F",
               background: "rgba(0,0,0,0.5)",
-              border: "0.5px solid #E7FB10",
+              border: "0.5px solid #D4FF1F",
               padding: "7px 10px",
               borderRadius: "2px",
               letterSpacing: "0.05em",
@@ -189,7 +189,7 @@ export function GalaxyHoverHUD({
             }}
             data-testid="galaxy-hud-telemetry"
           >
-            <div style={{ color: "#E7FB10", fontWeight: 700 }}>▸ TARGETING</div>
+            <div style={{ color: "#D4FF1F", fontWeight: 700 }}>▸ TARGETING</div>
             <div style={{ color: "rgba(255,255,255,0.55)", marginTop: 2 }}>
               {hoveredNode.name.length > 16 ? hoveredNode.name.slice(0, 14) + "…" : hoveredNode.name}
             </div>

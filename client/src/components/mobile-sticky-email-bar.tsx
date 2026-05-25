@@ -203,7 +203,7 @@ export function MobileStickyEmailBar() {
             </span>
             {/* No onClick here — parent div handles expand to avoid double-fire */}
             <span
-              className="text-xs font-bold text-[#E7FB10] whitespace-nowrap shrink-0"
+              className="text-xs font-bold text-[#D4FF1F] whitespace-nowrap shrink-0"
               data-testid="button-sticky-join"
             >
               Join &rarr;
@@ -246,7 +246,7 @@ export function MobileStickyEmailBar() {
               <button
                 type="submit"
                 disabled={isLoading || !email}
-                className="h-9 px-4 rounded-md bg-[#E7FB10] text-black text-sm font-bold disabled:opacity-50 shrink-0"
+                className="h-9 px-4 rounded-md bg-[#D4FF1F] text-black text-sm font-bold disabled:opacity-50 shrink-0"
                 data-testid="button-sticky-submit"
               >
                 {isLoading ? "..." : "Join the Research List \u2192"}

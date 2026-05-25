@@ -4,7 +4,7 @@ import { TrendingUp, Zap, Activity, Target, ArrowRight } from "lucide-react";
 
 function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean; activeStep: number }) {
   const cascadeSteps = [
-    { id: 0, name: 'IGF-1 LR3', y: 25, color: '#E7FB10' },
+    { id: 0, name: 'IGF-1 LR3', y: 25, color: '#D4FF1F' },
     { id: 1, name: 'IGF-1R', y: 55, color: '#21d8ff' },
     { id: 2, name: 'IRS-1/PI3K', y: 90, color: '#9d4edd' },
     { id: 3, name: 'Akt/mTOR', y: 125, color: '#ec4899' },
@@ -138,7 +138,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
           ))}
         </g>
         
-        <motion.text x="20" y="24" fill="#E7FB10" fontSize="6.5" fontWeight="bold"
+        <motion.text x="20" y="24" fill="#D4FF1F" fontSize="6.5" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -172,7 +172,7 @@ const pathwayDetails = [
     step: 0,
     title: 'IGF-1 LR3 Binding',
     description: 'Long R3 modification reduces binding to IGF binding proteins (IGFBPs), increasing bioavailability and extending half-life from 12 hours to 20-30 hours.',
-    color: '#E7FB10'
+    color: '#D4FF1F'
   },
   {
     step: 1,
@@ -253,12 +253,12 @@ export function IGF1SignalingVisual() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
           style={{
             background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
-            borderColor: '#E7FB10',
+            borderColor: '#D4FF1F',
             boxShadow: '0 0 20px rgba(231, 251, 16, 0.3)'
           }}
         >
-          <TrendingUp className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#22c55e] bg-clip-text text-transparent">
+          <TrendingUp className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#22c55e] bg-clip-text text-transparent">
             IGF-1 LR3 Signaling Cascade
           </span>
         </div>
@@ -328,7 +328,7 @@ export function IGF1SignalingVisual() {
 
         <div className="mt-6 grid grid-cols-3 gap-3">
           {[
-            { icon: Zap, title: "Extended Half-life", desc: "20-30 hours vs 12", color: "#E7FB10" },
+            { icon: Zap, title: "Extended Half-life", desc: "20-30 hours vs 12", color: "#D4FF1F" },
             { icon: Target, title: "↓ IGFBP Binding", desc: "Higher free IGF-1", color: "#21d8ff" },
             { icon: Activity, title: "mTOR Activation", desc: "Anabolic signaling", color: "#22c55e" },
           ].map((item, idx) => {

@@ -9,7 +9,7 @@ export function TelomereVisual() {
 
   const telomereStages = [
     { age: "Young Cell", length: 100, color: "#22c55e", label: "Full telomeres" },
-    { age: "Middle Age", length: 70, color: "#E7FB10", label: "Shortened" },
+    { age: "Middle Age", length: 70, color: "#D4FF1F", label: "Shortened" },
     { age: "Aged Cell", length: 40, color: "#f97316", label: "Critical length" },
     { age: "Senescent", length: 15, color: "#ef4444", label: "Cell death/dysfunction" },
   ];

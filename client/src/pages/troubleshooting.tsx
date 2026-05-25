@@ -88,7 +88,7 @@ const issues = [
     id: "label-smudge",
     icon: Stamp,
     title: "Label is Smudged or Damaged",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     summary: "Label printing is unclear or damaged",
     content: {
       normalReasons: [

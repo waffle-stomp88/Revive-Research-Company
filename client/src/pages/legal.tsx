@@ -25,7 +25,7 @@ import {
 import type { LegalDocument } from "@shared/schema";
 
 const categories = [
-  { id: "policies", label: "Policies", icon: FileText, color: "#E7FB10", bgColor: "bg-[#E7FB10]/10", borderColor: "border-[#E7FB10]/30", textColor: "text-[#E7FB10]" },
+  { id: "policies", label: "Policies", icon: FileText, color: "#D4FF1F", bgColor: "bg-[#D4FF1F]/10", borderColor: "border-[#D4FF1F]/30", textColor: "text-[#D4FF1F]" },
   { id: "compliance", label: "Compliance", icon: Shield, color: "#21d8ff", bgColor: "bg-[#21d8ff]/10", borderColor: "border-[#21d8ff]/30", textColor: "text-[#21d8ff]" },
   { id: "terms", label: "Terms & Legal", icon: Gavel, color: "#9d4edd", bgColor: "bg-[#9d4edd]/10", borderColor: "border-[#9d4edd]/30", textColor: "text-[#9d4edd]" },
 ];
@@ -33,7 +33,7 @@ const categories = [
 const quickLinks = [
   { href: "/terms-of-service", title: "Terms of Service", description: "Usage agreement", color: "#9d4edd" },
   { href: "/privacy", title: "Privacy Policy", description: "Data practices", color: "#21d8ff" },
-  { href: "/peptide-shipping-and-handling", title: "Shipping Policy", description: "Delivery info", color: "#E7FB10" },
+  { href: "/peptide-shipping-and-handling", title: "Shipping Policy", description: "Delivery info", color: "#D4FF1F" },
 ];
 
 export default function LegalHub() {
@@ -83,7 +83,7 @@ export default function LegalHub() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#9d4edd]/20 mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#D4FF1F]/20 via-[#21d8ff]/20 to-[#9d4edd]/20 mb-6">
             <Scale className="h-8 w-8 text-white" />
           </div>
           <h1
@@ -293,7 +293,7 @@ export default function LegalHub() {
                   <Link href="/contact">
                     <Button
                       variant="outline"
-                      className="border-[#E7FB10]/30 hover:border-[#E7FB10] text-[#E7FB10]"
+                      className="border-[#D4FF1F]/30 hover:border-[#D4FF1F] text-[#D4FF1F]"
                       data-testid="button-contact-legal"
                     >
                       <Building2 className="h-4 w-4 mr-2" />

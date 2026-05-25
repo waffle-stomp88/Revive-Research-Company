@@ -10,14 +10,14 @@ import {
 } from "lucide-react";
 
 const brainRegions = [
-  { name: 'Hippocampus', function: 'Memory formation', color: '#E7FB10' },
+  { name: 'Hippocampus', function: 'Memory formation', color: '#D4FF1F' },
   { name: 'Prefrontal Cortex', function: 'Executive function', color: '#21d8ff' },
   { name: 'Amygdala', function: 'Emotional processing', color: '#9d4edd' },
   { name: 'Cerebral Cortex', function: 'Higher cognition', color: '#ec4899' },
 ];
 
 const mechanisms = [
-  { name: 'BDNF Expression', description: 'Brain-derived neurotrophic factor', icon: Zap, color: '#E7FB10' },
+  { name: 'BDNF Expression', description: 'Brain-derived neurotrophic factor', icon: Zap, color: '#D4FF1F' },
   { name: 'Dopamine Modulation', description: 'Neurotransmitter regulation', icon: Activity, color: '#21d8ff' },
   { name: 'Neuroprotection', description: 'Oxidative stress defense', icon: Shield, color: '#9d4edd' },
   { name: 'Neuroplasticity', description: 'Synaptic adaptation', icon: Sparkles, color: '#ec4899' },
@@ -61,7 +61,7 @@ export function NeuropeptideVisual() {
           >
             <Brain className="h-8 w-8" style={{ color: mainColor }} />
             <motion.div
-              className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#E7FB10] flex items-center justify-center"
+              className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#D4FF1F] flex items-center justify-center"
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >

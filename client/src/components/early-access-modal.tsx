@@ -102,16 +102,16 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-md bg-[#1a1a1f] border border-[#E7FB10]/30 rounded-2xl p-6 md:p-8 shadow-2xl"
+          className="relative w-full max-w-md bg-[#1a1a1f] border border-[#D4FF1F]/30 rounded-2xl p-6 md:p-8 shadow-2xl"
           style={{
             boxShadow: "0 0 60px rgba(231, 251, 16, 0.15), 0 0 30px rgba(33, 216, 255, 0.1)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#E7FB10]/20 to-[#21d8ff]/20 border border-[#E7FB10]/40">
-              <Sparkles className="h-4 w-4 text-[#E7FB10]" />
-              <span className="text-sm font-bold text-[#E7FB10]">EARLY ACCESS</span>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#D4FF1F]/20 to-[#21d8ff]/20 border border-[#D4FF1F]/40">
+              <Sparkles className="h-4 w-4 text-[#D4FF1F]" />
+              <span className="text-sm font-bold text-[#D4FF1F]">EARLY ACCESS</span>
             </div>
           </div>
 
@@ -141,14 +141,14 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background/50 border-border/50 focus:border-[#E7FB10]/50"
+                    className="pl-10 bg-background/50 border-border/50 focus:border-[#D4FF1F]/50"
                     required
                     data-testid="input-early-access-email"
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold"
+                  className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-bold"
                   disabled={subscribeMutation.isPending}
                   data-testid="button-early-access-notify"
                 >

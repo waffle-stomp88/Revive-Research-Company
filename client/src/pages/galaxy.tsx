@@ -407,9 +407,9 @@ export default function GalaxyPage() {
             transition={{ duration: 0.4 }}
             className="pointer-events-auto"
           >
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-2">
-              <Sparkles className="h-3 w-3 text-[#E7FB10]" />
-              <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#E7FB10]">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 mb-2">
+              <Sparkles className="h-3 w-3 text-[#D4FF1F]" />
+              <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#D4FF1F]">
                 Synergy Galaxy
               </span>
             </div>
@@ -582,7 +582,7 @@ export default function GalaxyPage() {
       {/* Galaxy canvas / fallback */}
       {useFallback === null ? (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-[#E7FB10]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#D4FF1F]" />
         </div>
       ) : showFallback ? (
         <div className="pt-32 md:pt-36 pb-12">
@@ -630,7 +630,7 @@ export default function GalaxyPage() {
                   data-testid="galaxy-loading"
                 >
                   <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#D4FF1F]" />
                     <p className="text-xs font-mono text-muted-foreground">
                       Loading constellation...
                     </p>
@@ -767,7 +767,7 @@ export default function GalaxyPage() {
                 disabled={rotationPaused}
                 aria-label="Rotation speed"
                 data-testid="slider-galaxy-rotation-speed"
-                className="w-20 accent-[#E7FB10] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-20 accent-[#D4FF1F] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               />
               <span className="text-[10px] font-mono text-white/50 w-6 text-right select-none tabular-nums">
                 {rotationSpeed.toFixed(1)}×

@@ -44,7 +44,7 @@ const synergyTiers = [
     level: 95, 
     label: "Legendary", 
     description: "Research-proven synergy",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     bgColor: "rgba(231, 251, 16, 0.15)",
     highlight: true
   },
@@ -128,7 +128,7 @@ function SynergyBarGraph({ isInView, extraStacks }: { isInView: boolean; extraSt
         transition={{ delay: 2, duration: 0.5 }}
         className="pt-3 md:pt-4 text-center"
       >
-        <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/40 text-xs" data-testid="badge-wolverine-stack">
+        <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/40 text-xs" data-testid="badge-wolverine-stack">
           <Zap className="h-3 w-3 mr-1" />
           Wolverine Stack = 95% Synergy
         </Badge>
@@ -163,7 +163,7 @@ export function StackBuilderTeaser() {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#E7FB10]/8 rounded-full blur-[100px] hidden md:block"
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#D4FF1F]/8 rounded-full blur-[100px] hidden md:block"
           animate={{ 
             opacity: [0.08, 0.15, 0.08],
             scale: [1.1, 1, 1.1]
@@ -198,7 +198,7 @@ export function StackBuilderTeaser() {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex flex-wrap justify-center gap-2 mb-6 md:mb-10"
         >
-          <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
+          <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30 text-xs" data-testid="badge-legendary-stacks">
             <Crown className="h-3 w-3 mr-1" /> {knownStacksCount} Known Stacks
           </Badge>
           <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">

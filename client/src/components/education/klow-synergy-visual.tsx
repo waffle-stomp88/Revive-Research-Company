@@ -50,9 +50,9 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <circle cx="325" cy="80" r="22" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
+          <circle cx="325" cy="80" r="22" fill="#D4FF1F" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
           <text x="325" y="86" textAnchor="middle" fill="black" fontSize="12" fontWeight="700">GK</text>
-          <text x="325" y="120" textAnchor="middle" fill="#E7FB10" fontSize="12" fontWeight="600">GHK-Cu</text>
+          <text x="325" y="120" textAnchor="middle" fill="#D4FF1F" fontSize="12" fontWeight="600">GHK-Cu</text>
           <text x="325" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Collagen</text>
         </motion.g>
 
@@ -75,14 +75,14 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
               <>
                 <motion.path d="M 60 150 L 60 185" stroke="#ec4899" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
                 <motion.path d="M 175 150 L 175 185" stroke="#21d8ff" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 325 150 L 325 185" stroke="#E7FB10" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 325 150 L 325 185" stroke="#D4FF1F" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
                 <motion.path d="M 440 150 L 440 185" stroke="#22c55e" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
               </>
             ) : (
               <>
                 <motion.path d="M 60 150 Q 60 175 150 210" stroke="#ec4899" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
                 <motion.path d="M 175 150 Q 175 180 200 210" stroke="#21d8ff" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 325 150 Q 325 180 300 210" stroke="#E7FB10" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
+                <motion.path d="M 325 150 Q 325 180 300 210" stroke="#D4FF1F" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
                 <motion.path d="M 440 150 Q 440 175 350 210" stroke="#22c55e" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.3 }} />
               </>
             )}
@@ -164,8 +164,8 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <ellipse cx="250" cy="350" rx="170" ry="30" fill="none" stroke="#E7FB10" strokeWidth="2.5" strokeDasharray="4,4" opacity="0.6" />
-            <text x="250" y="356" textAnchor="middle" fill="#E7FB10" fontSize="14" fontWeight="700">
+            <ellipse cx="250" cy="350" rx="170" ry="30" fill="none" stroke="#D4FF1F" strokeWidth="2.5" strokeDasharray="4,4" opacity="0.6" />
+            <text x="250" y="356" textAnchor="middle" fill="#D4FF1F" fontSize="14" fontWeight="700">
               RESULT: Complete Healing Environment
             </text>
           </motion.g>
@@ -303,8 +303,8 @@ export function KLOWSynergyVisual() {
             }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></div>
-              <span className="text-sm font-bold text-[#E7FB10]">GHK-Cu</span>
+              <div className="w-3 h-3 rounded-full bg-[#D4FF1F]" style={{ boxShadow: '0 0 6px #D4FF1F' }}></div>
+              <span className="text-sm font-bold text-[#D4FF1F]">GHK-Cu</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Copper peptide activates collagen I, III, IV synthesis for structural matrix support.

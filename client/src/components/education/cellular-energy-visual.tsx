@@ -23,7 +23,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
   const hoverCapable = useHoverCapable();
 
   // DNA base pair colors
-  const basePairColors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899'];
+  const basePairColors = ['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899'];
   
   return (
     <div ref={containerRef} className="relative mb-8">
@@ -43,8 +43,8 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ delay: 0.2 }}
         >
-          <Dna className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <Dna className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Mitochondrial DNA Origin
           </span>
         </motion.div>
@@ -62,12 +62,12 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
             {/* Enhanced gradients with more vibrant colors */}
             <defs>
               <linearGradient id="strandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#E7FB10" stopOpacity="1" />
+                <stop offset="0%" stopColor="#D4FF1F" stopOpacity="1" />
                 <stop offset="20%" stopColor="#21d8ff" stopOpacity="1" />
                 <stop offset="40%" stopColor="#9d4edd" stopOpacity="1" />
                 <stop offset="60%" stopColor="#ec4899" stopOpacity="1" />
                 <stop offset="80%" stopColor="#21d8ff" stopOpacity="1" />
-                <stop offset="100%" stopColor="#E7FB10" stopOpacity="1" />
+                <stop offset="100%" stopColor="#D4FF1F" stopOpacity="1" />
               </linearGradient>
               <filter id="glow">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -196,7 +196,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               height={70}
               rx={8}
               fill="none"
-              stroke="#E7FB10"
+              stroke="#D4FF1F"
               strokeWidth="2"
               strokeDasharray="5,5"
               initial={{ opacity: 0 }}
@@ -212,7 +212,7 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               x={150}
               y={16}
               textAnchor="middle"
-              fill="#E7FB10"
+              fill="#D4FF1F"
               fontSize="11"
               fontWeight="900"
               initial={{ opacity: 0 }}
@@ -235,8 +235,8 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               style={{ 
                 top: '50%',
                 left: '10%',
-                background: ['#E7FB10', '#21d8ff', '#ec4899'][particle],
-                filter: `blur(0.5px) drop-shadow(0 0 6px ${['#E7FB10', '#21d8ff', '#ec4899'][particle]})`
+                background: ['#D4FF1F', '#21d8ff', '#ec4899'][particle],
+                filter: `blur(0.5px) drop-shadow(0 0 6px ${['#D4FF1F', '#21d8ff', '#ec4899'][particle]})`
               }}
               animate={{
                 x: [0, 240, 0],
@@ -261,8 +261,8 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 2 }}
           >
-            <Atom className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
-            <span className="text-sm font-medium bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#ec4899] bg-clip-text text-transparent">
+            <Atom className="h-5 w-5 text-[#D4FF1F]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <span className="text-sm font-medium bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#ec4899] bg-clip-text text-transparent">
               Peptide activates multiple cellular pathways
             </span>
           </motion.div>
@@ -343,12 +343,12 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
             boxShadow: '0 0 15px rgba(231, 251, 16, 0.15)'
           }}
         >
-          <span className="flex items-center gap-2 text-[#E7FB10]">
-            <span className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 8px #E7FB10' }}></span>
+          <span className="flex items-center gap-2 text-[#D4FF1F]">
+            <span className="w-3 h-3 rounded-full bg-[#D4FF1F]" style={{ boxShadow: '0 0 8px #D4FF1F' }}></span>
             mtDNA encoded
           </span>
           <span className="flex items-center gap-2 text-[#21d8ff]">
-            <span className="w-8 h-0.5 rounded-full bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#ec4899]" style={{ boxShadow: '0 0 8px rgba(33, 216, 255, 0.6)' }}></span>
+            <span className="w-8 h-0.5 rounded-full bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#ec4899]" style={{ boxShadow: '0 0 8px rgba(33, 216, 255, 0.6)' }}></span>
             Double helix
           </span>
         </div>
@@ -369,7 +369,7 @@ const peptideData = {
     mechanism: 'Mitochondrial-Derived Peptide',
     source: 'Encoded in mitochondrial DNA',
     pathways: [
-      { name: 'AMPK Activation', description: 'Energy sensor pathway', icon: Zap, color: '#E7FB10' },
+      { name: 'AMPK Activation', description: 'Energy sensor pathway', icon: Zap, color: '#D4FF1F' },
       { name: 'Glucose Uptake', description: 'Enhanced cellular glucose', icon: Flame, color: '#21d8ff' },
       { name: 'Folate Cycle', description: 'Metabolic regulation', icon: Activity, color: '#9d4edd' },
       { name: 'Fat Oxidation', description: 'Lipid metabolism', icon: Battery, color: '#ec4899' },
@@ -383,7 +383,7 @@ const peptideData = {
     mechanism: 'Essential Coenzyme',
     source: 'Required in every cell',
     pathways: [
-      { name: 'Sirtuin Activation', description: 'SIRT1-7 enzyme family', icon: Dna, color: '#E7FB10' },
+      { name: 'Sirtuin Activation', description: 'SIRT1-7 enzyme family', icon: Dna, color: '#D4FF1F' },
       { name: 'ATP Production', description: 'Cellular energy currency', icon: Battery, color: '#21d8ff' },
       { name: 'DNA Repair', description: 'PARP enzyme function', icon: Activity, color: '#9d4edd' },
       { name: 'Mitochondrial Health', description: 'Biogenesis support', icon: CircleDot, color: '#ec4899' },

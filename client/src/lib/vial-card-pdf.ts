@@ -30,7 +30,7 @@ export async function generateVialCardPDF(data: VialCardData): Promise<Blob> {
   doc.setTextColor("#71717a");
   doc.text("Reconstitution reference - keep with your vial", margin, y + 16);
 
-  doc.setDrawColor("#E7FB10");
+  doc.setDrawColor("#D4FF1F");
   doc.setLineWidth(2);
   doc.line(margin, y + 28, pageW - margin, y + 28);
 
@@ -83,7 +83,7 @@ export async function generateVialCardPDF(data: VialCardData): Promise<Blob> {
 
   // Big "Draw" callout box
   const boxY = y + 8;
-  doc.setFillColor("#E7FB10");
+  doc.setFillColor("#D4FF1F");
   doc.rect(margin, boxY, pageW - margin * 2, 70, "F");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(36);

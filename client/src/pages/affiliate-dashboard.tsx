@@ -154,7 +154,7 @@ interface AchievementBadge {
 }
 
 const BADGE_COLORS = {
-  yellow: "#E7FB10",
+  yellow: "#D4FF1F",
   cyan: "#21d8ff",
   purple: "#9d4edd",
   orange: "#f97316",
@@ -195,7 +195,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
         title: "First Blood",
         description: "Made your first sale",
         icon: Zap,
-        color: "#E7FB10",
+        color: "#D4FF1F",
         earned: salesCount >= 1,
         progress: Math.min(salesCount, 1),
         target: 1,
@@ -205,7 +205,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
         title: "Century Club",
         description: "Reach 100 total sales",
         icon: Trophy,
-        color: "#E7FB10",
+        color: "#D4FF1F",
         earned: salesCount >= 100,
         progress: Math.min(salesCount, 100),
         target: 100,
@@ -256,7 +256,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
   const earnedCount = badges.filter(b => b.earned).length;
 
   return (
-    <Card className="border-[#E7FB10]/20">
+    <Card className="border-[#D4FF1F]/20">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <button
@@ -264,14 +264,14 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
             className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 min-h-[44px]"
             data-testid="button-achievements-toggle"
           >
-            <Award className="h-5 w-5 text-[#E7FB10]" />
+            <Award className="h-5 w-5 text-[#D4FF1F]" />
             Achievements
             <ChevronDown 
               className="h-4 w-4 transition-transform"
               style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
             />
           </button>
-          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30 text-xs">
+          <Badge variant="secondary" className="bg-[#D4FF1F]/10 text-[#D4FF1F] border border-[#D4FF1F]/30 text-xs">
             {earnedCount}/{badges.length} Unlocked
           </Badge>
         </CardTitle>
@@ -444,10 +444,10 @@ function ReferralPowerhouse({ affiliate, stats, toast }: { affiliate: Affiliate;
   ];
 
   return (
-    <Card className="border-[#E7FB10]/20">
+    <Card className="border-[#D4FF1F]/20">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <Share2 className="h-5 w-5 text-[#E7FB10]" />
+          <Share2 className="h-5 w-5 text-[#D4FF1F]" />
           Quick Share Hub
         </CardTitle>
         <CardDescription>Share your referral link with one click</CardDescription>
@@ -559,10 +559,10 @@ function EarningsCalendarHeatmap({ sales }: { sales?: AffiliateSale[] }) {
   const getIntensity = (earnings: number) => {
     if (earnings === 0) return "bg-muted/30";
     const ratio = earnings / maxEarnings;
-    if (ratio > 0.75) return "bg-[#E7FB10] shadow-[0_0_8px_rgba(231,251,16,0.6)]";
-    if (ratio > 0.5) return "bg-[#E7FB10]/70";
-    if (ratio > 0.25) return "bg-[#E7FB10]/40";
-    return "bg-[#E7FB10]/20";
+    if (ratio > 0.75) return "bg-[#D4FF1F] shadow-[0_0_8px_rgba(231,251,16,0.6)]";
+    if (ratio > 0.5) return "bg-[#D4FF1F]/70";
+    if (ratio > 0.25) return "bg-[#D4FF1F]/40";
+    return "bg-[#D4FF1F]/20";
   };
 
   return (
@@ -611,10 +611,10 @@ function EarningsCalendarHeatmap({ sales }: { sales?: AffiliateSale[] }) {
         <div className="flex items-center justify-end gap-1 mt-3 text-[10px] text-muted-foreground">
           <span>Less</span>
           <div className="w-3 h-3 rounded-sm bg-muted/30" />
-          <div className="w-3 h-3 rounded-sm bg-[#E7FB10]/20" />
-          <div className="w-3 h-3 rounded-sm bg-[#E7FB10]/40" />
-          <div className="w-3 h-3 rounded-sm bg-[#E7FB10]/70" />
-          <div className="w-3 h-3 rounded-sm bg-[#E7FB10]" />
+          <div className="w-3 h-3 rounded-sm bg-[#D4FF1F]/20" />
+          <div className="w-3 h-3 rounded-sm bg-[#D4FF1F]/40" />
+          <div className="w-3 h-3 rounded-sm bg-[#D4FF1F]/70" />
+          <div className="w-3 h-3 rounded-sm bg-[#D4FF1F]" />
           <span>More</span>
         </div>
       </CardContent>
@@ -697,10 +697,10 @@ function PayoutCountdown({ stats, payouts }: { stats?: AffiliateStats; payouts?:
   const progressToMinimum = Math.min((pendingBalance / 100) * 100, 100);
 
   return (
-    <Card className="border-[#E7FB10]/20 overflow-visible">
+    <Card className="border-[#D4FF1F]/20 overflow-visible">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Timer className="h-5 w-5 text-[#E7FB10]" />
+          <Timer className="h-5 w-5 text-[#D4FF1F]" />
           Next Payout Window
         </CardTitle>
       </CardHeader>
@@ -718,7 +718,7 @@ function PayoutCountdown({ stats, payouts }: { stats?: AffiliateStats; payouts?:
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-2xl font-bold text-[#E7FB10] bg-[#E7FB10]/10 rounded-lg w-14 h-14 flex items-center justify-center">
+              <div className="text-2xl font-bold text-[#D4FF1F] bg-[#D4FF1F]/10 rounded-lg w-14 h-14 flex items-center justify-center">
                 {item.value}
               </div>
               <p className="text-[10px] text-muted-foreground mt-1">{item.label}</p>
@@ -765,7 +765,7 @@ function CommissionBreakdown({ stats }: { stats?: AffiliateStats }) {
   const total = tier1 + tier2;
 
   const pieData = [
-    { name: "Tier 1 (Direct)", value: tier1, color: "#E7FB10" },
+    { name: "Tier 1 (Direct)", value: tier1, color: "#D4FF1F" },
     { name: "Tier 2 (Team)", value: tier2, color: "#21d8ff" },
   ];
 
@@ -806,7 +806,7 @@ function CommissionBreakdown({ stats }: { stats?: AffiliateStats }) {
             <div className="flex-1 space-y-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-3 h-3 rounded-full bg-[#E7FB10]" />
+                  <div className="w-3 h-3 rounded-full bg-[#D4FF1F]" />
                   <span className="text-xs">Direct Sales</span>
                 </div>
                 <div className="flex items-baseline gap-2">
@@ -1086,8 +1086,8 @@ export default function AffiliateDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[#E7FB10] text-sm font-semibold">BASIC REFERRAL CODE</span>
-                    <span className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] px-2 py-0.5 rounded">10% OFF</span>
+                    <span className="text-[#D4FF1F] text-sm font-semibold">BASIC REFERRAL CODE</span>
+                    <span className="text-xs bg-[#D4FF1F]/20 text-[#D4FF1F] px-2 py-0.5 rounded">10% OFF</span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-3">Share this code for customer referrals - they save 10%, you earn 10%</p>
                   <code className="text-lg bg-muted px-3 py-2 rounded font-mono block mb-3 text-center font-bold" data-testid="text-basic-referral-code">
@@ -1154,8 +1154,8 @@ export default function AffiliateDashboard() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-[#E7FB10]/10">
-                  <DollarSign className="h-5 w-5 text-[#E7FB10]" />
+                <div className="p-2 rounded-lg bg-[#D4FF1F]/10">
+                  <DollarSign className="h-5 w-5 text-[#D4FF1F]" />
                 </div>
                 <span className="text-sm text-muted-foreground">Tier 1 Earnings</span>
               </div>
@@ -1245,7 +1245,7 @@ export default function AffiliateDashboard() {
                   <Card className="lg:col-span-2">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
+                        <TrendingUp className="h-5 w-5 text-[#D4FF1F]" />
                         Earnings Over Time
                       </CardTitle>
                       <CardDescription>
@@ -1266,8 +1266,8 @@ export default function AffiliateDashboard() {
                             >
                               <defs>
                                 <linearGradient id="tier1Gradient" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="#E7FB10" stopOpacity={0.3} />
-                                  <stop offset="95%" stopColor="#E7FB10" stopOpacity={0} />
+                                  <stop offset="5%" stopColor="#D4FF1F" stopOpacity={0.3} />
+                                  <stop offset="95%" stopColor="#D4FF1F" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="tier2Gradient" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="5%" stopColor="#21d8ff" stopOpacity={0.3} />
@@ -1304,7 +1304,7 @@ export default function AffiliateDashboard() {
                                 type="monotone"
                                 dataKey="tier1"
                                 name="Tier 1 (Direct)"
-                                stroke="#E7FB10"
+                                stroke="#D4FF1F"
                                 strokeWidth={2}
                                 fill="url(#tier1Gradient)"
                               />
@@ -1332,7 +1332,7 @@ export default function AffiliateDashboard() {
                     <CardHeader className="pb-3">
                       <div className="space-y-3">
                         <CardTitle className="flex items-center gap-2">
-                          <Trophy className="h-5 w-5 text-[#E7FB10]" />
+                          <Trophy className="h-5 w-5 text-[#D4FF1F]" />
                           Leaderboard
                         </CardTitle>
                         <div className="flex gap-2">
@@ -1373,7 +1373,7 @@ export default function AffiliateDashboard() {
                                 key={entry.affiliateId}
                                 className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                                   isCurrentUser
-                                    ? "bg-[#E7FB10]/10 border border-[#E7FB10]/30"
+                                    ? "bg-[#D4FF1F]/10 border border-[#D4FF1F]/30"
                                     : "bg-muted/50"
                                 }`}
                                 data-testid={`leaderboard-entry-${entry.rank}`}
@@ -1381,7 +1381,7 @@ export default function AffiliateDashboard() {
                                 <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 flex items-center justify-center rounded-full bg-muted shrink-0">
                                     {entry.rank === 1 ? (
-                                      <Crown className="h-4 w-4 text-[#E7FB10]" />
+                                      <Crown className="h-4 w-4 text-[#D4FF1F]" />
                                     ) : entry.rank === 2 ? (
                                       <Medal className="h-4 w-4 text-gray-400" />
                                     ) : entry.rank === 3 ? (
@@ -1407,7 +1407,7 @@ export default function AffiliateDashboard() {
                                   </div>
                                 </div>
                                 <div className="text-right shrink-0">
-                                  <p className="font-semibold text-sm text-[#E7FB10]">
+                                  <p className="font-semibold text-sm text-[#D4FF1F]">
                                     ${totalEarnings.toFixed(2)}
                                   </p>
                                 </div>
@@ -1465,7 +1465,7 @@ export default function AffiliateDashboard() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold text-[#E7FB10]">
+                            <p className="font-semibold text-[#D4FF1F]">
                               +${parseFloat(sale.commissionTier1).toFixed(2)}
                             </p>
                             <p className="text-sm text-muted-foreground">
@@ -1576,7 +1576,7 @@ export default function AffiliateDashboard() {
                         requestPayoutMutation.isPending ||
                         (stats?.pendingBalance || 0) < 100
                       }
-                      className="bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+                      className="bg-[#D4FF1F] hover:bg-[#D4FF1F]/90"
                       data-testid="button-request-payout"
                     >
                       {requestPayoutMutation.isPending ? (

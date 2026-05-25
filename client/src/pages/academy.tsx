@@ -70,7 +70,7 @@ const CURRICULUM = [
     title: "Core Foundations",
     description: "Master essential concepts",
     icon: Building,
-    color: "#E7FB10",
+    color: "#D4FF1F",
     lessons: [
       { id: "purity-basics", title: "Understanding Purity", articleSlug: null, xp: 20 },
       { id: "lyophilization", title: "Lyophilization Process", articleSlug: null, xp: 20 },
@@ -137,7 +137,7 @@ const PERSONA_CONFIG = {
     description: "Flexible module access - explore topics in any order within modules.",
     unlockMode: "module" as const, // Can do lessons within a module in any order
     recommendedStart: "purity-basics",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     icon: Beaker,
     features: [
       "Skip ahead within unlocked modules",
@@ -192,7 +192,7 @@ const REWARD_MILESTONES = [
   },
 ];
 
-function ProgressRing({ progress, size = 60, strokeWidth = 6, color = "#E7FB10" }: { progress: number; size?: number; strokeWidth?: number; color?: string }) {
+function ProgressRing({ progress, size = 60, strokeWidth = 6, color = "#D4FF1F" }: { progress: number; size?: number; strokeWidth?: number; color?: string }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (progress / 100) * circumference;
@@ -241,18 +241,18 @@ function AchievementBadge({ achievement, unlocked }: { achievement: typeof acade
       animate={{ scale: 1, opacity: 1 }}
       className={`relative flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${
         unlocked 
-          ? "bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/10 border border-[#E7FB10]/30" 
+          ? "bg-gradient-to-br from-[#D4FF1F]/20 to-[#21d8ff]/10 border border-[#D4FF1F]/30" 
           : "bg-white/5 border border-white/10 opacity-50"
       }`}
     >
       <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-        unlocked ? "bg-[#E7FB10]/20" : "bg-white/10"
+        unlocked ? "bg-[#D4FF1F]/20" : "bg-white/10"
       }`}>
-        <Icon className={`w-6 h-6 ${unlocked ? "text-[#E7FB10]" : "text-white/40"}`} />
+        <Icon className={`w-6 h-6 ${unlocked ? "text-[#D4FF1F]" : "text-white/40"}`} />
       </div>
       <span className="text-xs font-medium text-center text-white/80">{achievement.name}</span>
       {unlocked && (
-        <Badge variant="secondary" className="text-[10px] bg-[#E7FB10]/20 text-[#E7FB10] border-0">
+        <Badge variant="secondary" className="text-[10px] bg-[#D4FF1F]/20 text-[#D4FF1F] border-0">
           +{achievement.xp} XP
         </Badge>
       )}
@@ -382,7 +382,7 @@ function EmbeddedLessonViewer({
                 {learningMode} Mode
               </Badge>
             )}
-            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+            <Badge className="bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30">
               <Zap className="w-3 h-3 mr-1" />
               {totalXp} XP
             </Badge>
@@ -407,7 +407,7 @@ function EmbeddedLessonViewer({
                   onClick={() => setCurrentSlide(idx)}
                   className={`h-1.5 rounded-full transition-all ${
                     idx === currentSlide 
-                      ? "flex-[2] bg-[#E7FB10]" 
+                      ? "flex-[2] bg-[#D4FF1F]" 
                       : idx < currentSlide 
                         ? "flex-1 bg-[#22c55e]" 
                         : "flex-1 bg-white/20"
@@ -475,7 +475,7 @@ function EmbeddedLessonViewer({
                 </Button>
               ) : (
                 <Button
-                  className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                  className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
                   onClick={handleComplete}
                   data-testid="button-complete-lesson"
                 >
@@ -960,9 +960,9 @@ export default function Academy() {
 
       <div className="min-h-screen bg-[#1a1a1f]">
         <section className="relative overflow-hidden py-20 px-6">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#E7FB10]/10 via-transparent to-[#21d8ff]/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D4FF1F]/10 via-transparent to-[#21d8ff]/10" />
           <div className="absolute inset-0">
-            <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#E7FB10]/20 rounded-full blur-3xl" />
+            <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#D4FF1F]/20 rounded-full blur-3xl" />
             <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-[#21d8ff]/20 rounded-full blur-3xl" />
           </div>
 
@@ -973,13 +973,13 @@ export default function Academy() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <Badge className="mb-4 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30" data-testid="badge-academy">
+              <Badge className="mb-4 bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30" data-testid="badge-academy">
                 <Compass className="w-3 h-3 mr-1" />
                 Guided Orientation
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
                 Peptide Research{" "}
-                <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
                   Academy
                 </span>
               </h1>
@@ -995,7 +995,7 @@ export default function Academy() {
               >
                 <BookOpen className="w-4 h-4 text-[#21d8ff] flex-shrink-0" />
                 <span className="text-sm text-[#21d8ff]">Need quick reference?</span>
-                <Link href="/guides/peptide-education-center" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black md:hover:bg-[#E7FB10] md:hover:scale-105 md:active:scale-105 md:hover:shadow-lg transition-all duration-200 cursor-pointer">
+                <Link href="/guides/peptide-education-center" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black md:hover:bg-[#D4FF1F] md:hover:scale-105 md:active:scale-105 md:hover:shadow-lg transition-all duration-200 cursor-pointer">
                   Education Center
                 </Link>
               </div>
@@ -1097,7 +1097,7 @@ export default function Academy() {
 
                 <div className="flex items-center gap-4">
                   <div className="text-center px-4 py-2 bg-white/5 rounded-xl">
-                    <div className="text-2xl font-bold text-[#E7FB10]">{localProgress.totalXp}</div>
+                    <div className="text-2xl font-bold text-[#D4FF1F]">{localProgress.totalXp}</div>
                     <div className="text-xs text-white/60">Total XP</div>
                   </div>
                   <div className="text-center px-4 py-2 bg-white/5 rounded-xl">
@@ -1112,14 +1112,14 @@ export default function Academy() {
                 <div data-testid="recommended-section" className="mt-6 pt-6 border-t border-white/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <TrendingUp className="w-5 h-5 text-[#E7FB10]" />
+                      <TrendingUp className="w-5 h-5 text-[#D4FF1F]" />
                       <div>
                         <p className="text-sm text-white/60">Recommended Next</p>
                         <p className="text-white font-medium">{getRecommendedLesson()!.lesson.title}</p>
                       </div>
                     </div>
                     <Button
-                      className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                      className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90"
                       onClick={() => {
                         const lessonId = getRecommendedLesson()!.lesson.id;
                         if (!user && !canGuestAccessLesson(lessonId)) {
@@ -1397,7 +1397,7 @@ export default function Academy() {
                               className="rounded-xl border border-white/10 bg-[#1a1a1f]/80 backdrop-blur-sm px-5 py-4 text-center"
                               data-testid={`progress-gate-module-${module.id}`}
                             >
-                              <Lock className="w-5 h-5 text-[#E7FB10]/70 mx-auto mb-2" />
+                              <Lock className="w-5 h-5 text-[#D4FF1F]/70 mx-auto mb-2" />
                               <p className="text-sm font-semibold text-white leading-snug mb-1">
                                 Complete the previous module to unlock this one
                               </p>
@@ -1475,7 +1475,7 @@ export default function Academy() {
                                   {isCompleted ? (
                                     <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                                   ) : isUnlocked ? (
-                                    <Play className="w-5 h-5 text-[#E7FB10] flex-shrink-0" />
+                                    <Play className="w-5 h-5 text-[#D4FF1F] flex-shrink-0" />
                                   ) : (
                                     <Lock className="w-5 h-5 text-white/20 flex-shrink-0" />
                                   )}
@@ -1541,9 +1541,9 @@ export default function Academy() {
 
                 {/* Reward Milestones */}
                 {user ? (
-                  <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6 mt-6">
+                  <Card className="bg-gradient-to-br from-[#D4FF1F]/5 to-[#9d4edd]/5 border-[#D4FF1F]/20 p-6 mt-6">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <Gift className="w-5 h-5 text-[#E7FB10]" />
+                      <Gift className="w-5 h-5 text-[#D4FF1F]" />
                       Reward Milestones
                     </h3>
                     <div className="space-y-3">
@@ -1558,30 +1558,30 @@ export default function Academy() {
                             data-testid={`milestone-${milestone.xpRequired}`}
                             className={`p-3 rounded-lg border transition-all ${
                               isUnlocked
-                                ? "bg-[#E7FB10]/10 border-[#E7FB10]/30"
+                                ? "bg-[#D4FF1F]/10 border-[#D4FF1F]/30"
                                 : "bg-white/5 border-white/10"
                             }`}
                           >
                             <div className="flex items-center gap-3">
                               <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                isUnlocked ? "bg-[#E7FB10]/20" : "bg-white/10"
+                                isUnlocked ? "bg-[#D4FF1F]/20" : "bg-white/10"
                               }`}>
                                 {isUnlocked ? (
-                                  <CheckCircle2 className="w-4 h-4 text-[#E7FB10]" />
+                                  <CheckCircle2 className="w-4 h-4 text-[#D4FF1F]" />
                                 ) : (
                                   <Icon className="w-4 h-4 text-white/40" />
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={`text-sm font-medium truncate ${isUnlocked ? "text-[#E7FB10]" : "text-white/80"}`}>
+                                  <span className={`text-sm font-medium truncate ${isUnlocked ? "text-[#D4FF1F]" : "text-white/80"}`}>
                                     {milestone.reward}
                                   </span>
                                   <Badge
                                     variant="secondary"
                                     className={`text-[10px] flex-shrink-0 ${
                                       isUnlocked
-                                        ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                                        ? "bg-[#D4FF1F]/20 text-[#D4FF1F]"
                                         : "bg-white/10 text-white/50"
                                     }`}
                                   >
@@ -1603,9 +1603,9 @@ export default function Academy() {
                 ) : (
                   <BlurredGate
                     previewContent={
-                      <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6">
+                      <Card className="bg-gradient-to-br from-[#D4FF1F]/5 to-[#9d4edd]/5 border-[#D4FF1F]/20 p-6">
                         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                          <Gift className="w-5 h-5 text-[#E7FB10]" />
+                          <Gift className="w-5 h-5 text-[#D4FF1F]" />
                           Reward Milestones
                         </h3>
                         <div className="space-y-3">
@@ -1679,7 +1679,7 @@ export default function Academy() {
           <DialogContent data-testid="persona-quiz-dialog" className="bg-[#1a1a1f] border-white/10 max-w-lg">
             <DialogHeader>
               <DialogTitle className="text-xl text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-[#E7FB10]" />
+                <Target className="w-5 h-5 text-[#D4FF1F]" />
                 Personalize Your Journey
               </DialogTitle>
               <DialogDescription className="text-white/60">
@@ -1751,7 +1751,7 @@ export default function Academy() {
 
             <div className="flex flex-col gap-2 mt-6">
               <Button
-                className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-medium"
+                className="w-full bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-medium"
                 disabled={!pendingPersona}
                 onClick={() => {
                   if (pendingPersona) {

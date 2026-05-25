@@ -14,7 +14,7 @@ const melanotanTypes: MelanotanType[] = [
   {
     id: 0,
     name: "Melanotan 1",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     receptors: [
       { name: "MC1R", level: 95, effect: "Pigmentation" },
       { name: "MC3R", level: 15, effect: "Minimal" },
@@ -149,11 +149,11 @@ function StructureComparison({ isInView }: { isInView: boolean }) {
         initial={{ opacity: 0, x: -20 }}
         animate={isInView ? { opacity: 1, x: 0 } : {}}
       >
-        <div className="text-sm font-bold text-[#E7FB10] mb-2">MT1 (Linear)</div>
+        <div className="text-sm font-bold text-[#D4FF1F] mb-2">MT1 (Linear)</div>
         <svg viewBox="0 0 100 30" className="w-full h-8">
           <motion.line
             x1="10" y1="15" x2="90" y2="15"
-            stroke="#E7FB10"
+            stroke="#D4FF1F"
             strokeWidth="3"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
@@ -164,7 +164,7 @@ function StructureComparison({ isInView }: { isInView: boolean }) {
             <motion.circle
               key={i}
               cx={x} cy="15" r="4"
-              fill="#E7FB10"
+              fill="#D4FF1F"
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ delay: 0.7 + i * 0.1 }}
@@ -230,7 +230,7 @@ export function MelanotanReceptorVisual() {
   }, [isPlaying, isInView]);
 
   const icons = [
-    { Icon: Sun, label: "Pigmentation", color: "#E7FB10" },
+    { Icon: Sun, label: "Pigmentation", color: "#D4FF1F" },
     { Icon: Heart, label: "Sexual Function", color: "#ec4899" },
     { Icon: Palette, label: "Photoprotection", color: "#21d8ff" },
     { Icon: Brain, label: "Central Effects", color: "#9d4edd" },
@@ -259,7 +259,7 @@ export function MelanotanReceptorVisual() {
           }}
         >
           <Sun className="h-5 w-5" style={{ color: melanotanTypes[activeType].color, filter: `drop-shadow(0 0 4px ${melanotanTypes[activeType].color}60)` }} />
-          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+          <span className="text-sm font-bold bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
             Melanocortin Receptor Selectivity
           </span>
         </div>

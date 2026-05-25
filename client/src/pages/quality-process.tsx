@@ -180,13 +180,13 @@ export default function QualityProcess() {
             </div>
           </Card>
 
-          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/10 rounded-full blur-3xl" />
+          <Card className="p-8 border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4FF1F]/10 rounded-full blur-3xl" />
             <div className="relative">
-              <div className="w-14 h-14 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center mb-4">
-                <QrCode className="h-7 w-7 text-[#E7FB10]" />
+              <div className="w-14 h-14 rounded-xl bg-[#D4FF1F]/20 flex items-center justify-center mb-4">
+                <QrCode className="h-7 w-7 text-[#D4FF1F]" />
               </div>
-              <h3 className="font-display text-xl font-bold mb-3 text-[#E7FB10]">
+              <h3 className="font-display text-xl font-bold mb-3 text-[#D4FF1F]">
                 Full Traceability
               </h3>
               <p className="text-muted-foreground mb-4">
@@ -196,15 +196,15 @@ export default function QualityProcess() {
               </p>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#D4FF1F]" />
                   Unique batch numbers per production run
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#D4FF1F]" />
                   QR codes linked to COA verification
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#D4FF1F]" />
                   Complete production history on record
                 </li>
               </ul>
@@ -219,7 +219,7 @@ export default function QualityProcess() {
           className="mb-16"
         >
           <Card className="p-8 border-[#21d8ff]/20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/5 via-[#21d8ff]/5 to-[#9d4edd]/5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#D4FF1F]/5 via-[#21d8ff]/5 to-[#9d4edd]/5" />
             <div className="relative">
               <div className="text-center mb-8">
                 <Badge className="mb-4 bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">

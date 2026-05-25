@@ -88,7 +88,7 @@ export default function DosageCalculator() {
     <div className="min-h-screen bg-[#0d0d10] pt-20">
       <SEOHead title="Peptide Dosage Calculator" description="Calculate precise dosing for your research. Professional-grade calculator for peptide reconstitution." canonicalPath="/tools/peptide-reconstitution-calculator" />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/8 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4FF1F]/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#21d8ff]/8 rounded-full blur-[100px]" />
         <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-[#a855f7]/6 rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-[#22c55e]/5 rounded-full blur-[90px]" />
@@ -104,10 +104,10 @@ export default function DosageCalculator() {
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/20 mb-4"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4FF1F]/10 border border-[#D4FF1F]/20 mb-4"
             >
-              <Sparkles className="h-4 w-4 text-[#E7FB10]" />
-              <span className="text-sm text-[#E7FB10]">Precision Research Tool</span>
+              <Sparkles className="h-4 w-4 text-[#D4FF1F]" />
+              <span className="text-sm text-[#D4FF1F]">Precision Research Tool</span>
             </motion.div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
               Peptide Dosage Calculator
@@ -122,19 +122,19 @@ export default function DosageCalculator() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="mb-3 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/15 via-[#E7FB10]/8 to-transparent border border-[#E7FB10]/40 hover-elevate active-elevate-2 group"
+            className="mb-3 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#D4FF1F]/15 via-[#D4FF1F]/8 to-transparent border border-[#D4FF1F]/40 hover-elevate active-elevate-2 group"
             data-testid="link-try-wizard"
           >
-            <div className="p-2.5 rounded-lg bg-[#E7FB10]/20 flex-shrink-0">
-              <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+            <div className="p-2.5 rounded-lg bg-[#D4FF1F]/20 flex-shrink-0">
+              <Sparkles className="h-5 w-5 text-[#D4FF1F]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[#E7FB10]">New: Reconstitution Wizard</p>
+              <p className="text-sm font-medium text-[#D4FF1F]">New: Reconstitution Wizard</p>
               <p className="text-xs text-gray-400 mt-0.5">
                 Prefer a guided step-by-step flow with animated syringe and a printable Vial Card?
               </p>
             </div>
-            <span className="text-xs text-[#E7FB10] font-medium hidden sm:inline group-hover:translate-x-1 transition-transform">
+            <span className="text-xs text-[#D4FF1F] font-medium hidden sm:inline group-hover:translate-x-1 transition-transform">
               Try it →
             </span>
           </motion.a>
@@ -165,21 +165,21 @@ export default function DosageCalculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-b from-[#18181c] to-[#131316] rounded-2xl border border-[#E7FB10]/20 overflow-hidden shadow-2xl shadow-[#E7FB10]/5"
+            className="bg-gradient-to-b from-[#18181c] to-[#131316] rounded-2xl border border-[#D4FF1F]/20 overflow-hidden shadow-2xl shadow-[#D4FF1F]/5"
           >
             <div className="flex items-center justify-between px-6 py-3 border-b border-[#2a2a32] bg-[#0d0d10]/50">
               <div className="flex items-center gap-2">
                 {isBeginnerMode ? (
                   <GraduationCap className="h-4 w-4 text-[#21d8ff]" />
                 ) : (
-                  <Zap className="h-4 w-4 text-[#E7FB10]" />
+                  <Zap className="h-4 w-4 text-[#D4FF1F]" />
                 )}
                 <span className="text-sm text-gray-400">
                   {isBeginnerMode ? "Beginner Mode" : "Expert Mode"}
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`text-xs ${!isBeginnerMode ? 'text-[#E7FB10]' : 'text-gray-500'}`}>Expert</span>
+                <span className={`text-xs ${!isBeginnerMode ? 'text-[#D4FF1F]' : 'text-gray-500'}`}>Expert</span>
                 <Switch
                   checked={isBeginnerMode}
                   onCheckedChange={setIsBeginnerMode}
@@ -190,11 +190,11 @@ export default function DosageCalculator() {
               </div>
             </div>
 
-            <div className="p-6 border-b border-[#2a2a32] bg-gradient-to-r from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
+            <div className="p-6 border-b border-[#2a2a32] bg-gradient-to-r from-[#D4FF1F]/5 via-transparent to-[#21d8ff]/5">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1.5">
-                    <Target className="h-3 w-3 text-[#E7FB10]" />
+                    <Target className="h-3 w-3 text-[#D4FF1F]" />
                     Dose
                     {isBeginnerMode && (
                       <Tooltip>
@@ -213,13 +213,13 @@ export default function DosageCalculator() {
                       value={doseValue}
                       onChange={(e) => setDoseValue(e.target.value)}
                       onFocus={(e) => e.target.select()}
-                      className="bg-[#0d0d10] border-[#2a2a32] text-white rounded-r-none h-9 text-sm focus:border-[#E7FB10] focus:ring-[#E7FB10]/20"
+                      className="bg-[#0d0d10] border-[#2a2a32] text-white rounded-r-none h-9 text-sm focus:border-[#D4FF1F] focus:ring-[#D4FF1F]/20"
                       data-testid="input-dose-value"
                     />
                     <Tabs value={doseUnit} onValueChange={(v) => setDoseUnit(v as "mcg" | "mg")}>
                       <TabsList className="h-9 rounded-l-none bg-[#1a1a1f] border border-l-0 border-[#2a2a32]">
-                        <TabsTrigger value="mcg" className="text-xs h-7 px-2 data-[state=active]:bg-[#E7FB10]/20 data-[state=active]:text-[#E7FB10]" data-testid="tab-dose-mcg">mcg</TabsTrigger>
-                        <TabsTrigger value="mg" className="text-xs h-7 px-2 data-[state=active]:bg-[#E7FB10]/20 data-[state=active]:text-[#E7FB10]" data-testid="tab-dose-mg">mg</TabsTrigger>
+                        <TabsTrigger value="mcg" className="text-xs h-7 px-2 data-[state=active]:bg-[#D4FF1F]/20 data-[state=active]:text-[#D4FF1F]" data-testid="tab-dose-mcg">mcg</TabsTrigger>
+                        <TabsTrigger value="mg" className="text-xs h-7 px-2 data-[state=active]:bg-[#D4FF1F]/20 data-[state=active]:text-[#D4FF1F]" data-testid="tab-dose-mg">mg</TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
@@ -323,7 +323,7 @@ export default function DosageCalculator() {
                         <div className="flex gap-3 text-xs">
                           <div className="text-center">
                             <p className="text-gray-500">Concentration</p>
-                            <p className="text-[#E7FB10] font-medium">{calculations.concentration.toFixed(2)} mg/mL</p>
+                            <p className="text-[#D4FF1F] font-medium">{calculations.concentration.toFixed(2)} mg/mL</p>
                           </div>
                           <div className="border-l border-[#2a2a32]" />
                           <div className="text-center">
@@ -469,9 +469,9 @@ export default function DosageCalculator() {
               
               <div className="relative">
                 <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-0.5 z-0">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a855f7] rounded-full" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#a855f7] rounded-full" />
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a855f7] rounded-full blur-sm"
+                    className="absolute inset-0 bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#a855f7] rounded-full blur-sm"
                     animate={{ opacity: [0.5, 1, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
@@ -488,7 +488,7 @@ export default function DosageCalculator() {
                       title="CONCENTRATION"
                       description="Divide peptide amount by water volume to get how much peptide is in each mL"
                       example="5mg ÷ 2mL = 2.5 mg/mL"
-                      color="#E7FB10"
+                      color="#D4FF1F"
                       icon={<FlaskConical className="h-4 w-4" />}
                     />
                   </motion.div>
@@ -673,7 +673,7 @@ function PlainEnglishSummary({ calculations, syringeSize, doseValue, doseUnit }:
           <h4 className="text-[#22c55e] text-lg font-bold tracking-wide">Your Instructions</h4>
           <div className="space-y-2 text-sm">
             <p className="text-white leading-relaxed">
-              <span className="text-[#E7FB10] font-bold text-base">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
+              <span className="text-[#D4FF1F] font-bold text-base">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
             </p>
             <p className="text-gray-200 leading-relaxed">
               This equals <span className="text-[#21d8ff] font-semibold text-base">{doseDisplay}</span> per injection.
@@ -890,7 +890,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 <stop offset="100%" stopColor="#1a1a1f" />
               </linearGradient>
               <linearGradient id="liquidFill" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={isOverflow ? "#ef4444" : "#E7FB10"} stopOpacity="1" />
+                <stop offset="0%" stopColor={isOverflow ? "#ef4444" : "#D4FF1F"} stopOpacity="1" />
                 <stop offset="100%" stopColor={isOverflow ? "#991b1b" : "#0ea5e9"} stopOpacity="0.8" />
               </linearGradient>
               <linearGradient id="plunger" x1="0%" y1="0%" x2="0%" y2="100%">

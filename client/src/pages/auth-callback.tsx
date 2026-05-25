@@ -101,7 +101,7 @@ export default function AuthCallback() {
           <p className="text-muted-foreground mb-6">{errorMsg}</p>
           <a
             href="/login"
-            className="inline-block px-6 py-2 bg-[#E7FB10] text-black font-semibold rounded-md hover:opacity-90 transition-opacity"
+            className="inline-block px-6 py-2 bg-[#D4FF1F] text-black font-semibold rounded-md hover:opacity-90 transition-opacity"
           >
             Back to sign in
           </a>
@@ -113,7 +113,7 @@ export default function AuthCallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-4 border-[#E7FB10] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-[#D4FF1F] border-t-transparent rounded-full animate-spin" />
         <p className="text-muted-foreground text-sm">Completing sign-in...</p>
       </div>
     </div>

@@ -84,7 +84,7 @@ function HeroSection() {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/3 right-1/4 w-[150px] h-[150px] md:w-[400px] md:h-[400px] bg-[#E7FB10]/10 rounded-full blur-[60px] md:blur-[120px]"
+          className="absolute bottom-1/3 right-1/4 w-[150px] h-[150px] md:w-[400px] md:h-[400px] bg-[#D4FF1F]/10 rounded-full blur-[60px] md:blur-[120px]"
           animate={{ 
             opacity: [0.2, 0.4, 0.2],
             scale: [1.1, 1, 1.1]
@@ -107,7 +107,7 @@ function HeroSection() {
           >
             Everyone sells peptides.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff]">Nobody teaches them.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF1F] via-white to-[#21d8ff]">Nobody teaches them.</span>
           </h1>
         </motion.div>
 
@@ -129,8 +129,8 @@ function HeroSection() {
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
             <div className="relative inline-block">
-              <div className="absolute inset-0 rounded-md bg-[#E7FB10]/10 opacity-20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
-              <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+              <div className="absolute inset-0 rounded-md bg-[#D4FF1F]/10 opacity-20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+              <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#D4FF1F] text-black border-2 border-[#D4FF1F] shadow-[0_0_30px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
                 Shop Peptides
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -152,7 +152,7 @@ function HeroSection() {
           data-testid="div-hero-trust-strip"
         >
           <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-compound-count">
-            <Beaker className="h-3.5 w-3.5 text-[#E7FB10]/60 flex-shrink-0" />
+            <Beaker className="h-3.5 w-3.5 text-[#D4FF1F]/60 flex-shrink-0" />
             {compoundCount !== null ? `${compoundCount} Compounds` : "Compounds"}
           </span>
           <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
@@ -199,7 +199,7 @@ const educationCategories = [
 // Academy modules for teaser
 const academyModules = [
   { name: "Orientation", description: "Peptide fundamentals & legal compliance", color: "#21d8ff" },
-  { name: "Core Foundations", description: "Purity, storage & reconstitution", color: "#E7FB10" },
+  { name: "Core Foundations", description: "Purity, storage & reconstitution", color: "#D4FF1F" },
   { name: "Research Skills", description: "COA interpretation & lab safety", color: "#9d4edd" },
   { name: "Lab Confidence", description: "Real-world research workflows", color: "#22c55e" },
 ];
@@ -252,7 +252,7 @@ function EducationTeaser() {
                   <Badge className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
                     <BookOpen className="h-3 w-3 mr-1" /> 4 Modules
                   </Badge>
-                  <Badge className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+                  <Badge className="text-xs bg-[#D4FF1F]/20 text-[#D4FF1F] border-[#D4FF1F]/30">
                     <Zap className="h-3 w-3 mr-1" /> 17 Lessons
                   </Badge>
                   <Badge className="text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 hidden sm:inline-flex">
@@ -407,7 +407,7 @@ function EducationTeaser() {
 function CTASection() {
   const hoverCapable = useHoverCapable();
   return (
-    <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
+    <section className="py-16 md:py-20 text-primary-foreground bg-[#D4FF1F]">
       <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

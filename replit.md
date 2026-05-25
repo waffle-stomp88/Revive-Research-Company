@@ -9,7 +9,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### UI/UX Decisions
-The platform utilizes an Apple-inspired aesthetic with a dark charcoal background (`#1a1a1f`) complemented by neon yellow (`#E7FB10`) and cyan (`#21d8ff`) accents. Visual elements include glowing borders, neon shadows, animated pulse effects, and scale-up hover effects. DM Sans is used for body text and Bebas Neue for display. Legal compliance is visually reinforced with prominent FDA disclaimers and "Research Use Only" (RUO) warning boxes, featuring distinct color borders and subtle animations. Dashboards incorporate ambient background gradients and time-based greetings for an immersive experience.
+The platform utilizes an Apple-inspired aesthetic with a dark charcoal background (`#1a1a1f`) complemented by chartreuse (`#D4FF1F`) and cyan (`#21d8ff`) accents. Visual elements include glowing borders, neon shadows, animated pulse effects, and scale-up hover effects. DM Sans is used for body text and Bebas Neue for display. Legal compliance is visually reinforced with prominent FDA disclaimers and "Research Use Only" (RUO) warning boxes, featuring distinct color borders and subtle animations. Dashboards incorporate ambient background gradients and time-based greetings for an immersive experience.
 
 ### Technical Implementations
 The platform is built with a full-stack TypeScript architecture.

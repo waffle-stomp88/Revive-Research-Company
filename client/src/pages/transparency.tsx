@@ -29,7 +29,7 @@ const values = [
     icon: Shield,
     title: "Uncompromising Quality",
     description: "Every batch undergoes third-party testing. We never cut corners on purity or consistency.",
-    color: "#E7FB10",
+    color: "#D4FF1F",
   },
   {
     icon: Users,
@@ -95,9 +95,9 @@ export default function Transparency() {
           transition={{ delay: 0.1 }}
           className="mb-16"
         >
-          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+          <Card className="p-8 border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
             <div className="max-w-3xl mx-auto text-center">
-              <Award className="h-12 w-12 text-[#E7FB10] mx-auto mb-4" />
+              <Award className="h-12 w-12 text-[#D4FF1F] mx-auto mb-4" />
               <h2 className="font-display text-2xl font-bold mb-4">Our Mission</h2>
               <p className="text-lg text-muted-foreground">
                 To provide researchers with the highest quality peptide compounds, backed by 
@@ -245,15 +245,15 @@ export default function Transparency() {
           </Link>
 
           <Link href="/coa-library">
-            <Card className="p-6 h-full border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-colors cursor-pointer group" data-testid="link-coa-library">
-              <Shield className="h-8 w-8 text-[#E7FB10] mb-4" />
-              <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#E7FB10] transition-colors">
+            <Card className="p-6 h-full border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-colors cursor-pointer group" data-testid="link-coa-library">
+              <Shield className="h-8 w-8 text-[#D4FF1F] mb-4" />
+              <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#D4FF1F] transition-colors">
                 COA Library
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Browse our complete library of third-party verified certificates.
               </p>
-              <div className="flex items-center text-[#E7FB10] text-sm">
+              <div className="flex items-center text-[#D4FF1F] text-sm">
                 Browse Library <ArrowRight className="h-4 w-4 ml-1" />
               </div>
             </Card>

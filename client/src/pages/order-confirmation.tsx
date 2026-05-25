@@ -137,7 +137,7 @@ export default function OrderConfirmation() {
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
-            className="absolute top-20 left-10 w-64 h-64 bg-[#E7FB10]/5 rounded-full blur-3xl"
+            className="absolute top-20 left-10 w-64 h-64 bg-[#D4FF1F]/5 rounded-full blur-3xl"
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3]
@@ -164,13 +164,13 @@ export default function OrderConfirmation() {
           >
             {/* Animated checkmark with glow */}
             <motion.div 
-              className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20 flex items-center justify-center relative"
+              className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#D4FF1F]/20 to-[#21d8ff]/20 flex items-center justify-center relative"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
-              <div className="absolute inset-0 rounded-full bg-[#E7FB10]/20 animate-ping" />
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#E7FB10] to-[#21d8ff] flex items-center justify-center shadow-[0_0_40px_rgba(231,251,16,0.4)]">
+              <div className="absolute inset-0 rounded-full bg-[#D4FF1F]/20 animate-ping" />
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4FF1F] to-[#21d8ff] flex items-center justify-center shadow-[0_0_40px_rgba(231,251,16,0.4)]">
                 <CheckCircle className="w-10 h-10 text-black" />
               </div>
             </motion.div>
@@ -180,13 +180,13 @@ export default function OrderConfirmation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+              <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-[#D4FF1F] to-[#21d8ff] bg-clip-text text-transparent">
                 {isManualPayment && (paymentMethod === "venmo" || paymentMethod === "cashapp")
                   ? "Order Pending"
                   : "Order Confirmed!"}
               </h1>
               <p className="text-lg text-muted-foreground flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#E7FB10]" />
+                <Sparkles className="w-5 h-5 text-[#D4FF1F]" />
                 {isManualPayment && (paymentMethod === "venmo" || paymentMethod === "cashapp")
                   ? "Complete your payment below to confirm"
                   : "Thank you for choosing Revive Research"}
@@ -275,9 +275,9 @@ export default function OrderConfirmation() {
                               <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
                             </Button>
                           </div>
-                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50 mb-4">
-                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
-                            <p className="text-sm font-semibold text-[#E7FB10]">
+                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#D4FF1F]/15 border border-[#D4FF1F]/50 mb-4">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#D4FF1F]" />
+                            <p className="text-sm font-semibold text-[#D4FF1F]">
                               This is the <span className="underline underline-offset-2">ONLY</span> thing to write in the note — nothing else
                             </p>
                           </div>
@@ -287,7 +287,7 @@ export default function OrderConfirmation() {
                       {/* Footer */}
                       <div className="pt-4" style={{ borderTopColor: "#00AFF130", borderTopWidth: 1 }}>
                         <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#D4FF1F]" />
                           <p className="text-sm font-semibold text-foreground">
                             Your order status will update to "Paid" once we confirm your Venmo transfer.
                           </p>
@@ -356,9 +356,9 @@ export default function OrderConfirmation() {
                               <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
                             </Button>
                           </div>
-                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50 mb-4">
-                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
-                            <p className="text-sm font-semibold text-[#E7FB10]">
+                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#D4FF1F]/15 border border-[#D4FF1F]/50 mb-4">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#D4FF1F]" />
+                            <p className="text-sm font-semibold text-[#D4FF1F]">
                               This is the <span className="underline underline-offset-2">ONLY</span> thing to write in the note — nothing else
                             </p>
                           </div>
@@ -368,7 +368,7 @@ export default function OrderConfirmation() {
                       {/* Footer */}
                       <div className="pt-4" style={{ borderTopColor: "#00D63230", borderTopWidth: 1 }}>
                         <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#D4FF1F]" />
                           <p className="text-sm font-semibold text-foreground">
                             Your order status will update to "Paid" once we confirm your CashApp transfer.
                           </p>
@@ -398,9 +398,9 @@ export default function OrderConfirmation() {
                               <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
                             </Button>
                           </div>
-                          <div className="flex items-center gap-2 mt-3 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50">
-                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
-                            <p className="text-sm font-semibold text-[#E7FB10]">
+                          <div className="flex items-center gap-2 mt-3 rounded-md px-3 py-2.5 bg-[#D4FF1F]/15 border border-[#D4FF1F]/50">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#D4FF1F]" />
+                            <p className="text-sm font-semibold text-[#D4FF1F]">
                               This is the <span className="underline underline-offset-2">ONLY</span> thing you should write in the {methodName} note — nothing else
                             </p>
                           </div>
@@ -446,7 +446,7 @@ export default function OrderConfirmation() {
 
                       <div className="mt-4 pt-4" style={{ borderTopColor: `${color}30`, borderTopWidth: 1 }}>
                         <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#D4FF1F]" />
                           <p className="text-sm font-semibold text-foreground">
                             Your order status will update to "Paid" once we confirm your {methodName} transfer.
                           </p>
@@ -465,18 +465,18 @@ export default function OrderConfirmation() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="p-6 mb-6 border-[#E7FB10]/20 bg-gradient-to-br from-card/80 to-card shadow-[0_0_30px_rgba(231,251,16,0.1)]">
+            <Card className="p-6 mb-6 border-[#D4FF1F]/20 bg-gradient-to-br from-card/80 to-card shadow-[0_0_30px_rgba(231,251,16,0.1)]">
               <div className="flex items-center gap-3 mb-5">
-                <div className="p-2 rounded-lg bg-[#E7FB10]/10">
-                  <Package className="w-5 h-5 text-[#E7FB10]" />
+                <div className="p-2 rounded-lg bg-[#D4FF1F]/10">
+                  <Package className="w-5 h-5 text-[#D4FF1F]" />
                 </div>
                 <h2 className="font-display text-xl font-semibold">Order Details</h2>
               </div>
               
               {(paypalOrderId || orderId) && (
-                <div className="bg-gradient-to-r from-[#E7FB10]/5 to-[#21d8ff]/5 border border-[#E7FB10]/20 rounded-lg p-4 mb-5">
+                <div className="bg-gradient-to-r from-[#D4FF1F]/5 to-[#21d8ff]/5 border border-[#D4FF1F]/20 rounded-lg p-4 mb-5">
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Order Reference</p>
-                  <p className="font-mono text-sm font-medium text-[#E7FB10]">
+                  <p className="font-mono text-sm font-medium text-[#D4FF1F]">
                     #{getShortOrderRef(paypalOrderId || orderId || '')}
                   </p>
                 </div>
@@ -523,7 +523,7 @@ export default function OrderConfirmation() {
                           </div>
                         </div>
                         {item.price > 0 && (
-                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${Math.round(item.price * item.quantity)}</p>
+                          <p className="font-bold text-base text-[#D4FF1F] tabular-nums flex-shrink-0">${Math.round(item.price * item.quantity)}</p>
                         )}
                       </motion.div>
                     ))}
@@ -561,7 +561,7 @@ export default function OrderConfirmation() {
                     )}
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-[#E7FB10]">${orderSummary.total.toFixed(2)}</span>
+                      <span className="text-[#D4FF1F]">${orderSummary.total.toFixed(2)}</span>
                     </div>
                   </div>
                   
@@ -586,8 +586,8 @@ export default function OrderConfirmation() {
                 </div>
 
                 <div className="flex items-start gap-4 p-3 rounded-lg md:hover:bg-muted/20 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-5 h-5 text-[#E7FB10]" />
+                  <div className="w-10 h-10 rounded-full bg-[#D4FF1F]/10 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-[#D4FF1F]" />
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Processing Time</p>
@@ -673,7 +673,7 @@ export default function OrderConfirmation() {
           >
             <Button
               asChild
-              className="flex-1 font-display gap-2 bg-[#E7FB10] text-black md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.5)] transition-all duration-300"
+              className="flex-1 font-display gap-2 bg-[#D4FF1F] text-black md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_30px_rgba(231,251,16,0.5)] transition-all duration-300"
               size="lg"
               data-testid="button-continue-shopping"
             >

@@ -48,15 +48,15 @@ function DNAHelix() {
       >
         <defs>
           <linearGradient id="homeStrandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.9" />
+            <stop offset="0%" stopColor="#D4FF1F" stopOpacity="0.9" />
             <stop offset="25%" stopColor="#21d8ff" stopOpacity="1" />
             <stop offset="50%" stopColor="#9d4edd" stopOpacity="1" />
             <stop offset="75%" stopColor="#ec4899" stopOpacity="1" />
-            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#D4FF1F" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="homeStrandGradient2" x1="100%" y1="0%" x2="0%" y2="0%">
             <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.9" />
-            <stop offset="25%" stopColor="#E7FB10" stopOpacity="1" />
+            <stop offset="25%" stopColor="#D4FF1F" stopOpacity="1" />
             <stop offset="50%" stopColor="#ec4899" stopOpacity="1" />
             <stop offset="75%" stopColor="#9d4edd" stopOpacity="1" />
             <stop offset="100%" stopColor="#21d8ff" stopOpacity="0.9" />
@@ -94,7 +94,7 @@ function DNAHelix() {
         />
         
         {[40, 80, 120, 160, 200, 240, 280, 320, 360].map((x, index) => {
-          const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
+          const colors = ['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
           const color = colors[index % colors.length];
           const y1 = index % 2 === 0 ? 35 : 85;
           const y2 = index % 2 === 0 ? 85 : 35;
@@ -149,8 +149,8 @@ function DNAHelix() {
           style={{ 
             top: '50%',
             left: `${10 + i * 20}%`,
-            background: ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i],
-            filter: `blur(0.5px) drop-shadow(0 0 8px ${['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]})`
+            background: ['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i],
+            filter: `blur(0.5px) drop-shadow(0 0 8px ${['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]})`
           }}
           animate={{
             x: [0, 100, 200, 300],
@@ -188,7 +188,7 @@ export function MolecularDNAVisual() {
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-[#E7FB10]/10 rounded-full blur-[60px] md:blur-[120px]"
+          className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-[#D4FF1F]/10 rounded-full blur-[60px] md:blur-[120px]"
           animate={{ 
             opacity: [0.15, 0.35, 0.15],
             scale: [1.1, 1, 1.1]
@@ -225,13 +225,13 @@ export function MolecularDNAVisual() {
             transition={{ delay: 0.2 }}
           >
             <Dna className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
-            <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+            <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#D4FF1F] bg-clip-text text-transparent">
               Precision Engineered Peptides
             </span>
           </motion.div>
           
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#9d4edd]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#9d4edd]">
               The Building Blocks of Innovation
             </span>
           </h2>
@@ -250,7 +250,7 @@ export function MolecularDNAVisual() {
           className="grid grid-cols-3 gap-4 md:gap-8 mt-12 max-w-3xl mx-auto"
         >
           {[
-            { icon: FlaskConical, label: "Lab Synthesized", value: "99%+ Pure", color: "#E7FB10" },
+            { icon: FlaskConical, label: "Lab Synthesized", value: "99%+ Pure", color: "#D4FF1F" },
             { icon: Atom, label: "Quality Verified", value: "3rd Party", color: "#21d8ff" },
             { icon: Dna, label: "Research Grade", value: "Certified", color: "#9d4edd" },
           ].map((item, index) => {
@@ -306,12 +306,12 @@ export function MolecularDNAVisual() {
       {/* Floating molecules - hidden on mobile for performance */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         {[
-          { delay: 0, x: '10%', size: 6, color: '#E7FB10' },
+          { delay: 0, x: '10%', size: 6, color: '#D4FF1F' },
           { delay: 2, x: '25%', size: 8, color: '#21d8ff' },
           { delay: 4, x: '40%', size: 5, color: '#9d4edd' },
           { delay: 1, x: '60%', size: 7, color: '#ec4899' },
           { delay: 3, x: '75%', size: 6, color: '#f97316' },
-          { delay: 5, x: '90%', size: 8, color: '#E7FB10' },
+          { delay: 5, x: '90%', size: 8, color: '#D4FF1F' },
         ].map((props, i) => (
           <FloatingMolecule key={i} {...props} />
         ))}

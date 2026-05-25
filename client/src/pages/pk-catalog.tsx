@@ -66,7 +66,7 @@ type CanonicalSystem = typeof SYSTEM_ORDER[number];
 
 const SYSTEM_COLORS: Record<CanonicalSystem, string> = {
   Healing:   "#21d8ff",
-  Metabolic: "#E7FB10",
+  Metabolic: "#D4FF1F",
   Growth:    "#a78bfa",
   Cognitive: "#34d399",
   Skin:      "#f472b6",
@@ -303,8 +303,8 @@ function CompoundCard({
       transition={{ delay: index < 12 ? index * 0.02 : 0, duration: 0.3 }}
     >
       <div
-        className={`relative h-full flex flex-col rounded-md bg-[#07070b] border overflow-hidden transition-all duration-150${highlighted ? " pk-highlight-pulse" : ""}${isSelected ? " ring-2 ring-[#E7FB10]/60 border-[#E7FB10]/30" : " border-white/8"}`}
-        style={{ borderLeft: `3px solid ${isSelected ? "#E7FB10" : rc.hex}` }}
+        className={`relative h-full flex flex-col rounded-md bg-[#07070b] border overflow-hidden transition-all duration-150${highlighted ? " pk-highlight-pulse" : ""}${isSelected ? " ring-2 ring-[#D4FF1F]/60 border-[#D4FF1F]/30" : " border-white/8"}`}
+        style={{ borderLeft: `3px solid ${isSelected ? "#D4FF1F" : rc.hex}` }}
         data-testid={`card-compound-${entry.slug}`}
       >
         {/* Comparison checkbox overlay */}
@@ -314,8 +314,8 @@ function CompoundCard({
             onClick={() => onToggleCompare?.(entry.slug)}
             className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded border-2 transition-all duration-150 focus:outline-none"
             style={{
-              backgroundColor: isSelected ? "#E7FB10" : "rgba(0,0,0,0.6)",
-              borderColor: isSelected ? "#E7FB10" : "rgba(255,255,255,0.3)",
+              backgroundColor: isSelected ? "#D4FF1F" : "rgba(0,0,0,0.6)",
+              borderColor: isSelected ? "#D4FF1F" : "rgba(255,255,255,0.3)",
             }}
             aria-label={isSelected ? `Remove ${entry.name} from comparison` : `Add ${entry.name} to comparison`}
             aria-pressed={isSelected}
@@ -383,7 +383,7 @@ function CompoundCard({
               )}
               {(dual || ivOverlay) && (
                 <Badge
-                  className="text-[9px] px-1.5 py-0.5 gap-0.5 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/25 shrink-0"
+                  className="text-[9px] px-1.5 py-0.5 gap-0.5 bg-[#D4FF1F]/10 text-[#D4FF1F] border border-[#D4FF1F]/25 shrink-0"
                   data-testid={`badge-dual-route-${entry.slug}`}
                 >
                   <ArrowLeftRight className="h-2.5 w-2.5" />
@@ -685,7 +685,7 @@ function ComparisonTray({
             {/* Header row */}
             <div className="flex items-center justify-between mb-2.5 gap-3 flex-wrap">
               <div className="flex items-center gap-2">
-                <GitCompareArrows className="h-4 w-4 text-[#E7FB10]" />
+                <GitCompareArrows className="h-4 w-4 text-[#D4FF1F]" />
                 <span className="text-sm font-semibold text-foreground">
                   Comparing {selectedEntries.length} compounds
                 </span>
@@ -960,7 +960,7 @@ export default function PkCatalog() {
             <p className="text-foreground/70 text-sm max-w-2xl">
               Published pharmacokinetic half-life data for{" "}
               <span className="text-foreground font-medium">{CATALOG_ENTRIES.length} research compounds</span>.{" "}
-              <span className="text-[#E7FB10]/80">{dualCount} compounds</span> have meaningful route-dependent
+              <span className="text-[#D4FF1F]/80">{dualCount} compounds</span> have meaningful route-dependent
               kinetics — their IV and SC half-lives are shown side-by-side without needing a toggle.
             </p>
           </div>
@@ -977,14 +977,14 @@ export default function PkCatalog() {
           </div>
 
           {/* PK info box */}
-          <div className="flex gap-2 items-start rounded-md bg-[#E7FB10]/5 border border-[#E7FB10]/20 px-3 py-2.5 mb-6">
-            <Info className="h-4 w-4 text-[#E7FB10]/70 flex-shrink-0 mt-0.5" />
+          <div className="flex gap-2 items-start rounded-md bg-[#D4FF1F]/5 border border-[#D4FF1F]/20 px-3 py-2.5 mb-6">
+            <Info className="h-4 w-4 text-[#D4FF1F]/70 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-foreground/65 leading-relaxed">
-              <span className="text-[#E7FB10]/90 font-medium">About dual-route compounds.</span>{" "}
+              <span className="text-[#D4FF1F]/90 font-medium">About dual-route compounds.</span>{" "}
               Some compounds are studied via multiple administration routes (e.g. IV and SC). Route
               of administration affects the absorption phase, altering the apparent half-life
               researchers observe in plasma. Compounds marked{" "}
-              <span className="inline-flex items-center gap-0.5 text-[#E7FB10] font-medium">
+              <span className="inline-flex items-center gap-0.5 text-[#D4FF1F] font-medium">
                 <ArrowLeftRight className="h-3 w-3 inline" /> Dual Route
               </span>{" "}
               have published data for both routes shown side-by-side.
@@ -1023,7 +1023,7 @@ export default function PkCatalog() {
                 onClick={() => setGroupBySystem((v) => !v)}
                 className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded border transition-colors ${
                   groupBySystem
-                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    ? "bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/30"
                     : "bg-transparent text-muted-foreground/60 border-white/15 hover:border-white/30 hover:text-muted-foreground"
                 }`}
                 data-testid="button-group-by-system"
@@ -1039,7 +1039,7 @@ export default function PkCatalog() {
                 onClick={toggleComparisonMode}
                 className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded border transition-colors ${
                   comparisonMode
-                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    ? "bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/30"
                     : "bg-transparent text-muted-foreground/60 border-white/15 hover:border-white/30 hover:text-muted-foreground"
                 }`}
                 data-testid="button-toggle-comparison"
@@ -1075,11 +1075,11 @@ export default function PkCatalog() {
 
             {/* Comparison mode hint */}
             {comparisonMode && (
-              <div className="flex items-center gap-2 text-[11px] text-[#E7FB10]/60 bg-[#E7FB10]/5 border border-[#E7FB10]/15 rounded px-3 py-1.5">
+              <div className="flex items-center gap-2 text-[11px] text-[#D4FF1F]/60 bg-[#D4FF1F]/5 border border-[#D4FF1F]/15 rounded px-3 py-1.5">
                 <GitCompareArrows className="h-3 w-3 shrink-0" />
                 Select 2–4 compounds to compare their PK profiles side-by-side.
                 {selectedSlugs.size >= 2 && (
-                  <span className="text-[#E7FB10]/80 font-medium ml-1">
+                  <span className="text-[#D4FF1F]/80 font-medium ml-1">
                     Comparison tray is ready below.
                   </span>
                 )}
@@ -1153,7 +1153,7 @@ export default function PkCatalog() {
                 onClick={() => setDualFilter((f) => (f === "all" ? "dual-only" : "all"))}
                 className={`inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded border transition-colors ${
                   dualFilter === "dual-only"
-                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    ? "bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/30"
                     : "bg-transparent text-muted-foreground/60 border-white/8 hover:border-white/20 hover:text-muted-foreground"
                 }`}
                 data-testid="button-filter-dual-route"
@@ -1177,7 +1177,7 @@ export default function PkCatalog() {
               {groupedSections.map(({ system, entries }) => {
                 const accentColor =
                   system !== "Other"
-                    ? (SYSTEM_COLORS[system as CanonicalSystem] ?? "#E7FB10")
+                    ? (SYSTEM_COLORS[system as CanonicalSystem] ?? "#D4FF1F")
                     : "#ffffff44";
                 const sectionTestId = `section-system-${system.toLowerCase()}`;
                 // Running index for stagger animation — continues across sections

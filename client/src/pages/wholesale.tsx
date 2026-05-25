@@ -47,7 +47,7 @@ const pricingTiers = [
     range: "250–499", 
     discount: "25%", 
     label: "Silver",
-    color: "#E7FB10" 
+    color: "#D4FF1F" 
   },
   { 
     range: "500–999", 
@@ -107,7 +107,7 @@ function SavingsCalculator() {
   const getTierColor = (qty: number) => {
     if (qty >= 1000) return "#22c55e";
     if (qty >= 500) return "#a855f7";
-    if (qty >= 250) return "#E7FB10";
+    if (qty >= 250) return "#D4FF1F";
     if (qty >= 100) return "#21d8ff";
     return "#6b7280";
   };
@@ -120,10 +120,10 @@ function SavingsCalculator() {
   const tierColor = getTierColor(quantity);
   
   return (
-    <Card className="p-6 md:p-8 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 to-transparent">
+    <Card className="p-6 md:p-8 border-2 border-[#D4FF1F]/50 bg-gradient-to-br from-[#D4FF1F]/10 to-transparent">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-[#E7FB10]/30 flex items-center justify-center">
-          <Calculator className="h-6 w-6 text-[#E7FB10]" />
+        <div className="w-12 h-12 rounded-xl bg-[#D4FF1F]/30 flex items-center justify-center">
+          <Calculator className="h-6 w-6 text-[#D4FF1F]" />
         </div>
         <div>
           <h3 className="font-display text-xl font-bold">Savings Calculator</h3>
@@ -171,7 +171,7 @@ function SavingsCalculator() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setQuantity(preset)}
-                className={quantity >= preset ? "text-[#E7FB10]" : "text-muted-foreground"}
+                className={quantity >= preset ? "text-[#D4FF1F]" : "text-muted-foreground"}
                 data-testid={`button-preset-${preset}`}
               >
                 {preset}
@@ -191,14 +191,14 @@ function SavingsCalculator() {
           </div>
         </div>
         
-        <div className="p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/30 to-[#22c55e]/30 border border-[#E7FB10]/50">
+        <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4FF1F]/30 to-[#22c55e]/30 border border-[#D4FF1F]/50">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Estimated Savings</p>
-              <p className="text-3xl font-bold text-[#E7FB10]">Up to ${savings.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#D4FF1F]">Up to ${savings.toLocaleString()}</p>
             </div>
             <div className="text-right">
-              <Badge style={{ backgroundColor: tierColor, color: tierColor === "#E7FB10" ? "black" : "white" }} className="mb-1">{tierLabel}</Badge>
+              <Badge style={{ backgroundColor: tierColor, color: tierColor === "#D4FF1F" ? "black" : "white" }} className="mb-1">{tierLabel}</Badge>
               <p className="text-lg font-bold text-[#22c55e]">Up to {(discount * 100).toFixed(0)}% OFF</p>
             </div>
           </div>
@@ -315,11 +315,11 @@ export default function Wholesale() {
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
             Scale Your Business with{" "}
             <span className="relative inline-block">
-              <span className="relative z-10 bg-gradient-to-r from-[#21d8ff] via-[#a855f7] to-[#E7FB10] text-transparent bg-clip-text">
+              <span className="relative z-10 bg-gradient-to-r from-[#21d8ff] via-[#a855f7] to-[#D4FF1F] text-transparent bg-clip-text">
                 Premium Supply
               </span>
               <motion.span 
-                className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/20 via-[#a855f7]/20 to-[#E7FB10]/20 blur-xl -z-10"
+                className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/20 via-[#a855f7]/20 to-[#D4FF1F]/20 blur-xl -z-10"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 3, repeat: Infinity }}
               />
@@ -369,7 +369,7 @@ export default function Wholesale() {
                 { value: "98%+", label: "Purity Verified", icon: Shield, color: "#22c55e" },
                 { value: "24-48hr", label: "Fast Shipping", icon: Truck, color: "#21d8ff" },
                 { value: "100+", label: "Active Partners", icon: Users, color: "#a855f7" },
-                { value: "35%", label: "Max Discount", icon: TrendingUp, color: "#E7FB10" },
+                { value: "35%", label: "Max Discount", icon: TrendingUp, color: "#D4FF1F" },
               ].map((stat, index) => {
                 const Icon = stat.icon;
                 return (
@@ -431,7 +431,7 @@ export default function Wholesale() {
               <motion.div 
                 className="h-full rounded-full"
                 style={{ 
-                  background: "linear-gradient(90deg, #21d8ff 0%, #E7FB10 33%, #a855f7 66%, #22c55e 100%)" 
+                  background: "linear-gradient(90deg, #21d8ff 0%, #D4FF1F 33%, #a855f7 66%, #22c55e 100%)" 
                 }}
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
@@ -512,7 +512,7 @@ export default function Wholesale() {
             {/* Connecting line */}
             <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-px">
               <motion.div 
-                className="h-full bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#22c55e]"
+                className="h-full bg-gradient-to-r from-[#21d8ff] via-[#D4FF1F] to-[#22c55e]"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1.5, delay: 0.5 }}
@@ -522,7 +522,7 @@ export default function Wholesale() {
             <div className="grid md:grid-cols-3 gap-8 md:gap-4">
               {[
                 { step: 1, title: "Apply", desc: "Complete our quick form with your business details", icon: FileText, color: "#21d8ff" },
-                { step: 2, title: "Get Approved", desc: "Our team reviews within 24-48 hours", icon: BadgeCheck, color: "#E7FB10" },
+                { step: 2, title: "Get Approved", desc: "Our team reviews within 24-48 hours", icon: BadgeCheck, color: "#D4FF1F" },
                 { step: 3, title: "Start Ordering", desc: "Access wholesale pricing and place bulk orders", icon: Package, color: "#22c55e" },
               ].map((item, index) => {
                 const Icon = item.icon;
@@ -552,7 +552,7 @@ export default function Wholesale() {
                       <Icon className="h-10 w-10" style={{ color: item.color }} />
                       <span 
                         className="absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
-                        style={{ backgroundColor: item.color, color: item.color === "#E7FB10" ? "black" : "white" }}
+                        style={{ backgroundColor: item.color, color: item.color === "#D4FF1F" ? "black" : "white" }}
                       >
                         {item.step}
                       </span>

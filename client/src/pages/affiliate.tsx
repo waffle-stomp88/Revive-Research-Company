@@ -217,7 +217,7 @@ export default function AffiliatePage() {
               <Button
                 size="lg"
                 onClick={() => scrollToSection("apply")}
-                className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto"
+                className="gap-2 bg-[#D4FF1F] text-black font-display text-lg hover:bg-[#D4FF1F]/90 w-full sm:w-auto"
                 style={{
                   boxShadow: "0 0 30px rgba(231, 251, 16, 0.6)",
                 }}
@@ -250,7 +250,7 @@ export default function AffiliatePage() {
               transition={{ delay: 0 }}
               className="text-center"
             >
-              <p className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#D4FF1F]">
                 <AnimatedCounter value={10} suffix="%" duration={1.5} />
               </p>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">Tier 1</p>
@@ -339,27 +339,27 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="p-5 h-full border-2 border-[#E7FB10]/60 bg-gradient-to-br from-[#E7FB10]/10 to-transparent relative overflow-hidden animate-[pulse-glow-yellow_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)' }}>
+              <Card className="p-5 h-full border-2 border-[#D4FF1F]/60 bg-gradient-to-br from-[#D4FF1F]/10 to-transparent relative overflow-hidden animate-[pulse-glow-yellow_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)' }}>
                 <div className="absolute top-3 right-3">
-                  <Badge className="bg-[#E7FB10] text-black font-bold text-xs">TIER 1</Badge>
+                  <Badge className="bg-[#D4FF1F] text-black font-bold text-xs">TIER 1</Badge>
                 </div>
                 
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-[#E7FB10]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#D4FF1F]/20 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-[#D4FF1F]" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wider">Direct Sales</p>
-                    <p className="font-display text-3xl font-bold text-[#E7FB10]">10%</p>
+                    <p className="font-display text-3xl font-bold text-[#D4FF1F]">10%</p>
                   </div>
                 </div>
 
                 <p className="text-sm text-muted-foreground mb-3">
-                  When someone uses your public affiliate link or discount code, they receive <span className="text-[#E7FB10] font-semibold">10% off</span> and you earn <span className="text-[#E7FB10] font-semibold">10% commission</span>.
+                  When someone uses your public affiliate link or discount code, they receive <span className="text-[#D4FF1F] font-semibold">10% off</span> and you earn <span className="text-[#D4FF1F] font-semibold">10% commission</span>.
                 </p>
 
                 <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
-                  <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                  <CheckCircle className="h-3 w-3 text-[#D4FF1F]" />
                   No caps, no limits, no monthly sales requirement
                 </p>
 
@@ -370,16 +370,16 @@ export default function AffiliatePage() {
                       <Users className="h-5 w-5 text-[#9d4edd]" />
                     </div>
                     <p className="text-xs text-muted-foreground">Customer</p>
-                    <p className="text-[10px] text-[#E7FB10]">Gets 10% off</p>
+                    <p className="text-[10px] text-[#D4FF1F]">Gets 10% off</p>
                   </div>
                   <div className="flex-1 flex items-center justify-center gap-1">
-                    <ArrowRight className="h-4 w-4 text-[#E7FB10]" />
+                    <ArrowRight className="h-4 w-4 text-[#D4FF1F]" />
                     <span className="text-xs text-muted-foreground hidden sm:inline">your link</span>
-                    <ArrowRight className="h-4 w-4 text-[#E7FB10]" />
+                    <ArrowRight className="h-4 w-4 text-[#D4FF1F]" />
                   </div>
                   <div className="text-center">
-                    <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center mx-auto mb-1">
-                      <DollarSign className="h-5 w-5 text-[#E7FB10]" />
+                    <div className="w-10 h-10 rounded-full bg-[#D4FF1F]/20 flex items-center justify-center mx-auto mb-1">
+                      <DollarSign className="h-5 w-5 text-[#D4FF1F]" />
                     </div>
                     <p className="text-xs text-muted-foreground">You Earn 10%</p>
                   </div>
@@ -460,7 +460,7 @@ export default function AffiliatePage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">10 sales × $150 × 10%</span>
-                    <span className="text-[#E7FB10] font-semibold">$150</span>
+                    <span className="text-[#D4FF1F] font-semibold">$150</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Partner referral bonus: 15 sales × $120 × 10%</span>
@@ -555,30 +555,30 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="p-5 h-full border-2 border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-transparent">
+              <Card className="p-5 h-full border-2 border-[#D4FF1F]/40 bg-gradient-to-br from-[#D4FF1F]/10 to-transparent">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center">
-                    <Gift className="h-5 w-5 text-[#E7FB10]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#D4FF1F]/20 flex items-center justify-center">
+                    <Gift className="h-5 w-5 text-[#D4FF1F]" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wider">Customer Gets</p>
-                    <p className="font-display text-2xl font-bold text-[#E7FB10]">10% Off</p>
+                    <p className="font-display text-2xl font-bold text-[#D4FF1F]">10% Off</p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  When customers use your public affiliate link or discount code, they automatically receive <span className="text-[#E7FB10] font-semibold">10% off</span> their purchase.
+                  When customers use your public affiliate link or discount code, they automatically receive <span className="text-[#D4FF1F] font-semibold">10% off</span> their purchase.
                 </p>
                 <div className="space-y-1 text-xs text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <CheckCircle className="h-3 w-3 text-[#D4FF1F]" />
                     <span>Ensures value for your audience</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <CheckCircle className="h-3 w-3 text-[#D4FF1F]" />
                     <span>Increases conversion rates</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <CheckCircle className="h-3 w-3 text-[#D4FF1F]" />
                     <span>You still earn 10% commission</span>
                   </div>
                 </div>

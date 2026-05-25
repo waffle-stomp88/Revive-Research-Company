@@ -110,7 +110,7 @@ function getProductBadges(
     badges.push({
       type: "selling-fast",
       label: "Selling Fast",
-      className: "bg-[#E7FB10] text-black font-semibold",
+      className: "bg-[#D4FF1F] text-black font-semibold",
       icon: TrendingUp
     });
   }
@@ -153,7 +153,7 @@ const CATEGORIES = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic", color: "#E7FB10", names: ["rr-a1", "rr-a2", "rr-a3", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c", "adipotide"] },
+  { id: "metabolic", label: "Metabolic", color: "#D4FF1F", names: ["rr-a1", "rr-a2", "rr-a3", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c", "adipotide"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3", "igf-des", "ghrp-2", "ghrp-6", "hexarelin", "sermorelin", "mgf", "peg-mgf", "ace-031"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500", "ll-37", "ara-290", "klow"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic", "melanotan"] },
@@ -639,11 +639,11 @@ function ProductsComponent() {
                 variant="outline"
                 size="default"
                 onClick={() => setSidebarOpen(true)}
-                className="h-10 px-3 bg-background/80 backdrop-blur-sm border-[#E7FB10]/30 hover:border-[#E7FB10] hover:bg-[#E7FB10]/10 gap-2 group"
+                className="h-10 px-3 bg-background/80 backdrop-blur-sm border-[#D4FF1F]/30 hover:border-[#D4FF1F] hover:bg-[#D4FF1F]/10 gap-2 group"
                 data-testid="button-show-sidebar"
               >
-                <PanelLeft className="h-5 w-5 text-[#E7FB10]" />
-                <span className="text-xs font-medium text-muted-foreground group-hover:text-[#E7FB10] transition-colors">Filters</span>
+                <PanelLeft className="h-5 w-5 text-[#D4FF1F]" />
+                <span className="text-xs font-medium text-muted-foreground group-hover:text-[#D4FF1F] transition-colors">Filters</span>
               </Button>
             </div>
           )}
@@ -662,7 +662,7 @@ function ProductsComponent() {
                   {/* Sidebar Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Filter className="h-5 w-5 text-[#E7FB10]" />
+                      <Filter className="h-5 w-5 text-[#D4FF1F]" />
                       <span className="font-semibold text-white">Filters</span>
                     </div>
                     <Button
@@ -1053,7 +1053,7 @@ function ProductsComponent() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-[29px] font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
+                                <h3 className="font-display text-[29px] font-black mb-0.5 md:group-hover:text-[#D4FF1F] transition-colors line-clamp-2 text-center">
                                   {product.name}
                                 </h3>
                                 <p className="text-muted-foreground/70 mb-0.5 sm:mb-1 line-clamp-1 text-center text-[11px]">
@@ -1066,7 +1066,7 @@ function ProductsComponent() {
                                       Sign in to see pricing
                                     </span>
                                   ) : (
-                                    <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#E7FB10]">
+                                    <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#D4FF1F]">
                                       {product.minPrice && product.maxPrice
                                         ? `$${Math.round(Number(product.minPrice))}–$${Math.round(Number(product.maxPrice))}`
                                         : `$${Math.round(Number(product.price))}`

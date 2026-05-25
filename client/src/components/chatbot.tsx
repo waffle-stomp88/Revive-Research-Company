@@ -16,7 +16,7 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 
 const CYAN = "#21d8ff";
-const YELLOW = "#E7FB10";
+const YELLOW = "#D4FF1F";
 
 interface Message {
   role: "user" | "assistant";

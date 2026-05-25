@@ -99,16 +99,16 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-display text-xl font-bold truncate group-hover:text-[#E7FB10] transition-colors leading-tight">
+                  <p className="font-display text-xl font-bold truncate group-hover:text-[#D4FF1F] transition-colors leading-tight">
                     {product.name}
                   </p>
                   {hidePrice ? (
                     <div className="flex items-center gap-1 mt-1">
-                      <Lock className="w-3 h-3" style={{ color: "#E7FB1060" }} />
+                      <Lock className="w-3 h-3" style={{ color: "#D4FF1F60" }} />
                       <span className="text-xs text-gray-500">Sign in for pricing</span>
                     </div>
                   ) : (
-                    <p className="text-base text-[#E7FB10] font-black mt-1">
+                    <p className="text-base text-[#D4FF1F] font-black mt-1">
                       ${Math.round(Number(product.price))}
                     </p>
                   )}
@@ -145,7 +145,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
               aria-label="Show recently viewed products"
             >
               <Clock className="h-5 w-5 text-[#21d8ff]" />
-              <span className="absolute -top-1 -right-1 bg-[#E7FB10] text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 bg-[#D4FF1F] text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {recentProducts.length}
               </span>
             </Button>
@@ -190,16 +190,16 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium truncate group-hover:text-[#E7FB10] transition-colors">
+                        <p className="text-xs font-medium truncate group-hover:text-[#D4FF1F] transition-colors">
                           {product.name}
                         </p>
                         {hidePrice ? (
                           <div className="flex items-center gap-1">
-                            <Lock className="w-2.5 h-2.5 flex-shrink-0" style={{ color: "#E7FB1055" }} />
+                            <Lock className="w-2.5 h-2.5 flex-shrink-0" style={{ color: "#D4FF1F55" }} />
                             <span className="text-[9px] text-gray-600">Sign in</span>
                           </div>
                         ) : (
-                          <p className="text-[10px] text-[#E7FB10]">
+                          <p className="text-[10px] text-[#D4FF1F]">
                             ${Math.round(Number(product.price))}
                           </p>
                         )}

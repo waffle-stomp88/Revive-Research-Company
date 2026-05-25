@@ -115,7 +115,7 @@ const trustStats = [
     suffix: "%",
     label: "Purity Verified",
     description: "Every batch exceeds 98% purity threshold",
-    color: "#E7FB10",
+    color: "#D4FF1F",
     showProgress: true,
   },
   {
@@ -232,7 +232,7 @@ export function AnimatedTrustStats() {
 }
 
 const companyStats = [
-  { value: 50000, suffix: "+", label: "Orders Shipped", icon: Package, color: "#E7FB10" },
+  { value: 50000, suffix: "+", label: "Orders Shipped", icon: Package, color: "#D4FF1F" },
   { value: 10000, suffix: "+", label: "Happy Researchers", icon: Users, color: "#21d8ff" },
   { value: 500, suffix: "+", label: "Batches Tested", icon: FlaskConical, color: "#9d4edd" },
   { value: 99, suffix: "%", label: "Satisfaction Rate", icon: CheckCircle2, color: "#22c55e" },

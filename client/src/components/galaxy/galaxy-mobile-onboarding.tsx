@@ -61,7 +61,7 @@ export function GalaxyMobileOnboarding({ onDismiss }: GalaxyMobileOnboardingProp
               style={{
                 width: "60vmax",
                 height: "60vmax",
-                background: "radial-gradient(circle, #E7FB10 0%, transparent 70%)",
+                background: "radial-gradient(circle, #D4FF1F 0%, transparent 70%)",
               }}
             />
             <div
@@ -82,9 +82,9 @@ export function GalaxyMobileOnboarding({ onDismiss }: GalaxyMobileOnboardingProp
             className="relative flex flex-col items-center text-center max-w-xs"
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-6">
-              <Sparkles className="h-3 w-3 text-[#E7FB10]" />
-              <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#E7FB10]">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4FF1F]/10 border border-[#D4FF1F]/30 mb-6">
+              <Sparkles className="h-3 w-3 text-[#D4FF1F]" />
+              <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#D4FF1F]">
                 Synergy Galaxy
               </span>
             </div>
@@ -107,7 +107,7 @@ export function GalaxyMobileOnboarding({ onDismiss }: GalaxyMobileOnboardingProp
             {/* Hint lines */}
             <div className="flex flex-col gap-2 mb-10 text-sm font-mono text-white/70">
               <span className="flex items-center gap-2">
-                <span className="text-[#E7FB10] text-xs">▸</span>
+                <span className="text-[#D4FF1F] text-xs">▸</span>
                 Tap a star to explore
               </span>
               <span className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export function GalaxyMobileOnboarding({ onDismiss }: GalaxyMobileOnboardingProp
             <Button
               size="lg"
               onClick={handleEnter}
-              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-mono font-semibold px-8 min-h-[52px] w-full"
+              className="bg-[#D4FF1F] text-black hover:bg-[#D4FF1F]/90 font-mono font-semibold px-8 min-h-[52px] w-full"
               data-testid="galaxy-onboarding-enter"
             >
               Enter Galaxy

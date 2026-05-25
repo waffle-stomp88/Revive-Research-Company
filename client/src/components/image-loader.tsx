@@ -33,7 +33,7 @@ export const ImageLoader = memo(function ImageLoader({
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <div className="animate-spin">
-            <Loader2 className="h-8 w-8 text-[#E7FB10]" />
+            <Loader2 className="h-8 w-8 text-[#D4FF1F]" />
           </div>
         </div>
       )}

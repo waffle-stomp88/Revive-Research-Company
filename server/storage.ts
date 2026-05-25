@@ -2883,7 +2883,7 @@ export async function seedStripePresetsIfEmpty(): Promise<void> {
   if (existingCount > 0) return;
 
   const DEFAULT_PRESETS: Array<{ label: string; accentColor: string; sortOrder: number }> = [
-    { label: "Yellow-Green (Default / Regenerative)", accentColor: "#E7FB10", sortOrder: 0 },
+    { label: "Yellow-Green (Default / Regenerative)", accentColor: "#D4FF1F", sortOrder: 0 },
     { label: "Cyan (Cognitive / Neuro)", accentColor: "#21d8ff", sortOrder: 1 },
     { label: "Purple (GH / IGF-1 / Longevity)", accentColor: "#9d4edd", sortOrder: 2 },
     { label: "Violet (Longevity / Senolytic)", accentColor: "#a855f7", sortOrder: 3 },
@@ -3119,7 +3119,7 @@ This technique is also used in pharmaceutical manufacturing and long-term biolog
     {
       title: "What Purity Percentage Really Means",
       iconName: "FlaskConical",
-      accentColor: "#E7FB10",
+      accentColor: "#D4FF1F",
       publishedAt: new Date("2024-11-05"),
       category: "Quality",
       sortOrder: 3,
@@ -3270,7 +3270,7 @@ export async function seedResearchStacksIfEmpty(): Promise<void> {
       iconName: "Heart",
       color: "#22c55e",
       badge: "Most Popular",
-      badgeColor: "#E7FB10",
+      badgeColor: "#D4FF1F",
       category: "Recovery",
       synergyBonus: 95,
       showOnPage: true,
