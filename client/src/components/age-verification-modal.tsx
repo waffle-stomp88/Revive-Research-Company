@@ -192,7 +192,7 @@ export function AgeVerificationModal() {
                   />
                   <label
                     htmlFor="age-terms"
-                    className="font-medium cursor-pointer text-center"
+                    className="font-medium cursor-pointer pointer-events-none text-center"
                     style={{ color: '#ffffff', fontSize: '14px', lineHeight: 1.5 }}
                   >
                     I am 21 years of age or older and I accept the terms above and the full{' '}
@@ -201,7 +201,7 @@ export function AgeVerificationModal() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ color: '#21d8ff', textDecoration: 'underline' }}
+                      style={{ color: '#21d8ff', textDecoration: 'underline', pointerEvents: 'auto' }}
                     >
                       Terms of Service
                     </a>.
