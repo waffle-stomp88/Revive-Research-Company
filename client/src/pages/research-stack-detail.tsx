@@ -427,25 +427,6 @@ export default function ResearchStackDetail() {
               </div>
             )}
 
-            <Collapsible className="md:hidden mt-4">
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="w-full justify-between text-sm"
-                  data-testid="button-toggle-description-mobile"
-                >
-                  <span className="text-muted-foreground">About this stack</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2">
-                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-stack-description-mobile">
-                  {stack.longDescription}
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
-
             <Separator className="my-4 md:my-6" />
 
             {/* Compact RUO inline notice — desktop only */}
@@ -453,42 +434,6 @@ export default function ResearchStackDetail() {
               <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
               <span>For lawful research use only. Not for human or animal consumption.</span>
             </div>
-
-            {stack.educationLinks.length > 0 && (
-              <Collapsible className="md:hidden mb-6">
-                <CollapsibleTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-between border-[#ec4899]/30 hover:border-[#ec4899] text-sm"
-                    data-testid="button-toggle-education-mobile"
-                  >
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="h-4 w-4 text-[#ec4899]" />
-                      <span>Learn About These Peptides</span>
-                    </div>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-3 space-y-2">
-                  {stack.educationLinks.map((link) => (
-                    <Link key={link.peptideName} href={link.articleUrl}>
-                      <Card 
-                        className="p-3 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer"
-                        data-testid={`card-article-mobile-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <BookOpen className="h-4 w-4 text-[#ec4899] flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium truncate">{link.articleTitle}</h4>
-                          </div>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                      </Card>
-                    </Link>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            )}
 
           </motion.div>
         </div>
