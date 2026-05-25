@@ -757,40 +757,34 @@ export default function ResearchStackDetail() {
                   return (
                     <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card
-                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
+                        className="p-3 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
                         data-testid={`card-synergy-${partnerProduct.slug}`}
                       >
-                        <div className="flex flex-wrap items-start gap-4 h-full">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
+                        <div className="flex items-center gap-3 h-full">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-card flex-shrink-0">
                             <img
                               src={partnerProduct.imageUrl || productImage}
                               alt={partnerProduct.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="flex-1 min-w-0 flex flex-col h-full">
-                            <p className="font-medium text-sm truncate">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate mb-1.5">
                               {partnerProduct.name}
                             </p>
                             <Badge
-                              className="mt-2 text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
+                              className="text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
                             >
                               <Zap className="h-3 w-3 mr-1" />
                               {synergy.stack.name} • {synergy.synergyBonus}%
                             </Badge>
-                            {pairingReason && (
-                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1">
-                                {pairingReason.mechanism}
-                              </p>
-                            )}
-                            {!pairingReason && <div className="flex-1" />}
                             {softGated ? (
-                              <div className="inline-flex items-center gap-1 mt-2" style={{ color: "#9ca3af" }}>
+                              <div className="inline-flex items-center gap-1 mt-1.5" style={{ color: "#9ca3af" }}>
                                 <Lock className="w-3 h-3" />
                                 <span className="text-xs">Sign in for price</span>
                               </div>
                             ) : (
-                              <p className="text-sm font-bold text-[#D4FF1F] mt-2 mt-auto">
+                              <p className="text-sm font-bold text-[#D4FF1F] mt-1.5">
                                 ${Math.round(Number(partnerProduct.price))}
                               </p>
                             )}
