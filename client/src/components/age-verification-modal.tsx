@@ -134,7 +134,7 @@ export function AgeVerificationModal() {
                     gap: '8px',
                     paddingBottom: '12px',
                     marginBottom: '14px',
-                    borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
+                    borderBottom: '2px solid rgba(239, 68, 68, 0.35)',
                   }}
                 >
                   <AlertTriangle
