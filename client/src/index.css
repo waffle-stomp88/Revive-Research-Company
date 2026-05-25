@@ -48,16 +48,16 @@
     box-sizing: border-box;
   }
 
-  /* Prevent blinking text caret on non-editable interactive elements */
-  button, a, [role="button"], [role="link"], [role="tab"],
-  [role="menuitem"], [role="option"], label {
+  /* Prevent blinking text caret on all non-editable content site-wide */
+  *, *::before, *::after {
     caret-color: transparent;
     -webkit-user-select: none;
     user-select: none;
   }
 
-  /* Restore caret and selection for genuine text input elements */
-  input, textarea, [contenteditable="true"] {
+  /* Restore caret and selection for genuine text input elements only */
+  input, textarea, [contenteditable="true"],
+  input *, textarea *, [contenteditable="true"] * {
     caret-color: auto;
     -webkit-user-select: text;
     user-select: text;
