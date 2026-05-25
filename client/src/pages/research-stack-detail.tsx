@@ -5,12 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { buildPriceLookup, buildStockLookup, calculateStackPricing, isStackAvailable } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap, Check, FlaskConical, Lock
+  ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, CheckCircle, BookOpen, ChevronRight, ChevronDown, Zap, Check, FlaskConical, Lock
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useCart } from "@/contexts/CartContext";
@@ -55,9 +54,6 @@ import {
   MelanocortinArousalSynergyVisual,
 } from "@/components/education";
 
-type PurchaseType = "one-time" | "subscription";
-type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
-
 interface StackPeptideDetail { name: string; description: string; }
 interface StackEducationLink { articleUrl: string; peptideName: string; articleTitle: string; }
 interface StackDetail {
@@ -86,12 +82,6 @@ interface StackDetail {
   intentionalOverlap?: boolean;
 }
 
-const subscriptionOptions: { value: SubscriptionInterval; label: string; discount: number }[] = [
-  { value: "weekly", label: "Weekly", discount: 15 },
-  { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
-  { value: "monthly", label: "Monthly", discount: 10 },
-];
-
 const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
 export default function ResearchStackDetail() {
@@ -101,9 +91,6 @@ export default function ResearchStackDetail() {
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
   const softGated = SOFT_GATE_ENABLED && !isAuthenticated;
-  const [quantity, setQuantity] = useState(1);
-  const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
-  const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
   const [synergyLevel, setSynergyLevel] = useState<"beginner" | "expert">("beginner");
   const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "synergy">("overview");
 
@@ -213,33 +200,13 @@ export default function ResearchStackDetail() {
 
   const getBasePrice = () => pricing?.stackPrice ?? 0;
 
-  const getSelectedDiscount = () => {
-    if (purchaseType === "one-time") return 0;
-    const option = subscriptionOptions.find(o => o.value === subscriptionInterval);
-    return option?.discount || 0;
-  };
-
-  const getDiscountedPrice = () => {
-    const basePrice = getBasePrice();
-    const discount = getSelectedDiscount();
-    return basePrice * (1 - discount / 100);
-  };
-
-  const getTotalPrice = () => {
-    return getDiscountedPrice() * quantity;
-  };
-
-  const handleQuantityChange = (delta: number) => {
-    setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
-  };
-
   const handleAddToCart = async () => {
     await addToCart({
       productId: stack.id,
       bundleId: stack.id,
       name: stack.name,
       price: getBasePrice(),
-      quantity,
+      quantity: 1,
       dosage: "Research Stack",
       image: productImage,
       isBundle: true,
@@ -261,7 +228,7 @@ export default function ResearchStackDetail() {
       bundleId: stack.id,
       name: stack.name,
       price: getBasePrice(),
-      quantity,
+      quantity: 1,
       dosage: "Research Stack",
       image: productImage,
       isBundle: true,
@@ -276,7 +243,7 @@ export default function ResearchStackDetail() {
         description={stack.description}
         canonicalPath={`/research-stacks/${stack.id}`}
       />
-      <div className="max-w-7xl mx-auto px-4 pr-6 md:px-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-2 md:mb-4">
           <Link href="/research-stacks">
             <Button variant="ghost" size="sm" className="gap-1.5 -ml-2 md:-ml-4 md:gap-2" data-testid="button-back-stacks">
@@ -430,110 +397,6 @@ export default function ResearchStackDetail() {
               {stack.longDescription}
             </p>
 
-            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]" data-testid="box-quantity">
-              <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
-              <div className="flex items-center border rounded-md h-9 border-border bg-background">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  data-testid="button-quantity-minus"
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
-                  {quantity}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= 10}
-                  data-testid="button-quantity-plus"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="mb-3 md:mb-4">
-              <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Purchase Option</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "one-time" ? "border-[#D4FF1F] bg-[#D4FF1F]/5" : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("one-time")}
-                  data-testid="option-one-time"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">One-time</span>
-                    </div>
-                    {!softGated && <p className="text-xs text-muted-foreground mt-0.5">${Math.round(getBasePrice())}</p>}
-                  </div>
-                  {purchaseType === "one-time" && (
-                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#D4FF1F] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
-                      <Check className="h-3 w-3 text-black" />
-                    </div>
-                  )}
-                </div>
-
-                <div
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "subscription" ? "border-[#21d8ff] bg-[#21d8ff]/5" : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("subscription")}
-                  data-testid="option-subscription"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <Repeat className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">Subscribe</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">Auto-delivery</p>
-                  </div>
-                  {purchaseType === "subscription" && (
-                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center flex-shrink-0" data-testid="check-subscription">
-                      <Check className="h-3 w-3 text-black" />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {purchaseType === "subscription" && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-3 md:mb-4"
-              >
-                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {subscriptionOptions.map((option) => {
-                    const discountedPrice = getBasePrice() * (1 - option.discount / 100);
-                    return (
-                      <div
-                        key={option.value}
-                        className={`relative flex flex-col items-center p-2 rounded-lg border cursor-pointer transition-all ${
-                          subscriptionInterval === option.value ? "border-[#21d8ff] bg-[#21d8ff]/5" : "border-border hover:border-border/80"
-                        }`}
-                        onClick={() => setSubscriptionInterval(option.value)}
-                        data-testid={`option-interval-${option.value}`}
-                      >
-                        <span className="font-medium text-xs">{option.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
             <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
@@ -580,43 +443,29 @@ export default function ResearchStackDetail() {
                 </div>
               </div>
             ) : (
-              <>
-                <div className="flex flex-col gap-2" data-testid="stack-cta">
-                  <Button
-                    size="lg"
-                    className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
-                      purchaseType === "subscription"
-                        ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                        : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)]"
-                    }`}
-                    onClick={handleBuyNow}
-                    disabled={!canAddToCart}
-                    data-testid="button-buy-now"
-                  >
-                    {purchaseType === "subscription" ? (
-                      <><Repeat className="h-5 w-5" />Subscribe Now</>
-                    ) : (
-                      <><ShoppingCart className="h-5 w-5" />Buy Now</>
-                    )}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
-                    onClick={handleAddToCart}
-                    disabled={!canAddToCart}
-                    data-testid="button-add-to-cart"
-                  >
-                    <ShoppingBag className="h-5 w-5" />
-                    Add to Cart
-                  </Button>
-                </div>
-                {purchaseType === "subscription" && (
-                  <p className="text-[10px] text-center text-muted-foreground mt-1">
-                    Cancel anytime
-                  </p>
-                )}
-              </>
+              <div className="flex flex-col gap-2" data-testid="stack-cta">
+                <Button
+                  size="lg"
+                  className="w-full font-display font-bold gap-2 text-black bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212,255,31,0.4)] hover:shadow-[0_0_36px_rgba(212,255,31,0.75)] transition-shadow duration-300"
+                  onClick={handleBuyNow}
+                  disabled={!canAddToCart}
+                  data-testid="button-buy-now"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Buy Now — ${Math.round(getBasePrice())}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
+                  onClick={handleAddToCart}
+                  disabled={!canAddToCart}
+                  data-testid="button-add-to-cart"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+              </div>
             )}
 
             <Collapsible className="md:hidden mt-4">
