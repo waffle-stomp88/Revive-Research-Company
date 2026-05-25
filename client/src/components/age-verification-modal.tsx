@@ -124,7 +124,7 @@ export function AgeVerificationModal() {
                   marginBottom: '24px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px' }}>
                   <AlertTriangle
                     style={{ color: '#ef4444', width: '18px', height: '18px', flexShrink: 0 }}
                     aria-hidden="true"
@@ -132,7 +132,7 @@ export function AgeVerificationModal() {
                   <p
                     style={{
                       color: '#ef4444',
-                      fontSize: '11px',
+                      fontSize: '13px',
                       fontWeight: 600,
                       letterSpacing: '2px',
                       margin: 0,
