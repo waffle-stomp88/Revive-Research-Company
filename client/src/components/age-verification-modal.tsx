@@ -85,8 +85,8 @@ export function AgeVerificationModal() {
         <div className="age-modal-scroll-container">
           <motion.div
             style={{ opacity: 0 }}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
             className="age-modal-card"
           >
