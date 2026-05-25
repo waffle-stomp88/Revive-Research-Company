@@ -50,6 +50,12 @@ export function AgeVerificationModal() {
   }, [isLegalPage]);
 
   useEffect(() => {
+    // Remove the pre-React inline overlay injected by index.html
+    const pre = document.getElementById("pre-age-gate");
+    if (pre) pre.parentNode?.removeChild(pre);
+  }, []);
+
+  useEffect(() => {
     // Class is added synchronously in useState init for the initial open.
     // This effect only needs to clean up when the modal closes.
     if (!isOpen) {
