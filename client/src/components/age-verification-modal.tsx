@@ -125,8 +125,8 @@ export function AgeVerificationModal() {
                 }}
               >
                 <motion.div
-                  animate={{ opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
+                  animate={{ opacity: [0.55, 1, 0.55] }}
+                  transition={{ duration: 3, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
