@@ -171,25 +171,27 @@ export function AgeVerificationModal() {
 
               {/* 4. Checkbox + attestation */}
               <div
-                className="flex items-center gap-3 cursor-pointer"
+                className="flex flex-col items-center gap-3 cursor-pointer"
                 style={{ marginBottom: '24px' }}
                 onClick={() => setAgreed(!agreed)}
                 data-testid="button-age-terms"
               >
-                <Checkbox
-                  id="age-terms"
-                  checked={agreed}
-                  onCheckedChange={(checked) => setAgreed(checked === true)}
-                  data-testid="checkbox-age-verification"
-                  className="pointer-events-none flex-shrink-0 h-[18px] w-[18px]"
-                />
-                <label
-                  htmlFor="age-terms"
-                  className="font-medium cursor-pointer flex-1 pointer-events-none"
-                  style={{ color: '#ffffff', fontSize: '14px', lineHeight: 1.5 }}
-                >
-                  I am 21 or older and I understand the terms above.
-                </label>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="age-terms"
+                    checked={agreed}
+                    onCheckedChange={(checked) => setAgreed(checked === true)}
+                    data-testid="checkbox-age-verification"
+                    className="pointer-events-none flex-shrink-0 h-[18px] w-[18px]"
+                  />
+                  <label
+                    htmlFor="age-terms"
+                    className="font-medium cursor-pointer pointer-events-none text-center"
+                    style={{ color: '#ffffff', fontSize: '14px', lineHeight: 1.5 }}
+                  >
+                    I am 21 years or older and I understand the terms above.
+                  </label>
+                </div>
               </div>
 
               {/* 5 & 6. CTAs */}
