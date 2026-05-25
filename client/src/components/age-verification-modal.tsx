@@ -234,7 +234,7 @@ export function AgeVerificationModal() {
                 <Button
                   onClick={handleDecline}
                   variant="outline"
-                  className="w-full text-[#21d8ff] border-[#2a2a2f]"
+                  className="w-full text-[#21d8ff] border-[#2a2a2f] no-default-active-elevate"
                   style={{
                     borderRadius: '9px',
                     fontSize: '13px',
