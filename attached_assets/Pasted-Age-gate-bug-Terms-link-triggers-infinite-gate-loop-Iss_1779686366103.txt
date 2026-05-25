@@ -1,0 +1,51 @@
+Age gate bug — Terms link triggers infinite gate loop
+Issue:
+When a visitor clicks the "Terms of Service" link inside the age gate (before accepting), they navigate to the Terms page but the age gate fires again on that page. They cannot read the Terms they're being asked to accept, creating a logical paradox and a real UX dead-end.
+Legal context (why this matters beyond UX):
+Courts have ruled that Terms of Service are not enforceable if users don't have a fair opportunity to read them before accepting (Specht v. Netscape, 2002). Blocking access to terms behind an acceptance wall weakens our legal posture.
+Fix — whitelist legal/policy pages from the age gate:
+Update the age gate logic to NOT fire on these routes:
+
+The Terms of Service page (whatever route it currently uses, e.g. /terms or /terms-of-service)
+The Privacy Policy page
+Any other legal/policy pages (refund policy, RUO policy, etc.)
+
+On these whitelisted routes:
+
+The age gate modal should NOT appear, regardless of whether the visitor has accepted yet
+The page content (terms text, etc.) should display normally
+All other routes should still trigger the age gate as expected
+
+Implementation suggestion:
+Wherever the age gate currently checks "has user accepted?" before rendering, add a route-based exclusion. Something like:
+javascriptconst legalRoutes = ['/terms', '/privacy', '/refund-policy', '/ruo-policy'];
+const isLegalPage = legalRoutes.some(route => pathname.startsWith(route));
+
+if (!isLegalPage && !hasAccepted) {
+  // Show age gate
+}
+Use whatever routes actually exist — don't add routes that aren't real pages.
+Verification after deploy:
+
+Clear cookies / open incognito → age gate appears on homepage as expected
+Click "Terms of Service" link from the age gate → Terms page loads WITHOUT the age gate appearing
+Navigate to any other page (homepage, product, etc.) → age gate appears as expected
+After accepting on the age gate, all pages including Terms should be accessible normally
+Test on mobile: same behavior, no gate firing on legal pages
+
+
+Bonus thought:
+Consider whether the Terms page should have its own prominent "[Back to site]" link or "[I've read the Terms — return to age gate]" button at the bottom. After the visitor reads, they need an easy way back. If they just hit the back button, they'll land on the age gate again (correctly this time) and need to re-accept.
+
+
+That fix is straightforward — should be a 10-15 minute job for Replit.
+
+Status after this fix lands
+The age gate becomes fully production-ready:
+
+Brand-distinctive ✅
+Visually polished ✅
+Legally hardened ✅
+UX-coherent (no infinite loops) ✅
+
+Your call.Final move?

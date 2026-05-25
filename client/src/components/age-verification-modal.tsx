@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
+
+const LEGAL_ROUTES = ["/terms-of-service", "/terms", "/privacy", "/legal"];
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
 
@@ -15,16 +18,26 @@ function isSearchBot(): boolean {
 }
 
 export function AgeVerificationModal() {
+  const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
+  const isLegalPage = LEGAL_ROUTES.some(route => location.startsWith(route));
+
   useEffect(() => {
     if (isSearchBot()) return;
+    if (isLegalPage) return;
     const verified = localStorage.getItem(AGE_VERIFIED_KEY);
     if (!verified) {
       setIsOpen(true);
     }
-  }, []);
+  }, [isLegalPage]);
+
+  useEffect(() => {
+    if (isLegalPage) {
+      setIsOpen(false);
+    }
+  }, [isLegalPage]);
 
   useEffect(() => {
     if (isOpen) {
