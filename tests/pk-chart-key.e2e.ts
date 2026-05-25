@@ -137,11 +137,6 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     );
     await expect(tooltip).toBeAttached({ timeout: 5000 });
 
-    const hoverWrapper = mobilePage.locator(
-      '[data-testid="pk-mini-hover-cognitive-edge-stack"]'
-    );
-    await hoverWrapper.scrollIntoViewIfNeeded();
-
     // On touch-only devices, matchMedia("(hover: hover) and (pointer: fine)") is false,
     // so MiniPKChart never attaches its mouseenter listener.
     // We dispatch mouseenter programmatically to confirm no listener is active —

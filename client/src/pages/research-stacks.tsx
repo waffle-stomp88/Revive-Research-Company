@@ -3899,7 +3899,7 @@ function ResearchStacks() {
                     <Card className="relative overflow-hidden h-full cursor-pointer">
 
                       {/* ── MOBILE COMPACT LAYOUT ─────────────────────────── */}
-                      <div className="md:hidden p-3" data-testid={`card-stack-mobile-${stack.id}`}>
+                      <div className="md:hidden p-3" data-testid={`stack-mobile-${stack.id}`}>
                         <div className="flex gap-3 items-center">
                           <div
                             className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center"
