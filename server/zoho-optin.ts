@@ -80,7 +80,7 @@ export async function pushToZohoList(
     return { success: false, newContact: false, duplicate: false, error: `Network error: ${msg}` };
   }
 
-  const jsonMatch = bodyText.match(/##ZCJSONSTART##(.*?)##ZCJSON##/s);
+  const jsonMatch = bodyText.match(/##ZCJSONSTART##([\s\S]*?)##ZCJSON##/);
   if (!jsonMatch) {
     console.error(`[Zoho] ${list.label} unexpected response for ${email} — HTTP ${httpStatus} — body: ${bodyText.slice(0, 300)}`);
     return {
