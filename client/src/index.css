@@ -742,6 +742,8 @@ body.modal-open {
 .age-gate-cta {
   box-shadow: none;
   transition: box-shadow 0.25s ease, opacity 0.2s ease !important;
+  will-change: box-shadow, opacity;
+  isolation: isolate;
 }
 .age-gate-cta--active {
   box-shadow: 0 0 24px rgba(212, 255, 31, 0.35);
