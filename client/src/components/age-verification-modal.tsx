@@ -23,12 +23,18 @@ export function AgeVerificationModal() {
 
   const isLegalPage = LEGAL_ROUTES.some(route => location.startsWith(route));
 
-  // Synchronous init — no useEffect gap, so the overlay is present on the very first paint
+  // Synchronous init — lock the body scroll before the first paint so there's no
+  // mid-animation layout reflow from the useEffect firing a frame later
   const [isOpen, setIsOpen] = useState(() => {
     if (typeof window === "undefined") return false;
     if (isSearchBot()) return false;
     if (LEGAL_ROUTES.some(route => window.location.pathname.startsWith(route))) return false;
-    return !localStorage.getItem(AGE_VERIFIED_KEY);
+    const shouldOpen = !localStorage.getItem(AGE_VERIFIED_KEY);
+    if (shouldOpen) {
+      document.documentElement.classList.add("modal-open");
+      document.body.classList.add("modal-open");
+    }
+    return shouldOpen;
   });
 
   useEffect(() => {
@@ -44,14 +50,11 @@ export function AgeVerificationModal() {
   }, [isLegalPage]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.documentElement.classList.add("modal-open");
-      document.body.classList.add("modal-open");
-
-      return () => {
-        document.documentElement.classList.remove("modal-open");
-        document.body.classList.remove("modal-open");
-      };
+    // Class is added synchronously in useState init for the initial open.
+    // This effect only needs to clean up when the modal closes.
+    if (!isOpen) {
+      document.documentElement.classList.remove("modal-open");
+      document.body.classList.remove("modal-open");
     }
   }, [isOpen]);
 
