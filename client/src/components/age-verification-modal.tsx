@@ -162,7 +162,9 @@ export function AgeVerificationModal() {
                   </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
-                  <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>02</span>
+                  <span
+                    style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}
+                    className="text-[12px]">02</span>
                   <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
                     Purchaser assumes full responsibility for use, handling, and distribution.
                   </p>
