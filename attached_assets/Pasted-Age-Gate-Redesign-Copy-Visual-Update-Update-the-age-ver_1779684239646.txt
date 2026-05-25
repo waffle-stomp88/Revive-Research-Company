@@ -1,0 +1,138 @@
+Age Gate Redesign — Copy + Visual Update
+Update the age verification modal at client/src/components/age-verification-modal.tsx (or wherever the AgeVerification component lives). Several copy and visual changes, listed below in order of appearance in the modal.
+
+1. Logo block (top of modal)
+No changes. Keep current logo + REVIVE wordmark layout.
+
+2. Replace welcome paragraph with new headline + sub-copy
+Remove the current welcome paragraph entirely:
+Welcome to Revive Research. Every compound we offer is third-party tested with full documentation available. We believe researchers deserve transparency—from pricing to purity.
+Replace with a two-part headline/body structure:
+Headline (h1):
+You've seen this site a hundred times.
+Sub-copy (p, immediately below the h1):
+We're not going to convince you we're different. Walk in and judge for yourself.
+Style notes:
+
+Headline: large display size around 32–36px on desktop, scaling down responsively. White text. Font-weight 500. Letter-spacing -0.5px. Line-height 1.1. Center-aligned. Let it wrap naturally — don't force a hard line break.
+Sub-copy: 14–15px, color #b0b0b5 (or your text-secondary token). Line-height 1.6. Center-aligned. Max-width that keeps it readable but allows natural wrapping.
+Spacing: ~18–20px between headline and sub-copy. ~28–32px between sub-copy and the RUO block.
+
+
+3. RUO Compliance Block — REDESIGN with red warning styling
+Currently, the RUO bullets sit in a near-invisible gray box. Replace with a red-tinted warning block that makes this section the visual priority of the modal.
+Replace the current bullet box with this structure:
+html<div style="
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+">
+  <!-- Header row with icon + label -->
+  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+    <i class="ti ti-alert-triangle" style="color: #ef4444; font-size: 16px;" aria-hidden="true"></i>
+    <p style="
+      color: #ef4444;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      margin: 0;
+      text-transform: uppercase;
+    ">Research Use Only</p>
+  </div>
+
+  <!-- Compliance terms -->
+  <p style="color: #ffffff; font-size: 12px; line-height: 1.55; margin: 0 0 8px;">
+    For lawful research use only. Not for human or animal consumption.
+  </p>
+  <p style="color: #ffffff; font-size: 12px; line-height: 1.55; margin: 0;">
+    Purchaser assumes full responsibility for use, handling, and distribution.
+  </p>
+</div>
+Important visual specs:
+
+Box border: 1px solid rgba(239, 68, 68, 0.35) (subtle red border)
+Box background: rgba(239, 68, 68, 0.08) (subtle red tint)
+Border radius: 8px
+The "RESEARCH USE ONLY" label is uppercase, letterspacing 1.5px, color #ef4444
+The ti-alert-triangle icon is 16px, color #ef4444
+This styling exactly matches the RUO block in the welcome emails — intentional brand pattern consistency
+
+If ti-alert-triangle (Tabler Icons) isn't already loaded in the project, use a simple Unicode warning character ⚠ instead, sized appropriately and colored #ef4444. Don't add a new icon library dependency for one icon.
+
+4. Checkbox + attestation text
+Replace current text:
+I confirm that I am 21 years of age or older and agree to the terms above.
+With tighter wording:
+I am 21 or older and I understand the terms above.
+Keep the existing checkbox styling — chartreuse #D4FF1F background, black check icon, ~16px size. Text color stays white. Font-size around 12px. Vertical spacing: ~22px between the RUO block and this checkbox row.
+
+5. Primary CTA
+Replace button label:
+
+Current: Enter Site
+New: Prove it
+
+Keep all existing styling:
+
+Background: #D4FF1F
+Text: black, font-weight 500, font-size ~14px
+Lightning bolt icon (ti-bolt) at left of label, ~15px
+Padding: ~14px vertical
+Border-radius: ~9px
+Glow shadow: box-shadow: 0 0 24px rgba(212, 255, 31, 0.35)
+Full width of modal content area
+Disabled state remains until checkbox is checked
+
+
+6. Secondary CTA
+Replace button label:
+
+Current: Leave
+New: Not interested
+
+Keep all existing styling:
+
+Background: transparent
+Border: 1px solid #2a2a2f
+Text color: #21d8ff (cyan)
+Font-size: ~13px
+Padding: ~12px vertical
+Border-radius: ~9px
+Full width
+On click: redirect away (whatever URL it currently goes to)
+
+Vertical spacing: ~10px between primary and secondary buttons.
+
+7. Footer line (below secondary button)
+Keep the existing footer line:
+You must be 21+ to access this website.
+Style:
+
+Color: #555
+Font-size: 10px
+Letter-spacing: 0.5px
+Text-align: center
+Margin-top: ~22px
+
+
+8. Existing behavior — verify still works
+Confirm after the visual updates that all existing logic is intact:
+
+Modal appears on first visit (uncached) and dismisses on primary CTA click
+Cookie/localStorage persists the verification across page loads
+Checkbox must be checked before the primary CTA becomes enabled
+Secondary CTA still redirects to whatever URL it currently goes to
+Caret bug fix (if already deployed) is preserved on these new buttons
+Mobile rendering: headline reflows properly, no horizontal overflow, all tap targets remain ≥44px
+The data-testid="button-enter-site" attribute on the primary button — change the label to data-testid="button-prove-it" so test selectors stay semantic (or keep as-is if tests reference it)
+
+
+Visual reference
+The modal should feel calmer at the top (clean headline + restrained sub-copy), then visually escalate at the RUO block (red warning treatment grabs the eye), then resolve cleanly with the checkbox and chartreuse CTA. Three distinct visual zones: brand → legal → action. Each one is clearly the most important thing in its zone.
+Send me a screenshot once deployed so I can verify the typography weight and overall hierarchy renders correctly. Watch especially for:
+
+Headline weight rendering correctly at 500 (some font stacks make this look too thin)
+Red tint on the RUO block being visible but not aggressive — it should look serious, not alarming
+Mobile layout holding up at 320px width
