@@ -3908,24 +3908,20 @@ function ResearchStacks() {
                             <Icon className="h-6 w-6" style={{ color: stack.color }} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <h3 className="font-display font-bold text-white text-base leading-tight truncate">
-                                  {stack.name}
-                                </h3>
-                              </div>
-                              {stack.badge && (
-                                <Badge
-                                  className="flex-shrink-0 text-[10px]"
-                                  style={{
-                                    backgroundColor: stack.badgeColor,
-                                    color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
-                                  }}
-                                >
-                                  {stack.badge}
-                                </Badge>
-                              )}
-                            </div>
+                            <h3 className="font-display font-bold text-white text-base leading-tight truncate">
+                              {stack.name}
+                            </h3>
+                            {stack.badge && (
+                              <Badge
+                                className="mt-0.5 text-[10px]"
+                                style={{
+                                  backgroundColor: stack.badgeColor,
+                                  color: stack.badgeColor === "#D4FF1F" || stack.badgeColor === "#f59e0b" ? "black" : "white",
+                                }}
+                              >
+                                {stack.badge}
+                              </Badge>
+                            )}
                             <div className="flex items-center gap-1 mt-1.5 flex-wrap">
                               {stack.peptideNames.slice(0, 3).map((name) => (
                                 <span
