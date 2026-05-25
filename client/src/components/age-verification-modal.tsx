@@ -95,7 +95,8 @@ export function AgeVerificationModal() {
                     letterSpacing: '-0.8px',
                     lineHeight: 1.15,
                     marginBottom: '14px',
-                  }}
+                    textWrap: 'balance',
+                  } as React.CSSProperties}
                 >
                   You've seen this site a hundred times.
                 </h1>
@@ -105,8 +106,9 @@ export function AgeVerificationModal() {
                     color: '#b0b0b5',
                     lineHeight: 1.5,
                     margin: '0 auto',
-                    maxWidth: '440px',
-                  }}
+                    maxWidth: '370px',
+                    textWrap: 'pretty',
+                  } as React.CSSProperties}
                 >
                   We're not going to convince you we're different. Walk in and judge for yourself.
                 </p>
