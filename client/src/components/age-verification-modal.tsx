@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Zap, ChevronDown } from "lucide-react";
+import { AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
@@ -22,7 +22,6 @@ export function AgeVerificationModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 640);
-  const [ruoExpanded, setRuoExpanded] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -141,81 +140,47 @@ export function AgeVerificationModal() {
                   border: '1px solid rgba(239, 68, 68, 0.35)',
                   background: 'rgba(239, 68, 68, 0.08)',
                   borderRadius: '8px',
-                  padding: isMobile ? '10px 12px' : '16px 18px',
+                  padding: isMobile ? '8px 10px' : '16px 18px',
                   marginBottom: isMobile ? '12px' : '24px',
                 }}
               >
-                {/* Header — tappable on mobile to expand */}
                 <motion.div
                   animate={{ opacity: [0.55, 1, 0.55] }}
                   transition={{ duration: 3, ease: [0.45, 0, 0.55, 1], repeat: Infinity }}
-                  onClick={isMobile ? () => setRuoExpanded(v => !v) : undefined}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
-                    paddingBottom: (isMobile && !ruoExpanded) ? '0' : '12px',
-                    marginBottom: (isMobile && !ruoExpanded) ? '0' : '14px',
-                    borderBottom: (isMobile && !ruoExpanded) ? 'none' : '2px solid rgba(239, 68, 68, 0.35)',
-                    cursor: isMobile ? 'pointer' : 'default',
-                    position: 'relative',
+                    gap: '6px',
+                    paddingBottom: isMobile ? '8px' : '12px',
+                    marginBottom: isMobile ? '8px' : '14px',
+                    borderBottom: '2px solid rgba(239, 68, 68, 0.35)',
                   }}
                 >
-                  <AlertTriangle
-                    style={{ color: '#ef4444', width: '16px', height: '16px', flexShrink: 0 }}
-                    aria-hidden="true"
-                  />
-                  <p
-                    style={{
-                      color: '#ef4444',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      letterSpacing: '2px',
-                      margin: 0,
-                      textTransform: 'uppercase',
-                    }}
-                  >
+                  <AlertTriangle style={{ color: '#ef4444', width: isMobile ? '13px' : '18px', height: isMobile ? '13px' : '18px', flexShrink: 0 }} aria-hidden="true" />
+                  <p style={{ color: '#ef4444', fontSize: isMobile ? '10px' : '13px', fontWeight: 600, letterSpacing: '2px', margin: 0, textTransform: 'uppercase' }}>
                     Research Use Only
                   </p>
-                  {isMobile && (
-                    <ChevronDown
-                      style={{
-                        color: '#ef4444',
-                        width: '14px',
-                        height: '14px',
-                        flexShrink: 0,
-                        transform: ruoExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s ease',
-                        marginLeft: '2px',
-                      }}
-                    />
-                  )}
                 </motion.div>
 
-                {/* Items — always visible on desktop, collapsible on mobile */}
-                {(!isMobile || ruoExpanded) && (
-                  <>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '7px' }}>
-                      <span style={{ color: '#ef4444', fontSize: '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>01</span>
-                      <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
-                        For lawful research use only. Not intended for human or animal use of any kind — including ingestion, injection, inhalation, or topical application.
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '7px' }}>
-                      <span style={{ color: '#ef4444', fontSize: '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>02</span>
-                      <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
-                        Purchaser assumes full responsibility for use, handling, and distribution.
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '7px' }}>
-                      <span style={{ color: '#ef4444', fontSize: '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>03</span>
-                      <p style={{ color: '#ffffff', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
-                        The compounds are not FDA-approved or evaluated for safety or efficacy.
-                      </p>
-                    </div>
-                  </>
-                )}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: isMobile ? '5px' : '7px' }}>
+                  <span style={{ color: '#ef4444', fontSize: isMobile ? '11px' : '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>01</span>
+                  <p style={{ color: '#ffffff', fontSize: isMobile ? '11px' : '12px', lineHeight: 1.45, margin: 0 }}>
+                    For lawful research use only. Not intended for human or animal use of any kind — including ingestion, injection, inhalation, or topical application.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: isMobile ? '5px' : '7px' }}>
+                  <span style={{ color: '#ef4444', fontSize: isMobile ? '11px' : '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>02</span>
+                  <p style={{ color: '#ffffff', fontSize: isMobile ? '11px' : '12px', lineHeight: 1.45, margin: 0 }}>
+                    Purchaser assumes full responsibility for use, handling, and distribution.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: isMobile ? '5px' : '7px' }}>
+                  <span style={{ color: '#ef4444', fontSize: isMobile ? '11px' : '13px', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0, paddingTop: '1px', letterSpacing: '1px' }}>03</span>
+                  <p style={{ color: '#ffffff', fontSize: isMobile ? '11px' : '12px', lineHeight: 1.45, margin: 0 }}>
+                    The compounds are not FDA-approved or evaluated for safety or efficacy.
+                  </p>
+                </div>
               </div>
 
               {/* 4. Checkbox + attestation */}
@@ -262,12 +227,12 @@ export function AgeVerificationModal() {
                   <Button
                     onClick={handleEnter}
                     disabled={!agreed}
-                    className="w-full bg-[#D4FF1F] text-black text-[17px] font-semibold"
+                    className="w-full bg-[#D4FF1F] text-black text-[15px] font-semibold"
                     style={{
                       boxShadow: agreed ? '0 0 24px rgba(212, 255, 31, 0.35)' : 'none',
                       opacity: agreed ? 1 : 0.5,
                       cursor: agreed ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.2s ease',
+                      transition: 'box-shadow 0.2s ease, opacity 0.2s ease',
                       borderRadius: '9px',
                       paddingTop: '14px',
                       paddingBottom: '14px',
