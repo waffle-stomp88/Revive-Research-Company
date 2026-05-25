@@ -170,7 +170,7 @@ export function AgeVerificationModal() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '10px' }}>
                   <span style={{ color: '#ef4444', fontSize: '11px', fontFamily: 'monospace', fontWeight: 500, flexShrink: 0, paddingTop: '2px', letterSpacing: '1px' }}>03</span>
                   <p style={{ color: '#ffffff', fontSize: '13px', lineHeight: 1.55, margin: 0 }}>
-                    These compounds are not FDA-approved and have not been evaluated for safety or efficacy.
+                    The compounds are not FDA-approved or evaluated for safety or efficacy.
                   </p>
                 </div>
               </div>
