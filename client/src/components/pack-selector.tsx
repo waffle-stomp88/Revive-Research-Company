@@ -16,7 +16,7 @@ interface PackSelectorProps {
 export function PackSelector({ basePrice, selectedQty, onSelect, softGated = false, disabled = false }: PackSelectorProps) {
   return (
     <div data-testid="pack-selector">
-      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-2">Pack Size</p>
+      <p className="font-medium text-muted-foreground uppercase tracking-widest mb-2 text-[12px]">Pack Size</p>
       <div className="flex flex-col gap-1">
         {PACK_TIERS.map((tier) => {
           const isSelected = selectedQty === tier.qty;
