@@ -241,8 +241,11 @@ export async function addContactsToRestockQueue(contacts: RestockContact[]): Pro
 
 async function bulkAddContacts(listKey: string, contacts: RestockContact[]): Promise<void> {
   const token = await getAccessToken();
+  // emailids is mandatory for addlistsubscribersinbulk even when contactinfo is present.
+  // contactinfo carries the PRODUCT_NAME / PRODUCT_URL custom field values.
   const res   = await zohoPost("/addlistsubscribersinbulk", token, {
     listkey:     listKey,
+    emailids:    contacts.map(c => c.email.toLowerCase().trim()).join(","),
     contactinfo: buildContactInfo(contacts),
   });
   if (isZohoError(res)) {
