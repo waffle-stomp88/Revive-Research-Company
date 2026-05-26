@@ -187,7 +187,7 @@ test.describe("Price gate — blurred price matches real product price", () => {
   test.beforeEach(async ({ page }) => {
     // Accept the age gate so the modal does not block the price section
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
 
     await setupCommonMocks(page);
@@ -352,7 +352,7 @@ test.describe("Price gate — blurred price reflects selected dosage variant", (
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
     await setupDosageMocks(page);
   });

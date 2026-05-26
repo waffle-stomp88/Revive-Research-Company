@@ -14,9 +14,10 @@ const MOCK_TOTAL_STR = "99.99";
 
 test.describe("Order confirmation — Venmo deep-link pre-fill after page refresh", () => {
   test.beforeEach(async ({ page }) => {
-    // Pre-accept the age gate (stored in sessionStorage) so the modal doesn't block interactions.
+    // Pre-accept the age gate so the modal doesn't block interactions.
+    // The modal checks localStorage for a timestamp within the 7-day TTL window.
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
 
     await page.route(`**/api/orders/${MOCK_ORDER_ID}`, (route) => {
@@ -69,7 +70,7 @@ test.describe("Order confirmation — Venmo deep-link pre-fill after page refres
 test.describe("Order confirmation — CashApp deep-link pre-fill after page refresh", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
 
     await page.route(`**/api/orders/${MOCK_ORDER_ID}`, (route) => {

@@ -19,11 +19,10 @@ test.describe("PK Profile button — article page", () => {
   test.setTimeout(90000);
 
   // Bypass the age-verification modal so it never intercepts pointer events.
-  // The modal checks sessionStorage.getItem("revive-research-age-verified"); setting
-  // it here before each navigation prevents the modal from opening.
+  // The modal checks localStorage for a timestamp within the 7-day TTL window.
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
   });
 

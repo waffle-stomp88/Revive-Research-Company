@@ -19,13 +19,17 @@ import { test, expect } from "@playwright/test";
 const AGE_GATE_KEY = "revive-research-age-verified";
 
 test.describe("Proxy citation badge — browser rendering on product PK tabs", () => {
+  // Bypass the age-verification modal so it never intercepts pointer events.
+  // The modal checks localStorage for a timestamp within the 7-day TTL window.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript((key) => {
+      localStorage.setItem(key, Date.now().toString());
+    }, AGE_GATE_KEY);
+  });
+
   test("SNAP-8 product PK tab shows orange Proxy badge for off-compound proxy citation", async ({
     page,
   }) => {
-    // Seed the age gate before navigating to the product page
-    await page.goto("/");
-    await page.evaluate((key) => sessionStorage.setItem(key, "true"), AGE_GATE_KEY);
-
     await page.goto("/products/snap-8");
 
     // Wait for the research-tab nav to appear (confirms the product loaded)
@@ -55,9 +59,6 @@ test.describe("Proxy citation badge — browser rendering on product PK tabs", (
   test("PEG-MGF product PK tab shows orange Proxy badge for off-compound proxy citation", async ({
     page,
   }) => {
-    await page.goto("/");
-    await page.evaluate((key) => sessionStorage.setItem(key, "true"), AGE_GATE_KEY);
-
     await page.goto("/products/peg-mgf");
 
     await page.waitForSelector('[data-testid="nav-research-tabs"]', {
@@ -80,9 +81,6 @@ test.describe("Proxy citation badge — browser rendering on product PK tabs", (
   test("SNAP-8 Proxy badge tooltip contains off-compound proxy explanation text", async ({
     page,
   }) => {
-    await page.goto("/");
-    await page.evaluate((key) => sessionStorage.setItem(key, "true"), AGE_GATE_KEY);
-
     await page.goto("/products/snap-8");
 
     await page.waitForSelector('[data-testid="nav-research-tabs"]', {
@@ -110,9 +108,6 @@ test.describe("Proxy citation badge — browser rendering on product PK tabs", (
   test("BPC-157 product PK tab does NOT show a Proxy badge (direct compound-specific study)", async ({
     page,
   }) => {
-    await page.goto("/");
-    await page.evaluate((key) => sessionStorage.setItem(key, "true"), AGE_GATE_KEY);
-
     await page.goto("/products/bpc-157");
 
     await page.waitForSelector('[data-testid="nav-research-tabs"]', {
