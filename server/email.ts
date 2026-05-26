@@ -2157,6 +2157,8 @@ export async function sendInviteEmail(params: {
 // ---------------------------------------------------------------------------
 // Restock signup confirmation email
 // Sent immediately when a user signs up for an out-of-stock product alert.
+// Primary color: #D4FF1F (chartreuse). Merge data injected server-side via
+// TypeScript template literals — no Zoho merge tags used.
 // ---------------------------------------------------------------------------
 
 export function getRestockSignupConfirmationTemplate(params: {
@@ -2165,21 +2167,27 @@ export function getRestockSignupConfirmationTemplate(params: {
   productUrl: string;
 }): { subject: string; text: string; html: string } {
   const { email, productName, productUrl } = params;
-  const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
-  const siteUrl = process.env.SITE_URL || 'https://reviveresearch.co';
+  // #D4FF1F is the canonical chartreuse — pulled from brand config, never hardcoded
+  const chartreuse = styles.primaryColor; // '#D4FF1F'
+  const cyan       = styles.accentColor;  // '#21d8ff'
 
   const subject = `Restock alert set — ${productName}`;
 
   const text = `
-REVIVE RESEARCH
+REVIVE RESEARCH — Premium Research Compounds
 Restock Alert Confirmed
 
 You're on the list for ${productName}.
 
-We'll send you an email the moment it's back in stock. No action needed on your end.
+We'll email you the moment this compound is back in stock. No action needed on your end.
 
-View product: ${productUrl}
+Research documentation (COA) is available on the product page:
+${productUrl}
+
+Thank you for your interest in our research compounds. We take pride in every batch we source and verify. You'll hear from us the moment this compound is available.
+
+— The Revive Research Team
 
 ---
 RESEARCH USE ONLY
@@ -2201,56 +2209,106 @@ Unsubscribe: ${getUnsubscribeUrl(email)}
   <title>${subject}</title>
 </head>
 <body style="${styles.body}">
-  <div style="padding: 40px 20px; background-color: #0d0d0f;">
-    <div style="${styles.container}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);">
 
-      <!-- Header -->
-      <div style="${styles.header}">
-        <p style="${styles.logo}">Revive Research</p>
-        <h1 style="color: #ffffff; font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.5px;">
-          Restock Alert Set
-        </h1>
-        <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin: 8px 0 0 0;">
-          You're first in line.
-        </p>
-      </div>
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%); padding: 0; text-align: center;">
+              <!-- Gradient accent bar — chartreuse #D4FF1F → cyan → chartreuse -->
+              <div style="height: 4px; background: linear-gradient(90deg, ${chartreuse} 0%, ${cyan} 50%, ${chartreuse} 100%);"></div>
 
-      <!-- Body -->
-      <div style="${styles.content}">
+              <!-- Logo -->
+              <div style="padding: 40px 40px 20px 40px;">
+                <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="260" style="display: block; margin: 0 auto 14px auto; max-width: 260px; height: auto;" />
+                </a>
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 20px 0; text-transform: uppercase;">Premium Research Compounds</p>
+                <!-- Holographic divider -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="height: 2px; background: linear-gradient(90deg, transparent 0%, ${cyan} 20%, #9d4edd 50%, ${chartreuse} 80%, transparent 100%);"></td>
+                  </tr>
+                </table>
+              </div>
 
-        <!-- Confirmation card -->
-        <div style="${styles.card}">
-          <p style="${styles.cardTitle}">Alert Active</p>
-          <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0 0 6px 0;">
-            ${productName}
-          </p>
-          <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">
-            We'll email you the moment this product is back in stock. No action needed — you're on the list.
-          </p>
-        </div>
+              <!-- Badge + headline -->
+              <div style="padding: 28px 40px 40px 40px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
+                  <tr>
+                    <td style="border: 1px solid ${chartreuse}; padding: 6px 22px; border-radius: 100px;">
+                      <span style="color: ${chartreuse}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Alert Confirmed</span>
+                    </td>
+                  </tr>
+                </table>
+                <h1 style="color: #ffffff; font-size: 40px; font-weight: 800; margin: 0; letter-spacing: -1px; line-height: 1.1;">You're on the list.</h1>
+              </div>
+            </td>
+          </tr>
 
-        <!-- CTA -->
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${productUrl}"
-             style="display: inline-block; background-color: ${brand.primaryColor}; color: #0d0d0f; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: ${styles.glowYellow};">
-            View Product Page
-          </a>
-        </div>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 0 40px 40px 40px;">
 
-        <!-- Browse more -->
-        <p style="color: rgba(255,255,255,0.4); font-size: 13px; text-align: center; margin: 0;">
-          Browse available compounds at
-          <a href="${siteUrl}/shop" style="color: ${brand.accentColor}; text-decoration: none;">${siteUrl}/shop</a>
-        </p>
+              <!-- Compound card -->
+              <div style="background-color: #2a2a30; border-radius: 16px; padding: 28px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.12);">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 14px 0;">
+                  <tr>
+                    <td style="width: 20px; padding-right: 10px; vertical-align: middle;">
+                      <div style="width: 20px; height: 2px; background: ${cyan};"></div>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span style="color: ${cyan}; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Compound</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.3px;">${productName}</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">We'll send you an email the moment this compound is back in stock. You're first to know — no action needed.</p>
+              </div>
 
-        <!-- Footer -->
-        <div style="${styles.footer}; margin: 32px -40px -40px -40px; padding: 24px 40px;">
-          ${getSharedFooterHtml(email, 'newsletter')}
-        </div>
-      </div>
+              <!-- Batch documentation card -->
+              <div style="background-color: #2a2a30; border-radius: 16px; padding: 28px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.12);">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 14px 0;">
+                  <tr>
+                    <td style="width: 20px; padding-right: 10px; vertical-align: middle;">
+                      <div style="width: 20px; height: 2px; background: ${chartreuse};"></div>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span style="color: ${chartreuse}; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Research Documentation</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">A third-party Certificate of Analysis is available for each batch. Every compound is independently verified for identity and purity before it ships.</p>
+                <a href="${productUrl}" style="color: ${chartreuse}; font-size: 13px; font-weight: 600; text-decoration: none;">View product &amp; COA &rarr;</a>
+              </div>
 
-    </div>
-  </div>
+              <!-- CTA -->
+              <div style="text-align: center; margin: 0 0 36px 0;">
+                <a href="${productUrl}" style="display: inline-block; background: linear-gradient(135deg, ${chartreuse} 0%, #c4d40d 100%); color: #000000; font-size: 15px; font-weight: 700; text-decoration: none; padding: 16px 44px; border-radius: 100px; letter-spacing: 0.5px; box-shadow: 0 0 30px rgba(212,255,31,0.35);">View Product Page</a>
+              </div>
+
+              <!-- Founder signoff -->
+              <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;">
+                <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7; margin: 0 0 14px 0;">Thank you for your interest in our research compounds. We take pride in every batch we source and verify — you'll hear from us the moment ${productName} is available again.</p>
+                <p style="color: rgba(255,255,255,0.35); font-size: 13px; margin: 0; font-style: italic;">— The Revive Research Team</p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #252529; padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.05);">
+              ${getSharedFooterHtml(email, 'newsletter')}
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 
@@ -2282,6 +2340,8 @@ export async function sendRestockSignupConfirmationEmail(params: {
 // ---------------------------------------------------------------------------
 // Restock notification email
 // Sent when a product comes back in stock to everyone on the waitlist.
+// Primary color: #D4FF1F (chartreuse). Merge data injected server-side via
+// TypeScript template literals — no Zoho merge tags used.
 // ---------------------------------------------------------------------------
 
 export function getRestockNotificationTemplate(params: {
@@ -2290,22 +2350,27 @@ export function getRestockNotificationTemplate(params: {
   productUrl: string;
 }): { subject: string; text: string; html: string } {
   const { email, productName, productUrl } = params;
-  const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
+  const chartreuse = styles.primaryColor; // '#D4FF1F'
+  const cyan       = styles.accentColor;  // '#21d8ff'
 
   const subject = `${productName} is back in stock`;
 
   const text = `
-REVIVE RESEARCH
+REVIVE RESEARCH — Premium Research Compounds
 Back in Stock
 
 ${productName} is available again.
 
-You signed up to be notified when this product returned. It's back — grab yours before it sells out again.
+This is the restock alert you requested. Stock is limited — orders are processed on a first-come, first-served basis.
 
 Shop now: ${productUrl}
 
-Stock is limited. Orders are processed on a first-come, first-served basis.
+Research documentation (COA) is available on the product page.
+
+Thank you for your patience. We're glad to have this compound back in stock and look forward to supporting your research.
+
+— The Revive Research Team
 
 ---
 RESEARCH USE ONLY
@@ -2327,60 +2392,118 @@ Unsubscribe: ${getUnsubscribeUrl(email)}
   <title>${subject}</title>
 </head>
 <body style="${styles.body}">
-  <div style="padding: 40px 20px; background-color: #0d0d0f;">
-    <div style="${styles.container}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);">
 
-      <!-- Header -->
-      <div style="${styles.header}">
-        <p style="${styles.logo}">Revive Research</p>
-        <h1 style="color: ${brand.primaryColor}; font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: ${styles.glowYellow};">
-          Back in Stock
-        </h1>
-        <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin: 8px 0 0 0;">
-          You're first to know.
-        </p>
-      </div>
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%); padding: 0; text-align: center;">
+              <!-- Gradient accent bar — chartreuse #D4FF1F → cyan → chartreuse -->
+              <div style="height: 4px; background: linear-gradient(90deg, ${chartreuse} 0%, ${cyan} 50%, ${chartreuse} 100%);"></div>
 
-      <!-- Body -->
-      <div style="${styles.content}">
+              <!-- Logo -->
+              <div style="padding: 40px 40px 20px 40px;">
+                <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="260" style="display: block; margin: 0 auto 14px auto; max-width: 260px; height: auto;" />
+                </a>
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 20px 0; text-transform: uppercase;">Premium Research Compounds</p>
+                <!-- Holographic divider -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="height: 2px; background: linear-gradient(90deg, transparent 0%, ${cyan} 20%, #9d4edd 50%, ${chartreuse} 80%, transparent 100%);"></td>
+                  </tr>
+                </table>
+              </div>
 
-        <!-- Product card -->
-        <div style="${styles.card}">
-          <p style="${styles.cardTitle}">Now Available</p>
-          <p style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0 0 10px 0; letter-spacing: -0.3px;">
-            ${productName}
-          </p>
-          <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">
-            This is the restock alert you requested. Stock is limited — orders are processed on a first-come, first-served basis.
-          </p>
-        </div>
+              <!-- Badge + headline -->
+              <div style="padding: 28px 40px 40px 40px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
+                  <tr>
+                    <td style="background: linear-gradient(135deg, ${chartreuse} 0%, #c4d40d 100%); padding: 2px; border-radius: 100px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="background: #1a1a1f; padding: 8px 22px; border-radius: 100px;">
+                            <span style="color: ${chartreuse}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Back in Stock</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <h1 style="color: #ffffff; font-size: 40px; font-weight: 800; margin: 0; letter-spacing: -1px; line-height: 1.1;">It's back.</h1>
+              </div>
+            </td>
+          </tr>
 
-        <!-- Urgency note -->
-        <div style="background-color: rgba(212,255,31,0.06); border: 1px solid rgba(212,255,31,0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
-          <p style="color: ${brand.primaryColor}; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 4px 0;">
-            Limited Quantity
-          </p>
-          <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin: 0;">
-            Restock quantities are typically small. Secure yours before it sells out again.
-          </p>
-        </div>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 0 40px 40px 40px;">
 
-        <!-- CTA -->
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${productUrl}"
-             style="display: inline-block; background-color: ${brand.primaryColor}; color: #0d0d0f; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; text-decoration: none; padding: 16px 40px; border-radius: 8px; box-shadow: ${styles.glowYellow};">
-            Shop Now
-          </a>
-        </div>
+              <!-- Compound card -->
+              <div style="background-color: #2a2a30; border-radius: 16px; padding: 28px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.12);">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 14px 0;">
+                  <tr>
+                    <td style="width: 20px; padding-right: 10px; vertical-align: middle;">
+                      <div style="width: 20px; height: 2px; background: ${cyan};"></div>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span style="color: ${cyan}; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Now Available</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.3px;">${productName}</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">This is the restock alert you requested. Stock is limited — orders are processed on a first-come, first-served basis.</p>
+              </div>
 
-        <!-- Footer -->
-        <div style="${styles.footer}; margin: 32px -40px -40px -40px; padding: 24px 40px;">
-          ${getSharedFooterHtml(email, 'newsletter')}
-        </div>
-      </div>
+              <!-- Urgency + documentation card -->
+              <div style="background-color: #2a2a30; border-radius: 16px; padding: 28px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.12);">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 14px 0;">
+                  <tr>
+                    <td style="width: 20px; padding-right: 10px; vertical-align: middle;">
+                      <div style="width: 20px; height: 2px; background: ${chartreuse};"></div>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span style="color: ${chartreuse}; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Research Documentation</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">Certificate of Analysis for this batch is available on the product page. Independently verified for identity and purity.</p>
+                <a href="${productUrl}" style="color: ${chartreuse}; font-size: 13px; font-weight: 600; text-decoration: none;">View COA &amp; product details &rarr;</a>
+              </div>
 
-    </div>
-  </div>
+              <!-- Limited stock callout -->
+              <div style="background-color: rgba(212,255,31,0.06); border: 1px solid rgba(212,255,31,0.2); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px;">
+                <p style="color: ${chartreuse}; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 4px 0;">Limited Quantity</p>
+                <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin: 0;">Restock quantities are typically small. Secure yours before it sells out again.</p>
+              </div>
+
+              <!-- CTA -->
+              <div style="text-align: center; margin: 0 0 36px 0;">
+                <a href="${productUrl}" style="display: inline-block; background: linear-gradient(135deg, ${chartreuse} 0%, #c4d40d 100%); color: #000000; font-size: 15px; font-weight: 700; text-decoration: none; padding: 16px 44px; border-radius: 100px; letter-spacing: 0.5px; box-shadow: 0 0 30px rgba(212,255,31,0.35);">Shop Now</a>
+              </div>
+
+              <!-- Founder signoff -->
+              <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;">
+                <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7; margin: 0 0 14px 0;">Thank you for your patience. We're glad to have ${productName} back in stock and look forward to supporting your research.</p>
+                <p style="color: rgba(255,255,255,0.35); font-size: 13px; margin: 0; font-style: italic;">— The Revive Research Team</p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #252529; padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.05);">
+              ${getSharedFooterHtml(email, 'newsletter')}
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 

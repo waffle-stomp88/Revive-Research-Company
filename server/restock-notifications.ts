@@ -13,6 +13,7 @@
 
 import { storage } from "./storage";
 import { sendRestockNotificationEmail } from "./email";
+import { addContactsToRestockQueue, type RestockContact } from "./zoho-campaigns";
 
 export async function triggerRestockNotifications(
   productSlug: string,
@@ -53,7 +54,16 @@ export async function triggerRestockNotifications(
   // A failed SES send is logged above; we don't want to re-notify on next restock.
   await Promise.all(pending.map(n => storage.markNotificationAsSent(n.id)));
 
-  console.log(
-    `[restock] Done — ${sent} sent, ${failed} failed for "${productSlug}".`
-  );
+  console.log(`[restock] Done — ${sent} sent, ${failed} failed for "${productSlug}".`);
+
+  // Fire-and-forget: add contacts to Zoho "Restock Queue" for CRM visibility.
+  // The Zoho autoresponder for this list should be disabled — SES handles delivery.
+  const zohoContacts: RestockContact[] = pending.map(n => ({
+    email:      n.email,
+    productName,
+    productUrl,
+  }));
+  addContactsToRestockQueue(zohoContacts).catch(err => {
+    console.error(`[restock] Zoho CRM add failed for "${productSlug}":`, err?.message ?? String(err));
+  });
 }

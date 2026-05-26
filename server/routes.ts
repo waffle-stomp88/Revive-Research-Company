@@ -18,7 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail, sendRestockSignupConfirmationEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { addContactToResearchList, debugZohoNewsletter } from "./zoho-campaigns";
+import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
@@ -4261,20 +4261,25 @@ export async function registerRoutes(
         status: "pending"
       });
 
-      // Fire-and-forget: send branded confirmation email via SES immediately.
-      // Product name lookup is best-effort — falls back to slug if not found.
+      // Fire-and-forget: SES confirmation email (primary) + Zoho CRM add (secondary).
+      // SES delivers the email directly — no merge tag dependency.
+      // Zoho add is CRM-only; its autoresponder is disabled. Both are non-blocking.
       storage.getProductBySlug(productId).then(product => {
-        sendRestockSignupConfirmationEmail({
+        const contact = {
           email,
           productName: product?.name ?? productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,
-        });
+        };
+        sendRestockSignupConfirmationEmail(contact);
+        addContactToRestockSignups(contact); // CRM only
       }).catch(() => {
-        sendRestockSignupConfirmationEmail({
+        const contact = {
           email,
           productName: productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,
-        });
+        };
+        sendRestockSignupConfirmationEmail(contact);
+        addContactToRestockSignups(contact); // CRM only
       });
 
       res.status(201).json({ 
