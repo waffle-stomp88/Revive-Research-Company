@@ -154,9 +154,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
           </span>
         )}
       </div>
-
       <div className="my-2 border-t border-[#1e1e2a]" />
-
       <div className="flex items-center justify-between">
         {softGated ? (
           <div className="flex items-center gap-1.5">
@@ -180,10 +178,9 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
           <span className="text-xs text-green-500">{stockAmount > 0 ? `${stockAmount} in stock` : "In stock"}</span>
         </div>
       </div>
-
       {showSavings && !softGated && (
         <p
-          className="text-right mt-1 text-gray-500"
+          className="text-right mt-1 text-gray-500 text-[10px]"
           style={{ fontSize: "9px" }}
           data-testid="order-summary-savings"
         >
