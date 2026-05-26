@@ -312,23 +312,16 @@ export async function addContactToResearchList(email: string): Promise<void> {
  * Triggers an immediate send for the given Zoho campaign key.
  *
  * Setup in Zoho UI:
- *   1. Create an email campaign template for each product
- *   2. Set the campaign's "To" list to "Restock: {Product Name}"
- *   3. Copy the campaign key from the campaign settings
- *   4. Store it as ZOHO_RESTOCK_CAMPAIGN_KEY (or per-product in a future config)
+ *   1. Create an email campaign template for each product.
+ *   2. Set the campaign's "To" list to "Restock: {Product Name}".
+ *   3. Copy the campaign key from the campaign settings.
+ *   4. Store it as ZOHO_RESTOCK_CAMPAIGN_KEY.
  *
- * If no key is set, logs a warning — contacts have been added to their list
- * and a Zoho autoresponder (if configured) may still send automatically.
+ * Requires a non-empty key — callers must check for ZOHO_RESTOCK_CAMPAIGN_KEY
+ * and abort early if it is unset (see restock-notifications.ts).
+ * Throws on API error so the caller can distinguish "sent" from "failed".
  */
-export async function triggerCampaignSend(campaignKey: string | undefined): Promise<void> {
-  if (!campaignKey) {
-    console.warn(
-      "[zoho] ZOHO_RESTOCK_CAMPAIGN_KEY is not set — contacts were added to the list " +
-      "but no campaign was triggered. Set ZOHO_RESTOCK_CAMPAIGN_KEY to enable auto-sends."
-    );
-    return;
-  }
-
+export async function triggerCampaignSend(campaignKey: string): Promise<void> {
   const token  = await getAccessToken();
   const result = await zohoPost("/sendcampaign", token, {
     campaignkey: campaignKey,
