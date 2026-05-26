@@ -333,11 +333,15 @@ export async function debugZohoNewsletter(email: string): Promise<{
   subscribeRaw?: unknown;
   subscribeError?: string;
 }> {
-  const result: ReturnType<typeof debugZohoNewsletter> extends Promise<infer T> ? T : never = {
-    tokenOk: false,
+  const result = {
+    tokenOk: false as boolean,
+    tokenError: undefined as string | undefined,
     listCount: 0,
-    listNames: [],
-    researchListFound: false,
+    listNames: [] as string[],
+    researchListFound: false as boolean,
+    researchListKey: undefined as string | undefined,
+    subscribeRaw: undefined as unknown,
+    subscribeError: undefined as string | undefined,
   };
 
   let token: string;
