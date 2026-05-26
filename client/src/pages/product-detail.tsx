@@ -200,6 +200,7 @@ export default function ProductDetail() {
   const [quickAddSuccess, setQuickAddSuccess] = useState<Record<string, boolean>>({});
   const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("overview");
   const tabButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const tabScrollMountedRef = useRef(false);
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -549,6 +550,10 @@ export default function ProductDetail() {
   }, [hasPkData, activeResearchTab, softGateEnabled, isAuthenticated]);
 
   useEffect(() => {
+    if (!tabScrollMountedRef.current) {
+      tabScrollMountedRef.current = true;
+      return;
+    }
     const btn = tabButtonRefs.current[activeResearchTab];
     if (btn) {
       btn.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
