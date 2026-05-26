@@ -2,32 +2,17 @@
  * Restock notification trigger
  *
  * Called automatically when a product transitions from fully out-of-stock
- * to any positive inventory level. Pushes pending OOS subscribers to the
- * shared "Restock Queue" Zoho list and marks them as notified in Neon.
+ * to any positive inventory level. Sends restock notification emails via
+ * Amazon SES directly to each pending subscriber, then marks them as
+ * notified in Neon.
  *
- * The call is non-blocking — callers fire-and-forget and log any errors.
- *
- * How email delivery works:
- *   All restock contacts are added to a single shared "Restock Queue" list
- *   in Zoho Campaigns. A Zoho Autoresponder bound to that list fires
- *   immediately when contacts are added, using $[UD:PRODUCT_NAME||]$ and
- *   $[UD:PRODUCT_URL||]$ merge tags populated per-contact by this code.
- *   One autoresponder handles all products — no per-product lists needed.
- *
- * Setup required before emails will send:
- *   1. In Zoho Campaigns → Mailing Lists, create a list named exactly
- *      "Restock Queue".
- *   2. In Zoho Campaigns → Autoresponders, create an autoresponder triggered
- *      by "Contact Added to Mailing List" targeting "Restock Queue".
- *   3. Use the OOS_Product_Email template with send delay = immediately.
- *   4. Activate the autoresponder. No secrets need to be set in Replit.
+ * Emails are sent individually so a single failure doesn't block the batch.
+ * All results are logged; the function throws only if the Neon mark-as-sent
+ * step fails (so rows remain retryable on next restock).
  */
 
 import { storage } from "./storage";
-import {
-  addContactsToRestockQueue,
-  type RestockContact,
-} from "./zoho-campaigns";
+import { sendRestockNotificationEmail } from "./email";
 
 export async function triggerRestockNotifications(
   productSlug: string,
@@ -45,21 +30,30 @@ export async function triggerRestockNotifications(
 
   console.log(`[restock] ${pending.length} subscriber(s) to notify for "${productSlug}"`);
 
-  const contacts: RestockContact[] = pending.map(n => ({
-    email:      n.email,
-    productName,
-    productUrl: `https://reviveresearch.co/products/${productSlug}`,
-  }));
+  const productUrl = `https://reviveresearch.co/products/${productSlug}`;
+  let sent = 0;
+  let failed = 0;
 
-  // Add all contacts to the shared "Restock Queue" list with per-contact
-  // product merge fields. Adding contacts here triggers the Zoho Autoresponder.
-  await addContactsToRestockQueue(contacts);
+  // Send individually so one bad address doesn't block the rest
+  for (const notification of pending) {
+    const result = await sendRestockNotificationEmail({
+      email: notification.email,
+      productName,
+      productUrl,
+    });
+    if (result.success) {
+      sent++;
+    } else {
+      failed++;
+      console.error(`[restock] Failed to email ${notification.email}:`, result.error);
+    }
+  }
 
-  // Mark every notified row in Neon. Only reached after Zoho confirms the
-  // contact upload — failures leave rows in pending so they're retryable.
+  // Mark all rows as sent regardless of individual email failures.
+  // A failed SES send is logged above; we don't want to re-notify on next restock.
   await Promise.all(pending.map(n => storage.markNotificationAsSent(n.id)));
 
   console.log(
-    `[restock] Done — ${pending.length} subscriber(s) added to Zoho for "${productSlug}".`
+    `[restock] Done — ${sent} sent, ${failed} failed for "${productSlug}".`
   );
 }

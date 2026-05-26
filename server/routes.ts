@@ -16,9 +16,9 @@ import { verifySupabaseToken } from "./supabaseAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail, sendRestockSignupConfirmationEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
+import { addContactToResearchList, debugZohoNewsletter } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
@@ -4261,17 +4261,16 @@ export async function registerRoutes(
         status: "pending"
       });
 
-      // Fire-and-forget: push to "Restock Signups" Zoho list so the bound
-      // autoresponder sends a branded confirmation email immediately.
+      // Fire-and-forget: send branded confirmation email via SES immediately.
       // Product name lookup is best-effort — falls back to slug if not found.
       storage.getProductBySlug(productId).then(product => {
-        addContactToRestockSignups({
+        sendRestockSignupConfirmationEmail({
           email,
           productName: product?.name ?? productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,
         });
       }).catch(() => {
-        addContactToRestockSignups({
+        sendRestockSignupConfirmationEmail({
           email,
           productName: productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,

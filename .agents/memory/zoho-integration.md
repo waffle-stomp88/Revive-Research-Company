@@ -13,9 +13,7 @@ The `getmailinglists` API can return list names with trailing whitespace or unex
 
 ## ignored_contacts is Zoho deliverability filtering, not a bug
 
-When `addlistsubscribersinbulk` returns an email in `ignored_contacts` with `status: "success"` and `code: "0"`, it means Zoho's deliverability system rejected the address — not that our code failed. Common triggers: addresses with "debug", "probe", "test", "seed" in the local part, or fake domains like @test.com.
-
-Real user email addresses (normal Gmail, real domains) pass through cleanly with empty `ignored_contacts`.
+When `addlistsubscribersinbulk` returns an email in `ignored_contacts` with `status: "success"` and `code: "0"`, it means Zoho's deliverability system rejected the address — not that our code failed. Common triggers: addresses with "debug", "probe", "test", "seed" in the local part, disposable domains (yopmail, mailinator, etc.), and Gmail `+` alias addresses. Real user email addresses (normal Gmail, real domains) pass through cleanly with empty `ignored_contacts`.
 
 **Why:** Zoho protects sender reputation by pre-screening addresses before adding them to lists.
 
@@ -27,60 +25,47 @@ Real user email addresses (normal Gmail, real domains) pass through cleanly with
 - `emailids`: comma-separated email list (mandatory)
 - `contactinfo`: JSON array with `"Contact Email"`, `PRODUCT_NAME`, `PRODUCT_URL` (for custom fields)
 
-Confirmed working: passing both together returns code 0 and the custom fields are set on the contact.
+Confirmed working for the API call itself, but see the next entry for a major limitation.
 
-**Why:** Zoho treats `emailids` as the mandatory identifier field for this endpoint. `contactinfo` is supplementary — it carries field values but does not replace `emailids` as the list-addition target.
+## contactinfo custom fields are NOT applied to existing Zoho contacts
 
-**How to apply:** In `bulkAddContacts`, always include `emailids: contacts.map(c => c.email).join(",")` alongside `contactinfo`.
+When a contact already exists anywhere in Zoho (i.e. they're in any other list), `addlistsubscribersinbulk` adds them to the target list but silently ignores the `contactinfo` field values — the contact shows up in `existing_contacts` in the response, and their custom fields remain empty in the Zoho UI. There is no Zoho REST API v1.1 endpoint to update contact custom fields after the fact (all such endpoints return 1004).
+
+**Why:** Zoho's `addlistsubscribersinbulk` only sets custom field values when creating brand-new contacts. For contacts already in their database, it treats the add as a list-membership update only.
+
+**How to apply:** Do NOT rely on Zoho custom fields (e.g. `PRODUCT_NAME`, `PRODUCT_URL`) for per-contact personalization in autoresponder emails. Any user who ever signed up for the newsletter will hit this path. Use SES directly for transactional emails that need per-contact data.
+
+## Restock emails migrated to SES — Zoho autoresponder approach abandoned
+
+The "Restock Signups" autoresponder and "Restock Queue" autoresponder approaches were abandoned because Zoho's merge tags (`$[UD:PRODUCT_NAME||]$`, `$[UD:PRODUCT_URL||]$`) render empty for all existing Zoho contacts.
+
+Replacement architecture (implemented):
+- **OOS signup confirmation**: `sendRestockSignupConfirmationEmail` in `server/email.ts` — called fire-and-forget from `POST /api/stock-notifications` in `routes.ts`
+- **Restock notification**: `sendRestockNotificationEmail` in `server/email.ts` — called per-subscriber in `triggerRestockNotifications` in `server/restock-notifications.ts`
+
+Both use Amazon SES (nodemailer) with full branded dark HTML templates. Product name and URL are injected server-side — no merge tags, no Zoho contact field dependency.
+
+**Why:** SES is already the infrastructure for order confirmations and shipping emails. Moving restock emails there gives 100% reliability for all users regardless of Zoho contact history.
 
 ## sendcampaign only works for Autoresponder/Automated campaign types
 
-Regular draft email campaigns have `campaign_key: "null"` and CANNOT be triggered via the `sendcampaign` REST API endpoint. Confirmed by calling `getcampaigndetails` with `campaignid=<numeric_id>` — full campaign object returned with `campaign_key: "null"`.
+Regular draft email campaigns have `campaign_key: "null"` and CANNOT be triggered via the `sendcampaign` REST API endpoint. The Zoho campaign listing endpoints (`getallcampaigns`, `getcampaigns`, `getemailcampaigns`, etc.) all return 1004 in REST v1.1.
 
-The Zoho campaign listing endpoints (`getallcampaigns`, `getcampaigns`, `getemailcampaigns`, etc.) all return 1004 in REST v1.1 — there is no working programmatic campaign listing endpoint.
-
-**Why:** Zoho Campaigns REST API v1.1 `sendcampaign` is designed for automation/autoresponder campaigns, not one-off drafts.
-
-**How to apply:** For restock notifications, use a Zoho **Autoresponder** configured to trigger on "Contact Added to Mailing List" targeting "Restock Queue". When our code adds contacts via `addContactsToRestockQueue`, Zoho fires the autoresponder automatically. No campaign key or trigger API call needed. Same pattern for "Restock Signups" → confirmation autoresponder.
+**How to apply:** For any Zoho-triggered email, use Autoresponders on list-add events. For transactional emails with per-user data, use SES directly.
 
 ## getcampaigndetails works with campaignid (numeric), not campaignkey param
 
 `POST /getcampaigndetails` with `campaignkey=<numeric_id>` returns "Invalid Campaignkey".
 `POST /getcampaigndetails` with `campaignid=<numeric_id>` returns the full campaign object with code 0.
 
-**How to apply:** Use `campaignid` (not `campaignkey`) as the parameter name for campaign detail lookups.
+## Zoho still used for newsletter (Research List) — not for restock
 
-## Two-list autoresponder architecture for restock emails
+`addContactToResearchList` in `server/zoho-campaigns.ts` is still called for newsletter signups and is working. The only functions removed from active use are `addContactToRestockSignups` and `addContactsToRestockQueue` — both replaced by SES. Those functions remain in the file in case they're needed for CRM list-building in the future, but are not called from any route.
 
-- **"Restock Signups"** list + autoresponder → fires immediately on OOS signup → branded confirmation email with PRODUCT_NAME / PRODUCT_URL merge tags
-- **"Restock Queue"** list + autoresponder → fires when product restocks → restock notification email with same merge tags
+## Disposable domains and + aliases are filtered by Zoho
 
-Both use `$[UD:PRODUCT_NAME||]$` and `$[UD:PRODUCT_URL||]$` merge tags (two pipes, no space before closing `$`).
-Custom contact fields in Zoho: `PRODUCT_NAME` (text, 100) and `PRODUCT_URL` (text, 250).
-
-**Why:** Reusing one list would fire the restock email immediately on signup (wrong timing). Two separate lists = two separate autoresponders = correct timing for each email.
-
-**How to apply:** `addContactToRestockSignups` fires on every new OOS signup (fire-and-forget, non-throwing). `addContactsToRestockQueue` fires when `triggerRestockNotifications` is called at restock time.
-
-## Custom contact fields use contactinfo JSON alongside emailids
-
-`addlistsubscribersinbulk` passes custom field values per contact via `contactinfo` JSON array:
-```
-[{"Contact Email": "...", "PRODUCT_NAME": "...", "PRODUCT_URL": "..."}]
-```
-Column names `PRODUCT_NAME` and `PRODUCT_URL` were created as custom Zoho contact fields. The merge tags in templates are `$[UD:PRODUCT_NAME||]$` and `$[UD:PRODUCT_URL||]$`.
-`emailids` must ALSO be passed (see above rule).
-
-## Debug endpoint for diagnosing silent failures
-
-`POST /api/admin/debug/zoho-newsletter` (admin-only) runs the full subscribe flow synchronously and returns:
-- `tokenOk` — OAuth refresh success/failure
-- `listCount` / `listNames` — every list Zoho returned (exact strings for diagnosing name mismatches)
-- `researchListFound` / `researchListKey` — whether the lookup succeeded
-- `subscribeRaw` — raw Zoho API response including ignored_contacts
-
-Use this whenever newsletter signups appear to succeed in Neon but contacts are missing from Zoho.
+Both `yopmail.com` (disposable domain) and `name+alias@gmail.com` (Gmail subaddress) end up in `ignored_contacts` and are never added to any Zoho list. Use real email accounts for any Zoho integration testing.
 
 ## Fire-and-forget hides all errors
 
-`addContactToResearchList` and `addContactToRestockSignups` are called non-blocking. All errors are caught internally and only logged to console. If the server log buffer isn't captured (common in dev after restarts), failures are completely invisible. Always use the debug endpoint or probe scripts for diagnosis rather than relying on server logs.
+`addContactToResearchList` is called non-blocking. All errors are caught internally and only logged to console. Use the debug endpoint `POST /api/admin/debug/zoho-newsletter` (admin-only) for diagnosis rather than relying on server logs.

@@ -2153,3 +2153,258 @@ export async function sendInviteEmail(params: {
     replyTo: EMAIL_CONFIG.replyTo,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Restock signup confirmation email
+// Sent immediately when a user signs up for an out-of-stock product alert.
+// ---------------------------------------------------------------------------
+
+export function getRestockSignupConfirmationTemplate(params: {
+  email: string;
+  productName: string;
+  productUrl: string;
+}): { subject: string; text: string; html: string } {
+  const { email, productName, productUrl } = params;
+  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
+  const siteUrl = process.env.SITE_URL || 'https://reviveresearch.co';
+
+  const subject = `Restock alert set — ${productName}`;
+
+  const text = `
+REVIVE RESEARCH
+Restock Alert Confirmed
+
+You're on the list for ${productName}.
+
+We'll send you an email the moment it's back in stock. No action needed on your end.
+
+View product: ${productUrl}
+
+---
+RESEARCH USE ONLY
+All products are intended for laboratory research purposes only.
+Not for human or animal consumption.
+
+You're receiving this because you requested a restock alert at reviveresearch.co.
+Revive Research | ${COMPANY_ADDRESS}
+Unsubscribe: ${getUnsubscribeUrl(email)}
+
+© ${new Date().getFullYear()} Revive Research. All rights reserved.
+`.trim();
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="${styles.body}">
+  <div style="padding: 40px 20px; background-color: #0d0d0f;">
+    <div style="${styles.container}">
+
+      <!-- Header -->
+      <div style="${styles.header}">
+        <p style="${styles.logo}">Revive Research</p>
+        <h1 style="color: #ffffff; font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.5px;">
+          Restock Alert Set
+        </h1>
+        <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin: 8px 0 0 0;">
+          You're first in line.
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div style="${styles.content}">
+
+        <!-- Confirmation card -->
+        <div style="${styles.card}">
+          <p style="${styles.cardTitle}">Alert Active</p>
+          <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0 0 6px 0;">
+            ${productName}
+          </p>
+          <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">
+            We'll email you the moment this product is back in stock. No action needed — you're on the list.
+          </p>
+        </div>
+
+        <!-- CTA -->
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${productUrl}"
+             style="display: inline-block; background-color: ${brand.primaryColor}; color: #0d0d0f; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: ${styles.glowYellow};">
+            View Product Page
+          </a>
+        </div>
+
+        <!-- Browse more -->
+        <p style="color: rgba(255,255,255,0.4); font-size: 13px; text-align: center; margin: 0;">
+          Browse available compounds at
+          <a href="${siteUrl}/shop" style="color: ${brand.accentColor}; text-decoration: none;">${siteUrl}/shop</a>
+        </p>
+
+        <!-- Footer -->
+        <div style="${styles.footer}; margin: 32px -40px -40px -40px; padding: 24px 40px;">
+          ${getSharedFooterHtml(email, 'newsletter')}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return { subject, text, html };
+}
+
+export async function sendRestockSignupConfirmationEmail(params: {
+  email: string;
+  productName: string;
+  productUrl: string;
+}): Promise<EmailResult> {
+  const { subject, html, text } = getRestockSignupConfirmationTemplate(params);
+  const result = await sendEmail({
+    to: params.email,
+    subject,
+    html,
+    text,
+    from: 'noreply',
+    replyTo: EMAIL_CONFIG.replyTo,
+  });
+  if (result.success) {
+    console.log(`[Email] Restock signup confirmation sent to ${params.email} (${params.productName})`);
+  } else {
+    console.error(`[Email] Failed restock signup confirmation to ${params.email}:`, result.error);
+  }
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// Restock notification email
+// Sent when a product comes back in stock to everyone on the waitlist.
+// ---------------------------------------------------------------------------
+
+export function getRestockNotificationTemplate(params: {
+  email: string;
+  productName: string;
+  productUrl: string;
+}): { subject: string; text: string; html: string } {
+  const { email, productName, productUrl } = params;
+  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
+
+  const subject = `${productName} is back in stock`;
+
+  const text = `
+REVIVE RESEARCH
+Back in Stock
+
+${productName} is available again.
+
+You signed up to be notified when this product returned. It's back — grab yours before it sells out again.
+
+Shop now: ${productUrl}
+
+Stock is limited. Orders are processed on a first-come, first-served basis.
+
+---
+RESEARCH USE ONLY
+All products are intended for laboratory research purposes only.
+Not for human or animal consumption.
+
+You're receiving this because you requested a restock alert at reviveresearch.co.
+Revive Research | ${COMPANY_ADDRESS}
+Unsubscribe: ${getUnsubscribeUrl(email)}
+
+© ${new Date().getFullYear()} Revive Research. All rights reserved.
+`.trim();
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="${styles.body}">
+  <div style="padding: 40px 20px; background-color: #0d0d0f;">
+    <div style="${styles.container}">
+
+      <!-- Header -->
+      <div style="${styles.header}">
+        <p style="${styles.logo}">Revive Research</p>
+        <h1 style="color: ${brand.primaryColor}; font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: ${styles.glowYellow};">
+          Back in Stock
+        </h1>
+        <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin: 8px 0 0 0;">
+          You're first to know.
+        </p>
+      </div>
+
+      <!-- Body -->
+      <div style="${styles.content}">
+
+        <!-- Product card -->
+        <div style="${styles.card}">
+          <p style="${styles.cardTitle}">Now Available</p>
+          <p style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0 0 10px 0; letter-spacing: -0.3px;">
+            ${productName}
+          </p>
+          <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin: 0;">
+            This is the restock alert you requested. Stock is limited — orders are processed on a first-come, first-served basis.
+          </p>
+        </div>
+
+        <!-- Urgency note -->
+        <div style="background-color: rgba(212,255,31,0.06); border: 1px solid rgba(212,255,31,0.2); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+          <p style="color: ${brand.primaryColor}; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 4px 0;">
+            Limited Quantity
+          </p>
+          <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin: 0;">
+            Restock quantities are typically small. Secure yours before it sells out again.
+          </p>
+        </div>
+
+        <!-- CTA -->
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${productUrl}"
+             style="display: inline-block; background-color: ${brand.primaryColor}; color: #0d0d0f; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; text-decoration: none; padding: 16px 40px; border-radius: 8px; box-shadow: ${styles.glowYellow};">
+            Shop Now
+          </a>
+        </div>
+
+        <!-- Footer -->
+        <div style="${styles.footer}; margin: 32px -40px -40px -40px; padding: 24px 40px;">
+          ${getSharedFooterHtml(email, 'newsletter')}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return { subject, text, html };
+}
+
+export async function sendRestockNotificationEmail(params: {
+  email: string;
+  productName: string;
+  productUrl: string;
+}): Promise<EmailResult> {
+  const { subject, html, text } = getRestockNotificationTemplate(params);
+  const result = await sendEmail({
+    to: params.email,
+    subject,
+    html,
+    text,
+    from: 'noreply',
+    replyTo: EMAIL_CONFIG.replyTo,
+  });
+  if (result.success) {
+    console.log(`[Email] Restock notification sent to ${params.email} (${params.productName})`);
+  } else {
+    console.error(`[Email] Failed restock notification to ${params.email}:`, result.error);
+  }
+  return result;
+}
