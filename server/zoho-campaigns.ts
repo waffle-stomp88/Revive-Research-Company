@@ -107,7 +107,17 @@ function isZohoError(data: any): boolean {
 async function findListKeyByName(token: string, listName: string): Promise<string | null> {
   const res = await zohoPost("/getmailinglists", token, { range: "100" });
   const items: any[] = res?.list_of_details ?? [];
-  const match = items.find((l) => l.listname === listName);
+  const needle = listName.trim().toLowerCase();
+  console.log(
+    `[zoho] getmailinglists returned ${items.length} list(s):`,
+    items.map((l) => JSON.stringify(l.listname))
+  );
+  const match = items.find(
+    (l) => typeof l.listname === "string" && l.listname.trim().toLowerCase() === needle
+  );
+  if (!match) {
+    console.warn(`[zoho] findListKeyByName: no match for "${listName}" among returned list names`);
+  }
   return match?.listkey ?? null;
 }
 
