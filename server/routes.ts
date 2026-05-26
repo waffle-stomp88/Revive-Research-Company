@@ -18,7 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { addContactToResearchList } from "./zoho-campaigns";
+import { addContactToResearchList, debugZohoNewsletter } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
@@ -5147,6 +5147,17 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error deleting newsletter subscriber:", error);
       res.status(500).json({ error: "Failed to delete newsletter subscriber" });
+    }
+  });
+
+  // Zoho newsletter debug — admin only, synchronous, returns full diagnostic
+  app.post("/api/admin/debug/zoho-newsletter", isAdmin, async (req, res) => {
+    const email = (req.body?.email as string) || "debug-probe@reviveresearch.co";
+    try {
+      const result = await debugZohoNewsletter(email);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message ?? String(err) });
     }
   });
 

@@ -315,6 +315,71 @@ export async function addContactToResearchList(email: string): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Debug helper (admin-only, synchronous — for diagnosing Zoho integration)
+// ---------------------------------------------------------------------------
+
+/**
+ * Runs the full newsletter-subscribe Zoho flow synchronously and returns a
+ * structured diagnostic object instead of logging to console.
+ * Used by POST /api/admin/debug/zoho-newsletter to diagnose silent failures.
+ */
+export async function debugZohoNewsletter(email: string): Promise<{
+  tokenOk: boolean;
+  tokenError?: string;
+  listCount: number;
+  listNames: string[];
+  researchListFound: boolean;
+  researchListKey?: string;
+  subscribeRaw?: unknown;
+  subscribeError?: string;
+}> {
+  const result: ReturnType<typeof debugZohoNewsletter> extends Promise<infer T> ? T : never = {
+    tokenOk: false,
+    listCount: 0,
+    listNames: [],
+    researchListFound: false,
+  };
+
+  let token: string;
+  try {
+    token = await getAccessToken();
+    result.tokenOk = true;
+  } catch (err: any) {
+    result.tokenError = err?.message ?? String(err);
+    return result;
+  }
+
+  const listsRes = await zohoPost("/getmailinglists", token, { range: "100" });
+  const items: any[] = listsRes?.list_of_details ?? [];
+  result.listCount = items.length;
+  result.listNames = items.map((l) => l.listname ?? "(no listname field)");
+
+  const needle = "research list";
+  const match = items.find(
+    (l) => typeof l.listname === "string" && l.listname.trim().toLowerCase() === needle
+  );
+
+  if (!match) {
+    return result;
+  }
+
+  result.researchListFound = true;
+  result.researchListKey = match.listkey;
+
+  try {
+    const addRes = await zohoPost("/addlistsubscribersinbulk", token, {
+      listkey: match.listkey,
+      emailids: email.toLowerCase().trim(),
+    });
+    result.subscribeRaw = addRes;
+  } catch (err: any) {
+    result.subscribeError = err?.message ?? String(err);
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Campaign trigger
 // ---------------------------------------------------------------------------
 
