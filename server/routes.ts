@@ -4264,21 +4264,28 @@ export async function registerRoutes(
       // Fire-and-forget: SES confirmation email (primary) + Zoho CRM add (secondary).
       // SES delivers the email directly — no merge tag dependency.
       // Zoho add is CRM-only; its autoresponder is disabled. Both are non-blocking.
+      // Email is normalised to lowercase for consistent delivery.
+      const normalizedEmail = email.toLowerCase();
       storage.getProductBySlug(productId).then(product => {
         const contact = {
-          email,
+          email:       normalizedEmail,
           productName: product?.name ?? productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,
         };
-        sendRestockSignupConfirmationEmail(contact);
+        sendRestockSignupConfirmationEmail(contact).catch(err =>
+          console.error('[restock-signup] SES email failed:', err?.message ?? String(err))
+        );
         addContactToRestockSignups(contact); // CRM only
-      }).catch(() => {
+      }).catch(err => {
+        console.error('[restock-signup] getProductBySlug failed:', err?.message ?? String(err));
         const contact = {
-          email,
+          email:       normalizedEmail,
           productName: productId,
           productUrl:  `https://reviveresearch.co/products/${productId}`,
         };
-        sendRestockSignupConfirmationEmail(contact);
+        sendRestockSignupConfirmationEmail(contact).catch(e =>
+          console.error('[restock-signup] SES email (fallback) failed:', e?.message ?? String(e))
+        );
         addContactToRestockSignups(contact); // CRM only
       });
 
