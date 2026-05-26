@@ -34,6 +34,15 @@ import { trackEvent } from "@/lib/analytics";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
+const AGE_GATE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isAgeVerified(): boolean {
+  const raw = localStorage.getItem(AGE_VERIFIED_KEY);
+  if (!raw) return false;
+  const ts = parseInt(raw, 10);
+  if (isNaN(ts)) return false;
+  return Date.now() - ts < AGE_GATE_TTL_MS;
+}
 
 function HexGrid() {
   return (
@@ -152,7 +161,7 @@ export function FoundingMembersPopup() {
     if (isFoundingPopupSuppressed()) return;
 
     const checkAgeGate = () => {
-      const verified = sessionStorage.getItem(AGE_VERIFIED_KEY);
+      const verified = isAgeVerified();
       if (verified && !shownRef.current && !isEmailCaptured() && !isFoundingPopupSuppressed()) {
         shownRef.current = true;
         setTimeout(() => {

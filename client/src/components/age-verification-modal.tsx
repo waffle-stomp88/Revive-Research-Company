@@ -9,6 +9,15 @@ import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 const LEGAL_ROUTES = ["/terms-of-service", "/terms", "/privacy", "/legal"];
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
+const AGE_GATE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function isAgeVerified(): boolean {
+  const raw = localStorage.getItem(AGE_VERIFIED_KEY);
+  if (!raw) return false;
+  const ts = parseInt(raw, 10);
+  if (isNaN(ts)) return false; // legacy "true" string — treat as expired
+  return Date.now() - ts < AGE_GATE_TTL_MS;
+}
 
 function isSearchBot(): boolean {
   if (typeof window !== "undefined" && (window as any).__IS_BOT__) return true;
@@ -29,7 +38,7 @@ export function AgeVerificationModal() {
     if (typeof window === "undefined") return false;
     if (isSearchBot()) return false;
     if (LEGAL_ROUTES.some(route => window.location.pathname.startsWith(route))) return false;
-    const shouldOpen = !localStorage.getItem(AGE_VERIFIED_KEY);
+    const shouldOpen = !isAgeVerified();
     if (shouldOpen) {
       document.documentElement.classList.add("modal-open");
       document.body.classList.add("modal-open");
@@ -63,7 +72,7 @@ export function AgeVerificationModal() {
 
   const handleEnter = () => {
     if (agreed) {
-      localStorage.setItem(AGE_VERIFIED_KEY, "true");
+      localStorage.setItem(AGE_VERIFIED_KEY, Date.now().toString());
       setIsOpen(false);
     }
   };
