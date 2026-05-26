@@ -1040,7 +1040,7 @@ export default function ProductDetail() {
             <div className="mb-2" data-testid="text-product-price">
               {(!softGateEnabled || isAuthenticated) && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-display text-2xl md:text-3xl font-bold text-[#D4FF1F]">
+                  <span className="font-display md:text-3xl font-bold text-[#D4FF1F] text-[36px]">
                     ${Math.round(getBasePrice())}
                   </span>
                   <span className="text-xs text-muted-foreground">/ vial</span>
@@ -1281,7 +1281,7 @@ export default function ProductDetail() {
               )
             ) : (
               /* Out of Stock - Show prominent notification signup */
-              <motion.div
+              (<motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-5 rounded-lg border-2 border-red-500/30 bg-red-500/5"
@@ -1296,7 +1296,6 @@ export default function ProductDetail() {
                     <p className="text-xs text-muted-foreground">This product is temporarily unavailable</p>
                   </div>
                 </div>
-
                 <button
                   onClick={() => voteMutation.mutate(hasVoted ? "unvote" : "vote")}
                   disabled={voteMutation.isPending}
@@ -1310,14 +1309,11 @@ export default function ProductDetail() {
                   {hasVoted ? <Check className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
                   <span>{hasVoted ? "Wanted — We Hear You" : "Want This"}</span>
                 </button>
-                
                 <Separator className="my-4" />
-                
                 <div className="flex items-center gap-2 mb-3">
                   <Bell className="h-4 w-4 text-[#21d8ff]" />
                   <h4 className="font-display font-semibold text-sm">Get Notified When Back in Stock</h4>
                 </div>
-                
                 {notifySuccess ? (
                   <div className="flex items-center gap-2 text-sm text-green-400 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                     <CheckCircle className="h-5 w-5" />
@@ -1385,7 +1381,7 @@ export default function ProductDetail() {
                   <Sparkles className="h-3 w-3" />
                   <span>Launching in 2-3 weeks after third-party testing</span>
                 </div>
-              </motion.div>
+              </motion.div>)
             )}
 
 
@@ -2305,10 +2301,8 @@ export default function ProductDetail() {
           </>
 
       </div>
-      
       {/* Recently Viewed Sidebar */}
       <RecentlyViewed currentProductId={productId} variant="sidebar" />
-
       {/* Feature 1: Sticky Desktop Purchase Bar */}
       <AnimatePresence>
         {showStickyPurchase && !isOutOfStock && !(softGateEnabled && !isAuthenticated) && (
@@ -2340,7 +2334,6 @@ export default function ProductDetail() {
           </motion.div>
         )}
       </AnimatePresence>
-
       {/* Sticky Mobile Add-to-Cart Bar */}
       {product && !isOutOfStock && !(softGateEnabled && !isAuthenticated) && (
         <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
