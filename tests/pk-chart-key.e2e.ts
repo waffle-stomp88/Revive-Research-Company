@@ -70,9 +70,9 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     page,
   }) => {
     // Bypass the age-gate modal so we can interact with page content directly.
-    // The modal checks localStorage.getItem("revive-research-age-verified").
+    // The modal checks localStorage for a timestamp within the 7-day TTL window.
     await page.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
 
     await page.goto("/research-stacks");
@@ -123,7 +123,7 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     const mobilePage = await context.newPage();
 
     await mobilePage.addInitScript(() => {
-      localStorage.setItem("revive-research-age-verified", "true");
+      localStorage.setItem("revive-research-age-verified", Date.now().toString());
     });
 
     await mobilePage.goto("/research-stacks");
