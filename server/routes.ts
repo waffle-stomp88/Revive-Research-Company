@@ -18,7 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { addContactToResearchList, debugZohoNewsletter } from "./zoho-campaigns";
+import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
@@ -4255,15 +4255,31 @@ export async function registerRoutes(
         });
       }
       
-      // No Zoho push on this path — stock notifications are stored only, never forwarded to Zoho Campaigns
       const notification = await storage.createStockNotification({
         productId,
         email,
         status: "pending"
       });
-      
+
+      // Fire-and-forget: push to "Restock Signups" Zoho list so the bound
+      // autoresponder sends a branded confirmation email immediately.
+      // Product name lookup is best-effort — falls back to slug if not found.
+      storage.getProductBySlug(productId).then(product => {
+        addContactToRestockSignups({
+          email,
+          productName: product?.name ?? productId,
+          productUrl:  `https://reviveresearch.co/products/${productId}`,
+        });
+      }).catch(() => {
+        addContactToRestockSignups({
+          email,
+          productName: productId,
+          productUrl:  `https://reviveresearch.co/products/${productId}`,
+        });
+      });
+
       res.status(201).json({ 
-        message: "You'll be notified when this product is back in stock!",
+        message: "You're on the list — we'll email you the moment it's back in stock.",
         notification
       });
     } catch (error: any) {

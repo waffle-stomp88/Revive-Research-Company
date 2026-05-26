@@ -25,12 +25,14 @@ const TOKEN_URL  = "https://accounts.zoho.com/oauth/v2/token";
 const TIMEOUT_MS = 20_000;
 const BATCH_SIZE = 250;
 
-const RESTOCK_QUEUE_LIST_NAME = "Restock Queue";
+const RESTOCK_QUEUE_LIST_NAME   = "Restock Queue";
+const RESTOCK_SIGNUPS_LIST_NAME = "Restock Signups";
 
 // ---------------------------------------------------------------------------
-// Shared list key cache — resolved once, reused for the process lifetime
+// Shared list key caches — resolved once, reused for the process lifetime
 // ---------------------------------------------------------------------------
-let restockQueueListKey: string | null = null;
+let restockQueueListKey:   string | null = null;
+let restockSignupsListKey: string | null = null;
 
 // ---------------------------------------------------------------------------
 // Token helpers
@@ -171,6 +173,52 @@ function buildContactInfo(contacts: RestockContact[]): string {
       "PRODUCT_URL":   c.productUrl,
     }))
   );
+}
+
+/**
+ * Returns the Zoho list key for the shared "Restock Signups" list.
+ * Resolves once via getmailinglists and caches for the process lifetime.
+ * Throws clearly if the list doesn't exist — it must be created in the Zoho UI.
+ */
+async function getRestockSignupsListKey(): Promise<string> {
+  if (restockSignupsListKey) return restockSignupsListKey;
+
+  const token = await getAccessToken();
+  const key   = await findListKeyByName(token, RESTOCK_SIGNUPS_LIST_NAME);
+  if (!key) {
+    throw new Error(
+      `[zoho] "${RESTOCK_SIGNUPS_LIST_NAME}" list not found in Zoho Campaigns. ` +
+      `Create it in the Zoho UI (Mailing Lists → New List → name it exactly "${RESTOCK_SIGNUPS_LIST_NAME}") ` +
+      `then configure an Autoresponder to fire on "Contact Added to Mailing List" targeting that list.`
+    );
+  }
+  restockSignupsListKey = key;
+  return key;
+}
+
+/**
+ * Adds a single contact to the "Restock Signups" Zoho list with per-product
+ * merge fields. The bound Zoho Autoresponder fires immediately, sending a
+ * branded confirmation email to the subscriber.
+ *
+ * Non-throwing: logs on failure so a Zoho hiccup never breaks the signup
+ * response. Called fire-and-forget from POST /api/stock-notifications.
+ *
+ * Setup required (one-time in Zoho UI):
+ *   1. Mailing Lists → New List → name exactly "Restock Signups"
+ *   2. Autoresponders → new → trigger: "Contact Added to Mailing List"
+ *      targeting "Restock Signups" → use confirmation email template
+ *      with $[UD:PRODUCT_NAME||]$ and $[UD:PRODUCT_URL||]$ merge tags
+ *      → delay: immediately → activate
+ */
+export async function addContactToRestockSignups(contact: RestockContact): Promise<void> {
+  try {
+    const listKey = await getRestockSignupsListKey();
+    await bulkAddContacts(listKey, [contact]);
+    console.log(`[zoho] Restock Signups: confirmation queued for ${contact.email} (${contact.productName})`);
+  } catch (err: any) {
+    console.error(`[zoho] addContactToRestockSignups error for ${contact.email}:`, err?.message ?? String(err));
+  }
 }
 
 /**

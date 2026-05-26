@@ -1321,7 +1321,7 @@ export default function ProductDetail() {
                 {notifySuccess ? (
                   <div className="flex items-center gap-2 text-sm text-green-400 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                     <CheckCircle className="h-5 w-5" />
-                    <span>You'll be notified when this product is available!</span>
+                    <span>You're on the list — we'll email you the moment it's back in stock.</span>
                   </div>
                 ) : (
                   <form onSubmit={handleNotifySubmit} className="flex flex-col gap-2">
