@@ -30,19 +30,27 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               disabled={disabled}
               onClick={() => onSelect(tier.qty as PackQty)}
               data-testid={`pack-option-${tier.qty}`}
-              className="relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 text-left overflow-hidden"
+              className="relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-300 text-left overflow-hidden"
               style={{
-                background: isSelected
-                  ? "#1a1a22"
-                  : tier.popular
-                    ? "rgba(200,255,0,0.04)"
-                    : "#111118",
-                border: isSelected
+                background: isSelected && tier.popular
+                  ? "radial-gradient(ellipse at 50% 120%, rgba(212,255,31,0.18) 0%, rgba(26,26,34,1) 70%)"
+                  : isSelected
+                    ? "#1a1a22"
+                    : tier.popular
+                      ? "rgba(200,255,0,0.04)"
+                      : "#111118",
+                border: isSelected && tier.popular
                   ? "1.5px solid #D4FF1F"
-                  : tier.popular
-                    ? "1.5px solid #2a3a1a"
-                    : "1.5px solid #1e1e2a",
-                boxShadow: isSelected ? "0 0 14px rgba(212, 255, 31,0.12)" : "none",
+                  : isSelected
+                    ? "1.5px solid #D4FF1F"
+                    : tier.popular
+                      ? "1.5px solid #2a3a1a"
+                      : "1.5px solid #1e1e2a",
+                boxShadow: isSelected && tier.popular
+                  ? "0 0 0 1px rgba(212,255,31,0.25), 0 0 22px rgba(212,255,31,0.28), inset 0 1px 0 rgba(212,255,31,0.15)"
+                  : isSelected
+                    ? "0 0 14px rgba(212,255,31,0.12)"
+                    : "none",
               }}
               aria-pressed={isSelected}
             >
