@@ -19,6 +19,7 @@ import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { pushToZohoList, ZOHO_RESEARCH_LIST, ZOHO_WAITLIST_LIST } from "./zoho-optin";
+import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
   capturePaypalOrder, 
@@ -3210,14 +3211,38 @@ export async function registerRoutes(
   });
 
   // Admin: Sync dosage stocks for a product
+  // Also detects 0 → >0 inventory transitions and fires restock notifications.
   app.post("/api/admin/products/:id/dosage-stocks", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { dosageStocks } = req.body;
       if (!Array.isArray(dosageStocks)) {
         return res.status(400).json({ error: "dosageStocks must be an array" });
       }
+
+      // Snapshot state BEFORE sync so we can detect the 0 → >0 transition.
+      // Only treat as "completely OOS" when the product already has dosage rows
+      // (i.e. not a brand-new product being set up for the first time).
+      const currentStocks  = await storage.getProductDosageStocks(req.params.id);
+      const wasCompletelyOOS =
+        currentStocks.length > 0 &&
+        currentStocks.every(s => s.stockAmount === 0);
+
       const results = await storage.syncProductDosageStocks(req.params.id, dosageStocks);
+
+      // Respond immediately so the admin UI isn't blocked.
       res.json(results);
+
+      // Non-blocking restock check — runs after the HTTP response has been sent.
+      const isNowInStock = results.some(r => r.stockAmount > 0);
+      if (wasCompletelyOOS && isNowInStock) {
+        storage.getProduct(req.params.id).then(product => {
+          if (!product?.slug) return;
+          console.log(`[restock] ${product.slug} went from OOS → in-stock, queuing notifications…`);
+          triggerRestockNotifications(product.slug, product.name).catch(err =>
+            console.error("[restock] Notification send failed:", err)
+          );
+        }).catch(err => console.error("[restock] getProduct failed:", err));
+      }
     } catch (error) {
       console.error("Error syncing dosage stocks:", error);
       res.status(500).json({ error: "Failed to sync dosage stocks" });
