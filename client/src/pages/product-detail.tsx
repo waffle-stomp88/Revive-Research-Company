@@ -1048,7 +1048,7 @@ export default function ProductDetail() {
             <div className="mb-2" data-testid="text-product-price">
               {(!softGateEnabled || isAuthenticated) && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-display md:text-3xl font-bold text-[#D4FF1F] text-[36px]">
+                  <span className="font-display md:text-3xl font-bold text-[#D4FF1F] text-[38px]">
                     ${Math.round(getBasePrice())}
                   </span>
                   <span className="text-xs text-muted-foreground">/ vial</span>
