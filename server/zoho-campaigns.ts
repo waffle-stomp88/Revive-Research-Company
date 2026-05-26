@@ -116,6 +116,24 @@ async function findListKeyByName(token: string, listName: string): Promise<strin
  * Called at the start of each restock cycle so old subscribers aren't
  * re-emailed on the next send — only the current pending batch is added.
  */
+/**
+ * SAFETY GUARD — enforced in code, not just by convention.
+ *
+ * deletemailinglist may ONLY be called when the resolved list name starts with
+ * "Restock:". Any attempt to delete a list whose name does NOT match this prefix
+ * throws immediately — no soft warning, no fallback. This prevents accidentally
+ * deleting production marketing lists (e.g. "Research List") during testing or
+ * an unexpected API response.
+ */
+function assertRestockListName(listName: string): void {
+  if (!listName.startsWith("Restock:")) {
+    throw new Error(
+      `[zoho] SAFETY ABORT: deletemailinglist was about to target "${listName}", ` +
+      `which does not start with "Restock:". Only restock lists may be deleted programmatically.`
+    );
+  }
+}
+
 export async function deleteProductRestockList(
   productSlug: string,
   productName: string
@@ -123,7 +141,13 @@ export async function deleteProductRestockList(
   listKeyCache.delete(productSlug);
   const token    = await getAccessToken();
   const listName = buildListName(productName);
-  const listKey  = await findListKeyByName(token, listName);
+
+  // Hard guard — throws if listName doesn't start with "Restock:"
+  // buildListName always produces "Restock: {name}", but this is a second line
+  // of defence against future refactors or bad arguments.
+  assertRestockListName(listName);
+
+  const listKey = await findListKeyByName(token, listName);
   if (!listKey) {
     console.log(`[zoho] No existing list found for "${productSlug}", nothing to delete.`);
     return;
@@ -132,7 +156,7 @@ export async function deleteProductRestockList(
   if (isZohoError(res)) {
     console.warn(`[zoho] deletemailinglist warning for "${productSlug}":`, JSON.stringify(res).slice(0, 200));
   } else {
-    console.log(`[zoho] Deleted list "${listName}" (${listKey})`);
+    console.log(`[zoho] Deleted restock list "${listName}" (${listKey})`);
   }
 }
 
