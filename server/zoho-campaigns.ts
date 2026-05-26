@@ -178,24 +178,47 @@ function buildListName(productName: string): string {
 // Contact upload
 // ---------------------------------------------------------------------------
 
+export interface RestockContact {
+  email: string;
+  productName: string;
+  productUrl: string;
+}
+
 /**
- * Adds a batch of emails to the product's Zoho restock list.
- * If the list doesn't exist yet, creates it using addlistandcontacts.
- * Returns the listKey (needed to trigger a campaign send if desired).
+ * Serialises a contact array into the JSON string Zoho expects for the
+ * `contactinfo` parameter of addlistandcontacts / addlistsubscribersinbulk.
+ *
+ * Column names (PRODUCT_NAME, PRODUCT_URL) match the custom contact fields
+ * created in Zoho Campaigns. In email templates the merge tags are:
+ *   $[UD:PRODUCT_NAME||]$  and  $[UD:PRODUCT_URL||]$
+ */
+function buildContactInfo(contacts: RestockContact[]): string {
+  return JSON.stringify(
+    contacts.map(c => ({
+      "Contact Email": c.email.toLowerCase().trim(),
+      "PRODUCT_NAME":  c.productName,
+      "PRODUCT_URL":   c.productUrl,
+    }))
+  );
+}
+
+/**
+ * Adds a batch of contacts (with product merge-field data) to the product's
+ * Zoho restock list. If the list doesn't exist yet, creates it using
+ * addlistandcontacts. Returns the listKey.
  *
  * NOTE on re-email prevention:
- *   This function only receives emails that are currently "pending" in Neon
- *   (i.e., not yet notified). The Zoho list may contain historical contacts
- *   from previous restocks, but the caller (deleteProductRestockList) deletes
- *   the list first so only the current pending batch ends up in Zoho. This
- *   ensures only fresh sign-ups receive the campaign email.
+ *   This function only receives contacts that are currently "pending" in Neon
+ *   (i.e., not yet notified). The caller (deleteProductRestockList) deletes
+ *   the old list first so only the current pending batch ends up in Zoho.
+ *   This ensures only fresh sign-ups receive the campaign email.
  */
 export async function addContactsToList(
   productSlug: string,
   productName: string,
-  emails: string[]
+  contacts: RestockContact[]
 ): Promise<string> {
-  if (emails.length === 0) throw new Error("[zoho] addContactsToList called with empty emails");
+  if (contacts.length === 0) throw new Error("[zoho] addContactsToList called with empty contacts");
 
   const token    = await getAccessToken();
   const listName = buildListName(productName);
@@ -209,19 +232,19 @@ export async function addContactsToList(
     if (!existing) listKey = null; // list was deleted externally
   }
 
-  const [firstBatch, ...remainingBatches] = chunkEmails(emails, BATCH_SIZE);
+  const [firstBatch, ...remainingBatches] = chunkContacts(contacts, BATCH_SIZE);
 
   if (!listKey) {
-    // Create new list + seed with first batch
+    // Create new list + seed with first batch (contactinfo carries product fields)
     const createRes = await zohoPost("/addlistandcontacts", token, {
-      listname:  listName,
-      listdesc:  `Auto-managed restock waitlist. slug:${productSlug}`,
-      emailids:  firstBatch.join(","),
+      listname:    listName,
+      listdesc:    `Auto-managed restock waitlist. slug:${productSlug}`,
+      contactinfo: buildContactInfo(firstBatch),
     });
     if (isZohoError(createRes)) {
       throw new Error(`[zoho] addlistandcontacts failed: ${JSON.stringify(createRes)}`);
     }
-    console.log(`[zoho] Created list "${listName}" and added ${firstBatch.length} email(s)`);
+    console.log(`[zoho] Created list "${listName}" and added ${firstBatch.length} contact(s)`);
 
     // Retrieve the new list key (addlistandcontacts doesn't return it)
     const newKey = await findListKeyByName(token, listName);
@@ -232,36 +255,36 @@ export async function addContactsToList(
     listKeyCache.set(productSlug, listKey);
   } else {
     // List exists — add first batch directly
-    await bulkAddEmails(token, listKey, firstBatch);
+    await bulkAddContacts(token, listKey, firstBatch);
   }
 
   // Add any remaining batches
   for (const batch of remainingBatches) {
-    await bulkAddEmails(token, listKey, batch);
+    await bulkAddContacts(token, listKey, batch);
   }
 
-  console.log(`[zoho] Added ${emails.length} contact(s) to list "${listName}" (${listKey})`);
+  console.log(`[zoho] Added ${contacts.length} contact(s) to list "${listName}" (${listKey})`);
   return listKey;
 }
 
-async function bulkAddEmails(token: string, listKey: string, emails: string[]): Promise<void> {
+async function bulkAddContacts(token: string, listKey: string, contacts: RestockContact[]): Promise<void> {
   const res = await zohoPost("/addlistsubscribersinbulk", token, {
-    listkey:  listKey,
-    emailids: emails.join(","),
+    listkey:     listKey,
+    contactinfo: buildContactInfo(contacts),
   });
   if (isZohoError(res)) {
     throw new Error(`[zoho] addlistsubscribersinbulk failed: ${JSON.stringify(res)}`);
   }
   const ignored  = (res.ignored_contacts  ?? []).length;
   const existing = (res.existing_contacts ?? []).length;
-  const added    = emails.length - ignored - existing;
+  const added    = contacts.length - ignored - existing;
   console.log(`[zoho] Bulk add: ${added} new, ${existing} existing, ${ignored} ignored`);
 }
 
-function chunkEmails(emails: string[], size: number): string[][] {
-  const chunks: string[][] = [];
-  for (let i = 0; i < emails.length; i += size) {
-    chunks.push(emails.slice(i, i + size));
+function chunkContacts(contacts: RestockContact[], size: number): RestockContact[][] {
+  const chunks: RestockContact[][] = [];
+  for (let i = 0; i < contacts.length; i += size) {
+    chunks.push(contacts.slice(i, i + size));
   }
   return chunks;
 }

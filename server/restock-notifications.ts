@@ -20,6 +20,7 @@ import {
   deleteProductRestockList,
   addContactsToList,
   triggerCampaignSend,
+  type RestockContact,
 } from "./zoho-campaigns";
 
 export async function triggerRestockNotifications(
@@ -51,14 +52,19 @@ export async function triggerRestockNotifications(
     return;
   }
 
-  const emails = pending.map(n => n.email);
+  const contacts: RestockContact[] = pending.map(n => ({
+    email:       n.email,
+    productName,
+    productUrl:  `https://reviveresearch.co/products/${productSlug}`,
+  }));
 
   // Step 1 — Delete the old list so only the current pending batch gets the email.
   //           (Prevents re-emailing addresses that were notified in previous OOS cycles.)
   await deleteProductRestockList(productSlug, productName);
 
-  // Step 2 — Create a fresh list and bulk-add the current pending batch.
-  await addContactsToList(productSlug, productName, emails);
+  // Step 2 — Create a fresh list and bulk-add the current pending batch with
+  //           product merge fields (PRODUCT_NAME, PRODUCT_URL) populated.
+  await addContactsToList(productSlug, productName, contacts);
 
   // Step 3 — Trigger the Zoho campaign. Throws on API error, so if this
   //           succeeds we know Zoho accepted the send request.
