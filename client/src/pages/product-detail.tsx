@@ -1246,28 +1246,30 @@ export default function ProductDetail() {
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
-                <Button
-                  size="lg"
-                  className="inline-flex items-center justify-center whitespace-nowrap select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border min-h-[44px] rounded-md px-8 w-full font-display font-bold gap-2 text-black transition-shadow duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)] text-[18px]"
-                  onClick={handleBuyNow}
-                  data-testid="button-buy-now"
-                >
-                  {purchaseType === "subscription" ? (
-                    <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
-                  ) : (
-                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
-                  )}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50 text-[16px]"
-                  onClick={handleAddToCart}
-                  data-testid="button-add-to-cart"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  Add to Cart — ${effectiveTotal}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="lg"
+                    className="inline-flex items-center justify-center whitespace-nowrap select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border min-h-[44px] rounded-md px-8 flex-1 font-display font-bold gap-2 text-black transition-shadow duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)] text-[18px]"
+                    onClick={handleBuyNow}
+                    data-testid="button-buy-now"
+                  >
+                    {purchaseType === "subscription" ? (
+                      <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
+                    ) : (
+                      <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
+                    )}
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50 text-[16px]"
+                    onClick={handleAddToCart}
+                    data-testid="button-add-to-cart"
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    Add to Cart — ${effectiveTotal}
+                  </Button>
+                </div>
                 <Button
                   size="sm"
                   variant="outline"
