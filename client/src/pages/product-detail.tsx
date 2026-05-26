@@ -1261,7 +1261,7 @@ export default function ProductDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
+                  className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50 text-[16px]"
                   onClick={handleAddToCart}
                   data-testid="button-add-to-cart"
                 >
@@ -1271,9 +1271,7 @@ export default function ProductDetail() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className={`w-full gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] ${
-                    isInWishlist ? "bg-[#ec4899]/10" : ""
-                  }`}
+                  className="inline-flex items-center justify-center whitespace-nowrap font-medium select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border [border-color:var(--button-outline)] shadow-xs active:shadow-none min-h-[44px] rounded-md px-3 w-full gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] text-[15px]"
                   onClick={handleToggleWishlist}
                   disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
                   data-testid="button-toggle-wishlist"
