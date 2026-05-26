@@ -21,6 +21,33 @@ Real user email addresses (normal Gmail, real domains) pass through cleanly with
 
 **How to apply:** Do not treat ignored_contacts as a code error. Log it as a warning. It is expected for test addresses used during development.
 
+## sendcampaign only works for Autoresponder/Automated campaign types
+
+Regular draft email campaigns have `campaign_key: "null"` and CANNOT be triggered via the `sendcampaign` REST API endpoint. Confirmed by calling `getcampaigndetails` with `campaignid=<numeric_id>` — full campaign object returned with `campaign_key: "null"`.
+
+The Zoho campaign listing endpoints (`getallcampaigns`, `getcampaigns`, `getemailcampaigns`, etc.) all return 1004 in REST v1.1 — there is no working programmatic campaign listing endpoint.
+
+**Why:** Zoho Campaigns REST API v1.1 `sendcampaign` is designed for automation/autoresponder campaigns, not one-off drafts.
+
+**How to apply:** For restock notifications, use a Zoho **Autoresponder** configured to trigger on "Contact Added to Mailing List" targeting "Restock:" lists. When our code adds contacts via `addContactsToList`, Zoho fires the autoresponder automatically. No campaign key or trigger API call needed.
+
+## getcampaigndetails works with campaignid (numeric), not campaignkey param
+
+`POST /getcampaigndetails` with `campaignkey=<numeric_id>` returns "Invalid Campaignkey".
+`POST /getcampaigndetails` with `campaignid=<numeric_id>` returns the full campaign object with code 0.
+
+**How to apply:** Use `campaignid` (not `campaignkey`) as the parameter name for campaign detail lookups.
+
+## Custom contact fields use contactinfo JSON, not emailids
+
+`addlistsubscribersinbulk` and `addlistandcontacts` support a `contactinfo` JSON array parameter as an alternative to `emailids`. Use this to pass custom field values per contact.
+
+Format: `[{"Contact Email": "...", "PRODUCT_NAME": "...", "PRODUCT_URL": "..."}]`
+
+Column names `PRODUCT_NAME` and `PRODUCT_URL` were created as custom Zoho contact fields. The merge tags in templates are `$[UD:PRODUCT_NAME||]$` and `$[UD:PRODUCT_URL||]$` (two pipes required — `$[UD:FIELD|default|]$` format).
+
+**Why:** The `emailids` approach only carries email addresses; `contactinfo` carries full contact data including custom fields needed for per-product merge tags.
+
 ## Debug endpoint for diagnosing silent failures
 
 `POST /api/admin/debug/zoho-newsletter` (admin-only) runs the full subscribe flow synchronously and returns:

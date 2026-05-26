@@ -3,23 +3,28 @@
  *
  * Called automatically when a product transitions from fully out-of-stock
  * to any positive inventory level. Pushes pending OOS subscribers to Zoho
- * Campaigns and marks them as notified in Neon — but ONLY after the Zoho
- * campaign send is confirmed. If the campaign key is not configured, the
- * function exits without touching Neon so all pending rows remain retryable.
+ * Campaigns and marks them as notified in Neon.
  *
  * The call is non-blocking — callers fire-and-forget and log any errors.
  *
+ * How email delivery works:
+ *   Adding contacts to the per-product Zoho list ("Restock: {Product Name}")
+ *   triggers a Zoho Autoresponder configured to fire on "Contact Added to
+ *   Mailing List". The autoresponder template uses $[UD:PRODUCT_NAME||]$ and
+ *   $[UD:PRODUCT_URL||]$ merge tags which are populated per-contact by this
+ *   code. No API campaign-trigger call is needed — Zoho fires automatically.
+ *
  * Setup required before emails will send:
- *   1. Build a restock email campaign in Zoho Campaigns UI.
- *   2. Set its "To" list to "Restock: {Product Name}".
- *   3. Copy the campaign key and store it as ZOHO_RESTOCK_CAMPAIGN_KEY.
+ *   1. In Zoho Campaigns → Autoresponders, create an autoresponder triggered
+ *      by "Contact Added to Mailing List" targeting "Restock:" lists.
+ *   2. Use the OOS_Product_Email template with send delay = immediately.
+ *   3. Activate the autoresponder. No secrets need to be set.
  */
 
 import { storage } from "./storage";
 import {
   deleteProductRestockList,
   addContactsToList,
-  triggerCampaignSend,
   type RestockContact,
 } from "./zoho-campaigns";
 
@@ -39,23 +44,10 @@ export async function triggerRestockNotifications(
 
   console.log(`[restock] ${pending.length} subscriber(s) to notify for "${productSlug}"`);
 
-  // Guard: campaign key must be set before we do anything irreversible.
-  // Without it we cannot send the email, so we leave all rows in "pending"
-  // so they are picked up on the next restock trigger once the key is added.
-  const campaignKey = process.env.ZOHO_RESTOCK_CAMPAIGN_KEY;
-  if (!campaignKey) {
-    console.warn(
-      `[restock] ZOHO_RESTOCK_CAMPAIGN_KEY is not set — ${pending.length} subscriber(s) ` +
-      `for "${productSlug}" remain pending. Set ZOHO_RESTOCK_CAMPAIGN_KEY and retrigger ` +
-      `(e.g. by bumping stock to 0 then back up) to send the notification email.`
-    );
-    return;
-  }
-
   const contacts: RestockContact[] = pending.map(n => ({
-    email:       n.email,
+    email:      n.email,
     productName,
-    productUrl:  `https://reviveresearch.co/products/${productSlug}`,
+    productUrl: `https://reviveresearch.co/products/${productSlug}`,
   }));
 
   // Step 1 — Delete the old list so only the current pending batch gets the email.
@@ -64,16 +56,14 @@ export async function triggerRestockNotifications(
 
   // Step 2 — Create a fresh list and bulk-add the current pending batch with
   //           product merge fields (PRODUCT_NAME, PRODUCT_URL) populated.
+  //           Adding contacts here automatically triggers the Zoho Autoresponder.
   await addContactsToList(productSlug, productName, contacts);
 
-  // Step 3 — Trigger the Zoho campaign. Throws on API error, so if this
-  //           succeeds we know Zoho accepted the send request.
-  await triggerCampaignSend(campaignKey);
-
-  // Step 4 — Mark every notified row in Neon (only reached after Zoho confirms).
+  // Step 3 — Mark every notified row in Neon. Reached only after Zoho confirms
+  //           the contact upload, so failures leave rows retryable.
   await Promise.all(pending.map(n => storage.markNotificationAsSent(n.id)));
 
   console.log(
-    `[restock] Done — notified ${pending.length} subscriber(s) for "${productSlug}".`
+    `[restock] Done — ${pending.length} subscriber(s) added to Zoho for "${productSlug}".`
   );
 }
