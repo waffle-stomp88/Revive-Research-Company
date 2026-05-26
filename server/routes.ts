@@ -4288,10 +4288,10 @@ export async function registerRoutes(
       // Get product details for each notification
       const notificationsWithProducts = await Promise.all(
         notifications.map(async (n) => {
-          const product = await storage.getProduct(n.productId);
+          const product = await storage.getProductBySlug(n.productId);
           return {
             ...n,
-            productName: product?.name || "Unknown Product"
+            productName: product?.name || n.productId
           };
         })
       );
