@@ -1248,11 +1248,7 @@ export default function ProductDetail() {
               <div className="flex flex-col gap-2" data-testid="stack-cta">
                 <Button
                   size="lg"
-                  className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
-                    purchaseType === "subscription"
-                      ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
-                      : "bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)]"
-                  }`}
+                  className="inline-flex items-center justify-center whitespace-nowrap select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border min-h-[44px] rounded-md px-8 w-full font-display font-bold gap-2 text-black transition-shadow duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212, 255, 31,0.4)] hover:shadow-[0_0_36px_rgba(212, 255, 31,0.75)] text-[18px]"
                   onClick={handleBuyNow}
                   data-testid="button-buy-now"
                 >
