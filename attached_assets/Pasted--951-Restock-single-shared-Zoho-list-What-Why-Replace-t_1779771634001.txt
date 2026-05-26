@@ -1,0 +1,26 @@
+#951 - Restock: single shared Zoho list
+What & Why
+Replace the per-product "Restock: {Product Name}" list strategy with a single shared "Restock Queue" Zoho list. Zoho autoresponders bind to exactly one list, so the per-product approach would require one autoresponder per product — unworkable at scale. A shared list with per-contact PRODUCT_NAME / PRODUCT_URL custom fields lets one autoresponder handle all 137 products.
+
+Done looks like
+server/zoho-campaigns.ts exports addContactsToRestockQueue(contacts) and getRestockQueueListKey() instead of the old per-product helpers.
+Per-product list creation, deletion, naming, and the assertRestockListName guard are all removed.
+The listKeyCache is replaced with a single module-level cache for the "Restock Queue" list key (resolved once via findListKeyByName, then reused).
+server/restock-notifications.ts calls addContactsToRestockQueue and no longer calls deleteProductRestockList or addContactsToList.
+File-header comments in both files are updated to reflect the new architecture.
+triggerCampaignSend and the ZOHO_RESTOCK_CAMPAIGN_KEY references are fully cleaned out of both files (already removed from the caller, should be removed from the export too if unused).
+The "Restock Queue" list must already exist in Zoho (created by the user in the Zoho UI before the first run); the code throws a clear error if the list is not found.
+Out of scope
+Creating or deleting the "Restock Queue" list programmatically — the user creates it once in Zoho UI.
+Contact cleanup / unsubscribe after autoresponder fires (can be done later if needed; leaving contacts in the shared list doesn't break anything since autoresponder fires on new addition).
+Any changes to the newsletter ("Research List") path or the addContactToResearchList / debugZohoNewsletter helpers — those are untouched.
+Any schema or Neon changes — only the Zoho client layer changes.
+Steps
+Replace the listKeyCache and per-product helpers — Remove buildListName, assertRestockListName, deleteProductRestockList, and the per-product addContactsToList from zoho-campaigns.ts. Add a module-level restockQueueListKey cache variable and a getRestockQueueListKey() function that resolves the key via findListKeyByName("Restock Queue") on first call and caches it; throws clearly if the list is not found.
+Add addContactsToRestockQueue — New exported function that calls getRestockQueueListKey() then bulk-adds the contact batch (using the existing buildContactInfo / bulkAddContacts / chunkContacts helpers) to the shared list. Update the file-header comment.
+Update restock-notifications.ts — Remove the deleteProductRestockList import and call. Replace addContactsToList(productSlug, productName, contacts) with addContactsToRestockQueue(contacts). Update the header comment to describe the single shared list architecture.
+Relevant files
+server/zoho-campaigns.ts
+server/restock-notifications.ts
+Dependencies
+Restock notification automation — Zoho Campaigns with product fields

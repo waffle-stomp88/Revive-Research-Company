@@ -2,29 +2,30 @@
  * Restock notification trigger
  *
  * Called automatically when a product transitions from fully out-of-stock
- * to any positive inventory level. Pushes pending OOS subscribers to Zoho
- * Campaigns and marks them as notified in Neon.
+ * to any positive inventory level. Pushes pending OOS subscribers to the
+ * shared "Restock Queue" Zoho list and marks them as notified in Neon.
  *
  * The call is non-blocking — callers fire-and-forget and log any errors.
  *
  * How email delivery works:
- *   Adding contacts to the per-product Zoho list ("Restock: {Product Name}")
- *   triggers a Zoho Autoresponder configured to fire on "Contact Added to
- *   Mailing List". The autoresponder template uses $[UD:PRODUCT_NAME||]$ and
- *   $[UD:PRODUCT_URL||]$ merge tags which are populated per-contact by this
- *   code. No API campaign-trigger call is needed — Zoho fires automatically.
+ *   All restock contacts are added to a single shared "Restock Queue" list
+ *   in Zoho Campaigns. A Zoho Autoresponder bound to that list fires
+ *   immediately when contacts are added, using $[UD:PRODUCT_NAME||]$ and
+ *   $[UD:PRODUCT_URL||]$ merge tags populated per-contact by this code.
+ *   One autoresponder handles all products — no per-product lists needed.
  *
  * Setup required before emails will send:
- *   1. In Zoho Campaigns → Autoresponders, create an autoresponder triggered
- *      by "Contact Added to Mailing List" targeting "Restock:" lists.
- *   2. Use the OOS_Product_Email template with send delay = immediately.
- *   3. Activate the autoresponder. No secrets need to be set.
+ *   1. In Zoho Campaigns → Mailing Lists, create a list named exactly
+ *      "Restock Queue".
+ *   2. In Zoho Campaigns → Autoresponders, create an autoresponder triggered
+ *      by "Contact Added to Mailing List" targeting "Restock Queue".
+ *   3. Use the OOS_Product_Email template with send delay = immediately.
+ *   4. Activate the autoresponder. No secrets need to be set in Replit.
  */
 
 import { storage } from "./storage";
 import {
-  deleteProductRestockList,
-  addContactsToList,
+  addContactsToRestockQueue,
   type RestockContact,
 } from "./zoho-campaigns";
 
@@ -50,17 +51,12 @@ export async function triggerRestockNotifications(
     productUrl: `https://reviveresearch.co/products/${productSlug}`,
   }));
 
-  // Step 1 — Delete the old list so only the current pending batch gets the email.
-  //           (Prevents re-emailing addresses that were notified in previous OOS cycles.)
-  await deleteProductRestockList(productSlug, productName);
+  // Add all contacts to the shared "Restock Queue" list with per-contact
+  // product merge fields. Adding contacts here triggers the Zoho Autoresponder.
+  await addContactsToRestockQueue(contacts);
 
-  // Step 2 — Create a fresh list and bulk-add the current pending batch with
-  //           product merge fields (PRODUCT_NAME, PRODUCT_URL) populated.
-  //           Adding contacts here automatically triggers the Zoho Autoresponder.
-  await addContactsToList(productSlug, productName, contacts);
-
-  // Step 3 — Mark every notified row in Neon. Reached only after Zoho confirms
-  //           the contact upload, so failures leave rows retryable.
+  // Mark every notified row in Neon. Only reached after Zoho confirms the
+  // contact upload — failures leave rows in pending so they're retryable.
   await Promise.all(pending.map(n => storage.markNotificationAsSent(n.id)));
 
   console.log(

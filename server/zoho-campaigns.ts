@@ -3,20 +3,21 @@
  *
  * Confirmed working endpoints (all probed against live account):
  *   POST getmailinglists           — list all mailing lists
- *   GET  deletemailinglist         — delete a list by listkey
- *   POST addlistandcontacts        — create new list + seed contacts (emailids param)
- *   POST addlistsubscribersinbulk  — bulk-add emails to existing list (emailids param)
+ *   POST addlistandcontacts        — create new list + seed contacts (contactinfo param)
+ *   POST addlistsubscribersinbulk  — bulk-add contacts to existing list (contactinfo param)
  *   GET  getlistsubscribers        — read contacts in a list
- *   POST sendcampaign              — trigger a pre-built campaign by campaignkey
+ *
+ * Restock notification architecture:
+ *   All restock waitlist contacts are added to a single shared "Restock Queue"
+ *   Zoho list (created once in the Zoho UI). A Zoho Autoresponder bound to that
+ *   list fires immediately for each new contact, using $[UD:PRODUCT_NAME||]$ and
+ *   $[UD:PRODUCT_URL||]$ merge tags that are populated per-contact by this code.
+ *   No campaign key or sendcampaign API call is needed.
  *
  * Environment variables required:
  *   ZOHO_CLIENT_ID       — from Zoho API Console
  *   ZOHO_CLIENT_SECRET   — from Zoho API Console
  *   ZOHO_REFRESH_TOKEN   — obtained via OAuth code exchange
- *
- * Optional:
- *   ZOHO_RESTOCK_CAMPAIGN_KEY — campaign key to trigger after adding contacts
- *                               (set this after building your email template in Zoho UI)
  */
 
 const BASE_URL   = "https://campaigns.zoho.com/api/v1.1";
@@ -24,10 +25,12 @@ const TOKEN_URL  = "https://accounts.zoho.com/oauth/v2/token";
 const TIMEOUT_MS = 20_000;
 const BATCH_SIZE = 250;
 
+const RESTOCK_QUEUE_LIST_NAME = "Restock Queue";
+
 // ---------------------------------------------------------------------------
-// In-process cache: productSlug → Zoho list key
+// Shared list key cache — resolved once, reused for the process lifetime
 // ---------------------------------------------------------------------------
-const listKeyCache = new Map<string, string>();
+let restockQueueListKey: string | null = null;
 
 // ---------------------------------------------------------------------------
 // Token helpers
@@ -97,13 +100,9 @@ function isZohoError(data: any): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// List management
+// List lookup
 // ---------------------------------------------------------------------------
 
-/**
- * Looks up the Zoho list key for a product's restock waitlist by list name.
- * Searches existing lists; does NOT create — use addContactsToList for that.
- */
 async function findListKeyByName(token: string, listName: string): Promise<string | null> {
   const res = await zohoPost("/getmailinglists", token, { range: "100" });
   const items: any[] = res?.list_of_details ?? [];
@@ -121,57 +120,29 @@ async function findListKeyByName(token: string, listName: string): Promise<strin
   return match?.listkey ?? null;
 }
 
+// ---------------------------------------------------------------------------
+// Restock Queue — shared list management
+// ---------------------------------------------------------------------------
+
 /**
- * Deletes the product's Zoho restock list (and clears cache).
- * Called at the start of each restock cycle so old subscribers aren't
- * re-emailed on the next send — only the current pending batch is added.
+ * Returns the Zoho list key for the shared "Restock Queue" list.
+ * Resolves once via getmailinglists and caches for the process lifetime.
+ * Throws clearly if the list doesn't exist — it must be created in the Zoho UI.
  */
-/**
- * SAFETY GUARD — enforced in code, not just by convention.
- *
- * deletemailinglist may ONLY be called when the resolved list name starts with
- * "Restock:". Any attempt to delete a list whose name does NOT match this prefix
- * throws immediately — no soft warning, no fallback. This prevents accidentally
- * deleting production marketing lists (e.g. "Research List") during testing or
- * an unexpected API response.
- */
-function assertRestockListName(listName: string): void {
-  if (!listName.startsWith("Restock:")) {
+export async function getRestockQueueListKey(): Promise<string> {
+  if (restockQueueListKey) return restockQueueListKey;
+
+  const token = await getAccessToken();
+  const key   = await findListKeyByName(token, RESTOCK_QUEUE_LIST_NAME);
+  if (!key) {
     throw new Error(
-      `[zoho] SAFETY ABORT: deletemailinglist was about to target "${listName}", ` +
-      `which does not start with "Restock:". Only restock lists may be deleted programmatically.`
+      `[zoho] "${RESTOCK_QUEUE_LIST_NAME}" list not found in Zoho Campaigns. ` +
+      `Create it in the Zoho UI (Mailing Lists → New List → name it exactly "${RESTOCK_QUEUE_LIST_NAME}") ` +
+      `then configure an Autoresponder to fire on "Contact Added to Mailing List" targeting that list.`
     );
   }
-}
-
-export async function deleteProductRestockList(
-  productSlug: string,
-  productName: string
-): Promise<void> {
-  listKeyCache.delete(productSlug);
-  const token    = await getAccessToken();
-  const listName = buildListName(productName);
-
-  // Hard guard — throws if listName doesn't start with "Restock:"
-  // buildListName always produces "Restock: {name}", but this is a second line
-  // of defence against future refactors or bad arguments.
-  assertRestockListName(listName);
-
-  const listKey = await findListKeyByName(token, listName);
-  if (!listKey) {
-    console.log(`[zoho] No existing list found for "${productSlug}", nothing to delete.`);
-    return;
-  }
-  const res = await zohoGet("/deletemailinglist", token, { listkey: listKey });
-  if (isZohoError(res)) {
-    console.warn(`[zoho] deletemailinglist warning for "${productSlug}":`, JSON.stringify(res).slice(0, 200));
-  } else {
-    console.log(`[zoho] Deleted restock list "${listName}" (${listKey})`);
-  }
-}
-
-function buildListName(productName: string): string {
-  return `Restock: ${productName}`.slice(0, 100);
+  restockQueueListKey = key;
+  return key;
 }
 
 // ---------------------------------------------------------------------------
@@ -186,7 +157,7 @@ export interface RestockContact {
 
 /**
  * Serialises a contact array into the JSON string Zoho expects for the
- * `contactinfo` parameter of addlistandcontacts / addlistsubscribersinbulk.
+ * `contactinfo` parameter of addlistsubscribersinbulk.
  *
  * Column names (PRODUCT_NAME, PRODUCT_URL) match the custom contact fields
  * created in Zoho Campaigns. In email templates the merge tags are:
@@ -203,72 +174,26 @@ function buildContactInfo(contacts: RestockContact[]): string {
 }
 
 /**
- * Adds a batch of contacts (with product merge-field data) to the product's
- * Zoho restock list. If the list doesn't exist yet, creates it using
- * addlistandcontacts. Returns the listKey.
- *
- * NOTE on re-email prevention:
- *   This function only receives contacts that are currently "pending" in Neon
- *   (i.e., not yet notified). The caller (deleteProductRestockList) deletes
- *   the old list first so only the current pending batch ends up in Zoho.
- *   This ensures only fresh sign-ups receive the campaign email.
+ * Adds a batch of restock contacts to the shared "Restock Queue" Zoho list.
+ * Each contact carries PRODUCT_NAME and PRODUCT_URL custom field values so
+ * the autoresponder template can personalise per-product. Adding contacts
+ * here automatically triggers the bound Zoho Autoresponder.
  */
-export async function addContactsToList(
-  productSlug: string,
-  productName: string,
-  contacts: RestockContact[]
-): Promise<string> {
-  if (contacts.length === 0) throw new Error("[zoho] addContactsToList called with empty contacts");
+export async function addContactsToRestockQueue(contacts: RestockContact[]): Promise<void> {
+  if (contacts.length === 0) throw new Error("[zoho] addContactsToRestockQueue called with empty contacts");
 
-  const token    = await getAccessToken();
-  const listName = buildListName(productName);
+  const listKey = await getRestockQueueListKey();
 
-  // Check cache first
-  let listKey = listKeyCache.get(productSlug) ?? null;
-
-  // Verify the cached key still refers to a real list
-  if (listKey) {
-    const existing = await findListKeyByName(token, listName);
-    if (!existing) listKey = null; // list was deleted externally
+  for (const batch of chunkContacts(contacts, BATCH_SIZE)) {
+    await bulkAddContacts(listKey, batch);
   }
 
-  const [firstBatch, ...remainingBatches] = chunkContacts(contacts, BATCH_SIZE);
-
-  if (!listKey) {
-    // Create new list + seed with first batch (contactinfo carries product fields)
-    const createRes = await zohoPost("/addlistandcontacts", token, {
-      listname:    listName,
-      listdesc:    `Auto-managed restock waitlist. slug:${productSlug}`,
-      contactinfo: buildContactInfo(firstBatch),
-    });
-    if (isZohoError(createRes)) {
-      throw new Error(`[zoho] addlistandcontacts failed: ${JSON.stringify(createRes)}`);
-    }
-    console.log(`[zoho] Created list "${listName}" and added ${firstBatch.length} contact(s)`);
-
-    // Retrieve the new list key (addlistandcontacts doesn't return it)
-    const newKey = await findListKeyByName(token, listName);
-    if (!newKey) {
-      throw new Error(`[zoho] Created list "${listName}" but could not find its key via getmailinglists`);
-    }
-    listKey = newKey;
-    listKeyCache.set(productSlug, listKey);
-  } else {
-    // List exists — add first batch directly
-    await bulkAddContacts(token, listKey, firstBatch);
-  }
-
-  // Add any remaining batches
-  for (const batch of remainingBatches) {
-    await bulkAddContacts(token, listKey, batch);
-  }
-
-  console.log(`[zoho] Added ${contacts.length} contact(s) to list "${listName}" (${listKey})`);
-  return listKey;
+  console.log(`[zoho] Added ${contacts.length} contact(s) to "${RESTOCK_QUEUE_LIST_NAME}" (${listKey})`);
 }
 
-async function bulkAddContacts(token: string, listKey: string, contacts: RestockContact[]): Promise<void> {
-  const res = await zohoPost("/addlistsubscribersinbulk", token, {
+async function bulkAddContacts(listKey: string, contacts: RestockContact[]): Promise<void> {
+  const token = await getAccessToken();
+  const res   = await zohoPost("/addlistsubscribersinbulk", token, {
     listkey:     listKey,
     contactinfo: buildContactInfo(contacts),
   });
@@ -296,12 +221,6 @@ function chunkContacts(contacts: RestockContact[], size: number): RestockContact
 /**
  * Adds a single email address to the "Research List" mailing list in Zoho
  * Campaigns via the authenticated REST API.
- *
- * This is the server-side replacement for the old client-side weboptin.zc
- * hidden-form hack (zoho-form-submit.ts / zoho-optin.ts). Those approaches
- * depended on hardcoded form tokens that are tied to a specific Zoho signup
- * form — when that form is recreated the tokens change and signups stop
- * landing. This path uses our long-lived OAuth credentials instead.
  *
  * Non-throwing: logs on failure and resolves cleanly so a Zoho hiccup
  * never breaks the user-facing newsletter subscribe response.
@@ -404,34 +323,4 @@ export async function debugZohoNewsletter(email: string): Promise<{
   }
 
   return result;
-}
-
-// ---------------------------------------------------------------------------
-// Campaign trigger
-// ---------------------------------------------------------------------------
-
-/**
- * Triggers an immediate send for the given Zoho campaign key.
- *
- * Setup in Zoho UI:
- *   1. Create an email campaign template for each product.
- *   2. Set the campaign's "To" list to "Restock: {Product Name}".
- *   3. Copy the campaign key from the campaign settings.
- *   4. Store it as ZOHO_RESTOCK_CAMPAIGN_KEY.
- *
- * Requires a non-empty key — callers must check for ZOHO_RESTOCK_CAMPAIGN_KEY
- * and abort early if it is unset (see restock-notifications.ts).
- * Throws on API error so the caller can distinguish "sent" from "failed".
- */
-export async function triggerCampaignSend(campaignKey: string): Promise<void> {
-  const token  = await getAccessToken();
-  const result = await zohoPost("/sendcampaign", token, {
-    campaignkey: campaignKey,
-  });
-
-  console.log("[zoho] sendcampaign result:", JSON.stringify(result).slice(0, 300));
-
-  if (isZohoError(result)) {
-    throw new Error(`[zoho] Campaign send failed for key "${campaignKey}": ${JSON.stringify(result)}`);
-  }
 }
