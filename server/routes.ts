@@ -1632,6 +1632,49 @@ export async function registerRoutes(
     }
   });
 
+  // Cart persistence — get saved cart for authenticated user
+  app.get("/api/cart", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const items = await storage.getUserCart(userId);
+      res.json({ items: items ?? [] });
+    } catch (error) {
+      console.error("Error fetching user cart:", error);
+      res.status(500).json({ error: "Failed to fetch cart" });
+    }
+  });
+
+  // Cart persistence — save/update cart for authenticated user
+  app.put("/api/cart", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { items } = req.body;
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ error: "items must be an array" });
+      }
+      if (items.length > 100) {
+        return res.status(400).json({ error: "Cart cannot exceed 100 items" });
+      }
+      await storage.saveUserCart(userId, items);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Error saving user cart:", error);
+      res.status(500).json({ error: "Failed to save cart" });
+    }
+  });
+
+  // Cart persistence — clear saved cart for authenticated user
+  app.delete("/api/cart", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteUserCart(userId);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Error clearing user cart:", error);
+      res.status(500).json({ error: "Failed to clear cart" });
+    }
+  });
+
   // Get user's orders (authenticated)
   app.get("/api/orders/my-orders", isAuthenticated, async (req: any, res) => {
     try {

@@ -1058,3 +1058,12 @@ export const articleViews = pgTable(
 );
 
 export type ArticleView = typeof articleViews.$inferSelect;
+
+// User Carts — server-side cart persistence per authenticated user
+export const userCarts = pgTable("user_carts", {
+  userId: varchar("user_id").primaryKey().references(() => users.id, { onDelete: "cascade" }),
+  items: jsonb("items").notNull().default(sql`'[]'::jsonb`),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type UserCart = typeof userCarts.$inferSelect;

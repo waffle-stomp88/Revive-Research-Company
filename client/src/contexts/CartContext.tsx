@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 export interface CartItem {
   productId: string;
@@ -32,6 +33,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "revive-research-cart";
+const SYNC_DEBOUNCE_MS = 500;
 
 export function stripFreeItemsFromStorage(): void {
   if (typeof window === "undefined") return;
@@ -46,21 +48,164 @@ export function stripFreeItemsFromStorage(): void {
   }
 }
 
+function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
+  const result = [...server];
+  for (const localItem of local) {
+    if (localItem.isFree) continue;
+    const existingIndex = result.findIndex((s) => {
+      if (s.isFree) return false;
+      const sameSubscription =
+        s.isSubscription === localItem.isSubscription &&
+        s.subscriptionInterval === localItem.subscriptionInterval;
+      const samePackSize = (s.packSize || undefined) === (localItem.packSize || undefined);
+      if (localItem.bundleId) {
+        return s.bundleId === localItem.bundleId && s.dosage === localItem.dosage;
+      }
+      return (
+        s.productId === localItem.productId &&
+        s.dosage === localItem.dosage &&
+        sameSubscription &&
+        samePackSize
+      );
+    });
+    if (existingIndex >= 0) {
+      result[existingIndex] = {
+        ...result[existingIndex],
+        quantity: result[existingIndex].quantity + localItem.quantity,
+      };
+    } else {
+      result.push(localItem);
+    }
+  }
+  return result;
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { toast } = useToast();
+
   const [items, setItems] = useState<CartItem[]>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(CART_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      try {
+        const saved = localStorage.getItem(CART_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
     }
     return [];
   });
 
+  const isRestoringRef = useRef(false);
+  const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevAuthUserRef = useRef<{ id: string } | null | undefined>(undefined);
+  const authUserRef = useRef<{ id: string } | null | undefined>(undefined);
+
+  // Persist to localStorage on every change
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
+  // Watch auth state
+  const { data: authUser } = useQuery<{ id: string } | null>({
+    queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 30_000,
+  });
+
+  // Keep ref in sync with current auth user for use in the debounced sync effect
+  useEffect(() => {
+    authUserRef.current = authUser;
+  }, [authUser]);
+
+  // Handle auth state transitions
+  useEffect(() => {
+    const prev = prevAuthUserRef.current;
+    prevAuthUserRef.current = authUser;
+
+    // Still loading — wait
+    if (authUser === undefined) return;
+
+    // LOGGED OUT: clear the local cart so guest sessions start clean
+    if (authUser === null) {
+      if (prev !== undefined && prev !== null) {
+        // Was logged in, now logged out — wipe local cart
+        setItems([]);
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
+      }
+      return;
+    }
+
+    // LOGGED IN (page load with session, or explicit login): restore from server
+    if (prev === undefined || prev === null) {
+      const isExplicitLogin = prev === null;
+
+      const restore = async () => {
+        isRestoringRef.current = true;
+        try {
+          const res = await fetch("/api/cart", { credentials: "include" });
+          if (!res.ok) return;
+          const data = await res.json();
+          const serverItems: CartItem[] = Array.isArray(data.items) ? data.items : [];
+
+          // Read current local items (already populated from localStorage on mount)
+          const localRaw = localStorage.getItem(CART_STORAGE_KEY);
+          const localItems: CartItem[] = localRaw ? JSON.parse(localRaw) : [];
+          const nonFreeLocal = localItems.filter((i) => !i.isFree);
+
+          const merged = mergeCartItems(nonFreeLocal, serverItems);
+          setItems(merged);
+
+          // Show toast only on explicit login when there were items to restore
+          if (isExplicitLogin && serverItems.length > 0) {
+            const restoredCount = serverItems.reduce((sum, i) => sum + i.quantity, 0);
+            toast({
+              title: "Cart restored",
+              description: `${restoredCount} item${restoredCount !== 1 ? "s" : ""} saved from your last session.`,
+              duration: 4000,
+            });
+          }
+        } catch {
+          // Best-effort — don't interrupt the user
+        } finally {
+          // Small delay so the sync effect doesn't echo the just-restored items immediately
+          setTimeout(() => {
+            isRestoringRef.current = false;
+          }, 1200);
+        }
+      };
+
+      restore();
+    }
+  }, [authUser, toast]);
+
+  // Debounced server sync — runs on every cart change while logged in
+  useEffect(() => {
+    const user = authUserRef.current;
+    if (!user || isRestoringRef.current) return;
+
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(() => {
+      if (!authUserRef.current || isRestoringRef.current) return;
+      fetch("/api/cart", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ items }),
+      }).catch(() => {
+        // Best-effort
+      });
+    }, SYNC_DEBOUNCE_MS);
+
+    return () => {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    };
+  }, [items]);
+
   const addToCart = useCallback(async (item: CartItem): Promise<boolean> => {
-    // Free items skip stock validation and are stored as singletons (no qty merging)
     if (item.isFree) {
       setItems((prev) => {
         const alreadyFree = prev.some((i) => i.isFree && i.productId === item.productId);
@@ -106,16 +251,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setItems((prev) => {
-      const existingIndex = prev.findIndex(
-        (i) => {
-          // Never merge a paid add into a free item — free items are immutable singletons
-          if (i.isFree) return false;
-          const sameSubscriptionType = i.isSubscription === item.isSubscription && 
-            i.subscriptionInterval === item.subscriptionInterval;
-          const samePackSize = (i.packSize || undefined) === (item.packSize || undefined);
-          return i.productId === item.productId && i.dosage === item.dosage && sameSubscriptionType && samePackSize;
-        }
-      );
+      const existingIndex = prev.findIndex((i) => {
+        if (i.isFree) return false;
+        const sameSubscriptionType =
+          i.isSubscription === item.isSubscription &&
+          i.subscriptionInterval === item.subscriptionInterval;
+        const samePackSize = (i.packSize || undefined) === (item.packSize || undefined);
+        return (
+          i.productId === item.productId &&
+          i.dosage === item.dosage &&
+          sameSubscriptionType &&
+          samePackSize
+        );
+      });
 
       if (existingIndex >= 0) {
         const updated = [...prev];
@@ -131,9 +279,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeFromCart = (productId: string, dosage: string, packSize?: number) => {
     setItems((prev) =>
       prev.filter((i) => {
-        // Protect free items from the normal remove path
         if (i.isFree && i.productId === productId) return true;
-        return !(i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined));
+        return !(
+          i.productId === productId &&
+          i.dosage === dosage &&
+          (i.packSize || undefined) === (packSize || undefined)
+        );
       })
     );
   };
@@ -150,9 +301,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setItems((prev) =>
       prev.map((i) => {
-        // Free items are always quantity 1 and cannot be adjusted
         if (i.isFree && i.productId === productId) return i;
-        return i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)
+        return i.productId === productId &&
+          i.dosage === dosage &&
+          (i.packSize || undefined) === (packSize || undefined)
           ? { ...i, quantity }
           : i;
       })
@@ -161,36 +313,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
+    // Also clear server cart if logged in
+    if (authUserRef.current) {
+      fetch("/api/cart", { method: "DELETE", credentials: "include" }).catch(() => {});
+    }
   };
 
   const removeFreeItems = useCallback(() => {
     setItems((prev) => prev.filter((i) => !i.isFree));
   }, []);
 
-  // Watch auth state globally — strip free items whenever the session resolves to null
-  // (covers explicit logout, session expiry, and any other sign-out path)
-  const { data: authUser } = useQuery<{ id: string } | null>({
-    queryKey: ["/api/auth/user"],
-    queryFn: async () => {
-      const res = await fetch("/api/auth/user", { credentials: "include" });
-      if (!res.ok) return null;
-      return res.json();
-    },
-    staleTime: 30_000,
-  });
-
-  useEffect(() => {
-    if (authUser === null) {
-      removeFreeItems();
-    }
-  }, [authUser, removeFreeItems]);
-
   const getItemCount = () => {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   };
 
   const getSubtotal = () => {
-    // Free items are excluded from the subtotal and free-shipping threshold
     return items
       .filter((item) => !item.isFree)
       .reduce((sum, item) => sum + item.price * item.quantity, 0);

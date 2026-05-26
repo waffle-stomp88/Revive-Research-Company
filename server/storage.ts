@@ -10,6 +10,7 @@ import {
   stripePresets,
   researchStacks,
   articleViews,
+  userCarts,
   type ResearchStack, type InsertResearchStack,
   type User, type UpsertUser,
   type Product, type InsertProduct,
@@ -418,6 +419,11 @@ export interface IStorage {
   // Article Views (cross-device Continue Reading)
   saveArticleView(userId: string, articleId: string): Promise<void>;
   getRecentArticleViews(userId: string, limit: number): Promise<string[]>;
+
+  // User Carts (server-side persistence)
+  getUserCart(userId: string): Promise<unknown[] | null>;
+  saveUserCart(userId: string, items: unknown[]): Promise<void>;
+  deleteUserCart(userId: string): Promise<void>;
 }
 
 export function resolveDisplayPrice(
@@ -2835,6 +2841,31 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(articleViews.viewedAt))
       .limit(limit);
     return rows.map((r) => r.articleId);
+  }
+
+  async getUserCart(userId: string): Promise<unknown[] | null> {
+    const rows = await db
+      .select()
+      .from(userCarts)
+      .where(eq(userCarts.userId, userId))
+      .limit(1);
+    if (!rows.length) return null;
+    const items = rows[0].items;
+    return Array.isArray(items) ? items : [];
+  }
+
+  async saveUserCart(userId: string, items: unknown[]): Promise<void> {
+    await db
+      .insert(userCarts)
+      .values({ userId, items: items as any, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: userCarts.userId,
+        set: { items: items as any, updatedAt: new Date() },
+      });
+  }
+
+  async deleteUserCart(userId: string): Promise<void> {
+    await db.delete(userCarts).where(eq(userCarts.userId, userId));
   }
 }
 
