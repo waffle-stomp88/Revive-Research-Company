@@ -981,6 +981,14 @@ export default function ProductDetail() {
                     <ChevronRight className="h-3.5 w-3.5 text-[#ec4899]/50 group-hover:text-[#ec4899] transition-colors flex-shrink-0" />
                   </div>
                 </Link>
+
+                <Separator className="my-4" />
+
+                {/* RUO inline notice */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
+                  <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
+                  <span>For lawful research use only. Not for human or animal consumption.</span>
+                </div>
               </motion.section>
             )}
 
@@ -1384,14 +1392,6 @@ export default function ProductDetail() {
               </motion.div>)
             )}
 
-
-            <Separator className="my-4 md:my-6" />
-
-            {/* RUO inline notice */}
-            <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
-              <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
-              <span>For lawful research use only. Not for human or animal consumption.</span>
-            </div>
 
             {/* Mobile-only collapsible education section */}
             {relatedArticles.length > 0 && (
