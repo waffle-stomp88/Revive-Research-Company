@@ -257,6 +257,54 @@ function chunkEmails(emails: string[], size: number): string[][] {
 }
 
 // ---------------------------------------------------------------------------
+// Newsletter list helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Adds a single email address to the "Research List" mailing list in Zoho
+ * Campaigns via the authenticated REST API.
+ *
+ * This is the server-side replacement for the old client-side weboptin.zc
+ * hidden-form hack (zoho-form-submit.ts / zoho-optin.ts). Those approaches
+ * depended on hardcoded form tokens that are tied to a specific Zoho signup
+ * form — when that form is recreated the tokens change and signups stop
+ * landing. This path uses our long-lived OAuth credentials instead.
+ *
+ * Non-throwing: logs on failure and resolves cleanly so a Zoho hiccup
+ * never breaks the user-facing newsletter subscribe response.
+ */
+export async function addContactToResearchList(email: string): Promise<void> {
+  const RESEARCH_LIST_NAME = "Research List";
+  try {
+    const token   = await getAccessToken();
+    const listKey = await findListKeyByName(token, RESEARCH_LIST_NAME);
+    if (!listKey) {
+      console.warn(`[zoho] addContactToResearchList: "${RESEARCH_LIST_NAME}" not found in Zoho — contact not added. Check that the list exists.`);
+      return;
+    }
+    const res = await zohoPost("/addlistsubscribersinbulk", token, {
+      listkey:  listKey,
+      emailids: email.toLowerCase().trim(),
+    });
+    if (isZohoError(res)) {
+      console.error(`[zoho] addContactToResearchList failed for ${email}:`, JSON.stringify(res).slice(0, 200));
+    } else {
+      const ignored  = (res.ignored_contacts  ?? []).length;
+      const existing = (res.existing_contacts ?? []).length;
+      if (ignored > 0) {
+        console.warn(`[zoho] Research List: ${email} was ignored (invalid/suppressed address)`);
+      } else if (existing > 0) {
+        console.log(`[zoho] Research List: ${email} already subscribed`);
+      } else {
+        console.log(`[zoho] Research List: ${email} added successfully`);
+      }
+    }
+  } catch (err: any) {
+    console.error(`[zoho] addContactToResearchList error for ${email}:`, err?.message ?? String(err));
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Campaign trigger
 // ---------------------------------------------------------------------------
 

@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { trackEvent } from "@/lib/analytics";
 import { X } from "lucide-react";
-import { submitToZohoResearchList } from "@/lib/zoho-form-submit";
 
 const DISMISSED_KEY = "revive_sticky_dismissed";
 const CAPTURED_KEY = "revive_email_captured";
@@ -154,7 +153,6 @@ export function MobileStickyEmailBar() {
         localStorage.setItem(CAPTURED_KEY, "true");
       } catch {}
       trackEvent("email_sticky_bar_submitted");
-      submitToZohoResearchList(email);
 
       setTimeout(() => {
         setVisible(false);

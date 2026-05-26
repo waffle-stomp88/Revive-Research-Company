@@ -18,7 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { pushToZohoList, ZOHO_RESEARCH_LIST, ZOHO_WAITLIST_LIST } from "./zoho-optin";
+import { addContactToResearchList } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { 
   createPaypalOrder, 
@@ -1900,16 +1900,6 @@ export async function registerRoutes(
         sendPreLaunchConfirmationEmail(email.toLowerCase()).catch((err) => {
           console.error("[Waitlist] Failed to send pre-launch confirmation email:", err);
         });
-      }
-
-      // Push to Zoho Campaigns Waitlist list (if configured)
-      if (ZOHO_WAITLIST_LIST) {
-        const zohoResult = await pushToZohoList(email.toLowerCase(), ZOHO_WAITLIST_LIST);
-        if (!zohoResult.success && !zohoResult.duplicate) {
-          console.error(`[Zoho] Waitlist push failed for ${email}: ${zohoResult.error}`);
-        }
-      } else {
-        console.warn("[Zoho] Waitlist list not configured — set ZOHO_WAITLIST_ZCLD, ZOHO_WAITLIST_ZCTD, ZOHO_WAITLIST_FORMIX to enable.");
       }
 
       res.json({ success: true, foundingMember: signup.foundingMember, foundingMemberNumber: signup.foundingMemberNumber, totalCount });
@@ -5069,9 +5059,11 @@ Return ONLY valid JSON in this exact format:
 
       const subscriber = await storage.subscribeToNewsletter(parsed.data);
 
-      // Zoho Campaigns push is handled client-side (browser form submission) to pass
-      // Zoho's bot detection. Server-side POSTs to weboptin.zc are blocked by their
-      // spmSubmit fingerprinting regardless of headers — see zoho-form-submit.ts.
+      // Push to Zoho Campaigns "Research List" via REST API (fire-and-forget).
+      // Non-blocking: a Zoho error never fails the signup response.
+      addContactToResearchList(parsed.data.email).catch((err) => {
+        console.error("[Newsletter] Zoho push error:", err?.message ?? String(err));
+      });
 
       res.status(201).json({ success: true, message: "Successfully subscribed to newsletter!", subscriber });
     } catch (error: any) {
