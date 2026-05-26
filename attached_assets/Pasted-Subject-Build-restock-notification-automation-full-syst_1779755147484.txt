@@ -1,0 +1,57 @@
+Subject: Build restock notification automation, full system
+Just upgraded Zoho to Standard plan, REST API is unlocked. OAuth setup is done — Client ID and Secret are already added to Replit Secrets as ZOHO_CLIENT_ID and ZOHO_CLIENT_SECRET. Authorizing the full restock notification automation build.
+System goal:
+When a product goes from out-of-stock to in-stock, automatically email everyone on that product's OOS waitlist to let them know it's back. Update their notified status so they don't get the same email twice.
+Data flow:
+
+Inventory event detected (trigger mechanism TBD, see question below)
+Query Neon stock_notifications for rows where product_id = {slug} AND notified = false
+Push that email segment into Zoho Campaigns via REST API (addlistsubscribersinbulk or equivalent)
+Trigger a pre-built Zoho campaign send to that segment
+After successful send, update Neon to mark those rows as notified = true
+
+Specs:
+
+Restock definition: Only fires when a product's inventory goes from 0 (OOS) to any positive number. Not on inventory increases from low-to-high (e.g., 5 to 50). Strict 0 → >0 only.
+Timing: Instant. Fire as soon as the restock is detected. No batching.
+Email frequency cap: A user marked notified = true for a specific product never gets a second restock email for that same product unless they explicitly re-sign up (which would create a new row).
+Trigger mechanism: What's the cleanest way to detect 0 → >0 inventory changes in the current codebase? I'm asking you, since you know the architecture. Options I can think of: inventory update API endpoint hook, database trigger, admin panel action listener. You pick the best fit and let me know your recommendation before building.
+
+Zoho REST API setup:
+
+OAuth Client ID and Secret are in Replit Secrets already (ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET)
+You'll need to generate the authorization URL for me to click, exchange the resulting code for a refresh token, store it as ZOHO_REFRESH_TOKEN
+Scopes needed: ZohoCampaigns.contact.CREATE, ZohoCampaigns.contact.UPDATE, ZohoCampaigns.campaign.CREATE, ZohoCampaigns.campaign.SEND (or whatever's required to push contacts to a list and trigger a campaign send)
+When you generate the auth URL, send it to me. The auth code expires in ~60 seconds, so I'll click immediately and paste back the redirect URL's code= value
+
+Zoho campaign template:
+
+I'll design the restock email template in Zoho Campaigns UI separately
+The campaign needs merge tags so it can dynamically inject the product name and product URL
+I'll provide the campaign ID once the template is built so your code knows which campaign to trigger
+
+Acceptance criteria:
+
+Manually flip a product from 0 inventory to 10 in the admin panel
+Within 1 minute, all users in stock_notifications for that product (with notified = false) receive a restock email from Zoho
+Email correctly displays the product name and a working link to the product page
+After the send, those rows show notified = true in Neon
+Flipping the same product 0 → positive again does NOT re-email the same users (they're already notified)
+Any errors during the Zoho API calls are logged and surfaced (no silent failures)
+
+What I don't need yet:
+
+Admin panel UI for monitoring restock sends (can add later)
+Open/click tracking back to Neon (can add later)
+Per-product send statistics dashboard (can add later)
+
+Newsletter signup follow-up:
+Now that API access is unlocked, you can also rebuild the newsletter signup using the proper server-side REST API call (replacing the client-side iframe hack). Lower priority than the restock automation. Flag it as a separate task to circle back to after this ships.
+Order of work:
+
+Recommend the trigger mechanism (your call, based on architecture)
+Generate OAuth authorization URL, I authorize when prompted
+Build the system
+I design the email template in parallel
+Connect template + system, test end-to-end
+Ship to production

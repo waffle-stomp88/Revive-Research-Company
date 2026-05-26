@@ -177,6 +177,54 @@ export async function registerRoutes(
 
   const SITE_URL = "https://reviveresearch.co";
 
+  // ---------------------------------------------------------------------------
+  // Zoho OAuth callback — one-time use for obtaining ZOHO_REFRESH_TOKEN
+  // After the token is stored as a secret this route can remain (it's a no-op
+  // unless ?code= is present) but will never fire again in normal operation.
+  // ---------------------------------------------------------------------------
+  app.get("/api/zoho/oauth/callback", async (req, res) => {
+    const code = req.query.code as string | undefined;
+    if (!code) {
+      return res.status(400).send("<h2>Missing <code>code</code> parameter.</h2>");
+    }
+    const clientId     = process.env.ZOHO_CLIENT_ID;
+    const clientSecret = process.env.ZOHO_CLIENT_SECRET;
+    const redirectUri  = `https://${process.env.REPLIT_DOMAINS}/api/zoho/oauth/callback`;
+    if (!clientId || !clientSecret) {
+      return res.status(500).send("<h2>ZOHO_CLIENT_ID / ZOHO_CLIENT_SECRET not set.</h2>");
+    }
+    try {
+      const tokenRes = await fetch("https://accounts.zoho.com/oauth/v2/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type:    "authorization_code",
+          client_id:     clientId,
+          client_secret: clientSecret,
+          code,
+          redirect_uri:  redirectUri,
+        }).toString(),
+      });
+      const data = await tokenRes.json() as any;
+      if (data.error || !data.refresh_token) {
+        console.error("[zoho oauth] token exchange failed:", data);
+        return res.status(500).send(
+          `<h2>Token exchange failed</h2><pre>${JSON.stringify(data, null, 2)}</pre>`
+        );
+      }
+      console.log("[zoho oauth] refresh token obtained successfully");
+      res.send(`<!DOCTYPE html><html><body style="font-family:monospace;padding:2rem;background:#0d0d10;color:#e0e0e0">
+        <h2 style="color:#D4FF1F">Zoho OAuth Success</h2>
+        <p>Copy the refresh token below and paste it to the Replit Agent:</p>
+        <textarea rows="4" style="width:100%;background:#1a1a1f;color:#21d8ff;border:1px solid #333;padding:1rem;font-size:1rem" readonly onclick="this.select()">${data.refresh_token}</textarea>
+        <p style="color:#888;font-size:.85rem">Access token (expires 1 h): <code>${data.access_token?.slice(0,20)}…</code></p>
+      </body></html>`);
+    } catch (err) {
+      console.error("[zoho oauth] fetch error:", err);
+      res.status(500).send(`<h2>Network error</h2><pre>${err}</pre>`);
+    }
+  });
+
   // 301 redirect for removed /bulk-packs page
   app.get('/bulk-packs', (_req, res) => {
     res.redirect(301, '/peptides');
