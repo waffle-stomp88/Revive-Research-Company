@@ -13,7 +13,7 @@
 
 import { storage } from "./storage";
 import { sendRestockNotificationEmail } from "./email";
-import { addContactsToRestockQueue, type RestockContact } from "./zoho-campaigns";
+import { addContactsToRestockQueue, removeContactsFromRestockQueue, type RestockContact } from "./zoho-campaigns";
 
 export async function triggerRestockNotifications(
   productSlug: string,
@@ -56,14 +56,17 @@ export async function triggerRestockNotifications(
 
   console.log(`[restock] Done — ${sent} sent, ${failed} failed for "${productSlug}".`);
 
-  // Fire-and-forget: add contacts to Zoho "Restock Queue" for CRM visibility.
-  // The Zoho autoresponder for this list should be disabled — SES handles delivery.
+  // Fire-and-forget: add contacts to Zoho "Restock Queue" so the bound
+  // Autoresponder fires, then immediately remove them to keep the list lean
+  // and ensure the autoresponder fires again for any future re-subscription.
   const zohoContacts: RestockContact[] = pending.map(n => ({
     email:      n.email,
     productName,
     productUrl,
   }));
-  addContactsToRestockQueue(zohoContacts).catch(err => {
-    console.error(`[restock] Zoho CRM add failed for "${productSlug}":`, err?.message ?? String(err));
-  });
+  addContactsToRestockQueue(zohoContacts)
+    .then(() => removeContactsFromRestockQueue(zohoContacts))
+    .catch(err => {
+      console.error(`[restock] Zoho queue add/cleanup failed for "${productSlug}":`, err?.message ?? String(err));
+    });
 }

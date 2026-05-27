@@ -5,6 +5,7 @@
  *   POST getmailinglists           — list all mailing lists
  *   POST addlistandcontacts        — create new list + seed contacts (contactinfo param)
  *   POST addlistsubscribersinbulk  — bulk-add contacts to existing list (contactinfo param)
+ *   POST deletelistsubscribers     — remove contacts from a list by email
  *   GET  getlistsubscribers        — read contacts in a list
  *
  * Restock notification architecture:
@@ -13,6 +14,12 @@
  *   list fires immediately for each new contact, using $[UD:PRODUCT_NAME||]$ and
  *   $[UD:PRODUCT_URL||]$ merge tags that are populated per-contact by this code.
  *   No campaign key or sendcampaign API call is needed.
+ *
+ *   Cleanup strategy: after the autoresponder fires (triggered by the add), the
+ *   contacts are removed from the "Restock Queue" list in a best-effort
+ *   fire-and-forget call. This prevents list bloat and avoids stale contacts
+ *   interfering with future adds (where Zoho may treat them as "existing" and
+ *   skip the autoresponder). See removeContactsFromRestockQueue below.
  *
  * Environment variables required:
  *   ZOHO_CLIENT_ID       — from Zoho API Console
@@ -237,6 +244,42 @@ export async function addContactsToRestockQueue(contacts: RestockContact[]): Pro
   }
 
   console.log(`[zoho] Added ${contacts.length} contact(s) to "${RESTOCK_QUEUE_LIST_NAME}" (${listKey})`);
+}
+
+/**
+ * Removes a batch of email addresses from the "Restock Queue" Zoho list using
+ * the deletelistsubscribers endpoint.
+ *
+ * Called fire-and-forget after addContactsToRestockQueue succeeds so the list
+ * stays lean and the autoresponder fires reliably for future re-subscriptions
+ * (Zoho skips "existing" contacts, so leaving them in the list would prevent
+ * re-notification if a contact signs up again for a different product later).
+ *
+ * Non-throwing: logs on failure — a cleanup hiccup must never break the main
+ * restock notification flow.
+ */
+export async function removeContactsFromRestockQueue(contacts: RestockContact[]): Promise<void> {
+  if (contacts.length === 0) return;
+
+  try {
+    const listKey = await getRestockQueueListKey();
+    const token   = await getAccessToken();
+
+    for (const batch of chunkContacts(contacts, BATCH_SIZE)) {
+      const emailids = batch.map(c => c.email.toLowerCase().trim()).join(",");
+      const res = await zohoPost("/deletelistsubscribers", token, {
+        listkey:  listKey,
+        emailids,
+      });
+      if (isZohoError(res)) {
+        console.error(`[zoho] deletelistsubscribers returned error:`, JSON.stringify(res).slice(0, 200));
+      } else {
+        console.log(`[zoho] Removed ${batch.length} contact(s) from "${RESTOCK_QUEUE_LIST_NAME}"`);
+      }
+    }
+  } catch (err: any) {
+    console.error(`[zoho] removeContactsFromRestockQueue error:`, err?.message ?? String(err));
+  }
 }
 
 async function bulkAddContacts(listKey: string, contacts: RestockContact[]): Promise<void> {
