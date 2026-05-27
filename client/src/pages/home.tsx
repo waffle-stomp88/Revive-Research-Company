@@ -97,6 +97,7 @@ function HeroSection() {
         className="relative z-[10] max-w-6xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center h-full"
       >
         <motion.div
+          style={{ opacity: 0 }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -112,6 +113,7 @@ function HeroSection() {
         </motion.div>
 
         <motion.p
+          style={{ opacity: 0 }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -122,6 +124,7 @@ function HeroSection() {
         </motion.p>
 
         <motion.div
+          style={{ opacity: 0 }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.7 }}
@@ -145,6 +148,7 @@ function HeroSection() {
         </motion.div>
 
         <motion.div
+          style={{ opacity: 0 }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.9 }}
@@ -168,6 +172,7 @@ function HeroSection() {
         </motion.div>
       </motion.div>
       <motion.div
+        style={{ opacity: 0 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
