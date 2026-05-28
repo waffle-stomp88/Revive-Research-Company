@@ -201,45 +201,103 @@ export async function registerRoutes(
 
   app.get('/sitemap.xml', async (_req, res) => {
     try {
+      const BODY_SYSTEM_SLUGS = ['healing', 'metabolic', 'growth', 'cognitive', 'skin', 'longevity', 'hormonal'];
+
       const staticUrls = [
+        // Core pages
         { loc: '/', priority: '1.0', changefreq: 'daily' },
         { loc: '/peptides', priority: '0.9', changefreq: 'daily' },
         { loc: '/shop', priority: '0.9', changefreq: 'daily' },
         { loc: '/research-stacks', priority: '0.8', changefreq: 'weekly' },
-        { loc: '/bulk-packs', priority: '0.7', changefreq: 'weekly' },
-        { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/affiliate', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/academy', priority: '0.7', changefreq: 'weekly' },
-        { loc: '/peptide-research-faq', priority: '0.7', changefreq: 'monthly' },
-        { loc: '/peptide-shipping-and-handling', priority: '0.5', changefreq: 'monthly' },
-        { loc: '/peptide-research-resources', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/coa/verify-certificate-of-analysis', priority: '0.7', changefreq: 'weekly' },
-        { loc: '/coa/batch-testing-archive', priority: '0.6', changefreq: 'weekly' },
+        // Body system hub pages
+        ...BODY_SYSTEM_SLUGS.map(s => ({ loc: `/systems/${s}`, priority: '0.7', changefreq: 'weekly' })),
+        // Tools & resources
         { loc: '/tools/peptide-reconstitution-calculator', priority: '0.7', changefreq: 'monthly' },
         { loc: '/reconstitution-wizard', priority: '0.7', changefreq: 'monthly' },
-        { loc: '/about/our-transparency-commitment', priority: '0.5', changefreq: 'monthly' },
-        { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
-        { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
-        { loc: '/disclaimer', priority: '0.3', changefreq: 'yearly' },
-        { loc: '/legal', priority: '0.3', changefreq: 'yearly' },
-        { loc: '/guides/peptide-education-center', priority: '0.7', changefreq: 'monthly' },
-        { loc: '/guides/peptide-quality-assurance-process', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/guides/peptide-vendor-ethics-standards', priority: '0.5', changefreq: 'monthly' },
-        { loc: '/guides/peptide-pricing-breakdown', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/guides/peptide-vendor-checklist', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/guides/peptide-handling-troubleshooting', priority: '0.6', changefreq: 'monthly' },
-        { loc: '/guides/peptide-lab-research-archive', priority: '0.5', changefreq: 'weekly' },
-        { loc: '/guides/peptide-package-arrived-warm', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/academy', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/peptide-research-faq', priority: '0.7', changefreq: 'monthly' },
+        // COA & quality
+        { loc: '/coa/verify-certificate-of-analysis', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/coa/batch-testing-archive', priority: '0.7', changefreq: 'weekly' },
+        // Education hub
+        { loc: '/guides/peptide-education-center', priority: '0.8', changefreq: 'weekly' },
+        { loc: '/peptide-research-resources', priority: '0.7', changefreq: 'monthly' },
+        // Trust & transparency guides
+        { loc: '/guides/peptide-quality-assurance-process', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/about/our-transparency-commitment', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-vendor-ethics-standards', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-pricing-breakdown', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-vendor-checklist', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-lab-research-archive', priority: '0.7', changefreq: 'weekly' },
+        // SEO entry articles
         { loc: '/guides/are-peptide-coas-trustworthy', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/how-batch-testing-works', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/what-research-use-only-means', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/how-to-verify-peptide-quality', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/peptide-purity-explained', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/why-cheap-peptides-are-cheap', priority: '0.7', changefreq: 'monthly' },
+        // Individual peptide education articles
+        { loc: '/guides/what-is-bpc-157-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-tb-500-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-ghk-cu-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-rr-a1-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-rr-a2-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-rr-a3-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-cjc-1295-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-ipamorelin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-tesamorelin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-epithalon-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-mots-c-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-igf-1-lr3-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-igf-des-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-semax-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-hcg-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-nad-precursor', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-glow-peptide-complex', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-klow-peptide-complex', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-5-amino-1mq-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-dihexa-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-glutathione', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-vitamin-b12', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-melanotan-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-slu-pp-332-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-aod-9604-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-kisspeptin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-kisspeptin-54-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-pt-141-bremelanotide-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-gonadorelin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-triptorelin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-enclomiphene-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-oxytocin-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-thymosin-alpha-1-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-dsip-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-selank-peptide', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-is-thymulin-peptide', priority: '0.7', changefreq: 'monthly' },
+        // General education articles
+        { loc: '/guides/ordering-expectations', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/how-to-read-coas', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/storage-101', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/lab-safety-guidelines', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/understanding-batches', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-handling-troubleshooting', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-package-arrived-warm', priority: '0.6', changefreq: 'monthly' },
+        // Support & info
+        { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/affiliate', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/peptide-shipping-and-handling', priority: '0.6', changefreq: 'monthly' },
+        // Legal
+        { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/disclaimer', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/legal', priority: '0.3', changefreq: 'yearly' },
       ];
 
-      const products = await storage.getAllProducts();
-      const articles = await storage.getAllEducationArticles();
+      const [products, articles, stacks] = await Promise.all([
+        storage.getAllProducts(),
+        storage.getAllEducationArticles(),
+        storage.getResearchStacks({ showOnPage: true }),
+      ]);
       const today = new Date().toISOString().split('T')[0];
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -253,6 +311,11 @@ export async function registerRoutes(
         if (product.slug) {
           xml += `  <url>\n    <loc>${SITE_URL}/peptides/${product.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
         }
+      }
+
+      for (const stack of stacks) {
+        const slug = stack.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        xml += `  <url>\n    <loc>${SITE_URL}/research-stacks/${slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
       }
 
       for (const article of articles) {
