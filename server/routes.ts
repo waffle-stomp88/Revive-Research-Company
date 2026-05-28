@@ -307,8 +307,16 @@ export async function registerRoutes(
         xml += `  <url>\n    <loc>${SITE_URL}${url.loc}</loc>\n    <changefreq>${url.changefreq}</changefreq>\n    <priority>${url.priority}</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
       }
 
+      // Thin/placeholder products are noindexed — exclude from sitemap so Google
+      // doesn't waste crawl budget on pages we've already told it to ignore.
+      const THIN_NOINDEX_SLUGS = new Set([
+        'botulinum-toxin-type-a', 'pnc-27', 'hyaluronic-acid', 'ara-290',
+        'cjc-1295-no-dac', 'cjc-1295-ipamorelin-stack', 'adipotide',
+        'ghrp-6', 'hexarelin', 'vip', 'igf-des',
+      ]);
+
       for (const product of products) {
-        if (product.slug) {
+        if (product.slug && !THIN_NOINDEX_SLUGS.has(product.slug)) {
           xml += `  <url>\n    <loc>${SITE_URL}/peptides/${product.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
         }
       }
@@ -344,10 +352,40 @@ export async function registerRoutes(
     '/guides/verify-quality': '/guides/how-to-verify-peptide-quality',
     '/guides/purity-explained': '/guides/peptide-purity-explained',
     '/guides/cheap-peptides': '/guides/why-cheap-peptides-are-cheap',
+    // Duplicate slug consolidation — confirmed duplicate content pairs
+    '/guides/research-use-only-explained': '/guides/what-research-use-only-means',
+    '/guides/understanding-peptide-purity': '/guides/peptide-purity-explained',
+    '/guides/peptide-vendor-checklist': '/guides/peptide-vendor-ethics-standards',
   };
 
   Object.entries(guideRedirects).forEach(([oldPath, newPath]) => {
     app.get(oldPath, (req, res) => {
+      res.redirect(301, newPath);
+    });
+  });
+
+  // 301 redirects for legacy/renamed pages
+  // These URLs were renamed or restructured. They previously had only client-side window.location.replace()
+  // redirects in App.tsx which Googlebot cannot follow — adding server-side 301s here fixes soft 404s.
+  const legacyPageRedirects: Record<string, string> = {
+    '/faq':              '/peptide-research-faq',
+    '/dosage-calculator':'/tools/peptide-reconstitution-calculator',
+    '/package-warm':     '/guides/peptide-package-arrived-warm',
+    '/coa':              '/coa/verify-certificate-of-analysis',
+    '/transparency':     '/about/our-transparency-commitment',
+    '/quality-process':  '/guides/peptide-quality-assurance-process',
+    '/resources':        '/peptide-research-resources',
+    '/lab-notes':        '/guides/peptide-lab-research-archive',
+    '/batch-archive':    '/coa/batch-testing-archive',
+    '/buyer-checklist':  '/guides/peptide-vendor-ethics-standards',
+    '/ethical-pricing':  '/guides/peptide-pricing-breakdown',
+    '/wholesale':        '/contact',
+    '/products':         '/peptides',
+    '/troubleshooting':  '/guides/peptide-handling-troubleshooting',
+  };
+
+  Object.entries(legacyPageRedirects).forEach(([oldPath, newPath]) => {
+    app.get(oldPath, (_req, res) => {
       res.redirect(301, newPath);
     });
   });

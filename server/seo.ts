@@ -16,7 +16,22 @@ interface PageMeta {
   ogImage?: string;
   canonicalUrl?: string;
   jsonLd?: object[];
+  noindex?: boolean;
 }
+
+const THIN_PRODUCT_SLUGS = new Set([
+  'botulinum-toxin-type-a',
+  'pnc-27',
+  'hyaluronic-acid',
+  'ara-290',
+  'cjc-1295-no-dac',
+  'cjc-1295-ipamorelin-stack',
+  'adipotide',
+  'ghrp-6',
+  'hexarelin',
+  'vip',
+  'igf-des',
+]);
 
 function makeBreadcrumbList(items: Array<{name: string; url: string}>) {
   return {
@@ -296,7 +311,7 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
   },
   "/guides/how-to-verify-peptide-quality": {
     title: `How to Verify Peptide Quality | ${SITE_NAME}`,
-    description: "Step-by-step guide to verifying research peptide quality. COA analysis, vendor evaluation, and quality indicators.",
+    description: "Verify research peptide quality with third-party lab testing. Learn how to read Colmaric Analyticals COA reports, interpret mass spec results, and spot vendor red flags.",
     jsonLd: [{
       "@context": "https://schema.org",
       "@type": "Article",
@@ -469,7 +484,10 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
   const productMatch = cleanUrl.match(/^\/(peptides|products)\/(.+)$/);
   if (productMatch) {
     const meta = await getProductMeta(productMatch[2]);
-    if (meta) return { ...meta, canonicalUrl: `${SITE_URL}/peptides/${productMatch[2]}` };
+    if (meta) {
+      const isNoindex = THIN_PRODUCT_SLUGS.has(productMatch[2]);
+      return { ...meta, canonicalUrl: `${SITE_URL}/peptides/${productMatch[2]}`, ...(isNoindex ? { noindex: true } : {}) };
+    }
   }
 
   const articleMatch = cleanUrl.match(/^\/guides\/(.+)$/);
@@ -908,6 +926,10 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
 
   const injection = `${ogImageTag}\n    ${ogUrlTag}\n    ${canonicalTag}${jsonLdTags ? '\n    ' + jsonLdTags : ''}`;
   html = html.replace('</head>', `    ${injection}\n  </head>`);
+
+  if (meta.noindex) {
+    html = html.replace('</head>', `    <meta name="robots" content="noindex, follow" />\n  </head>`);
+  }
 
   if (preRenderedContent) {
     html = html.replace('<div id="root"></div>', `<div id="root">${preRenderedContent}</div>`);
