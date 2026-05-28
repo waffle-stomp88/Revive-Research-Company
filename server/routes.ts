@@ -227,7 +227,6 @@ export async function registerRoutes(
         { loc: '/about/our-transparency-commitment', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/peptide-vendor-ethics-standards', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/peptide-pricing-breakdown', priority: '0.7', changefreq: 'monthly' },
-        { loc: '/guides/peptide-vendor-checklist', priority: '0.7', changefreq: 'monthly' },
         { loc: '/guides/peptide-lab-research-archive', priority: '0.7', changefreq: 'weekly' },
         // SEO entry articles
         { loc: '/guides/are-peptide-coas-trustworthy', priority: '0.7', changefreq: 'monthly' },
@@ -303,8 +302,10 @@ export async function registerRoutes(
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
       xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
+      const emittedPaths = new Set<string>();
       for (const url of staticUrls) {
         xml += `  <url>\n    <loc>${SITE_URL}${url.loc}</loc>\n    <changefreq>${url.changefreq}</changefreq>\n    <priority>${url.priority}</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
+        emittedPaths.add(url.loc);
       }
 
       // Thin/placeholder products are noindexed — exclude from sitemap so Google
@@ -328,7 +329,7 @@ export async function registerRoutes(
       }
 
       for (const article of articles) {
-        if (article.slug) {
+        if (article.slug && !emittedPaths.has(`/guides/${article.slug}`)) {
           const mod = article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : today;
           xml += `  <url>\n    <loc>${SITE_URL}/guides/${article.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n    <lastmod>${mod}</lastmod>\n  </url>\n`;
         }
