@@ -159,23 +159,28 @@ export function log(message: string, source = "express") {
 
       const originalEnd = res.end.bind(res);
       (res as any).end = function(chunk: any, ...args: any[]) {
-        if (chunk && typeof chunk === 'string' && chunk.includes('</head>') && chunk.includes('<div id="root">')) {
+        // Coerce Buffer/Uint8Array to string so the HTML check and injection
+        // always run, regardless of how Vite hands off the response body.
+        const chunkStr: string | null = chunk
+          ? (typeof chunk === 'string' ? chunk : Buffer.isBuffer(chunk) || chunk instanceof Uint8Array ? Buffer.from(chunk).toString('utf-8') : null)
+          : null;
+        if (chunkStr && chunkStr.includes('</head>') && chunkStr.includes('<div id="root">')) {
           try {
             Promise.all([
               getMetaForUrl(req.originalUrl),
               getPreRenderedContent(req.originalUrl),
             ]).then(([meta, preRendered]) => {
-              const modified = injectMetaTags(chunk, meta, preRendered);
+              const modified = injectMetaTags(chunkStr, meta, preRendered);
               if (is404) res.statusCode = 404;
               originalEnd(modified, ...args);
             }).catch(() => {
               if (is404) res.statusCode = 404;
-              originalEnd(chunk, ...args);
+              originalEnd(chunkStr, ...args);
             });
             return res;
           } catch {
             if (is404) res.statusCode = 404;
-            return originalEnd(chunk, ...args);
+            return originalEnd(chunkStr, ...args);
           }
         }
         if (is404) res.statusCode = 404;
