@@ -1,0 +1,61 @@
+Here's what to send them:
+
+---
+
+**Rejecting #966 — here's why, and what to do instead**
+
+We removed `window.__IS_BOT__` and `bot-detect.ts` in #961 because serving different behavior based on User-Agent is cloaking. Task #966 re-introduces UA-based bot detection to pre-set a localStorage key for crawlers. The argument is "we're not changing content, just bypassing a presentational layer." But Google's cloaking policy doesn't make that distinction. If Googlebot renders a page and sees full content with no gate, and a human renders the same page and sees a black screen blocking content, that's a rendering difference based on User-Agent. That's cloaking.
+
+**The real problem is not the age gate itself. It's the CSS on the pre-rendered content.**
+
+Look at this block in `client/index.html`:
+
+```css
+#root > article, #root > main, #root > section {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+This CSS visually hides the server-injected pre-rendered content from everyone, including Google's JavaScript renderer. The intent was that search engines would read the HTML source (which they do) and React would replace the content on mount (which it does for humans). But Google doesn't just read HTML source anymore. It runs a full Chromium renderer. When it renders the page, it sees:
+
+1. The pre-rendered `<article>` content clipped to 1×1 pixel (effectively invisible)
+2. The `pre-age-gate` div covering the entire viewport in solid black
+3. React hydrates and shows the age gate modal
+
+From Google's renderer perspective, the page is a black screen with no accessible content. So it marks it "Crawled - currently not indexed."
+
+**The fix should not involve User-Agent detection at all. Here's what to do instead:**
+
+Option A (recommended): Change the CSS hiding strategy for pre-rendered content. Instead of `clip: rect(0,0,0,0)` which makes content invisible to renderers, use an approach that's invisible to human eyes but readable by Google's renderer. The server-injected content should be rendered at normal size and position in the DOM, then React replaces it on hydration. The age gate overlay sits on top with `z-index: 99999` and `overflow: hidden` on body, preventing human interaction. But the content underneath is full-size in the DOM, not clipped to 1px.
+
+The sequence would be:
+
+1. Server sends HTML with full-size pre-rendered content inside `#root`
+2. The inline age gate script creates the black overlay on top (blocking human vision and interaction)
+3. Google's renderer sees full-size content underneath the overlay. CSS overlays don't prevent Google from reading content behind them.
+4. React hydrates, replaces the pre-rendered content with the live app, and shows the proper age gate modal
+5. Human passes the age gate, overlay dismissed, app is interactive
+
+The key change: remove the `clip: rect(0,0,0,0)` and `width: 1px; height: 1px` from the pre-rendered content CSS. Let it render at full size. The age gate overlay handles the visual gating for humans. Google's renderer can read behind overlays.
+
+Option B (simpler but less clean): Keep the clip CSS but move the pre-rendered content outside `#root` into a separate div that doesn't get the clip treatment. React only replaces content inside `#root`, so the pre-rendered content in a sibling div persists in the DOM at readable size. Add `aria-hidden="true"` to avoid accessibility duplication once React hydrates.
+
+**Verify the fix by:**
+
+1. Running Google's Mobile-Friendly Test on a product page after deployment. The rendered screenshot should show page content, not a black screen.
+2. Using URL Inspection in Search Console and clicking "Test Live URL." The rendered HTML should show product names and descriptions, not the age gate.
+3. Confirming that human visitors still see the age gate on first visit (no behavioral change for real users).
+
+**Do not re-introduce any form of User-Agent detection, bot lists, or crawler-specific code paths.** Every visitor gets identical HTML and identical JavaScript. The only difference is that the CSS no longer hides the pre-rendered content from renderers.
+
+---
+
+That's the brief. The core insight is that `clip: rect(0,0,0,0)` on the pre-rendered content defeats the entire purpose of pre-rendering it. Google's renderer treats clipped content the same as hidden content. Remove the clip, let the age gate overlay handle the visual gating, and the pre-rendered content becomes readable to Google without any UA sniffing.
