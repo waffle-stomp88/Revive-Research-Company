@@ -168,7 +168,42 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
+  // ---------------------------------------------------------------------------
+  // Search engine crawler age-gate bypass
+  // Google's renderer visits as a fresh browser session — no localStorage —
+  // so every page renders the full age-gate modal instead of actual content.
+  // This causes all pages to be "Crawled - currently not indexed" because
+  // Google indexes the age gate text, not the peptide/guide content.
+  //
+  // Google Search Central documentation explicitly recommends bypassing age
+  // gates for Googlebot. This is NOT cloaking: the same page content is served
+  // to all visitors; bots simply skip an interstitial they cannot interact with.
+  //
+  // Mechanism: for known crawler User-Agents, inject a tiny inline <script>
+  // immediately after <body> that pre-sets the localStorage key the age gate
+  // already checks. When the existing inline script runs a millisecond later,
+  // it finds the key set and skips creating the black overlay div. When React
+  // hydrates, isAgeVerified() also finds the key and skips opening the modal.
+  // The age-verification-modal.tsx component code is unchanged.
+  // ---------------------------------------------------------------------------
+  const SEARCH_BOT_RE = /Googlebot|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
+  const AGE_BYPASS_SCRIPT = `<script>try{if(!localStorage.getItem('revive-research-age-verified')){localStorage.setItem('revive-research-age-verified',String(Date.now()));}}catch(e){}</script>`;
+
+  app.use((req, res, next) => {
+    const ua = req.headers['user-agent'] ?? '';
+    if (!SEARCH_BOT_RE.test(ua)) return next();
+
+    const originalEnd = res.end.bind(res);
+    (res as any).end = function(chunk: any, ...args: any[]) {
+      if (typeof chunk === 'string' && chunk.includes('<body>')) {
+        chunk = chunk.replace('<body>', '<body>' + AGE_BYPASS_SCRIPT);
+      }
+      return originalEnd(chunk, ...args);
+    };
+    next();
+  });
+
   // Serve static assets from public folder (e.g., /assets/logo.png)
   // In development: serve from public/assets and client/public/assets
   // In production: serve from dist/public/assets (Vite copies client/public to dist/public)
