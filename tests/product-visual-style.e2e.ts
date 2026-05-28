@@ -12,7 +12,7 @@ import { test, expect } from "@playwright/test";
  *   2. Gradient separator line between product name and price
  *   3. Mechanism descriptor rendered above the price (or price gate placeholder)
  *   4. Bordered dosage selection container
- *   5. Trust badge bar with three segments ("3rd Party Tested", "COA Included", "Guaranteed")
+ *   5. Trust badge bar with two segments ("3rd Party Tested", "Cold Chain Shipping")
  *   6. Checkmark badge on the default-selected "One-time" purchase option
  *   7. Stacked CTA column: Buy Now appears above Add to Cart in a vertical stack
  *
@@ -57,9 +57,9 @@ const PRODUCTS: ProductCase[] = [
 
 /** Returns true when the page is showing the out-of-stock panel. */
 async function isOutOfStock(page: import("@playwright/test").Page): Promise<boolean> {
-  // Wait for the page to render either the CTA stack (in-stock / soft-gated) or the OOS panel.
+  // Wait for the page to render the CTA stack, the auth-gate sign-in button, or the OOS panel.
   await page.waitForSelector(
-    '[data-testid="stack-cta"], [data-testid="panel-out-of-stock"]',
+    '[data-testid="stack-cta"], [data-testid="panel-out-of-stock"], [data-testid="auth-gate-inline"]',
     { timeout: 10000 }
   );
   // Allow any in-flight network requests (e.g. dosage-stock API) to finish so we
@@ -118,12 +118,11 @@ for (const product of PRODUCTS) {
       await expect(dosageBox).toBeVisible({ timeout: 10000 });
     });
 
-    test("trust badge bar shows all three segments", async ({ page }) => {
+    test("trust badge bar shows both segments", async ({ page }) => {
       const bar = page.locator('[data-testid="bar-trust-badges"]');
       await expect(bar).toBeVisible({ timeout: 10000 });
       await expect(bar).toContainText("3rd Party Tested");
-      await expect(bar).toContainText("COA Included");
-      await expect(bar).toContainText("Guaranteed");
+      await expect(bar).toContainText("Cold Chain Shipping");
     });
 
     test("checkmark is visible on the default-selected one-time purchase option", async ({ page }) => {
