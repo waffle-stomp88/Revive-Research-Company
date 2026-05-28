@@ -61,7 +61,8 @@ import {
   ArrowUp,
   Check,
   Sparkles,
-  Lock
+  Lock,
+  MapPin,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -1189,46 +1190,62 @@ export default function ProductDetail() {
 
 
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+            {/* Stock status + batch chips */}
+            <div className="flex items-center justify-center gap-2 flex-wrap mb-2.5">
               {!isOutOfStock && (
-                <span className="flex items-center gap-1">
-                  {displayStockAmount > 0 && displayStockAmount <= 10 ? (
-                    <>
-                      <AlertTriangle className="h-3 w-3 text-orange-500" />
-                      <span className="text-orange-500 font-medium">Only {displayStockAmount} left</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-3 w-3 text-green-500" />
-                      {displayStockAmount} in stock
-                    </>
-                  )}
-                </span>
+                displayStockAmount > 0 && displayStockAmount <= 10 ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-medium">
+                    <AlertTriangle className="h-3 w-3" />
+                    Only {displayStockAmount} left
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[11px] font-medium">
+                    <CheckCircle className="h-3 w-3" />
+                    {displayStockAmount} in stock
+                  </span>
+                )
+              )}
+              {batchesWithCoas.length > 0 && (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 text-[#21d8ff] text-[11px] font-medium hover:bg-[#21d8ff]/20 transition-colors"
+                  data-testid="text-batch-number"
+                  onClick={() => {
+                    setActiveResearchTab("cert");
+                    setTimeout(() => {
+                      const el = document.getElementById("mobile-cert-accordion");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 50);
+                  }}
+                >
+                  <FlaskConical className="h-3 w-3" />
+                  Batch {batchesWithCoas[0].batchNumber}
+                </button>
               )}
             </div>
 
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
-                <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+            {/* Shipping line */}
+            <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mb-3" data-testid="text-shipping-info">
+              <Truck className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
+              <span>Ships from USA</span>
+              <span className="text-border/60">·</span>
+              <span className="text-[#D4FF1F]/75 font-medium">Same Day by 12PM CT</span>
+            </div>
+
+            {/* Trust badge bar */}
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-4 border border-[#21d8ff]/20 rounded-md overflow-hidden bg-[#21d8ff]/[0.04]" data-testid="bar-trust-badges">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+                <Shield className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
               </div>
-              <div className="w-px self-stretch bg-border/60" />
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
-                <FileCheck className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
-                <span>COA Included</span>
-              </div>
-              <div className="w-px self-stretch bg-border/60" />
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
-                <RefreshCw className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
-                <span>Guaranteed</span>
+              <div className="w-px self-stretch bg-[#21d8ff]/20" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+                <Snowflake className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
+                <span>Cold Chain Shipping</span>
               </div>
             </div>
 
-            {/* Mobile-only compact RUO notice */}
-            <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mb-3" data-testid="card-ruo-mobile">
-              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
-              <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
-            </div>
+            <Separator className="mb-4" />
 
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
@@ -1393,6 +1410,11 @@ export default function ProductDetail() {
               </motion.div>)
             )}
 
+            {/* Mobile-only compact RUO notice — always below the button/OOS section */}
+            <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mt-2" data-testid="card-ruo-mobile">
+              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+              <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
+            </div>
 
             {/* Mobile-only collapsible education section */}
             {relatedArticles.length > 0 && (
@@ -1475,14 +1497,13 @@ export default function ProductDetail() {
         {/* === RESEARCH ZONE === */}
 
         <>
-          {/* Zone separator */}
-          <div className="mt-8 mb-0" />
 
           {/* Research container */}
           <div className="rounded-xl mt-0 px-4 md:px-8 py-4 md:py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
 
               {/* Tab navigation */}
               <nav
+                id="mobile-cert-accordion"
                 data-testid="nav-research-tabs"
                 className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-4 md:mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
                 style={{ background: "rgba(157,78,221,0.04)", WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory" }}

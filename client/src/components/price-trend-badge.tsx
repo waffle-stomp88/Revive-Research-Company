@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { TrendingUp, TrendingDown, Minus, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Clock, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
@@ -122,7 +122,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
   const Icon = isIncrease ? TrendingUp : isDecrease ? TrendingDown : Minus;
   
   const badgeColors = isDecrease 
-    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+    ? "bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
     : isIncrease 
       ? "bg-red-500/20 text-red-400 border-red-500/30"
       : "bg-neutral-500/20 text-neutral-400 border-neutral-500/30";
@@ -140,6 +140,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
             >
               <span className="mr-1">{arrowSymbol}</span>
               {percentDisplay}%
+              {isDecrease && <HelpCircle className="w-3 h-3 ml-1 opacity-60" />}
             </Badge>
           </div>
         </TooltipTrigger>
@@ -147,11 +148,15 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
           side="top" 
           className="max-w-[280px] bg-[#1a1a1f] border border-neutral-700 p-3"
         >
-          <PriceTrendTooltipContent 
-            trend={trend} 
-            timeAgo={getTimeAgo()} 
-            isDecrease={isDecrease} 
-          />
+          {isDecrease ? (
+            <p className="text-sm text-neutral-300">Price adjusted based on supply conditions. Locked for 30 days.</p>
+          ) : (
+            <PriceTrendTooltipContent 
+              trend={trend} 
+              timeAgo={getTimeAgo()} 
+              isDecrease={isDecrease} 
+            />
+          )}
         </TooltipContent>
       </Tooltip>
     );
@@ -169,6 +174,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
           >
             <Icon className="w-3.5 h-3.5" />
             <span>{arrowSymbol} {percentDisplay}%</span>
+            {isDecrease && <HelpCircle className="w-3.5 h-3.5 ml-0.5 opacity-60" />}
           </Badge>
           <span className="text-xs text-neutral-500 flex items-center gap-1">
             <Clock className="w-3 h-3" />
@@ -180,12 +186,25 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
         side="top" 
         className="max-w-[320px] bg-[#1a1a1f] border border-neutral-700 p-4"
       >
-        <PriceTrendTooltipContent 
-          trend={trend} 
-          timeAgo={getTimeAgo()} 
-          isDecrease={isDecrease}
-          showDetails 
-        />
+        {isDecrease ? (
+          <div className="space-y-2">
+            <p className="text-sm text-neutral-300">Price adjusted based on supply conditions. Locked for 30 days.</p>
+            <div className="text-xs text-neutral-500 pt-1 border-t border-neutral-700">
+              Changed {getTimeAgo()} • 30-day price lock in effect
+            </div>
+            <Link href="/guides/peptide-pricing-breakdown" className="text-xs text-[#21d8ff]/70 flex items-center gap-1 hover:text-[#21d8ff] transition-colors" onClick={(e: React.MouseEvent) => e.stopPropagation()} data-testid="link-pricing-transparency">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
+              Radical pricing transparency
+            </Link>
+          </div>
+        ) : (
+          <PriceTrendTooltipContent 
+            trend={trend} 
+            timeAgo={getTimeAgo()} 
+            isDecrease={isDecrease}
+            showDetails 
+          />
+        )}
       </TooltipContent>
     </Tooltip>
   );

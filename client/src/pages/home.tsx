@@ -18,6 +18,8 @@ import {
   Beaker,
   Thermometer,
   ShieldCheck,
+  Snowflake,
+  Truck,
 } from "lucide-react";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import { trackEvent } from "@/lib/analytics";
@@ -462,11 +464,46 @@ function CTASection() {
   );
 }
 
+const trustBarItems = [
+  { icon: ShieldCheck, label: "3rd Party Tested", description: "Every batch independently verified" },
+  { icon: FileCheck, label: "COA Verified", description: "Certificate of Analysis included" },
+  { icon: Snowflake, label: "Cold Chain Shipping", description: "Temperature-controlled delivery" },
+  { icon: Truck, label: `Free Shipping $${FREE_SHIPPING_THRESHOLD}+`, description: "On qualifying orders" },
+];
+
+function HomeTrustBar() {
+  return (
+    <section className="w-full border-y border-border/40 bg-muted/30" data-testid="section-homepage-trust-bar">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 md:py-5">
+        <div className="grid grid-cols-2 md:flex md:flex-row md:justify-around gap-4 md:gap-0">
+          {trustBarItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.label}
+                className="flex items-center gap-2.5 md:gap-3"
+                data-testid={`trust-bar-item-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0 text-[#21d8ff]" strokeWidth={1.5} />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-foreground leading-tight">{item.label}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight hidden md:block">{item.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main>
       <SEOHead title="Home" description={`Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`} canonicalPath="/" />
       <HeroSection />
+      <HomeTrustBar />
       <EducationTeaser />
       <StackBuilderTeaser />
       <div id="why-researchers">
