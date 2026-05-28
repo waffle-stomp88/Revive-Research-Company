@@ -875,7 +875,7 @@ export default function ProductDetail() {
 
         {softGateEnabled && !isAuthenticated && <SoftGateBanner />}
 
-        <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
+        <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-4 md:gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
           <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
             {product.name}
           </div>
@@ -1027,7 +1027,7 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-3xl md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-wide leading-none" data-testid="text-product-name">
+            <h1 className="font-display text-[2rem] md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-wide leading-none" data-testid="text-product-name">
               {product.name}
             </h1>
 
@@ -1479,12 +1479,12 @@ export default function ProductDetail() {
           <div className="mt-8 mb-0" />
 
           {/* Research container */}
-          <div className="rounded-xl mt-0 px-4 md:px-8 py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
+          <div className="rounded-xl mt-0 px-4 md:px-8 py-4 md:py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
 
               {/* Tab navigation */}
               <nav
                 data-testid="nav-research-tabs"
-                className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
+                className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-4 md:mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
                 style={{ background: "rgba(157,78,221,0.04)", WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory" }}
               >
                 <div className="flex min-w-max">
@@ -1524,7 +1524,7 @@ export default function ProductDetail() {
                 {/* Product description + accent separator */}
                 {product.description && (
                   <>
-                    <p className="text-muted-foreground leading-relaxed mb-6" data-testid="text-overview-description">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6" data-testid="text-overview-description">
                       {product.description}
                     </p>
                     <div className="mb-6 h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
@@ -1536,7 +1536,7 @@ export default function ProductDetail() {
                   const profile = getCompoundProfile(product.slug ?? "");
                   if (!profile) return null;
                   return (
-                    <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" data-testid="section-molecular-identity">
+                    <div className="mb-4 md:mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" data-testid="section-molecular-identity">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         <Atom className="h-3.5 w-3.5 text-[#9d4edd]" />
                         <span className="text-xs uppercase tracking-widest font-semibold text-[#9d4edd]/70">Identity</span>
@@ -1594,8 +1594,8 @@ export default function ProductDetail() {
 
                 {/* Key Benefits — 2-column grid */}
                 {benefits.length > 0 && (
-                  <div className="mb-8" data-testid="list-benefits-overview">
-                    <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                  <div className="mb-4 md:mb-8" data-testid="list-benefits-overview">
+                    <h3 className="font-display font-semibold text-base md:text-lg mb-2 md:mb-4">Key Benefits</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {benefits.map((benefit, index) => (
                         <div key={index} className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-border bg-card text-sm">
@@ -1610,20 +1610,21 @@ export default function ProductDetail() {
                 {/* Usage / administration notes */}
                 {product.usage && (
                   <div data-testid="section-usage-lower">
-                    <div className="flex items-center gap-3 mb-4">
-                      <BookOpen className="h-5 w-5 text-[#21d8ff]" />
-                      <h3 className="font-display font-semibold text-lg">Usage Information</h3>
+                    <div className="flex items-center gap-3 mb-3 md:mb-4">
+                      <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff]" />
+                      <h3 className="font-display font-semibold text-base md:text-lg">Usage Information</h3>
                     </div>
-                    <p className="text-muted-foreground leading-relaxed mb-4">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-3 md:mb-4">
                       {product.usage}
                     </p>
                     <Link href="/guides/storage-101">
                       <Button
-                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow"
+                        size="sm"
+                        className="gap-1.5 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow"
                         data-testid="link-learn-storage-lower"
                       >
-                        <BookOpen className="h-4 w-4" />
-                        Learn More: Storage Best Practices
+                        <BookOpen className="h-3.5 w-3.5" />
+                        Storage Best Practices
                         <ChevronRight className="h-3 w-3" />
                       </Button>
                     </Link>
@@ -1636,12 +1637,12 @@ export default function ProductDetail() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: 0.15 }}
-                    className="mt-8"
+                    className="mt-4 md:mt-8"
                     data-testid="section-healing-guide-cta"
                   >
-                    <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-8" />
+                    <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-4 md:mb-8" />
                     <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
-                      <Card className="p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
+                      <Card className="p-3 md:p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
                         <div className="flex items-start gap-4">
                           <div className="p-2.5 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
                             <FlaskConical className="h-5 w-5 text-[#22c55e]" />
@@ -1653,10 +1654,10 @@ export default function ProductDetail() {
                               </Badge>
                               <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
                             </div>
-                            <h4 className="font-display text-base md:text-lg font-bold leading-snug mb-1">
+                            <h4 className="font-display text-sm md:text-base font-bold leading-snug mb-1">
                               Learn the Science Behind This Compound
                             </h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-none">
                               Explore the tissue repair cascade, angiogenesis signaling, and how healing peptides work at the molecular level.
                             </p>
                           </div>
@@ -1673,13 +1674,13 @@ export default function ProductDetail() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 }}
-                    className="mt-8"
+                    className="mt-4 md:mt-8"
                     data-testid="section-explore-system"
                   >
-                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-4 md:mb-8" />
                     <Link href={`/systems/${systemHub.slug}`} data-testid="link-explore-system">
                       <div
-                        className="flex items-center justify-between p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                        className="flex items-center justify-between p-3 md:p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
                         style={{ borderColor: `${systemHub.color}33`, background: `${systemHub.color}08` }}
                       >
                         <div>
@@ -1776,13 +1777,13 @@ export default function ProductDetail() {
                       className="rounded-xl border border-[#21d8ff]/20 bg-gradient-to-br from-[#0d1a2a] to-[#0a0f1a] overflow-hidden"
                       data-testid="section-pk-chart"
                     >
-                      <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#21d8ff]/10">
+                      <div className="flex items-center justify-between px-4 md:px-6 pt-4 md:pt-5 pb-3 md:pb-4 border-b border-[#21d8ff]/10">
                         <div className="flex items-center gap-3">
                           <div className="p-2 rounded-lg bg-[#21d8ff]/10">
-                            <Clock className="h-5 w-5 text-[#21d8ff]" />
+                            <Clock className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff]" />
                           </div>
                           <div>
-                            <h2 className="font-display text-lg font-bold text-white">Plasma Concentration Profile</h2>
+                            <h2 className="font-display text-base md:text-lg font-bold text-white">Plasma Concentration Profile</h2>
                             <p className="text-xs text-[#21d8ff]/60 mt-0.5">Published pharmacokinetic data · primary literature</p>
                           </div>
                         </div>
@@ -1790,7 +1791,7 @@ export default function ProductDetail() {
                           PK Data
                         </Badge>
                       </div>
-                      <div className="px-2 pb-4 pt-2">
+                      <div className="px-2 pb-3 md:pb-4 pt-2">
                         <PharmacokineticsChart
                           peptides={pkPeptides}
                           stackId={product.slug || product.id.toString()}
@@ -1906,7 +1907,7 @@ export default function ProductDetail() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.17 }}
-                    className="mb-8"
+                    className="mb-4 md:mb-8"
                     data-testid="section-storage"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -1967,10 +1968,10 @@ export default function ProductDetail() {
                     transition={{ duration: 0.4, delay: 0.18 }}
                     data-testid="section-batches"
                   >
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-3 md:mb-6">
                       <div className="flex items-center gap-3">
-                        <FileCheck className="h-6 w-6 text-[#9d4edd]" />
-                        <h2 className="font-display text-2xl font-bold">Certificates of Analysis</h2>
+                        <FileCheck className="h-5 w-5 md:h-6 md:w-6 text-[#9d4edd]" />
+                        <h2 className="font-display text-lg md:text-2xl font-bold">Certificates of Analysis</h2>
                       </div>
                       <Link href="/coa-library">
                         <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd]" data-testid="link-view-all-coas">
@@ -2154,11 +2155,11 @@ export default function ProductDetail() {
                       transition={{ duration: 0.4, delay: 0.2 }}
                       data-testid="section-synergy"
                     >
-                      <div className="flex flex-wrap items-center gap-3 mb-6">
-                        <Layers className="h-6 w-6 text-[#22c55e]" />
-                        <h2 className="font-display text-2xl font-bold" data-testid="text-synergy-heading">Works Well With</h2>
+                      <div className="flex flex-wrap items-center gap-3 mb-3 md:mb-6">
+                        <Layers className="h-5 w-5 md:h-6 md:w-6 text-[#22c55e]" />
+                        <h2 className="font-display text-lg md:text-2xl font-bold" data-testid="text-synergy-heading">Works Well With</h2>
                       </div>
-                      <p className="text-muted-foreground mb-6" data-testid="text-synergy-description">
+                      <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-6" data-testid="text-synergy-description">
                         Research-backed pairings with {product.name} based on complementary mechanisms of action.
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
@@ -2252,7 +2253,7 @@ export default function ProductDetail() {
                           );
                         })}
                       </div>
-                      <div className="mt-6 flex justify-center">
+                      <div className="mt-4 md:mt-6 flex justify-center">
                         <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
                           <motion.div
                             className="inline-block relative"

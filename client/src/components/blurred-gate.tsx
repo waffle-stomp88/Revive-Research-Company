@@ -50,21 +50,25 @@ export function BlurredGate({ previewContent, title, description, testId, custom
   ) : null);
 
   return (
-    <div className="relative rounded-xl overflow-hidden" data-testid={testId}>
-      <div className="blur-sm pointer-events-none select-none opacity-40" aria-hidden="true">
-        {previewContent}
-      </div>
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "linear-gradient(to bottom, transparent 0%, #1a1a1f80 55%, #1a1a1f 100%)",
-        }}
-      />
+    <div className="rounded-xl overflow-hidden" data-testid={testId}>
+      {/* Gate card at the top — visible immediately without scrolling */}
       {overlay && (
-        <div className="relative mt-2 px-2 pb-2">
+        <div className="px-1 pt-1 pb-3">
           {overlay}
         </div>
       )}
+      {/* Blurred preview below — height-capped so it doesn't push gate off screen */}
+      <div className="relative overflow-hidden max-h-52">
+        <div className="blur-sm pointer-events-none select-none opacity-40" aria-hidden="true">
+          {previewContent}
+        </div>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, transparent 0%, #1a1a1f80 55%, #1a1a1f 100%)",
+          }}
+        />
+      </div>
     </div>
   );
 }
