@@ -15,13 +15,15 @@ export const initGA = () => {
     return;
   }
 
-  // Add Google Analytics script to the head
+  // GA is already bootstrapped by the inline script in index.html.
+  // Only inject scripts dynamically if gtag wasn't loaded (e.g., blocked by network).
+  if (typeof window.gtag === 'function') return;
+
   const script1 = document.createElement('script');
   script1.async = true;
   script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
   document.head.appendChild(script1);
 
-  // Initialize gtag
   const script2 = document.createElement('script');
   script2.textContent = `
     window.dataLayer = window.dataLayer || [];

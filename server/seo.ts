@@ -654,6 +654,198 @@ ${faqItems}
 </main>`;
   }
 
+  // / — homepage with dynamic featured product listing
+  if (cleanUrl === '/') {
+    try {
+      const products = await storage.getAllProductsWithDisplayPrices();
+      const inStock = products.filter(p => p.inStock).slice(0, 12);
+      const items = inStock.map(p => {
+        const price = parseFloat(p.displayPrice) || 0;
+        return `<li><a href="/peptides/${escapeHtml(p.slug || '')}">${escapeHtml(p.name)}</a>${p.category ? ` — ${escapeHtml(p.category)}` : ''}${price > 0 ? ` — $${price.toFixed(2)}` : ''}</li>`;
+      }).join('\n');
+      return `<main>
+  <h1>Premium Research Compounds — Revive Research</h1>
+  <p>Third-party tested peptides with Certificates of Analysis for every batch. Engineered with intention, built for those who don't wait for permission.</p>
+  <section>
+    <h2>Featured Research Compounds (${inStock.length} In Stock)</h2>
+    <ul>
+${items}
+    </ul>
+  </section>
+  <section>
+    <h2>Why Revive Research</h2>
+    <ul>
+      <li>Every batch independently verified by accredited third-party laboratory</li>
+      <li>Certificates of Analysis available for every product and every batch</li>
+      <li>HPLC and mass spectrometry testing on all compounds</li>
+      <li>Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}</li>
+      <li>Research Use Only — not for human or animal consumption</li>
+    </ul>
+  </section>
+  <nav><a href="/peptides">Browse All Compounds</a> | <a href="/research-stacks">Research Stacks</a> | <a href="/guides/peptide-education-center">Education Center</a> | <a href="/coa/verify-certificate-of-analysis">Verify COA</a></nav>
+</main>`;
+    } catch (err) {
+      console.error('[SEO] Error pre-rendering homepage:', err);
+    }
+  }
+
+  // /peptides and /shop — full product catalog listing
+  if (cleanUrl === '/peptides' || cleanUrl === '/shop') {
+    try {
+      const products = await storage.getAllProductsWithDisplayPrices();
+      const inStock = products.filter(p => p.inStock);
+      const outOfStock = products.filter(p => !p.inStock);
+      const sorted = [...inStock, ...outOfStock];
+      const items = sorted.map(p => {
+        const price = parseFloat(p.displayPrice) || 0;
+        const availability = p.inStock ? 'In Stock' : 'Out of Stock';
+        return `<li><a href="/peptides/${escapeHtml(p.slug || '')}">${escapeHtml(p.name)}</a> — ${escapeHtml(p.category || 'Research Compound')}${price > 0 ? ` — $${price.toFixed(2)}` : ''} — ${availability}</li>`;
+      }).join('\n');
+      return `<main>
+  <h1>Research Compounds — Revive Research (${sorted.length} Total)</h1>
+  <p>${inStock.length} compounds in stock. All third-party tested with Certificates of Analysis available for every batch. Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}.</p>
+  <ul>
+${items}
+  </ul>
+  <nav><a href="/research-stacks">Research Stacks</a> | <a href="/guides/peptide-education-center">Education Center</a> | <a href="/coa/verify-certificate-of-analysis">Verify COA</a> | <a href="/contact">Contact Us</a></nav>
+  <p>All compounds are for research use only. Not for human or animal consumption.</p>
+</main>`;
+    } catch (err) {
+      console.error('[SEO] Error pre-rendering product listing:', err);
+    }
+  }
+
+  // /research-stacks — stack listing
+  if (cleanUrl === '/research-stacks') {
+    try {
+      const stacks = await storage.getResearchStacks({ showOnPage: true });
+      if (stacks.length > 0) {
+        const items = stacks.map(s => {
+          const slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          const benefits = Array.isArray(s.keyBenefits) ? s.keyBenefits.slice(0, 3) : [];
+          return `<li><h2><a href="/research-stacks/${escapeHtml(slug)}">${escapeHtml(s.name)}</a></h2>${s.subtitle ? `<p>${escapeHtml(s.subtitle)}</p>` : ''}<p>${escapeHtml(s.description)}</p>${benefits.length ? `<ul>${benefits.map((b: string) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}</li>`;
+        }).join('\n');
+        return `<main>
+  <h1>Research Stacks — Pre-Built Peptide Bundles | Revive Research</h1>
+  <p>Save 10% on curated peptide combinations. Each stack is designed around synergistic research pathways with full COA documentation for every component.</p>
+  <ul>
+${items}
+  </ul>
+  <nav><a href="/peptides">Browse All Compounds</a> | <a href="/guides/peptide-education-center">Education Center</a> | <a href="/contact">Contact Us</a></nav>
+  <p>All compounds are for research use only. Not for human or animal consumption.</p>
+</main>`;
+      }
+    } catch (err) {
+      console.error('[SEO] Error pre-rendering stacks listing:', err);
+    }
+  }
+
+  // /research-stacks/:slug — individual stack detail page
+  const stackSlugMatch = cleanUrl.match(/^\/research-stacks\/(.+)$/);
+  if (stackSlugMatch) {
+    try {
+      const stacks = await storage.getResearchStacks({ showOnPage: true });
+      const urlSlug = stackSlugMatch[1];
+      const stack = stacks.find(s => {
+        const nameSlug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return nameSlug === urlSlug || s.id === urlSlug || s.detailPageId === urlSlug;
+      });
+      if (stack) {
+        const benefits = Array.isArray(stack.keyBenefits) ? stack.keyBenefits : [];
+        const applications = Array.isArray(stack.researchApplications) ? stack.researchApplications : [];
+        return `<article itemscope itemtype="https://schema.org/Product">
+  <header>
+    <h1 itemprop="name">${escapeHtml(stack.name)}</h1>
+    ${stack.subtitle ? `<p>${escapeHtml(stack.subtitle)}</p>` : ''}
+  </header>
+  <section itemprop="description">
+    <p>${escapeHtml(stack.description)}</p>
+    ${stack.longDescription ? `<p>${escapeHtml(stack.longDescription)}</p>` : ''}
+  </section>
+  ${benefits.length ? `<section><h2>Key Research Areas</h2><ul>${benefits.map((b: string) => `<li>${escapeHtml(b)}</li>`).join('')}</ul></section>` : ''}
+  ${applications.length ? `<section><h2>Research Applications</h2><ul>${applications.map((a: string) => `<li>${escapeHtml(a)}</li>`).join('')}</ul></section>` : ''}
+  <section>
+    <h2>Bundle Savings</h2>
+    <p>This research stack includes a 10% discount compared to purchasing compounds individually. All components are third-party tested with Certificates of Analysis available for each batch.</p>
+    <p>For research use only. Not for human or animal consumption.</p>
+  </section>
+  <footer>
+    <nav><a href="/research-stacks">All Research Stacks</a> | <a href="/peptides">Browse Individual Compounds</a> | <a href="/contact">Contact Us</a></nav>
+    <p itemprop="brand" itemscope itemtype="https://schema.org/Brand"><span itemprop="name">Revive Research</span></p>
+  </footer>
+</article>`;
+      }
+    } catch (err) {
+      console.error(`[SEO] Error pre-rendering stack detail "${stackSlugMatch[1]}":`, err);
+    }
+  }
+
+  // /systems/:slug — body system pages (data inlined; no LucideIcon dependency on server)
+  const SYSTEMS = [
+    { id: 'healing',   name: 'Healing & Recovery',       description: 'Tissue repair, wound healing, and injury recovery through growth factor activation. Research peptides in this system target collagen synthesis, angiogenesis, and cellular regeneration pathways.' },
+    { id: 'metabolic', name: 'Metabolic & Energy',        description: 'Energy production, fat metabolism, and mitochondrial function optimization. Compounds in this system are studied for their roles in lipolysis, insulin signaling, and thermogenesis.' },
+    { id: 'growth',    name: 'Growth & Muscle',           description: 'Growth hormone pathways supporting muscle, bone, and cellular development. Research peptides here target GHRH receptors, IGF-1 production, and nitrogen retention.' },
+    { id: 'cognitive', name: 'Cognitive & Brain Health',  description: 'Neuroprotection, focus enhancement, and brain-derived growth factors. Compounds in this system are studied for BDNF upregulation, synaptic plasticity, and neuroinflammation reduction.' },
+    { id: 'skin',      name: 'Skin & Aesthetics',         description: 'Collagen synthesis, elastin production, and dermal regeneration. Research peptides in this system act on fibroblast activity, copper-dependent enzymes, and melanin regulation.' },
+    { id: 'longevity', name: 'Longevity & Anti-Aging',    description: 'Anti-aging mechanisms including telomere support, autophagy activation, and cellular renewal. Compounds studied for NAD+ pathway support and oxidative stress reduction.' },
+    { id: 'hormonal',  name: 'Hormonal & Reproductive',   description: 'Reproductive axis, endocrine signaling, and sexual health research. Peptides in this system target the hypothalamic-pituitary-gonadal axis and steroidogenesis pathways.' },
+  ];
+  const systemSlugMatch = cleanUrl.match(/^\/systems\/(.+)$/);
+  if (systemSlugMatch) {
+    const urlSlug = systemSlugMatch[1];
+    const system = SYSTEMS.find(s => s.id === urlSlug);
+    if (system) {
+      try {
+        const allProducts = await storage.getAllProductsWithDisplayPrices();
+        const linked = allProducts
+          .filter(p => (p.category || '').toLowerCase().includes(system.id) || (p.name || '').toLowerCase().includes(system.id))
+          .slice(0, 12);
+        const productSection = linked.length > 0
+          ? `<section><h2>Research Compounds in This System</h2><ul>${linked.map(p => {
+              const price = parseFloat(p.displayPrice) || 0;
+              return `<li><a href="/peptides/${escapeHtml(p.slug || '')}">${escapeHtml(p.name)}</a>${price > 0 ? ` — $${price.toFixed(2)}` : ''}${p.inStock ? ' — In Stock' : ' — Out of Stock'}</li>`;
+            }).join('')}</ul></section>`
+          : '';
+        return `<main>
+  <h1>${escapeHtml(system.name)} Research Compounds | Revive Research</h1>
+  <p>${escapeHtml(system.description)}</p>
+  ${productSection}
+  <section>
+    <h2>Research Use Only</h2>
+    <p>All compounds are sold strictly for laboratory and scientific research purposes. Not for human or animal consumption. Every batch is third-party tested with a Certificate of Analysis available for verification.</p>
+  </section>
+  <nav><a href="/peptides">Browse All Compounds</a> | <a href="/research-stacks">Research Stacks</a> | <a href="/guides/peptide-education-center">Education Center</a> | <a href="/coa/verify-certificate-of-analysis">Verify COA</a></nav>
+</main>`;
+      } catch (err) {
+        console.error(`[SEO] Error pre-rendering system page "${urlSlug}":`, err);
+        return `<main><h1>${escapeHtml(system.name)} Research Compounds | Revive Research</h1><p>${escapeHtml(system.description)}</p><nav><a href="/peptides">Browse All Compounds</a></nav><p>For research use only.</p></main>`;
+      }
+    }
+  }
+
+  // /education and /guides/peptide-education-center — article listing
+  if (cleanUrl === '/education' || cleanUrl === '/guides/peptide-education-center') {
+    try {
+      const articles = await storage.getAllEducationArticles();
+      if (articles.length > 0) {
+        const items = articles.map(a =>
+          `<li><h2><a href="/guides/${escapeHtml(a.slug)}">${escapeHtml(a.title)}</a></h2>${a.summary ? `<p>${escapeHtml(a.summary)}</p>` : ''}</li>`
+        ).join('\n');
+        return `<main>
+  <h1>Peptide Research Education Center | Revive Research</h1>
+  <p>${articles.length} research guides covering peptide science, quality verification, reconstitution, storage, and research applications. Written for laboratory researchers and scientists.</p>
+  <ul>
+${items}
+  </ul>
+  <nav><a href="/peptides">Shop Research Compounds</a> | <a href="/reconstitution-wizard">Reconstitution Wizard</a> | <a href="/contact">Contact Us</a></nav>
+  <p>All content is for educational and research purposes only. Not for human or animal consumption.</p>
+</main>`;
+      }
+    } catch (err) {
+      console.error('[SEO] Error pre-rendering education listing:', err);
+    }
+  }
+
   if (STATIC_ROUTES[cleanUrl]) {
     const route = STATIC_ROUTES[cleanUrl];
     return `<main>

@@ -19,12 +19,6 @@ function isAgeVerified(): boolean {
   return Date.now() - ts < AGE_GATE_TTL_MS;
 }
 
-function isSearchBot(): boolean {
-  if (typeof window !== "undefined" && (window as any).__IS_BOT__) return true;
-  if (typeof navigator === "undefined") return false;
-  return /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|seznambot|google-inspectiontool|google web preview|mediapartners-google|adsbot-google|apis-google|feedfetcher-google/i.test(navigator.userAgent);
-}
-
 export function AgeVerificationModal() {
   const [location] = useLocation();
   const [agreed, setAgreed] = useState(false);
@@ -36,7 +30,6 @@ export function AgeVerificationModal() {
   // mid-animation layout reflow from the useEffect firing a frame later
   const [isOpen, setIsOpen] = useState(() => {
     if (typeof window === "undefined") return false;
-    if (isSearchBot()) return false;
     if (LEGAL_ROUTES.some(route => window.location.pathname.startsWith(route))) return false;
     const shouldOpen = !isAgeVerified();
     if (shouldOpen) {

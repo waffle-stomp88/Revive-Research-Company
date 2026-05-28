@@ -1,0 +1,44 @@
+Here's what to send them:
+
+---
+
+**Re: Plan #961 — Approved with notes**
+
+Plan #961 is approved. Good work identifying the existing injection pipeline and scoping the expansion correctly. A few notes after reviewing the current HTML output from GSC for the homepage, Education Center, and Products page:
+
+**Priority 1 — Remove `window.__IS_BOT__` immediately**
+
+This is the most urgent item. The homepage does NOT have the bot flag injected, but `/guides/peptide-education-center` and `/peptides` both do. That means we're serving different behavior to bots vs humans on some pages but not others, which is exactly the inconsistency Google flags as cloaking. Don't wait for the rest of 961 to ship this. Remove the `window.__IS_BOT__` injection from `server/static.ts`, remove `isSearchBot()` from `age-verification-modal.tsx`, and delete `server/bot-detect.ts` if nothing else calls it. This can go out as a standalone deploy today.
+
+**Priority 2 — Education Center indexing issue**
+
+The Education Center at `/guides/peptide-education-center` is not indexed in Google despite having full rendered HTML and correct meta tags. The canonical tag points to `/guides/peptide-education-center`, which is correct. But I need to know: does `/education` currently 301-redirect to `/guides/peptide-education-center`? Or does it serve its own content? If `/education` serves separate content without a canonical tag pointing to the guide URL, Google is likely confused about which URL is authoritative. Please confirm the current behavior of `/education` and add a 301 redirect to `/guides/peptide-education-center` if one doesn't exist.
+
+**Priority 3 — Fix duplicate gtag injection**
+
+All three pages I tested have the Google Analytics script (`G-NETP832ZVN`) injected twice in `<head>`. Once from the original `index.html` template, and again appended by the server injection pipeline. This is double-counting every pageview in GA. The server injection should check whether gtag is already present before appending it, or the duplicate block should be removed from the injection logic.
+
+**Priority 4 — The route expansion (Steps 1-6 of Plan #961)**
+
+Proceed as scoped. The homepage, individual product pages, and guide pages already have pre-rendered content working. The routes that still need coverage are the ones you identified: `/research-stacks`, `/research-stacks/:slug`, `/systems/:slug`, and the shop listing at `/peptides` and `/shop`. The Education Center listing at `/education` also needs coverage per Step 6.
+
+**Priority 5 — Malformed `pre-age-gate` div**
+
+The `<div id="pre-age-gate">` is being appended after the closing `</body>` tag on all pages. It should be inside `<body>`. This is a minor issue but technically invalid HTML. Move it inside `<body>` if straightforward.
+
+**After deployment, I need:**
+- Confirmation that `window.__IS_BOT__` is fully removed (grep the codebase for `__IS_BOT__` and `isSearchBot`)
+- Confirmation of `/education` redirect behavior
+- Output of `curl -s https://reviveresearch.co/research-stacks | head -50` to verify new route coverage
+- Output of `curl -s https://reviveresearch.co/sitemap.xml` so I can audit the sitemap
+
+**Sitemap regeneration:** After all routes are covered, regenerate `sitemap.xml` to include every pre-rendered route with current `<lastmod>` dates and resubmit to Google Search Console.
+
+**Follow-up tasks (separate from 961):**
+- Add `<meta name="robots" content="noindex">` to `/cart`, `/checkout`, `/account`, `/login`, `/register`, and any admin routes
+- Add JSON-LD `ItemList` schema to listing pages (`/peptides`, `/research-stacks`, `/guides/peptide-education-center`)
+- Confirm canonical relationship between `/education` and `/guides/peptide-education-center` — one URL should own the content, the other should redirect
+
+---
+
+That covers everything without repeating the wrong diagnosis. Want me to adjust anything?

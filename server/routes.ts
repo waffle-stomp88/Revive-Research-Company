@@ -184,6 +184,15 @@ export async function registerRoutes(
     res.redirect(301, '/peptides');
   });
 
+  // 301 redirects for /education → canonical Education Center URL
+  // Client-side router also handles these but server-side redirect is required for crawlers
+  app.get('/education', (_req, res) => {
+    res.redirect(301, '/guides/peptide-education-center');
+  });
+  app.get('/education/:slug', (req, res) => {
+    res.redirect(301, `/guides/${req.params.slug}`);
+  });
+
   app.get('/robots.txt', (_req, res) => {
     res.type('text/plain').send(
       `User-agent: *\nAllow: /\n\n# Allow public API routes needed for page rendering\nAllow: /api/education\nAllow: /api/peptides\nAllow: /api/products\nAllow: /api/coas\nAllow: /api/waitlist/count\n\n# Disallow all other API and system routes\nDisallow: /api/\n\n# Disallow private pages\nDisallow: /admin\nDisallow: /dashboard\nDisallow: /account\nDisallow: /account-settings\nDisallow: /affiliate-dashboard\nDisallow: /login\nDisallow: /signup\nDisallow: /register\n\n# Disallow transactional pages\nDisallow: /cart\nDisallow: /checkout\nDisallow: /order-confirmation\n\nSitemap: ${SITE_URL}/sitemap.xml`
