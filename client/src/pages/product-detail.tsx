@@ -61,7 +61,6 @@ import {
   ArrowUp,
   Check,
   Sparkles,
-  Lock,
   MapPin,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -1062,13 +1061,13 @@ export default function ProductDetail() {
                 </div>
               )}
               {softGateEnabled && !isAuthenticated && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{
-                  background: "#21d8ff0d",
-                  border: "1px solid #21d8ff25",
-                }}>
-                  <Lock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
-                  <span className="text-sm font-medium" style={{ color: "#9ca3af" }}>Sign in to see pricing</span>
-                </div>
+                <button
+                  onClick={() => login()}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
+                  data-testid="link-sign-in-pricing"
+                >
+                  Sign in to see pricing
+                </button>
               )}
             </div>
 
@@ -1251,20 +1250,14 @@ export default function ProductDetail() {
             {!isOutOfStock ? (
               softGateEnabled && !isAuthenticated ? (
                 <div data-testid="auth-gate-inline">
-                  <div
-                    className="blur-sm pointer-events-none select-none opacity-40 flex flex-col gap-2"
-                    aria-hidden="true"
-                    data-testid="stack-cta"
+                  <Button
+                    size="lg"
+                    className="w-full font-display gap-2 text-black transition-all duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212,255,31,0.4)] hover:shadow-[0_0_40px_rgba(212,255,31,0.75)] text-[17px] font-normal min-h-[44px]"
+                    onClick={() => login()}
+                    data-testid="button-sign-in-to-purchase"
                   >
-                    <div className="w-full h-11 rounded-md bg-[#D4FF1F] flex items-center justify-center gap-2">
-                      <ShoppingCart className="h-5 w-5 text-black" />
-                      <span className="font-display font-bold text-black">Buy Now</span>
-                    </div>
-                    <div className="w-full h-11 rounded-md border-2 border-border flex items-center justify-center gap-2">
-                      <ShoppingBag className="h-5 w-5 text-foreground" />
-                      <span className="font-display text-foreground">Add to Cart</span>
-                    </div>
-                  </div>
+                    Sign in to see pricing &amp; purchase
+                  </Button>
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
