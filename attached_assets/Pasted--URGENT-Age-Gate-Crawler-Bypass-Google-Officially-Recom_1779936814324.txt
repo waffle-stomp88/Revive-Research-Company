@@ -1,0 +1,64 @@
+---
+
+**URGENT: Age Gate Crawler Bypass — Google Officially Recommends This**
+
+**Context: I was wrong twice. Here's the correction with sources.**
+
+Over the past few hours we rejected two proposals (#966 and the earlier `window.__IS_BOT__` pattern) for detecting Googlebot and bypassing the age gate, on the grounds that serving different behavior based on User-Agent is cloaking. That was incorrect. Google's own documentation explicitly recommends this approach for age-gated sites.
+
+**Sources:**
+
+1. Google Search Central documentation on interstitials (updated December 10, 2025) literally says: "You can do this by verifying Googlebot requests and serving the content without age gate."
+
+2. John Mueller (Google Search Advocate) on the topic: "If you're using JavaScript, CSS, to display an interstitial on top of your existing content that's already loaded, then that would work for Google search. And from a policy point of view, that's fine. That's not something that we would consider to be cloaking, because the content is still being loaded there."
+
+3. Google's guidance on interstitials also states: "Googlebot can't get past interstitials to the content beyond by clicking any links or the close button, and will try to index the content of the interstitial instead."
+
+That third point is exactly what our Google Search Console screenshots show. On both `/peptide-research-faq` and `/guides/peptide-education-center`, the rendered screenshot shows the RUO age gate modal covering the entire viewport. Google is indexing the age gate, not our content. This is almost certainly the primary driver of the 68 "crawled - currently not indexed" pages.
+
+**What's happening right now:**
+
+1. Google's Chromium renderer hits any page on our site
+2. No localStorage exists (fresh session every crawl)
+3. The inline script in `index.html` creates a black `position:fixed; z-index:99999` overlay
+4. React hydrates and renders the full age gate modal with the RUO checkbox
+5. Google's renderer sees the age gate covering everything
+6. Google indexes the age gate content instead of the page content
+7. Google decides "this page has no useful content" and marks it "Crawled - currently not indexed"
+
+This happens on every single page, every single crawl. It's been happening since the age gate was implemented. The clip CSS fix (#967) was a real bug, but it didn't solve this because the age gate modal itself is what Google renders, regardless of what's underneath.
+
+**What to do — revive the #966 approach with these specifics:**
+
+Step 1: Create a crawler detection utility on the server. Check the User-Agent string for known search engine crawlers: Googlebot, Bingbot, DuckDuckBot, Baiduspider, Applebot, Yandex, and similar. This is NOT the same as the old `window.__IS_BOT__` pattern we removed. The old pattern injected a global JS variable that changed client-side rendering behavior and was applied inconsistently (homepage didn't have it, other pages did). The new approach sets a localStorage key via a server-injected script so the existing age gate logic naturally skips itself.
+
+Step 2: For crawler requests, inject a small `<script>` block into the HTML response BEFORE the existing age gate inline script in `index.html`. This script does one thing: `localStorage.setItem('revive-research-age-verified', String(Date.now()))`. When the age gate script runs immediately after, it checks `localStorage.getItem('revive-research-age-verified')`, finds the key, and skips creating the black overlay. When React hydrates, `isAgeVerified()` also finds the key and skips rendering the modal. The page renders normally.
+
+Step 3: This must be applied to EVERY page consistently. The old `__IS_BOT__` pattern was applied to some pages but not the homepage, which created the inconsistency Google could flag. Every page gets the same treatment. No exceptions.
+
+Step 4: Do NOT re-introduce `window.__IS_BOT__` as a global variable. Do NOT change any rendering logic based on bot detection. Do NOT serve different HTML content. The only thing the injected script does is pre-set a localStorage key that the existing age gate code already checks. The age gate code itself is unchanged. Human visitors without the key see the gate. Crawlers with the pre-set key skip it. The underlying page content is identical in both cases.
+
+**Why this is not cloaking:**
+
+The previous `window.__IS_BOT__` approach was risky because it changed client-side rendering behavior through a global flag, was applied inconsistently across pages, and created a code path where bot visitors got different component rendering than humans. The new approach doesn't change any rendering logic. It pre-sets a value that the existing, unchanged age gate code already uses to determine whether to show the gate. The same code path runs for everyone. The only difference is whether a localStorage key exists when the code checks for it. Google explicitly endorses this for age-gated sites.
+
+**How to verify:**
+
+1. `curl -H "User-Agent: Googlebot/2.1" https://reviveresearch.co/peptides/bpc-157` should return HTML containing the localStorage pre-set script
+2. `curl https://reviveresearch.co/peptides/bpc-157` (no Googlebot UA) should return HTML WITHOUT the pre-set script (normal age gate behavior for humans)
+3. After deployment, use Google Search Console URL Inspection on `/peptides/bpc-157`, click "Test Live URL," and check the rendered screenshot. It should show product content, NOT the age gate modal
+4. Visit the site in an incognito browser window and confirm the age gate still appears normally for human visitors
+
+**After this is deployed:**
+
+The combination of #961 (cloaking removal + pre-render expansion), #962 (redirects + duplicate consolidation + thin page noindex), #967 (clip CSS removal), #970 (sitemap dedup), and this new task (age gate crawler bypass) addresses every structural SEO issue we've identified.
+
+After deployment, I will re-request indexing on the top 20 highest-value pages through Search Console. The 68 "crawled - currently not indexed" pages should start moving back to indexed status within 2-4 weeks as Google re-crawls with clean signals.
+
+Resubmit the sitemap after this deploys. The sitemap "Last read" date is currently February 14, 2026, meaning Google hasn't processed our sitemap in over three months. The fresh submission from today combined with this fix should trigger a full re-crawl cycle.
+
+**Priority: Ship this today if possible. Every day the age gate blocks Google's renderer is another day of de-indexed pages.**
+
+---
+
+That's the brief. This is the fix that should have happened first. The structural cleanup in #962 and #970 was still necessary and correct, but the age gate was the primary blocker all along.
