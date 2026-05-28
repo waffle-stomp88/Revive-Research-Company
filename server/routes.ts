@@ -180,15 +180,17 @@ export async function registerRoutes(
   // gates for Googlebot. This is NOT cloaking: the same page content is served
   // to all visitors; bots simply skip an interstitial they cannot interact with.
   //
-  // Mechanism: for known crawler User-Agents, inject a tiny inline <script>
-  // immediately after <body> that sets window.__AGE_BYPASS__=1. This global
-  // flag is checked by both the inline pre-React script (client/index.html)
-  // and by isAgeVerified() in age-verification-modal.tsx. Using a window
-  // global avoids relying on localStorage, which Google's rendering sandbox
-  // silently blocks. localStorage.setItem is also attempted as a fallback so
-  // subsequent navigations within the same session stay gate-free.
+  // Mechanism: for known crawler User-Agents, add data-bot-bypass="1" to the
+  // <html> tag. This is a pure HTML attribute — no JavaScript execution needed.
+  // It is readable by both the inline pre-React script (client/index.html) and
+  // React's isAgeVerified() via document.documentElement.dataset.botBypass.
+  // We also inject window.__AGE_BYPASS__=1 + localStorage.setItem as belt-and-
+  // suspenders for renderers that do support those APIs.
+  //
+  // IMPORTANT: Google's URL Inspection Tool sends UA "Google-InspectionTool/1.0"
+  // (not "Googlebot/2.1") for its WRS rendering requests. Both must be matched.
   // ---------------------------------------------------------------------------
-  const SEARCH_BOT_RE = /Googlebot|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
+  const SEARCH_BOT_RE = /Googlebot|Google-InspectionTool|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
   const AGE_BYPASS_SCRIPT = `<script>window.__AGE_BYPASS__=1;try{localStorage.setItem('revive-research-age-verified',String(Date.now()));}catch(e){}</script>`;
 
   app.use((req, res, next) => {
@@ -197,6 +199,9 @@ export async function registerRoutes(
 
     const originalEnd = res.end.bind(res);
     (res as any).end = function(chunk: any, ...args: any[]) {
+      if (typeof chunk === 'string' && chunk.includes('<html')) {
+        chunk = chunk.replace('<html', '<html data-bot-bypass="1"');
+      }
       if (typeof chunk === 'string' && chunk.includes('<body>')) {
         chunk = chunk.replace('<body>', '<body>' + AGE_BYPASS_SCRIPT);
       }

@@ -30,7 +30,7 @@
           var LEGAL = ['/terms-of-service', '/terms', '/privacy', '/legal'];
           var path = window.location.pathname;
           var onLegal = LEGAL.some(function(r) { return path.indexOf(r) === 0; });
-          if (!onLegal && !window.__AGE_BYPASS__ && !localStorage.getItem('revive-research-age-verified')) {
+          if (!onLegal && !document.documentElement.dataset.botBypass && !window.__AGE_BYPASS__ && !localStorage.getItem('revive-research-age-verified')) {
             var d = document.createElement('div');
             d.id = 'pre-age-gate';
             d.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:#000;';

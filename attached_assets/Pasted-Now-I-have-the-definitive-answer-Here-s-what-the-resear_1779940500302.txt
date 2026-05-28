@@ -1,0 +1,19 @@
+Now I have the definitive answer. Here's what the research confirms:
+
+Google's own blog post from March 2026 states explicitly: "The WRS operates statelessly — it clears local storage and session data between requests."
+
+Vercel's documentation (based on partnership research with MERJ) confirms: "Stateless rendering: Each page render occurs in a fresh browser session, without retaining cookies or state from previous renders."
+
+Multiple 2026 sources confirm: "WRS is stateless: Local storage, session storage, and cookies are cleared between WRS requests. Content that depends on stored client-side state will not render correctly for Googlebot."
+
+But here's the critical distinction: Martin Splitt from Google said: "We're still not supporting cookies, session storage, local storage or IndexedDB across page load. So, if you wanna store data in any of these mechanisms, that is possible, but it will be cleared out before the next URL or the next page comes on."
+
+That last quote is the key. Martin Splitt said storing data in localStorage **is possible** within a single page load. It gets cleared **between** page loads, not within a single render. So `localStorage.setItem()` should work during the render of a single page. The data just won't persist to the next page Google renders.
+
+This means the `localStorage.setItem` in your bypass script should work within the same render session. The age gate's `localStorage.getItem` check happens in the same page load. So the bypass SHOULD work.
+
+**The problem is probably timing, not localStorage availability.** Your injected script runs when `<body>` opens. But the age gate inline script also runs when `<body>` opens, immediately after. If the WRS processes them differently (batching inline scripts, or if the injection point isn't actually before the age gate script), the setItem might not be visible to the getItem check.
+
+Tell your dev team: the localStorage approach should work per Google's own documentation. The issue is likely script execution order. They need to verify that the injected `<script>` tag appears BEFORE the existing age gate `<script>` tag in the actual HTML response, and that both are synchronous inline scripts (no `defer` or `async`). Have them dump the raw HTML response for a Googlebot request and check the exact position of both script blocks relative to each other.
+
+If the order is correct and it still doesn't work, then the `window.__AGE_BYPASS__` flag approach should be the fallback since it doesn't touch any storage APIs at all.

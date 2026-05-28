@@ -12,6 +12,7 @@ const AGE_VERIFIED_KEY = "revive-research-age-verified";
 const AGE_GATE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 function isAgeVerified(): boolean {
+  if (typeof window !== 'undefined' && document.documentElement.dataset.botBypass === '1') return true;
   if (typeof window !== 'undefined' && (window as any).__AGE_BYPASS__) return true;
   const raw = localStorage.getItem(AGE_VERIFIED_KEY);
   if (!raw) return false;
