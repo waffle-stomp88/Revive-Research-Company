@@ -1,0 +1,75 @@
+Here's the Replit brief. Send this now:
+
+---
+
+**URGENT: SEO Recovery — De-indexed Page Fixes**
+
+Google has de-indexed 47 pages in the last 10 weeks (115 indexed → 68 indexed). 68 pages are in "crawled - currently not indexed" status. This task fixes the structural issues causing Google to reject pages so that when we request re-indexing, the pages pass quality evaluation.
+
+**Task 1 — Consolidate duplicate guide pages with 301 redirects**
+
+These URL pairs cover the same topic. Redirect the duplicate to the canonical version:
+
+- `/guides/research-use-only-explained` → 301 to `/guides/what-research-use-only-means`
+- `/guides/understanding-peptide-purity` → 301 to `/guides/peptide-purity-explained`
+- `/guides/peptide-vendor-checklist` → 301 to `/guides/peptide-vendor-ethics-standards`
+
+Audit for any other guide pairs covering the same subject under different slugs. If found, pick the one with more content and redirect the other.
+
+**Task 2 — Add noindex to thin product pages with no inventory and no compound profile**
+
+Any product page that meets ALL of these criteria should get `<meta name="robots" content="noindex, follow">`:
+
+- Out of stock / "Coming Soon"
+- No education article linked (no Deep Dive or Quick Breakdown content)
+- Product description is one sentence or less
+
+This likely includes pages like `/peptides/botulinum-toxin-type-a`, `/peptides/pnc-27`, `/peptides/l-carnitine`, `/peptides/hyaluronic-acid`, and similar placeholder SKUs. The goal is to stop Google from counting these as thin pages against our site quality score.
+
+Do NOT noindex any product page that has real content, even if out of stock. Pages like `/peptides/bpc-157`, `/peptides/ghk-cu`, `/peptides/mots-c` should stay indexed regardless of stock status because they have compound profiles and education content.
+
+To be clear: this is a `<meta>` tag decision, not a page removal. The pages stay live for users. We're just telling Google not to count them until they have substance.
+
+**Task 3 — Remove stale URLs from sitemap**
+
+Remove these from `sitemap.xml`:
+
+- `/bulk-packs` (301 redirects to `/peptides`, wastes crawl budget)
+- `/robots.txt` (not a page)
+- Any product URL that gets noindexed in Task 2
+
+Add to sitemap if not already present:
+
+- All `/systems/:slug` pages (7 body system pages)
+- All `/research-stacks/:slug` pages (dynamically from DB)
+- `/guides/peptide-education-center` (confirm it's there, not `/education`)
+
+**Task 4 — Confirm canonical tags on all guide pages**
+
+Every guide at `/guides/:slug` should have `<link rel="canonical" href="https://reviveresearch.co/guides/:slug" />` in the `<head>`. If any guide page is missing a canonical or has a canonical pointing to a different URL, fix it. This is the most likely reason Google is marking 19 pages as "Alternate page with proper canonical tag."
+
+Also confirm: `/education` returns a 301 redirect to `/guides/peptide-education-center`, NOT a 200 with its own content. This was deployed in Plan #961 but verify it's working.
+
+**Task 5 — Verify no orphaned old URLs are still in the sitemap**
+
+After the Education Center restructure, are there any old URL patterns still in the sitemap that no longer exist or now redirect? Common patterns to check:
+
+- Old education article URLs that moved to `/guides/:slug`
+- Old product URLs that changed slugs
+- Any URL in the sitemap that returns a 3xx or 4xx
+
+Run this check: iterate every URL in `sitemap.xml`, curl each one, and flag any that don't return 200. Remove non-200 URLs from the sitemap.
+
+**After deployment, provide:**
+
+- Updated `sitemap.xml` output
+- List of URLs that were noindexed (Task 2)
+- List of redirects added (Task 1)
+- Confirmation that `/education` 301s to `/guides/peptide-education-center`
+- Count of total URLs in sitemap before and after cleanup
+
+I will handle Google Search Console re-indexing requests after these changes are live.
+
+---
+
+That covers everything the dev team can fix. Once they ship it, you go through Search Console and request re-indexing on your highest-value pages. The ranking recovery should start showing within 2-4 weeks after Google re-crawls with clean signals.
