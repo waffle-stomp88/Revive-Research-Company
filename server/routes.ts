@@ -313,6 +313,7 @@ export async function registerRoutes(
         'botulinum-toxin-type-a', 'pnc-27', 'hyaluronic-acid', 'ara-290',
         'cjc-1295-no-dac', 'cjc-1295-ipamorelin-stack', 'adipotide',
         'ghrp-6', 'hexarelin', 'vip', 'igf-des',
+        'l-carnitine', 'b12-injection',
       ]);
 
       for (const product of products) {
@@ -356,6 +357,9 @@ export async function registerRoutes(
     '/guides/research-use-only-explained': '/guides/what-research-use-only-means',
     '/guides/understanding-peptide-purity': '/guides/peptide-purity-explained',
     '/guides/peptide-vendor-checklist': '/guides/peptide-vendor-ethics-standards',
+    // Audited: /guides/why-coas-matter-peptide-research vs /guides/are-peptide-coas-trustworthy
+    // These serve different search intents — "why COAs matter" answers importance/value questions
+    // while "are COAs trustworthy" answers credibility/verification questions. No redirect added.
   };
 
   Object.entries(guideRedirects).forEach(([oldPath, newPath]) => {

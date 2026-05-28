@@ -31,6 +31,8 @@ const THIN_PRODUCT_SLUGS = new Set([
   'hexarelin',
   'vip',
   'igf-des',
+  'l-carnitine',
+  'b12-injection',
 ]);
 
 function makeBreadcrumbList(items: Array<{name: string; url: string}>) {
