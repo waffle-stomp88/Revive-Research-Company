@@ -181,14 +181,15 @@ export async function registerRoutes(
   // to all visitors; bots simply skip an interstitial they cannot interact with.
   //
   // Mechanism: for known crawler User-Agents, inject a tiny inline <script>
-  // immediately after <body> that pre-sets the localStorage key the age gate
-  // already checks. When the existing inline script runs a millisecond later,
-  // it finds the key set and skips creating the black overlay div. When React
-  // hydrates, isAgeVerified() also finds the key and skips opening the modal.
-  // The age-verification-modal.tsx component code is unchanged.
+  // immediately after <body> that sets window.__AGE_BYPASS__=1. This global
+  // flag is checked by both the inline pre-React script (client/index.html)
+  // and by isAgeVerified() in age-verification-modal.tsx. Using a window
+  // global avoids relying on localStorage, which Google's rendering sandbox
+  // silently blocks. localStorage.setItem is also attempted as a fallback so
+  // subsequent navigations within the same session stay gate-free.
   // ---------------------------------------------------------------------------
   const SEARCH_BOT_RE = /Googlebot|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
-  const AGE_BYPASS_SCRIPT = `<script>try{if(!localStorage.getItem('revive-research-age-verified')){localStorage.setItem('revive-research-age-verified',String(Date.now()));}}catch(e){}</script>`;
+  const AGE_BYPASS_SCRIPT = `<script>window.__AGE_BYPASS__=1;try{localStorage.setItem('revive-research-age-verified',String(Date.now()));}catch(e){}</script>`;
 
   app.use((req, res, next) => {
     const ua = req.headers['user-agent'] ?? '';
