@@ -934,7 +934,7 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
   }
 
   if (preRenderedContent) {
-    html = html.replace('<div id="root"></div>', `<div id="root">${preRenderedContent}</div>`);
+    html = html.replace('<div id="root"></div>', `<div id="root"><div style="display:none" aria-hidden="true">${preRenderedContent}</div></div>`);
   }
 
   return html;
