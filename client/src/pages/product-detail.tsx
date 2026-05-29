@@ -1073,7 +1073,7 @@ export default function ProductDetail() {
 
 
 
-            <div className="grid grid-cols-2 gap-3 mb-2" data-testid="box-dosage">
+            <div className="grid grid-cols-2 gap-3 mb-2 items-end" data-testid="box-dosage">
               {/* Dosage box */}
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
