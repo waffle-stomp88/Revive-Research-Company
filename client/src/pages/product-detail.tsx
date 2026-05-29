@@ -1157,13 +1157,13 @@ export default function ProductDetail() {
                   </button>
                   {!isOutOfStock && (
                     displayStockAmount > 0 && displayStockAmount <= 10 ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[10px] font-medium whitespace-nowrap">
-                        <AlertTriangle className="h-2.5 w-2.5 flex-shrink-0" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-medium whitespace-nowrap">
+                        <AlertTriangle className="h-3 w-3 flex-shrink-0" />
                         Only {displayStockAmount} left
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[10px] font-medium whitespace-nowrap">
-                        <CheckCircle className="h-2.5 w-2.5 flex-shrink-0" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[11px] font-medium whitespace-nowrap">
+                        <CheckCircle className="h-3 w-3 flex-shrink-0" />
                         {displayStockAmount} in stock
                       </span>
                     )
