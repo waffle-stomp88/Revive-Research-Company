@@ -28,13 +28,7 @@ import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose
 import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
 import MistBackground from "@/components/home/mist-background";
 
-function HeroSection() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 800], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
-  const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
-  const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
-
+function HeroTrustStrip() {
   const { data: products } = useQuery<{ id: number }[]>({
     queryKey: ["/api/products"],
     staleTime: 5 * 60 * 1000,
@@ -46,6 +40,39 @@ function HeroSection() {
     staleTime: 10 * 60 * 1000,
   });
   const purityLabel = purityData?.purity != null ? `${purityData.purity}% Purity` : "98.5% Purity";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.9 }}
+      className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
+      data-testid="div-hero-trust-strip"
+    >
+      <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-compound-count">
+        <Beaker className="h-3.5 w-3.5 text-[#D4FF1F]/60 flex-shrink-0" />
+        {compoundCount !== null ? `${compoundCount} Compounds` : "Compounds"}
+      </span>
+      <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
+      <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-purity">
+        <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff]/60 flex-shrink-0" />
+        {purityLabel}
+      </span>
+      <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
+      <span className="flex items-center gap-1.5 text-xs text-white/50">
+        <ShieldCheck className="h-3.5 w-3.5 text-[#9d4edd]/60 flex-shrink-0" />
+        100% Tested
+      </span>
+    </motion.div>
+  );
+}
+
+function HeroSection() {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 800], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
+  const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
 
   const handleScrollClick = () => {
     const nextSection = document.getElementById('why-researchers');
@@ -146,28 +173,7 @@ function HeroSection() {
           </Link>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9 }}
-          className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
-          data-testid="div-hero-trust-strip"
-        >
-          <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-compound-count">
-            <Beaker className="h-3.5 w-3.5 text-[#D4FF1F]/60 flex-shrink-0" />
-            {compoundCount !== null ? `${compoundCount} Compounds` : "Compounds"}
-          </span>
-          <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
-          <span className="flex items-center gap-1.5 text-xs text-white/50" data-testid="text-hero-purity">
-            <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff]/60 flex-shrink-0" />
-            {purityLabel}
-          </span>
-          <span className="text-white/20 text-xs hidden sm:inline" aria-hidden="true">·</span>
-          <span className="flex items-center gap-1.5 text-xs text-white/50">
-            <ShieldCheck className="h-3.5 w-3.5 text-[#9d4edd]/60 flex-shrink-0" />
-            100% Tested
-          </span>
-        </motion.div>
+        <HeroTrustStrip />
       </motion.div>
       <motion.div
         initial={{ opacity: 0 }}
