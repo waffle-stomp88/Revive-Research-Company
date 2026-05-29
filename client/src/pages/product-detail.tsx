@@ -1073,7 +1073,7 @@ export default function ProductDetail() {
 
 
 
-            <div className="grid grid-cols-2 gap-3 mb-2 items-end" data-testid="box-dosage">
+            <div className="grid grid-cols-2 gap-3 mb-2" data-testid="box-dosage">
               {/* Dosage box */}
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
@@ -1128,25 +1128,9 @@ export default function ProductDetail() {
               )}
 
               {/* Quantity box — stepper for single-vial, read-only count for packs */}
-              <div className="flex flex-col">
-                {!isOutOfStock && (
-                  <div className="mb-1">
-                    {displayStockAmount > 0 && displayStockAmount <= 10 ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-medium">
-                        <AlertTriangle className="h-3 w-3" />
-                        Only {displayStockAmount} left
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[11px] font-medium">
-                        <CheckCircle className="h-3 w-3" />
-                        {displayStockAmount} in stock
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
+              <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
                 <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
-                <div className="flex items-center min-h-[44px]">
+                <div className="flex items-center gap-2 min-h-[44px]">
                   <button
                     type="button"
                     onClick={() => handleQtyChange(singleVialQty - 1)}
@@ -1171,7 +1155,19 @@ export default function ProductDetail() {
                   >
                     <span className="text-sm leading-none select-none">+</span>
                   </button>
-                </div>
+                  {!isOutOfStock && (
+                    displayStockAmount > 0 && displayStockAmount <= 10 ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[10px] font-medium whitespace-nowrap">
+                        <AlertTriangle className="h-2.5 w-2.5 flex-shrink-0" />
+                        Only {displayStockAmount} left
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[10px] font-medium whitespace-nowrap">
+                        <CheckCircle className="h-2.5 w-2.5 flex-shrink-0" />
+                        {displayStockAmount} in stock
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             </div>
