@@ -147,7 +147,6 @@ function HeroSection() {
         </motion.div>
 
         <motion.div
-          style={{ opacity: 0 }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.9 }}
@@ -171,7 +170,6 @@ function HeroSection() {
         </motion.div>
       </motion.div>
       <motion.div
-        style={{ opacity: 0 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
