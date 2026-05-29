@@ -1155,6 +1155,19 @@ export default function ProductDetail() {
                   >
                     <span className="text-sm leading-none select-none">+</span>
                   </button>
+                  {!isOutOfStock && (
+                    displayStockAmount > 0 && displayStockAmount <= 10 ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-medium whitespace-nowrap">
+                        <AlertTriangle className="h-3 w-3 flex-shrink-0" />
+                        Only {displayStockAmount} left
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[11px] font-medium whitespace-nowrap">
+                        <CheckCircle className="h-3 w-3 flex-shrink-0" />
+                        {displayStockAmount} in stock
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             </div>
