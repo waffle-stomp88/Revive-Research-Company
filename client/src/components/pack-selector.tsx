@@ -1,6 +1,7 @@
 import { Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import type { ReactNode } from "react";
+import { PriceTrendBadge } from "@/components/price-trend-badge";
 import { PACK_TIERS, getPackPerVialPrice } from "@/lib/pack-tiers";
 import type { PackQty } from "@/lib/pack-tiers";
 export type { PackQty } from "@/lib/pack-tiers";
@@ -129,9 +130,10 @@ interface OrderSummaryProps {
   dosage: string;
   stockAmount: number;
   softGated?: boolean;
+  productId?: string;
 }
 
-export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, productName, dosage, stockAmount, softGated = false }: OrderSummaryProps) {
+export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, productName, dosage, stockAmount, softGated = false, productId }: OrderSummaryProps) {
   const tier = PACK_TIERS.find(t => t.qty === selectedQty)!;
   const perVialActual = getPackPerVialPrice(basePrice, tier.discount);
   const perVialRounded = Math.round(perVialActual);
@@ -169,13 +171,16 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
             </Link>
           </div>
         ) : (
-          <span
-            className="font-bold text-white"
-            style={{ fontSize: "22px" }}
-            data-testid="order-summary-total"
-          >
-            ${totalRounded}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className="font-bold text-white"
+              style={{ fontSize: "22px" }}
+              data-testid="order-summary-total"
+            >
+              ${totalRounded}
+            </span>
+            {productId && <PriceTrendBadge productId={productId} variant="compact" />}
+          </div>
         )}
 
         <div className="flex items-center gap-1.5">

@@ -1050,28 +1050,6 @@ export default function ProductDetail() {
               );
             })()}
 
-            <div className="mb-2" data-testid="text-product-price">
-              {(!softGateEnabled || isAuthenticated) && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-display md:text-3xl font-bold text-[#D4FF1F] text-[38px]">
-                    ${Math.round(getBasePrice())}
-                  </span>
-                  <span className="text-xs text-muted-foreground">/ vial</span>
-                  <PriceTrendBadge productId={product.id} />
-                </div>
-              )}
-              {softGateEnabled && !isAuthenticated && (
-                <button
-                  onClick={() => login()}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
-                  data-testid="link-sign-in-pricing"
-                >
-                  Sign in to see pricing
-                </button>
-              )}
-            </div>
-
-
 
             <div className="grid grid-cols-2 gap-3 mb-2" data-testid="box-dosage">
               {/* Dosage box */}
@@ -1209,6 +1187,7 @@ export default function ProductDetail() {
                   dosage={selectedDosage}
                   stockAmount={displayStockAmount}
                   softGated={softGateEnabled && !isAuthenticated}
+                  productId={product.id}
                 />
               </div>
             )}
