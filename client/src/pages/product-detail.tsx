@@ -1172,23 +1172,6 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Mobile-only stock badge — sits at the same line as Pack Size label */}
-            {!isOutOfStock && (
-              <div className="sm:hidden flex items-center mb-1 -mt-1">
-                {displayStockAmount > 0 && displayStockAmount <= 10 ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[11px] font-medium whitespace-nowrap">
-                    <AlertTriangle className="h-3 w-3 flex-shrink-0" />
-                    Only {displayStockAmount} left
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-[11px] font-medium whitespace-nowrap">
-                    <CheckCircle className="h-3 w-3 flex-shrink-0" />
-                    {displayStockAmount} in stock
-                  </span>
-                )}
-              </div>
-            )}
-
             {/* Pack Size Selector */}
             {!isOutOfStock && (
               <div className="mb-2">
@@ -1198,6 +1181,19 @@ export default function ProductDetail() {
                   onSelect={(qty) => { setPackQty(qty); setSingleVialQty(qty); }}
                   softGated={softGateEnabled && !isAuthenticated}
                   disabled={isOutOfStock}
+                  badge={
+                    <span className="sm:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap"
+                      style={displayStockAmount > 0 && displayStockAmount <= 10
+                        ? { background: "rgba(249,115,22,0.15)", border: "1px solid rgba(249,115,22,0.3)", color: "#fb923c" }
+                        : { background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ade80" }
+                      }
+                    >
+                      {displayStockAmount > 0 && displayStockAmount <= 10
+                        ? <><AlertTriangle className="h-3 w-3 flex-shrink-0" />Only {displayStockAmount} left</>
+                        : <><CheckCircle className="h-3 w-3 flex-shrink-0" />{displayStockAmount} in stock</>
+                      }
+                    </span>
+                  }
                 />
               </div>
             )}

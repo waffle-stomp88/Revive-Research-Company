@@ -1,5 +1,6 @@
 import { Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
+import type { ReactNode } from "react";
 import { PACK_TIERS, getPackPerVialPrice } from "@/lib/pack-tiers";
 import type { PackQty } from "@/lib/pack-tiers";
 export type { PackQty } from "@/lib/pack-tiers";
@@ -11,12 +12,16 @@ interface PackSelectorProps {
   onSelect: (qty: PackQty) => void;
   softGated?: boolean;
   disabled?: boolean;
+  badge?: ReactNode;
 }
 
-export function PackSelector({ basePrice, selectedQty, onSelect, softGated = false, disabled = false }: PackSelectorProps) {
+export function PackSelector({ basePrice, selectedQty, onSelect, softGated = false, disabled = false, badge }: PackSelectorProps) {
   return (
     <div data-testid="pack-selector">
-      <p className="font-medium text-muted-foreground uppercase tracking-widest mb-2 text-[12px]">Pack Size</p>
+      <div className="flex items-center gap-2 mb-2">
+        <p className="font-medium text-muted-foreground uppercase tracking-widest text-[12px]">Pack Size</p>
+        {badge}
+      </div>
       <div className="flex flex-col gap-1">
         {PACK_TIERS.map((tier) => {
           const isSelected = selectedQty === tier.qty;
