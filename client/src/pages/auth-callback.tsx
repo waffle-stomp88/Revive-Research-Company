@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
+import { queryClient } from "@/lib/queryClient";
 
 export default function AuthCallback() {
   const [, navigate] = useLocation();
@@ -34,6 +35,11 @@ export default function AuthCallback() {
 
         const returnTo = sessionStorage.getItem("auth_return_to") || "/dashboard";
         sessionStorage.removeItem("auth_return_to");
+
+        // Bust the stale null cache so the destination page always sees
+        // isLoading:true (spinner) instead of isAuthenticated:false (auth gate)
+        // during the brief window before the query re-fetches with the new session.
+        queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
 
         // If user attested RUO during signup, record it now that we have a session
         const attestPending = sessionStorage.getItem("ruo_attest_pending");
