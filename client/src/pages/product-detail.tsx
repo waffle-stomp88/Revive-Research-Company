@@ -1077,7 +1077,7 @@ export default function ProductDetail() {
               {/* Dosage box */}
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
-                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Dosage</Label>
+                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest text-center">Dosage</Label>
                   <Select value={selectedDosage} onValueChange={setSelectedDosage}>
                     <SelectTrigger data-testid="select-dosage" className="min-h-[44px]">
                       <SelectValue placeholder="Select dosage" />
