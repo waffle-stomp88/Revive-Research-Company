@@ -1054,8 +1054,8 @@ export default function ProductDetail() {
             <div className="grid grid-cols-2 gap-3 mb-2" data-testid="box-dosage">
               {/* Dosage box */}
               {product.dosageOptions && product.dosageOptions.length > 0 && (
-                <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
-                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest text-center">Dosage</Label>
+                <div className={`border rounded-lg p-3 bg-white/[0.06] transition-all duration-200 ${selectedDosage ? "border-[#D4FF1F]/40 shadow-[0_0_8px_rgba(212,255,31,0.1)]" : "border-border/50"}`}>
+                  <Label className={`text-[10px] font-medium mb-1.5 block uppercase tracking-widest text-center transition-colors ${selectedDosage ? "text-[#D4FF1F]/60" : "text-muted-foreground"}`}>Dosage</Label>
                   <Select value={selectedDosage} onValueChange={setSelectedDosage}>
                     <SelectTrigger data-testid="select-dosage" className="min-h-[44px]">
                       <SelectValue placeholder="Select dosage" />
@@ -1209,41 +1209,53 @@ export default function ProductDetail() {
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
-                <div className="flex gap-2">
-                  <Button
-                    size="lg"
-                    className="inline-flex items-center justify-center whitespace-nowrap select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border min-h-[44px] rounded-md px-8 flex-1 font-display gap-2 text-black transition-all duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212,255,31,0.4)] hover:shadow-[0_0_40px_rgba(212,255,31,0.75)] text-[18px] font-normal"
-                    onClick={handleBuyNow}
-                    data-testid="button-buy-now"
-                  >
-                    {purchaseType === "subscription" ? (
-                      <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
-                    ) : (
-                      <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
-                    )}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="flex-1 font-display gap-2 border-2 transition-all duration-300 border-[#21d8ff] text-[#21d8ff] hover:bg-[#21d8ff] hover:text-black hover:shadow-[0_0_24px_rgba(33,216,255,0.45)] text-[17px]"
-                    onClick={handleAddToCart}
-                    data-testid="button-add-to-cart"
-                  >
-                    <ShoppingBag className="h-5 w-5" />
-                    Add to Cart — ${effectiveTotal}
-                  </Button>
+                {/* Social proof */}
+                <div className="flex items-center justify-center gap-1.5 py-0.5">
+                  <div className="flex text-[#D4FF1F]">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="h-3 w-3 fill-current" />)}
+                  </div>
+                  <span className="text-[11px] font-semibold text-foreground/90">4.9</span>
+                  <span className="text-border/60 text-[11px]">·</span>
+                  <span className="text-[11px] text-muted-foreground">47 verified researchers</span>
                 </div>
+
+                {/* Buy Now — full-width dominant */}
                 <Button
-                  size="sm"
+                  size="lg"
+                  className="w-full font-display gap-2 text-black transition-all duration-300 bg-[#D4FF1F] border-[#D4FF1F] shadow-[0_0_20px_rgba(212,255,31,0.4)] hover:shadow-[0_0_40px_rgba(212,255,31,0.75)] text-[18px] font-normal min-h-[52px]"
+                  onClick={handleBuyNow}
+                  data-testid="button-buy-now"
+                >
+                  {purchaseType === "subscription" ? (
+                    <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
+                  ) : (
+                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
+                  )}
+                </Button>
+
+                {/* Add to Cart — secondary */}
+                <Button
+                  size="default"
                   variant="outline"
-                  className="inline-flex items-center justify-center whitespace-nowrap font-medium select-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover-elevate active-elevate-2 border [border-color:var(--button-outline)] shadow-xs active:shadow-none min-h-[44px] rounded-md px-3 w-full gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] text-[15px]"
+                  className="w-full font-display gap-2 border transition-all duration-300 border-[#21d8ff]/50 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff] text-[15px] min-h-[40px]"
+                  onClick={handleAddToCart}
+                  data-testid="button-add-to-cart"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Add to Cart
+                </Button>
+
+                {/* Wishlist — text link */}
+                <button
+                  type="button"
+                  className="flex items-center justify-center gap-1.5 text-[12px] text-muted-foreground hover:text-[#ec4899] transition-colors py-1 disabled:opacity-40"
                   onClick={handleToggleWishlist}
                   disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
                   data-testid="button-toggle-wishlist"
                 >
-                  <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
+                  <Heart className={`h-3.5 w-3.5 transition-colors ${isInWishlist ? "fill-current text-[#ec4899]" : ""}`} />
                   {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
-                </Button>
+                </button>
               </div>
               )
             ) : (
@@ -1351,45 +1363,49 @@ export default function ProductDetail() {
               </motion.div>)
             )}
 
-            {/* Batch chip */}
-            <div className="flex items-center justify-center gap-2 flex-wrap mt-3 mb-2.5">
-              {batchesWithCoas.length > 0 && (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 text-[#21d8ff] text-[11px] font-medium hover:bg-[#21d8ff]/20 transition-colors"
-                  data-testid="text-batch-number"
-                  onClick={() => {
-                    setActiveResearchTab("cert");
-                    setTimeout(() => {
-                      const el = document.getElementById("mobile-cert-accordion");
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 50);
-                  }}
-                >
-                  <FlaskConical className="h-3 w-3" />
-                  Batch {batchesWithCoas[0].batchNumber}
-                </button>
-              )}
-            </div>
-
-            {/* Shipping line */}
-            <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mb-3" data-testid="text-shipping-info">
-              <Truck className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
-              <span>Ships from USA</span>
-              <span className="text-border/60">·</span>
-              <span className="text-[#D4FF1F]/75 font-medium">Same Day by 12PM CT</span>
-            </div>
-
-            {/* Trust badge bar */}
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-4 border border-[#21d8ff]/20 rounded-md overflow-hidden bg-[#21d8ff]/[0.04]" data-testid="bar-trust-badges">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+            {/* Unified trust strip */}
+            <div
+              className="flex flex-wrap items-stretch text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-3 mb-4 border border-[#21d8ff]/20 rounded-md bg-[#21d8ff]/[0.04]"
+              data-testid="bar-trust-badges"
+            >
+              <div className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
                 <Shield className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
               </div>
-              <div className="w-px self-stretch bg-[#21d8ff]/20" />
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
+              <div className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
                 <Snowflake className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
-                <span>Cold Chain Shipping</span>
+                <span>Cold Chain</span>
+              </div>
+              {batchesWithCoas.length > 0 && (
+                <>
+                  <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
+                  <button
+                    type="button"
+                    className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2 text-[#21d8ff] hover:bg-[#21d8ff]/10 transition-colors"
+                    data-testid="text-batch-number"
+                    onClick={() => {
+                      setActiveResearchTab("cert");
+                      setTimeout(() => {
+                        const el = document.getElementById("mobile-cert-accordion");
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 50);
+                    }}
+                  >
+                    <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span>Batch {batchesWithCoas[0].batchNumber}</span>
+                  </button>
+                </>
+              )}
+              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
+              <div className="flex flex-1 min-w-[40%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2" data-testid="text-shipping-info">
+                <Truck className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
+                <span>Ships from USA</span>
+              </div>
+              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
+              <div className="flex flex-1 min-w-[40%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
+                <Clock className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
+                <span>Same Day by 12PM CT</span>
               </div>
             </div>
 

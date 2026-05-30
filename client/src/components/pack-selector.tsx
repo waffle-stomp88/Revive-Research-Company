@@ -76,12 +76,22 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                 )}
               </span>
 
-              {/* Label */}
-              <span
-                className="flex-1 font-semibold text-sm"
-                style={{ color: isSelected ? "#ffffff" : "#d1d5db" }}
-              >
-                {tier.label}
+              {/* Label + savings */}
+              <span className="flex-1 flex flex-col gap-0.5">
+                <span
+                  className="font-semibold text-sm"
+                  style={{ color: isSelected ? "#ffffff" : "#d1d5db" }}
+                >
+                  {tier.label}
+                </span>
+                {tier.discount > 0 && !softGated && (
+                  <span
+                    className="text-[10px] font-medium"
+                    style={{ color: isSelected ? "rgba(212,255,31,0.75)" : "rgba(212,255,31,0.45)" }}
+                  >
+                    save ${Math.round(basePrice * tier.discount)}/vial
+                  </span>
+                )}
               </span>
 
               {/* Popular badge — inline, left of price */}
