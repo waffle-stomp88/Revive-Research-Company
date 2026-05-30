@@ -1129,7 +1129,7 @@ export default function ProductDetail() {
 
               {/* Quantity box — stepper for single-vial, read-only count for packs */}
               <div className="border border-border/50 rounded-lg p-3 bg-white/[0.06]">
-                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
+                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest text-center">Quantity</Label>
                 <div className="flex items-center min-h-[44px]">
                   <button
                     type="button"
