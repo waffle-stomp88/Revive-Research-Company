@@ -1194,50 +1194,6 @@ export default function ProductDetail() {
 
 
 
-            {/* Batch chip */}
-            <div className="flex items-center justify-center gap-2 flex-wrap mb-2.5">
-              {batchesWithCoas.length > 0 && (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 text-[#21d8ff] text-[11px] font-medium hover:bg-[#21d8ff]/20 transition-colors"
-                  data-testid="text-batch-number"
-                  onClick={() => {
-                    setActiveResearchTab("cert");
-                    setTimeout(() => {
-                      const el = document.getElementById("mobile-cert-accordion");
-                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 50);
-                  }}
-                >
-                  <FlaskConical className="h-3 w-3" />
-                  Batch {batchesWithCoas[0].batchNumber}
-                </button>
-              )}
-            </div>
-
-            {/* Shipping line */}
-            <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mb-3" data-testid="text-shipping-info">
-              <Truck className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
-              <span>Ships from USA</span>
-              <span className="text-border/60">·</span>
-              <span className="text-[#D4FF1F]/75 font-medium">Same Day by 12PM CT</span>
-            </div>
-
-            {/* Trust badge bar */}
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-4 border border-[#21d8ff]/20 rounded-md overflow-hidden bg-[#21d8ff]/[0.04]" data-testid="bar-trust-badges">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
-                <Shield className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
-                <span>3rd Party Tested</span>
-              </div>
-              <div className="w-px self-stretch bg-[#21d8ff]/20" />
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
-                <Snowflake className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
-                <span>Cold Chain Shipping</span>
-              </div>
-            </div>
-
-            <Separator className="mb-4" />
-
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
               softGateEnabled && !isAuthenticated ? (
@@ -1394,6 +1350,48 @@ export default function ProductDetail() {
                 </div>
               </motion.div>)
             )}
+
+            {/* Batch chip */}
+            <div className="flex items-center justify-center gap-2 flex-wrap mt-3 mb-2.5">
+              {batchesWithCoas.length > 0 && (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 text-[#21d8ff] text-[11px] font-medium hover:bg-[#21d8ff]/20 transition-colors"
+                  data-testid="text-batch-number"
+                  onClick={() => {
+                    setActiveResearchTab("cert");
+                    setTimeout(() => {
+                      const el = document.getElementById("mobile-cert-accordion");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 50);
+                  }}
+                >
+                  <FlaskConical className="h-3 w-3" />
+                  Batch {batchesWithCoas[0].batchNumber}
+                </button>
+              )}
+            </div>
+
+            {/* Shipping line */}
+            <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mb-3" data-testid="text-shipping-info">
+              <Truck className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
+              <span>Ships from USA</span>
+              <span className="text-border/60">·</span>
+              <span className="text-[#D4FF1F]/75 font-medium">Same Day by 12PM CT</span>
+            </div>
+
+            {/* Trust badge bar */}
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-4 border border-[#21d8ff]/20 rounded-md overflow-hidden bg-[#21d8ff]/[0.04]" data-testid="bar-trust-badges">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+                <Shield className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
+                <span>3rd Party Tested</span>
+              </div>
+              <div className="w-px self-stretch bg-[#21d8ff]/20" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-3">
+                <Snowflake className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
+                <span>Cold Chain Shipping</span>
+              </div>
+            </div>
 
             {/* Mobile-only compact RUO notice — always below the button/OOS section */}
             <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mt-2" data-testid="card-ruo-mobile">
