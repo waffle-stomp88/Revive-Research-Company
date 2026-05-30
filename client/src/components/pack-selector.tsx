@@ -18,9 +18,9 @@ interface PackSelectorProps {
 export function PackSelector({ basePrice, selectedQty, onSelect, softGated = false, disabled = false, badge }: PackSelectorProps) {
   return (
     <div data-testid="pack-selector">
-      <div className="flex items-center gap-2 mb-2">
-        <p className="font-medium text-muted-foreground uppercase tracking-widest text-[12px]">Pack Size</p>
-        {badge}
+      <div className="grid grid-cols-2 gap-3 mb-2 sm:block">
+        <p className="font-medium text-muted-foreground uppercase tracking-widest text-[12px] self-center">Pack Size</p>
+        {badge && <div className="flex justify-center items-center">{badge}</div>}
       </div>
       <div className="flex flex-col gap-1">
         {PACK_TIERS.map((tier) => {
