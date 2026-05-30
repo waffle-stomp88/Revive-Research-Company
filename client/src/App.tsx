@@ -89,6 +89,16 @@ import SystemHub from "@/pages/systems/system-hub";
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
+function DeferredChatBot() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(true), 3500);
+    return () => clearTimeout(t);
+  }, []);
+  if (!show) return null;
+  return <ChatBot />;
+}
+
 function ScrollManager() {
   const [location] = useLocation();
   const isPopState = useRef(false);
@@ -351,7 +361,7 @@ function AppShell() {
       <MobileStickyEmailBar />
       <MobileBottomNav />
       <Suspense fallback={null}>
-        <ChatBot />
+        <DeferredChatBot />
         <BackToTopButton />
       </Suspense>
       <Toaster />

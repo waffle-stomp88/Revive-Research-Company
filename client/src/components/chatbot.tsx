@@ -266,9 +266,9 @@ export function ChatBot() {
       </AnimatePresence>
 
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1, type: "spring", stiffness: 200 }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
         className="fixed bottom-44 md:bottom-4 right-3 md:right-6 z-50"
         data-testid="chatbot-toggle-wrapper"
       >
