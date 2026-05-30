@@ -1061,7 +1061,7 @@ function ProductsComponent() {
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
                                   {SOFT_GATE_ENABLED && !isAuthenticated ? (
-                                    <span className="flex items-center gap-1.5 text-[13px] text-muted-foreground font-medium">
+                                    <span className="flex items-center gap-1.5 text-muted-foreground font-medium text-[15px]">
                                       <Lock className="w-3 h-3 shrink-0" />
                                       Sign in to see pricing
                                     </span>
