@@ -44,8 +44,7 @@ function HeroTrustStrip() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.9 }}
       className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
       data-testid="div-hero-trust-strip"
@@ -71,7 +70,7 @@ function HeroTrustStrip() {
 function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 800], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const opacity = useTransform(scrollY, [100, 600], [1, 0]);
   const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
 

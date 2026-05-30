@@ -106,10 +106,10 @@ export function ChatBot() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="fixed bottom-24 md:bottom-24 right-3 md:right-6 z-50 w-[92%] sm:w-[380px] md:w-[400px] max-w-[400px]"
           >
             <Card 
@@ -274,10 +274,11 @@ export function ChatBot() {
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="h-14 w-14 rounded-full shadow-lg transition-all duration-300"
-          style={isOpen ? undefined : { 
-            backgroundColor: CYAN,
-            boxShadow: `0 0 20px ${CYAN}80`
+          className="h-14 w-14 rounded-full shadow-lg"
+          style={{ 
+            backgroundColor: isOpen ? undefined : CYAN,
+            boxShadow: isOpen ? undefined : `0 0 20px ${CYAN}80`,
+            transition: "background-color 0.2s ease, box-shadow 0.2s ease"
           }}
           data-testid="button-toggle-chat"
         >
