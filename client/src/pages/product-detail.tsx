@@ -1988,44 +1988,6 @@ export default function ProductDetail() {
                       </Link>
                     </div>
 
-                    {/* Purity timeline sparkline */}
-                    {(() => {
-                      const parsePurity = (p: string) => parseFloat((p || "").replace(/[^0-9.]/g, ""));
-                      const parseTestDate = (d: string) => { const dt = new Date(d || ""); return isNaN(dt.getTime()) ? null : dt; };
-                      const timelineData = productCoas
-                        .map(coa => ({ date: parseTestDate(coa.testDate || ""), purity: parsePurity(coa.purity || "") }))
-                        .filter((d): d is { date: Date; purity: number } => d.date !== null && !isNaN(d.purity) && d.purity > 0)
-                        .sort((a, b) => a.date.getTime() - b.date.getTime());
-                      if (timelineData.length < 2) return null;
-                      const minPurity = Math.min(...timelineData.map(d => d.purity));
-                      const maxPurity = Math.max(...timelineData.map(d => d.purity));
-                      const yMin = Math.min(minPurity - 1, 95);
-                      const yMax = Math.max(maxPurity + 0.5, 100);
-                      const yRange = yMax - yMin;
-                      const W = 300, H = 48, padX = 10, padY = 6;
-                      const toX = (i: number) => padX + (i / (timelineData.length - 1)) * (W - padX * 2);
-                      const toY = (p: number) => H - padY - ((p - yMin) / yRange) * (H - padY * 2);
-                      const points = timelineData.map((d, i) => `${toX(i)},${toY(d.purity)}`).join(" ");
-                      const last = timelineData[timelineData.length - 1];
-                      const lastX = toX(timelineData.length - 1);
-                      const lastY = toY(last.purity);
-                      return (
-                        <div className="mb-6 p-4 rounded-lg border border-[#9d4edd]/20 bg-[#9d4edd]/5" data-testid="chart-purity-timeline">
-                          <p className="text-xs text-muted-foreground mb-2 font-medium">Purity over time</p>
-                          <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 48 }}>
-                            <polyline points={points} fill="none" stroke="#9d4edd" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-                            <circle cx={lastX} cy={lastY} r="4" fill="#9d4edd" />
-                            <text x={lastX + 6} y={lastY + 4} fontSize="9" fill="#9d4edd" fontFamily="monospace">
-                              {last.purity.toFixed(1)}%
-                            </text>
-                          </svg>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Consistent purity across {timelineData.length} batches
-                          </p>
-                        </div>
-                      );
-                    })()}
-
                     {/* Most recent batch — REVIVE lab results card */}
                     {(() => {
                       const latestCoa = productCoas[0];
