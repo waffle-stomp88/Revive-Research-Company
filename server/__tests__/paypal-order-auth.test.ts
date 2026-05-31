@@ -476,3 +476,115 @@ describe('POST /api/orders/paypal — BAC water promo preserved for first-time b
     expect(orderArg.fulfillmentNotes).toContain('BPC-157');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 4 — BAC water quantity cap: only 1 unit free for first-time buyers
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — BAC water quantity cap (multi-unit, first-time buyer)', () => {
+  // BAC water catalogue price used across this suite.
+  const BAC_WATER_CATALOGUE_PRICE = 20;
+
+  beforeEach(() => {
+    setTestSession('user-first-time-buyer-multiunit');
+
+    // First-time buyer: zero prior orders
+    mockGetOrdersByUserId.mockResolvedValue([]);
+
+    // Product catalogue includes BAC water
+    mockGetAllProducts.mockResolvedValue([
+      {
+        id: BAC_WATER_ID,
+        slug: 'bacteriostatic-water',
+        name: 'Bacteriostatic Water',
+      },
+    ]);
+
+    // getProductWithDosageStock is called for the paid BAC water unit (price > 0
+    // after sanitization). Return a valid catalogue entry so the server can
+    // verify the per-unit price and compute a correct server-side subtotal.
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BAC_WATER_ID,
+      name: 'Bacteriostatic Water',
+      price: String(BAC_WATER_CATALOGUE_PRICE),
+      dosageStocks: [
+        { dosage: '3ml', price: String(BAC_WATER_CATALOGUE_PRICE), stock: 100 },
+      ],
+    });
+
+    // 1 paid BAC water unit ($20 subtotal) + flat-rate shipping ($20) = $40 total.
+    // The free unit contributes $0 and is excluded from the server subtotal.
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 40,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('returns 201 when a first-time buyer orders 2 units of 3ml BAC water', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          // Buyer legitimately wants 2 vials; the server caps the promo at 1 free.
+          quantity: 2,
+          price: String(BAC_WATER_CATALOGUE_PRICE),
+        },
+      ],
+      // Client submits the pre-promo total; server re-verifies independently.
+      subtotal: String(BAC_WATER_CATALOGUE_PRICE),
+      shipping: '20',
+      tax: '0',
+      total: '40',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toBe(201);
+  });
+
+  it('records exactly 1 free unit and 1 catalogue-priced unit in fulfillmentNotes', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 2,
+          price: String(BAC_WATER_CATALOGUE_PRICE),
+        },
+      ],
+      subtotal: String(BAC_WATER_CATALOGUE_PRICE),
+      shipping: '20',
+      tax: '0',
+      total: '40',
+    });
+
+    await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.fulfillmentNotes).toBeDefined();
+
+    // The free unit must appear as qty 1 at $0.00 — the first-order promo cap.
+    expect(orderArg.fulfillmentNotes).toContain('Bacteriostatic Water (3ml) x1 @ $0.00');
+
+    // The paid unit must appear as qty 1 at the catalogue price — proving the
+    // cap split the original qty-2 line into exactly two separate line items
+    // and did NOT grant a second free vial.
+    expect(orderArg.fulfillmentNotes).toContain(
+      `Bacteriostatic Water (3ml) x1 @ $${BAC_WATER_CATALOGUE_PRICE}`
+    );
+  });
+});
