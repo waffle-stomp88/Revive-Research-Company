@@ -41,6 +41,14 @@ The platform is built with a full-stack TypeScript architecture.
 - **Research Phase System**: Tracks user progression and awards titles based on activity thresholds.
 - **Dashboard Interface**: Tabbed interface (`/dashboard`) with sections for General, Orders (subscriptions, history, wishlist), and Settings.
 
+## Testing Setup
+
+End-to-end tests use Playwright with a bundled Chromium browser. The `postinstall` npm lifecycle hook runs `npx playwright install chromium` automatically whenever dependencies are installed or upgraded, so the browser stays in sync with the installed Playwright version. After cloning the repo for the first time (or if you skip `npm install`), run this manually:
+
+```
+npx playwright install chromium
+```
+
 ## External Dependencies
 
 - **Database**: Neon Database (PostgreSQL)
