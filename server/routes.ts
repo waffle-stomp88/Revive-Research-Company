@@ -1289,18 +1289,21 @@ export async function registerRoutes(
       // This prevents underpayment attacks where a low-value PayPal order is
       // presented alongside a high-value cart.
 
+      // Require an authenticated session before processing order creation.
+      // Checkout is behind a ProtectedRoute on the client, so legitimate users
+      // always have a session here. Unauthenticated POSTs (e.g. direct API
+      // abuse) are rejected with 401 to prevent the BAC water promo from being
+      // silently applied to unknown / repeat buyers.
+      const sessionUserId = (req.session as any)?.userId;
+      if (!sessionUserId) {
+        return res.status(401).json({ error: "Authentication required to create an order" });
+      }
+
       // Determine if this session belongs to a first-time buyer (0 prior orders).
       // First-time buyers get a free 3ml BAC water — its price is $0 on the server side.
-      // If the session has expired or the user is not authenticated, we treat them as a
-      // first-time buyer (isUserFirstOrder = true) so the free item is never silently
-      // stripped for a legitimate first order due to a session expiry between page load
-      // and payment submission.
-      const sessionUserId = (req.session as any)?.userId;
-      let isUserFirstOrder = true; // default: treat unknown session as first-time buyer
-      if (sessionUserId) {
-        const priorOrders = await storage.getOrdersByUserId(sessionUserId);
-        isUserFirstOrder = priorOrders.length === 0;
-      }
+      // Default to false (safe) so a session lookup failure never grants the promo.
+      const priorOrders = await storage.getOrdersByUserId(sessionUserId);
+      const isUserFirstOrder = priorOrders.length === 0;
 
       // Always identify the BAC water product so we can enforce promo rules
       // regardless of first-order status.
