@@ -1,7 +1,6 @@
 import { Lock, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
 import type { ReactNode } from "react";
-import { PriceTrendBadge } from "@/components/price-trend-badge";
 import { PACK_TIERS, getPackPerVialPrice } from "@/lib/pack-tiers";
 import type { PackQty } from "@/lib/pack-tiers";
 export type { PackQty } from "@/lib/pack-tiers";
@@ -172,35 +171,33 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         )}
       </div>
       <div className="my-2 border-t border-[#1e1e2a]" />
-      <div className="flex items-baseline gap-2.5 flex-wrap">
-        {softGated ? (
-          <div className="flex items-center gap-1.5">
-            <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
-            <Link href="/login" className="text-sm font-medium" style={{ color: "#21d8ff" }}>
-              Sign in
-            </Link>
-          </div>
-        ) : (
-          <>
+      {softGated ? (
+        <div className="flex items-center gap-1.5">
+          <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
+          <Link href="/login" className="text-sm font-medium" style={{ color: "#21d8ff" }}>
+            Sign in
+          </Link>
+        </div>
+      ) : (
+        <>
+          <span
+            className="font-black tracking-tight block"
+            style={{ fontSize: "34px", color: "#D4FF1F", lineHeight: 1 }}
+            data-testid="order-summary-total"
+          >
+            ${totalRounded}
+          </span>
+          {showSavings && (
             <span
-              className="font-black tracking-tight"
-              style={{ fontSize: "34px", color: "#D4FF1F", lineHeight: 1 }}
-              data-testid="order-summary-total"
+              className="block mt-1"
+              style={{ fontSize: "11px", color: "#4b5563", letterSpacing: "0.01em" }}
+              data-testid="order-summary-per-vial"
             >
-              ${totalRounded}
+              ${perVialRounded} / vial&nbsp;&nbsp;·&nbsp;&nbsp;${singlePerVialRounded} single-pack
             </span>
-            {productId && <PriceTrendBadge productId={productId} variant="compact" />}
-            {showSavings && (
-              <span
-                className="text-[11px] text-gray-500 font-normal"
-                data-testid="order-summary-comparison"
-              >
-                vs ${singlePerVialRounded * effectiveQty} at single-vial pricing
-              </span>
-            )}
-          </>
-        )}
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
