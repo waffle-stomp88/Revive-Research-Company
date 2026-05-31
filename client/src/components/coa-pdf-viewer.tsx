@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+// Vite bundles this as a classic IIFE worker (not ESM) in production,
+// which works in Samsung Browser and every other browser.
+import PdfWorkerConstructor from "pdfjs-dist/build/pdf.worker.min.mjs?worker";
+
+let _sharedPdfWorker: Worker | null = null;
+function getSharedPdfWorker(): Worker {
+  if (!_sharedPdfWorker) _sharedPdfWorker = new PdfWorkerConstructor();
+  return _sharedPdfWorker;
+}
 
 interface CoaPdfViewerProps {
   pdfUrl: string;
@@ -82,14 +91,12 @@ export function CoaPdfViewer({
       setDataUrl(null);
       try {
         const pdfjsLib = await import("pdfjs-dist");
-        // Worker is served from client/public/pdf.worker.min.mjs — a static
-        // copy of node_modules/pdfjs-dist/build/pdf.worker.min.mjs.  Vite
-        // passes public-folder files through as-is (no module transformation),
-        // which is required so the Web Worker runs without /@vite/client
-        // injections breaking its global scope.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+        // Use a Vite-bundled worker (classic IIFE format) so it works in
+        // Samsung Browser, Firefox, and every other browser — no ESM worker
+        // support required.
+        pdfjsLib.GlobalWorkerOptions.workerPort = getSharedPdfWorker() as any;
 
-        const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
+        const pdf = await pdfjsLib.getDocument({ url: pdfUrl, useSystemFonts: true }).promise;
         if (cancelled) return;
         const page = await pdf.getPage(1);
         if (cancelled) return;
