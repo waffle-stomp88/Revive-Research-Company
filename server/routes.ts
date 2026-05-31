@@ -1861,6 +1861,7 @@ export async function registerRoutes(
   });
 
   // Cart persistence — save/update cart for authenticated user
+  const CART_MAX_QTY = 20;
   app.put("/api/cart", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -1871,7 +1872,17 @@ export async function registerRoutes(
       if (items.length > 100) {
         return res.status(400).json({ error: "Cart cannot exceed 100 items" });
       }
-      await storage.saveUserCart(userId, items);
+      for (const item of items) {
+        const qty = Number(item.quantity);
+        if (!Number.isFinite(qty) || qty <= 0) {
+          return res.status(400).json({ error: "Each item quantity must be a positive number" });
+        }
+      }
+      const clamped = items.map((item: any) => ({
+        ...item,
+        quantity: Math.min(Number(item.quantity), CART_MAX_QTY),
+      }));
+      await storage.saveUserCart(userId, clamped);
       res.json({ ok: true });
     } catch (error) {
       console.error("Error saving user cart:", error);
