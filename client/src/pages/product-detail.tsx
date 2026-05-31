@@ -2056,7 +2056,7 @@ export default function ProductDetail() {
                           {/* ── Top header: lab + method split ── */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
                             <div className="px-5 py-4 text-center">
-                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">Testing Laboratory</p>
+                              <p className="font-bold tracking-widest uppercase text-[#D4FF1F] mb-1 text-[11px]">Testing Laboratory</p>
                               <p className="font-semibold text-foreground text-[20px]">{latestCoa.labName}</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Independent third-party verification</p>
                               <div className="flex flex-col items-center gap-1 mt-2">
@@ -2090,7 +2090,7 @@ export default function ProductDetail() {
                               </div>
                             </div>
                             <div className="px-5 py-4 text-center">
-                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#21d8ff] mb-1">Method</p>
+                              <p className="font-bold tracking-widest uppercase text-[#21d8ff] mb-1 text-[11px]">Method</p>
                               <p className="font-semibold text-foreground text-[20px]">HPLC-UV / Mass Spectrometry</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Identity confirmed via observed [M+nH]ⁿ⁺ values</p>
                             </div>
@@ -2098,7 +2098,7 @@ export default function ProductDetail() {
                           {/* ── Purity hero ── */}
                           <div className="px-5 py-5 border-b border-white/10">
                             <div className="text-center">
-                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">HPLC Purity</p>
+                              <p className="font-bold tracking-widest uppercase text-[#D4FF1F] mb-1 text-[12px]">HPLC Purity</p>
                               <p className="font-display text-5xl md:text-6xl font-bold text-white leading-none tracking-tight">
                                 {purityValue}
                               </p>
