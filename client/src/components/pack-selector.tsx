@@ -153,7 +153,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
     >
       <div className="flex items-center justify-between gap-3">
         {softGated ? (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" data-testid="text-product-price">
             <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
             <Link
               href="/login"
@@ -168,7 +168,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
           <span
             className="font-black tracking-tight flex-shrink-0"
             style={{ fontSize: "34px", color: "#ffffff", lineHeight: 1 }}
-            data-testid="order-summary-total"
+            data-testid="text-product-price"
           >
             ${totalRounded}
           </span>

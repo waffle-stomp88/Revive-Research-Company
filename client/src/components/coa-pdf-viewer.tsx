@@ -101,7 +101,7 @@ export function CoaPdfViewer({
         const hiRaw = document.createElement("canvas");
         hiRaw.width = Math.round(hiViewport.width);
         hiRaw.height = Math.round(hiViewport.height);
-        await page.render({ canvasContext: hiRaw.getContext("2d")!, viewport: hiViewport }).promise;
+        await page.render({ canvasContext: hiRaw.getContext("2d")!, viewport: hiViewport } as any).promise;
         if (cancelled) return;
         const hiCropped = cropWhitespace(hiRaw);
         setDataUrl(hiCropped.toDataURL("image/jpeg", 0.93));
@@ -112,7 +112,7 @@ export function CoaPdfViewer({
         const thumbRaw = document.createElement("canvas");
         thumbRaw.width = Math.round(thumbViewport.width);
         thumbRaw.height = Math.round(thumbViewport.height);
-        await page.render({ canvasContext: thumbRaw.getContext("2d")!, viewport: thumbViewport }).promise;
+        await page.render({ canvasContext: thumbRaw.getContext("2d")!, viewport: thumbViewport } as any).promise;
         if (cancelled) return;
         const thumbCropped = cropWhitespace(thumbRaw);
 

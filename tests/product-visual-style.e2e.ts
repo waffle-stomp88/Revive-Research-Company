@@ -99,6 +99,11 @@ for (const product of PRODUCTS) {
     });
 
     test("mechanism descriptor appears above the product price", async ({ page }) => {
+      // Skip when out of stock — the price element (OrderSummary) is intentionally hidden.
+      if (await isOutOfStock(page)) {
+        test.skip(true, `${product.name} is currently out of stock — price element is hidden`);
+        return;
+      }
       const descriptor = page.locator('[data-testid="text-mechanism-descriptor"]');
       // When soft gate is active this locator resolves to the price-gate placeholder
       // element, which carries the same testid and is in the correct position.
