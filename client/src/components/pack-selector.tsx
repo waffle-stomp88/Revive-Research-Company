@@ -37,20 +37,14 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
               data-testid={`pack-option-${tier.qty}`}
               className="relative w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-300 text-left overflow-hidden"
               style={{
-                background: isSelected && tier.popular
-                  ? "radial-gradient(ellipse at 50% 120%, rgba(212,255,31,0.18) 0%, rgba(26,26,34,1) 70%)"
-                  : isSelected
-                    ? "#1a1a22"
-                    : tier.popular
-                      ? "rgba(200,255,0,0.04)"
-                      : "#111118",
-                border: isSelected && tier.popular
+                background: isSelected
+                  ? (tier.popular
+                    ? "radial-gradient(ellipse at 50% 120%, rgba(212,255,31,0.18) 0%, rgba(26,26,34,1) 70%)"
+                    : "#1a1a22")
+                  : "#111118",
+                border: isSelected
                   ? "1.5px solid #D4FF1F"
-                  : isSelected
-                    ? "1.5px solid #D4FF1F"
-                    : tier.popular
-                      ? "1.5px solid #2a3a1a"
-                      : "1.5px solid #1e1e2a",
+                  : "1.5px solid #1e1e2a",
                 boxShadow: isSelected && tier.popular
                   ? "0 0 0 1px rgba(212,255,31,0.25), 0 0 22px rgba(212,255,31,0.28), inset 0 1px 0 rgba(212,255,31,0.15)"
                   : isSelected
@@ -187,15 +181,6 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
           >
             ${totalRounded}
           </span>
-          {showSavings && (
-            <span
-              className="block mt-1"
-              style={{ fontSize: "11px", color: "#4b5563", letterSpacing: "0.01em" }}
-              data-testid="order-summary-per-vial"
-            >
-              ${perVialRounded} / vial&nbsp;&nbsp;·&nbsp;&nbsp;${singlePerVialRounded} single-pack
-            </span>
-          )}
         </>
       )}
     </div>
