@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import type { Express } from "express";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
+import { applyBacWaterPromo } from "./lib/bac-water-pricing";
 import { calculateTax } from "@shared/taxRates";
 import express from "express";
 import { createServer, type Server } from "http";
@@ -1289,19 +1290,15 @@ export async function registerRoutes(
       // This prevents underpayment attacks where a low-value PayPal order is
       // presented alongside a high-value cart.
 
-      // Require an authenticated session before processing order creation.
-      // Checkout is behind a ProtectedRoute on the client, so legitimate users
-      // always have a session here. Unauthenticated POSTs (e.g. direct API
-      // abuse) are rejected with 401 to prevent the BAC water promo from being
-      // silently applied to unknown / repeat buyers.
+      // Checkout is behind a ProtectedRoute on the client, so every legitimate
+      // caller is authenticated. Reject unauthenticated POSTs (direct API abuse)
+      // before running any further logic or spending PayPal API budget.
       const sessionUserId = (req.session as any)?.userId;
       if (!sessionUserId) {
         return res.status(401).json({ error: "Authentication required to create an order" });
       }
 
-      // Determine if this session belongs to a first-time buyer (0 prior orders).
-      // First-time buyers get a free 3ml BAC water — its price is $0 on the server side.
-      // Default to false (safe) so a session lookup failure never grants the promo.
+      // First-time buyer check: 0 prior orders → free 3ml BAC water promo.
       const priorOrders = await storage.getOrdersByUserId(sessionUserId);
       const isUserFirstOrder = priorOrders.length === 0;
 
@@ -1314,36 +1311,12 @@ export async function registerRoutes(
       const bacWaterProductId = bacWaterProduct?.id ?? null;
 
       // Build a server-authoritative sanitized items list.
-      // The free promo is ONLY valid for the 3ml BAC water dosage on a user's first order.
-      //   - First-order user + BAC water item @ dosage '3ml' → price forced to $0
-      //   - First-order user + BAC water item @ other dosage → full price (no promo)
-      //   - Non-first-order user + $0-price BAC water item → stripped (promo abuse blocked)
-      //   - Non-first-order user + full-price BAC water item → kept (legitimate purchase)
-      //   - All other items → kept as-is
-      const sanitizedItems: any[] = [];
-      for (const rawItem of items) {
-        if (bacWaterProductId && rawItem.productId === bacWaterProductId) {
-          if (isUserFirstOrder && rawItem.dosage === '3ml') {
-            const qty = Math.max(1, Number(rawItem.quantity) || 1);
-            // Exactly ONE unit is free — force qty=1 at $0 (server-authoritative)
-            console.log(`[PayPal Order] Free 3ml BAC water x1 (first order) for user ${sessionUserId}`);
-            sanitizedItems.push({ ...rawItem, quantity: 1, price: "0.00" });
-            if (qty > 1) {
-              // Any additional units are priced normally — prevents quantity-gaming
-              console.warn(`[PayPal Order] BAC water qty ${qty} on first order; 1 free, ${qty - 1} at normal price`);
-              sanitizedItems.push({ ...rawItem, quantity: qty - 1 });
-            }
-          } else if (!isUserFirstOrder && parseFloat(rawItem.price || '0') <= 0) {
-            // Non-first-order user attempting free BAC water — strip entirely
-            console.warn(`[PayPal Order] Stripped $0 BAC water promo attempt from non-first-order user ${sessionUserId}`);
-          } else {
-            // Any other BAC water scenario (non-3ml on first order, or full-price on repeat order) → full price
-            sanitizedItems.push(rawItem);
-          }
-        } else {
-          sanitizedItems.push(rawItem);
-        }
+      // Pricing rules are centralised in server/lib/bac-water-pricing.ts so
+      // they can be unit-tested independently of the full route pipeline.
+      if (isUserFirstOrder) {
+        console.log(`[PayPal Order] First-order buyer (user=${sessionUserId ?? "guest"}) — 3ml BAC water will be free`);
       }
+      const sanitizedItems = applyBacWaterPromo(items, bacWaterProductId, isUserFirstOrder);
 
       // Pack-tier discount table — MUST stay in sync with PACK_TIERS in
       // client/src/lib/pack-tiers.ts. If you change volume pricing percentages
@@ -1355,7 +1328,7 @@ export async function registerRoutes(
         const qty = Number(item.quantity);
 
         // Free 3ml BAC water (first order) — contributes $0 to server subtotal
-        if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage === '3ml' && parseFloat(item.price || '0') === 0) {
+        if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage === '3ml' && parseFloat(String(item.price ?? '0')) === 0) {
           continue;
         }
 
