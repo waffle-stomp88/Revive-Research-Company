@@ -3,40 +3,6 @@ import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-reac
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-// /api/pdfjs-worker is an Express route that reads the worker directly from
-// node_modules WITHOUT going through Vite's dev server. This is essential:
-// any URL served through Vite gets /@vite/client injected for HMR, and that
-// relative specifier is unresolvable inside a Web Worker context.
-//
-// We then wrap the raw JS in a Blob URL so pdfjs-dist's internal dynamic
-// import() can't have ?import appended to it by Vite's module graph.
-//
-// The Promise is cached at module level so the ~1.5 MB worker is only
-// fetched once per page load regardless of how many viewers mount/unmount.
-let _workerBlobUrlPromise: Promise<string> | null = null;
-function getWorkerBlobUrl(): Promise<string> {
-  if (!_workerBlobUrlPromise) {
-    _workerBlobUrlPromise = fetch("/api/pdfjs-worker", { cache: "no-store" })
-      .then(r => {
-        if (!r.ok) throw new Error(`Worker fetch failed: ${r.status}`);
-        // Guard: if Vite's catch-all returned HTML instead of JS, fail fast
-        // so the retry logic can try again on the next render
-        const ct = r.headers.get("content-type") ?? "";
-        if (ct.includes("text/html")) throw new Error("Worker route returned HTML — browser cache may be stale");
-        return r.text();
-      })
-      .then(code => URL.createObjectURL(
-        new Blob([code], { type: "application/javascript" })
-      ))
-      .catch(err => {
-        // Reset so the next render can retry after a transient startup race
-        _workerBlobUrlPromise = null;
-        throw err;
-      });
-  }
-  return _workerBlobUrlPromise;
-}
-
 interface CoaPdfViewerProps {
   pdfUrl: string;
   batchNumber: string;
@@ -115,44 +81,13 @@ export function CoaPdfViewer({
       setStatus("loading");
       setDataUrl(null);
       try {
-        // Apply main-thread polyfills (mirrors the worker polyfills above).
-        if (typeof URL.parse === "undefined") {
-          (URL as unknown as Record<string, unknown>).parse = (u: string, b?: string) => {
-            try { return new URL(u, b); } catch { return null; }
-          };
-        }
-        if (typeof (Promise as unknown as Record<string, unknown>).try === "undefined") {
-          (Promise as unknown as Record<string, unknown>).try = function<T>(fn: (...args: unknown[]) => T | PromiseLike<T>, ...args: unknown[]) {
-            return new Promise<T>((res, rej) => { try { res(fn(...args)); } catch (e) { rej(e); } });
-          };
-        }
-        if (typeof Promise.withResolvers === "undefined") {
-          (Promise as unknown as Record<string, unknown>).withResolvers = function<T>() {
-            let resolve!: (v: T | PromiseLike<T>) => void, reject!: (r: unknown) => void;
-            const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
-            return { promise, resolve, reject };
-          };
-        }
-        if (typeof (Uint8Array.prototype as unknown as Record<string, unknown>).toHex === "undefined") {
-          (Uint8Array.prototype as unknown as Record<string, unknown>).toHex = function(this: Uint8Array) {
-            return Array.from(this).map(b => b.toString(16).padStart(2, "0")).join("");
-          };
-        }
-        if (typeof (Map.prototype as unknown as Record<string, unknown>).getOrInsertComputed === "undefined") {
-          (Map.prototype as unknown as Record<string, unknown>).getOrInsertComputed = function<K, V>(this: Map<K, V>, key: K, fn: (k: K) => V): V {
-            if (this.has(key)) return this.get(key) as V;
-            const val = fn(key);
-            this.set(key, val);
-            return val;
-          };
-        }
-
-        const [pdfjsLib, workerBlobUrl] = await Promise.all([
-          import("pdfjs-dist"),
-          getWorkerBlobUrl(),
-        ]);
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerBlobUrl;
+        const pdfjsLib = await import("pdfjs-dist");
+        // Worker is served from client/public/pdf.worker.min.mjs — a static
+        // copy of node_modules/pdfjs-dist/build/pdf.worker.min.mjs.  Vite
+        // passes public-folder files through as-is (no module transformation),
+        // which is required so the Web Worker runs without /@vite/client
+        // injections breaking its global scope.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
         if (cancelled) return;

@@ -15,16 +15,17 @@ import path from "path";
  *  - The error state ("Unable to preview document") is NOT shown
  *  - Clicking the thumbnail opens the lightbox with the full-res JPEG data URL
  *
- * Polyfill context:
- *   pdfjs-dist ≥ 5 requires several APIs added after Chrome 125 (the version
- *   Playwright ships).  The COA viewer applies main-thread polyfills before
- *   importing pdfjs, and the /api/pdfjs-worker Express route prepends the same
- *   polyfills to the worker script before serving it.  Polyfilled APIs:
- *     - URL.parse                          (Chrome 126+)
- *     - Promise.try(fn, ...args)           (Chrome 127+)
- *     - Promise.withResolvers()            (polyfilled defensively)
- *     - Uint8Array.prototype.toHex()       (Chrome 132+)
- *     - Map.prototype.getOrInsertComputed() (Chrome 136+)
+ * Worker context:
+ *   pdfjs-dist ≥ 5 requires several APIs that were added in Chrome 126–136.
+ *   As of mid-2026 all supported browsers include these APIs natively, so the
+ *   production code has no polyfills.  The worker is served as a static file
+ *   from client/public/pdf.worker.min.mjs (GlobalWorkerOptions.workerSrc =
+ *   "/pdf.worker.min.mjs").
+ *
+ *   The test browser in CI is the NixOS system Chromium (≈ 125), which predates
+ *   these APIs.  fakePolyfillWorker() intercepts the worker script request and
+ *   prepends the same five guards so the tests can run in that environment
+ *   without touching production code.
  *
  * The COA PDF URL (/objects/uploads/…) is cloud object storage that is not
  * reachable in the local dev environment, so each test intercepts that request
@@ -61,10 +62,58 @@ async function fakePdfStorage(page: import("@playwright/test").Page) {
   );
 }
 
+/**
+ * Shared polyfill guards for the five APIs that Chrome < 136 lacks.
+ * These are no-ops on Chrome 136+ where the APIs exist natively.
+ */
+const COMPAT_POLYFILLS = [
+  "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};}",
+  "if(typeof Promise.try==='undefined'){Promise.try=function(f){var a=Array.prototype.slice.call(arguments,1);return new Promise(function(res,rej){try{res(f.apply(this,a));}catch(e){rej(e);}});};}",
+  "if(typeof Promise.withResolvers==='undefined'){Promise.withResolvers=function(){var res,rej,p=new Promise(function(r,j){res=r;rej=j;});return{promise:p,resolve:res,reject:rej};};}",
+  "if(typeof Uint8Array.prototype.toHex==='undefined'){Uint8Array.prototype.toHex=function(){return Array.from(this).map(function(b){return b.toString(16).padStart(2,'0');}).join('');};}",
+  "if(typeof Map.prototype.getOrInsertComputed==='undefined'){Map.prototype.getOrInsertComputed=function(k,fn){if(this.has(k))return this.get(k);var v=fn(k);this.set(k,v);return v;};}",
+].join("\n");
+
+/**
+ * Inject compatibility guards into the main thread before any page scripts run.
+ * pdfjs calls URL.parse, Promise.try, etc. on the main thread as well as
+ * inside the worker, so both scopes need patching when running under Chrome 125.
+ *
+ * Production code is polyfill-free; these guards only run inside the test
+ * browser (system Chromium ≈ 125).
+ */
+async function injectMainThreadPolyfills(page: import("@playwright/test").Page) {
+  await page.addInitScript(COMPAT_POLYFILLS);
+}
+
+/**
+ * Intercept the pdfjs worker script served from /pdf.worker.min.mjs and
+ * prepend the same compatibility guards for the Worker's global scope.
+ *
+ * Web Workers run in a separate global that does not inherit main-thread
+ * addInitScript patches, so the worker also needs its own injection.
+ */
+async function fakePolyfillWorker(page: import("@playwright/test").Page) {
+  const workerCode = fs.readFileSync(
+    path.resolve("node_modules/pdfjs-dist/build/pdf.worker.min.mjs"),
+    "utf-8"
+  );
+
+  await page.route("**/pdf.worker.min.mjs", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/javascript",
+      body: COMPAT_POLYFILLS + "\n" + workerCode,
+    })
+  );
+}
+
 test.describe("COA PDF viewer — GHK-Cu Certification tab", () => {
   test.beforeEach(async ({ page }) => {
+    await injectMainThreadPolyfills(page);
     await fakeAuthUser(page);
     await fakePdfStorage(page);
+    await fakePolyfillWorker(page);
   });
 
   test("canvas thumbnail renders without error and has non-white pixels", async ({ page }) => {

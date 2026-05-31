@@ -1,68 +1,82 @@
 ---
-name: pdfjs-dist polyfills for Chromium 125
-description: Five browser APIs required by pdfjs-dist ≥5 that are missing in Playwright's Chromium 125; how and where they are polyfilled.
+name: pdfjs-dist polyfills
+description: How pdfjs-dist ≥5 polyfills were handled and the current worker-serving approach (updated mid-2026 — production is now polyfill-free)
 ---
 
-# pdfjs-dist ≥ 5 — Required Polyfills for Chromium 125
+# pdfjs-dist ≥ 5 — Polyfill history and current approach
 
-pdfjs-dist 5.x uses five browser APIs not available in Chrome 125 (the version
-Playwright ships as of early 2026). All five must be polyfilled in **two places**:
-the main thread (pdf.mjs) and the Web Worker (pdf.worker.mjs), because workers
-have a separate global scope.
+## Current approach (mid-2026): production is polyfill-free
 
-## APIs and when they were added to Chrome
+pdfjs-dist 5.x uses five APIs (URL.parse, Promise.try, Promise.withResolvers,
+Uint8Array.prototype.toHex, Map.prototype.getOrInsertComputed) that landed in
+Chrome 126–136.  All supported real-user browsers now have these natively.
 
-| API | Chrome version |
-|-----|----------------|
-| `URL.parse(url, base?)` | 126 |
-| `Promise.try(fn, ...args)` | 127 |
-| `Promise.withResolvers()` | 119 (polyfilled defensively) |
-| `Uint8Array.prototype.toHex()` | 132 |
-| `Map.prototype.getOrInsertComputed(key, fn)` | 136 |
+### Worker serving
 
-**Critical `Promise.try` gotcha**: pdfjs calls `Promise.try(action, data.data)` with
-arguments forwarded to the function. The naïve polyfill `new Promise(r => r(fn()))`
-ignores those arguments, causing `action(undefined)` and the runtime error
-`Cannot destructure property 'docId' of 'e' as it is undefined`. The correct
-polyfill must use `fn(...args)`:
+Worker is served as a plain static file from `client/public/pdf.worker.min.mjs`
+— a verbatim copy of `node_modules/pdfjs-dist/build/pdf.worker.min.mjs`.
+The component sets:
+
+```ts
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+```
+
+Vite passes files in `client/public/` through as-is (no module transformation),
+which keeps the Web Worker free of `/@vite/client` injections that would break
+its global scope.
+
+**Why not `?url` import?**  
+`import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"` fails at
+runtime in this Vite setup — Vite loads the `.mjs` as a real ES module and the
+`?url` qualifier is not applied, producing "does not provide an export named
+'default'".  Copying to `client/public/` is the reliable alternative.
+
+**Why not the old Express `/api/pdfjs-worker` route?**  
+The route read the full ≈1 MB worker on first request and kept it in memory; it
+also served polyfills that are no longer needed.  Both the route and the
+polyfills have been removed.
+
+**Keep `client/public/pdf.worker.min.mjs` in sync** with the installed
+pdfjs-dist version.  When upgrading pdfjs-dist, copy the new worker file.
+
+### Main-thread component (`client/src/components/coa-pdf-viewer.tsx`)
+
+No polyfills.  Just:
+```ts
+const pdfjsLib = await import("pdfjs-dist");
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+```
+
+---
+
+## Test environment — NixOS system Chromium ≈ 125
+
+The system Chromium used by Playwright is v125 (predates all five APIs).
+Tests inject compatibility guards in **two places**:
+
+1. **Main thread** — `page.addInitScript(COMPAT_POLYFILLS)` must be called
+   **before** `page.goto()`.  pdfjs calls URL.parse etc. on the main thread.
+
+2. **Worker** — `page.route("**/pdf.worker.min.mjs", ...)` intercepts the
+   worker script request and prepends the same guards.  Workers have their own
+   global scope and do not inherit `addInitScript` patches.
+
+See `tests/coa-pdf-viewer.e2e.ts` for the shared `COMPAT_POLYFILLS` constant
+and the `injectMainThreadPolyfills` / `fakePolyfillWorker` helpers.
+
+**Critical `Promise.try` gotcha** (unchanged): pdfjs calls
+`Promise.try(action, data.data)` and the args must be forwarded.  The polyfill
+must use `fn(...args)`, not `fn()`:
 ```js
 Promise.try = function(f, ...args) {
   return new Promise((res, rej) => { try { res(f(...args)); } catch(e) { rej(e); } });
 };
 ```
 
-## Where polyfills live
+---
 
-### Main thread (pdf.mjs)
-Applied eagerly in `client/src/components/coa-pdf-viewer.tsx` before the
-dynamic `import("pdfjs-dist")`.
+## Key files
 
-### Web Worker (pdf.worker.mjs)
-The Express route `GET /api/pdfjs-worker` (in `server/routes.ts`) reads
-`node_modules/pdfjs-dist/build/pdf.worker.min.mjs` from disk, prepends all five
-polyfills as raw JS, and serves the combined script with
-`Content-Type: application/javascript` and 24-hour cache.  The frontend sets:
-```ts
-pdfjsLib.GlobalWorkerOptions.workerSrc = "/api/pdfjs-worker";
-```
-
-**Why a server route instead of a Vite-processed URL?**  
-When `workerSrc` is a Vite-managed `.mjs?url` import, Vite transforms the worker
-load path and appends `?import` in dev mode, routing the Worker fetch through its
-module graph and returning `text/html` instead of JS.  The Express route bypasses
-Vite entirely and is registered in `registerRoutes` before `setupVite`, ensuring
-`/api/pdfjs-worker` is matched by Express before Vite's SPA fallback.
-
-## E2E test setup
-
-`tests/coa-pdf-viewer.e2e.ts` — two tests covering canvas render and lightbox open.
-
-The COA PDF URL (`/objects/uploads/…`) points to GCS (not reachable in local dev),
-so tests use `page.route("**/objects/uploads/**", ...)` to serve
-`tests/fixtures/test-coa.pdf` — a minimal but fully valid PDF generated by Python
-with correct xref byte offsets and a black filled rectangle for non-white pixels.
-
-**Why `force: true` on the lightbox close button click?**  
-The Radix UI Dialog sets `aria-hidden="true"` on `#root` when open, and Playwright
-sees the navigation's user-menu button as intercepting pointer events at the same
-coordinate. `{ force: true }` bypasses the interception check.
+- `client/src/components/coa-pdf-viewer.tsx` — component (polyfill-free)
+- `client/public/pdf.worker.min.mjs` — static worker copy (keep in sync with pdfjs-dist)
+- `tests/coa-pdf-viewer.e2e.ts` — injects polyfills via addInitScript + route interception
