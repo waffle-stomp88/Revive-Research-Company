@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import pdfjsWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 interface CoaPdfViewerProps {
   pdfUrl: string;
@@ -83,8 +82,48 @@ export function CoaPdfViewer({
       setStatus("loading");
       setDataUrl(null);
       try {
+        // pdfjs-dist ≥ 5 internally calls URL.parse() (Chrome 126+) and
+        // Promise.try() (Chrome 127+) in both the main library AND the Web Worker.
+        // Web Workers run in a separate global scope that won't see main-thread polyfills,
+        // so the worker is served via /api/pdfjs-worker — an Express route that prepends
+        // the polyfills to the raw worker script before sending it to the browser.
+        //
+        // We still need the main-thread polyfills here for pdf.mjs itself.
+        if (typeof URL.parse === "undefined") {
+          (URL as unknown as Record<string, unknown>).parse = (u: string, b?: string) => {
+            try { return new URL(u, b); } catch { return null; }
+          };
+        }
+        if (typeof (Promise as unknown as Record<string, unknown>).try === "undefined") {
+          (Promise as unknown as Record<string, unknown>).try = function<T>(fn: (...args: unknown[]) => T | PromiseLike<T>, ...args: unknown[]) {
+            return new Promise<T>((res, rej) => { try { res(fn(...args)); } catch (e) { rej(e); } });
+          };
+        }
+        if (typeof Promise.withResolvers === "undefined") {
+          (Promise as unknown as Record<string, unknown>).withResolvers = function<T>() {
+            let resolve!: (v: T | PromiseLike<T>) => void, reject!: (r: unknown) => void;
+            const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+            return { promise, resolve, reject };
+          };
+        }
+        if (typeof (Uint8Array.prototype as unknown as Record<string, unknown>).toHex === "undefined") {
+          (Uint8Array.prototype as unknown as Record<string, unknown>).toHex = function(this: Uint8Array) {
+            return Array.from(this).map(b => b.toString(16).padStart(2, "0")).join("");
+          };
+        }
+        if (typeof (Map.prototype as unknown as Record<string, unknown>).getOrInsertComputed === "undefined") {
+          (Map.prototype as unknown as Record<string, unknown>).getOrInsertComputed = function<K, V>(this: Map<K, V>, key: K, fn: (k: K) => V): V {
+            if (this.has(key)) return this.get(key) as V;
+            const val = fn(key);
+            this.set(key, val);
+            return val;
+          };
+        }
+
         const pdfjsLib = await import("pdfjs-dist");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
+        // /api/pdfjs-worker serves the pdfjs worker with polyfills injected,
+        // bypassing Vite's dev-server module transformations.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/api/pdfjs-worker";
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
         if (cancelled) return;

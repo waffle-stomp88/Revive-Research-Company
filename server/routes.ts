@@ -218,6 +218,43 @@ export async function registerRoutes(
   app.use('/assets', express.static(path.resolve(process.cwd(), 'client/public/assets')));
   app.use('/assets', express.static(path.resolve(process.cwd(), 'dist/public/assets')));
 
+  // ---------------------------------------------------------------------------
+  // Serve the pdfjs-dist worker with polyfills prepended.
+  //
+  // pdfjs-dist ≥ 5 internally calls URL.parse() (Chrome 126+) and Promise.try()
+  // (Chrome 127+) inside the Web Worker.  Web Workers have their own global scope
+  // that does not inherit polyfills applied on the main thread, so the only
+  // reliable fix is to serve a version of the worker that has those polyfills
+  // injected at the top.
+  //
+  // This endpoint:
+  //   1. Reads the worker file from node_modules once and caches it in memory.
+  //   2. Prepends two tiny polyfills (≈ 200 bytes).
+  //   3. Serves the result as application/javascript with a 24-hour Cache-Control.
+  //
+  // The frontend sets GlobalWorkerOptions.workerSrc = "/api/pdfjs-worker", which
+  // bypasses Vite's dev-server transformation (Vite would inject /@vite/client
+  // module specifiers that break inside a Web Worker blob context).
+  // ---------------------------------------------------------------------------
+  let _pdfjsWorkerCache: string | null = null;
+  app.get('/api/pdfjs-worker', (_req, res) => {
+    if (!_pdfjsWorkerCache) {
+      const workerPath = path.resolve(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
+      const workerCode = fs.readFileSync(workerPath, 'utf-8');
+      const polyfills = [
+        "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};} ",
+        "if(typeof Promise.try==='undefined'){Promise.try=function(f){var a=Array.prototype.slice.call(arguments,1);return new Promise(function(res,rej){try{res(f.apply(this,a));}catch(e){rej(e);}});};}",
+        "if(typeof Promise.withResolvers==='undefined'){Promise.withResolvers=function(){var res,rej,p=new Promise(function(r,j){res=r;rej=j;});return{promise:p,resolve:res,reject:rej};};}",
+        "if(typeof Uint8Array.prototype.toHex==='undefined'){Uint8Array.prototype.toHex=function(){return Array.from(this).map(function(b){return b.toString(16).padStart(2,'0');}).join('');};}",
+        "if(typeof Map.prototype.getOrInsertComputed==='undefined'){Map.prototype.getOrInsertComputed=function(k,fn){if(this.has(k))return this.get(k);var v=fn(k);this.set(k,v);return v;};}",
+      ].join('\n');
+      _pdfjsWorkerCache = polyfills + '\n' + workerCode;
+    }
+    res.set('Content-Type', 'application/javascript');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.send(_pdfjsWorkerCache);
+  });
+
   const SITE_URL = "https://reviveresearch.co";
 
   // ---------------------------------------------------------------------------
