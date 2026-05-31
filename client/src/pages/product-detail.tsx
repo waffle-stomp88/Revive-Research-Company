@@ -2052,7 +2052,7 @@ export default function ProductDetail() {
                         <div className="mb-6 rounded-lg border border-[#D4FF1F]/20 bg-[#1a1a1f] overflow-hidden" data-testid="section-latest-coa-preview">
                           {/* ── Top header: lab + method split ── */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
-                            <div className="px-5 py-4">
+                            <div className="px-5 py-4 text-center">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">Testing Laboratory</p>
                               <p className="font-semibold text-foreground text-[20px]">{latestCoa.labName}</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Independent third-party verification</p>
@@ -2069,14 +2069,14 @@ export default function ProductDetail() {
                                 </a>
                               )}
                             </div>
-                            <div className="px-5 py-4">
+                            <div className="px-5 py-4 text-center">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#21d8ff] mb-1">Method</p>
                               <p className="font-semibold text-foreground text-[20px]">HPLC-UV / Mass Spectrometry</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Identity confirmed via observed [M+nH]ⁿ⁺ values</p>
                             </div>
                           </div>
                           {/* ── Purity hero ── */}
-                          <div className="px-5 py-5 flex items-end justify-between gap-4 border-b border-white/10">
+                          <div className="px-5 py-5 flex items-end justify-between gap-4 border-b border-white/10 text-center">
                             <div>
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">HPLC Purity</p>
                               <p className="font-display text-5xl md:text-6xl font-bold text-white leading-none tracking-tight">
