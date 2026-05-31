@@ -2009,7 +2009,8 @@ export default function ProductDetail() {
                           return { label: r.trim(), expected: "", actual: "", status: "" };
                         }).filter(r => r.label);
 
-                      const resultRows = parseResults(latestCoa.results);
+                      const resultRows = parseResults(latestCoa.results)
+                        .filter(r => !/hplc\s*purity/i.test(r.label || ""));
                       const rawPurity = latestCoa.purity || "—";
                       const purityValue = rawPurity !== "—" && !rawPurity.includes("%") ? `${rawPurity}%` : rawPurity;
 
