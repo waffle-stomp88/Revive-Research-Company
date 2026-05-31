@@ -192,7 +192,7 @@ export async function registerRoutes(
   // IMPORTANT: Google's URL Inspection Tool sends UA "Google-InspectionTool/1.0"
   // (not "Googlebot/2.1") for its WRS rendering requests. Both must be matched.
   // ---------------------------------------------------------------------------
-  const SEARCH_BOT_RE = /Googlebot|Google-InspectionTool|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
+  const SEARCH_BOT_RE = /Googlebot|Google-InspectionTool|Chrome-Lighthouse|bingbot|DuckDuckBot|Baiduspider|Applebot|YandexBot|Slurp/i;
   const AGE_BYPASS_SCRIPT = `<script>window.__AGE_BYPASS__=1;try{localStorage.setItem('revive-research-age-verified',String(Date.now()));}catch(e){}</script>`;
 
   app.use((req, res, next) => {

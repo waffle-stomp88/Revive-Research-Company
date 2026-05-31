@@ -885,6 +885,8 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
   const ogType = meta.ogType || "website";
   const ogImage = meta.ogImage || DEFAULT_IMAGE;
   const canonical = meta.canonicalUrl || SITE_URL;
+  const escapedOgImage = escapeHtml(ogImage);
+  const escapedCanonical = escapeHtml(canonical);
 
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapedTitle}</title>`);
 
@@ -905,6 +907,14 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
     /<meta property="og:type" content="[^"]*" \/>/,
     `<meta property="og:type" content="${ogType}" />`
   );
+  html = html.replace(
+    /<meta property="og:image" content="[^"]*" \/>/,
+    `<meta property="og:image" content="${escapedOgImage}" />`
+  );
+  html = html.replace(
+    /<meta property="og:url" content="[^"]*" \/>/,
+    `<meta property="og:url" content="${escapedCanonical}" />`
+  );
 
   html = html.replace(
     /<meta name="twitter:title" content="[^"]*" \/>/,
@@ -914,10 +924,15 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
     /<meta name="twitter:description" content="[^"]*" \/>/,
     `<meta name="twitter:description" content="${escapedDesc}" />`
   );
+  html = html.replace(
+    /<meta name="twitter:image" content="[^"]*" \/>/,
+    `<meta name="twitter:image" content="${escapedOgImage}" />`
+  );
 
-  const ogImageTag = `<meta property="og:image" content="${escapeHtml(ogImage)}" />`;
-  const canonicalTag = `<link rel="canonical" href="${escapeHtml(canonical)}" />`;
-  const ogUrlTag = `<meta property="og:url" content="${escapeHtml(canonical)}" />`;
+  html = html.replace(
+    /<link rel="canonical" href="[^"]*" \/>/,
+    `<link rel="canonical" href="${escapedCanonical}" />`
+  );
 
   let jsonLdTags = '';
   if (meta.jsonLd && meta.jsonLd.length > 0) {
@@ -926,8 +941,9 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
     ).join('\n    ');
   }
 
-  const injection = `${ogImageTag}\n    ${ogUrlTag}\n    ${canonicalTag}${jsonLdTags ? '\n    ' + jsonLdTags : ''}`;
-  html = html.replace('</head>', `    ${injection}\n  </head>`);
+  if (jsonLdTags) {
+    html = html.replace('</head>', `    ${jsonLdTags}\n  </head>`);
+  }
 
   if (meta.noindex) {
     html = html.replace('</head>', `    <meta name="robots" content="noindex, follow" />\n  </head>`);
