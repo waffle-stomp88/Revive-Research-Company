@@ -7,6 +7,7 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
 import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty, seedResearchStacksIfEmpty } from "./storage";
+import { runMigrations } from "./migrate";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -138,6 +139,11 @@ export function log(message: string, source = "express") {
       res.send(_pdfjsWorkerCache);
     });
   }
+
+  // Run schema migrations first — this MUST complete before routes are
+  // registered. Any failure throws and crashes the process intentionally,
+  // so we never serve traffic against a broken schema.
+  await runMigrations();
 
   // Run DB seed/migration tasks in the background so they never block
   // the server from binding to port 5000. Each task is independently
