@@ -396,7 +396,7 @@ describe('POST /api/orders/paypal — BAC water promo blocked for repeat buyers'
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Suite 3 — BAC water promo preserved for first-time buyers
+// Suite 3 — BAC water promo preserved for first-time buyers (3ml only)
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('POST /api/orders/paypal — BAC water promo preserved for first-time buyers', () => {
@@ -586,5 +586,90 @@ describe('POST /api/orders/paypal — BAC water quantity cap (multi-unit, first-
     expect(orderArg.fulfillmentNotes).toContain(
       `Bacteriostatic Water (3ml) x1 @ $${BAC_WATER_CATALOGUE_PRICE}`
     );
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 5 — Non-3ml BAC water at $0 is never free, even for first-time buyers
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — non-3ml BAC water at $0 is stripped for first-time buyers', () => {
+  beforeEach(() => {
+    setTestSession('user-first-time-buyer-10ml');
+
+    // First-time buyer: zero prior orders
+    mockGetOrdersByUserId.mockResolvedValue([]);
+
+    // Product catalogue includes BAC water
+    mockGetAllProducts.mockResolvedValue([
+      {
+        id: BAC_WATER_ID,
+        slug: 'bacteriostatic-water',
+        name: 'Bacteriostatic Water',
+      },
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    // BPC-157: $300 per 5 mg vial (above $250 free-shipping threshold → $0 shipping)
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    // PayPal captured $300. The 10ml BAC water submitted at $0 must be stripped
+    // before the server subtotal is computed, so the captured amount still matches.
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('accepts the order (201) and does not include the $0 non-3ml BAC water in the created record', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+        {
+          // First-time buyer trying to get a 10ml BAC water for free.
+          // Only the 3ml SKU qualifies for the first-order promo — this
+          // must be stripped, not silently passed through at $0.
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '10ml',
+          quantity: 1,
+          price: '0',
+        },
+      ],
+      total: '300',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    // The order still succeeds — the BAC water is silently dropped, not rejected.
+    expect(res.status).toBe(201);
+
+    // createOrder must have been called exactly once.
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    // fulfillmentNotes is built from sanitizedItems and is the authoritative
+    // record. The $0 10ml BAC water must NOT appear — it was stripped by
+    // applyBacWaterPromo because only the 3ml SKU is eligible for the promo.
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.fulfillmentNotes).toBeDefined();
+    expect(orderArg.fulfillmentNotes).not.toContain('Bacteriostatic Water');
+    expect(orderArg.fulfillmentNotes).toContain('BPC-157');
   });
 });

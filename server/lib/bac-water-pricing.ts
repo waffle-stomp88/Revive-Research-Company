@@ -8,9 +8,12 @@
  *   1. First-order user + BAC water @ dosage "3ml"
  *      → quantity clamped to 1, price forced to "0.00"
  *      → any extra units kept at the item's original price
- *   2. Non-first-order user + BAC water with price ≤ $0
- *      → item stripped entirely (promo-abuse prevention)
- *   3. All other cases → item passed through unchanged
+ *   2. Any BAC water submitted at price ≤ $0 that does NOT match rule 1
+ *      (wrong dosage on a first order, or any dosage on a repeat order)
+ *      → item stripped entirely. Non-qualifying $0 items are never
+ *      auto-repriced; they are removed so they cannot inflate the server
+ *      subtotal or appear in fulfillmentNotes at zero cost.
+ *   3. BAC water submitted at a positive price → item passed through unchanged
  */
 
 export type CartItemInput = {
@@ -52,12 +55,14 @@ export function applyBacWaterPromo(
         // Additional units beyond the free one are priced normally.
         sanitized.push({ ...rawItem, quantity: qty - 1 });
       }
-    } else if (!isUserFirstOrder && priceNum <= 0) {
-      // Repeat buyer attempting to claim a $0 BAC water — strip it.
+    } else if (priceNum <= 0) {
+      // Any BAC water submitted at $0 that did not qualify for the 3ml
+      // first-order promo (wrong dosage, or repeat buyer) must be stripped.
+      // This prevents a first-order buyer from getting a non-3ml SKU for free
+      // and also blocks the existing repeat-buyer promo-abuse path.
       // (no push)
     } else {
-      // Any other scenario (non-3ml on first order, or full-price on repeat)
-      // → keep as-is.
+      // Full-price BAC water on any order → keep as-is.
       sanitized.push(rawItem);
     }
   }

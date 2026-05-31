@@ -81,6 +81,15 @@ describe("applyBacWaterPromo — first-order user (isUserFirstOrder: true)", () 
     const bac = result.find((i) => i.productId === BAC_ID);
     expect(bac?.price).toBe("30.00");
   });
+
+  it("strips a $0-priced non-3ml BAC water even on a first order (no free pass for wrong dosage)", () => {
+    // A first-time buyer who submits a 10ml BAC water at $0 must NOT receive
+    // it for free. Only the 3ml SKU qualifies for the first-order promo.
+    const result = applyBacWaterPromo([peptideItem(), bacItem({ dosage: "10ml", price: "0" })], BAC_ID, true);
+
+    expect(result.find((i) => i.productId === BAC_ID)).toBeUndefined();
+    expect(result.find((i) => i.productId === PEPTIDE_ID)).toBeDefined();
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
