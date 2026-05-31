@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import pdfjsWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 interface CoaPdfViewerProps {
   pdfUrl: string;
@@ -83,10 +84,7 @@ export function CoaPdfViewer({
       setDataUrl(null);
       try {
         const pdfjsLib = await import("pdfjs-dist");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-          "pdfjs-dist/build/pdf.worker.min.mjs",
-          import.meta.url
-        ).toString();
+        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
         if (cancelled) return;
@@ -123,7 +121,7 @@ export function CoaPdfViewer({
         canvas.getContext("2d")!.drawImage(thumbCropped, 0, 0);
         if (!cancelled) setStatus("rendered");
       } catch (err) {
-        console.error("[CoaPdfViewer]", err);
+        console.error("[CoaPdfViewer]", (err as Error)?.message ?? err);
         if (!cancelled) setStatus("error");
       }
     }
