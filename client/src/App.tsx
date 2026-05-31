@@ -184,11 +184,31 @@ function Router() {
         </Route>
         <Route path="/stacks/:shareCode" component={StackShare} />
         <Route path="/bundles/:id" component={BundleDetail} />
-        <Route path="/cart" component={Cart} />
-        <Route path="/checkout" component={Checkout} />
-        <Route path="/checkout/success" component={CheckoutSuccess} />
-        <Route path="/subscription/success" component={SubscriptionSuccess} />
-        <Route path="/order-confirmation" component={OrderConfirmation} />
+        <Route path="/cart">
+          <ProtectedRoute title="Your Cart" description="Sign in to view your cart and complete your research compound order.">
+            <Cart />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/checkout">
+          <ProtectedRoute title="Checkout" description="Sign in to complete your order and receive your free BAC water with qualifying purchases.">
+            <Checkout />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/checkout/success">
+          <ProtectedRoute>
+            <CheckoutSuccess />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/subscription/success">
+          <ProtectedRoute>
+            <SubscriptionSuccess />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/order-confirmation">
+          <ProtectedRoute>
+            <OrderConfirmation />
+          </ProtectedRoute>
+        </Route>
         <Route path="/coa/verify-certificate-of-analysis" component={CoaVerification} />
         <Route path="/coa-library">
           <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
