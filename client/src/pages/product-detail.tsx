@@ -2130,7 +2130,7 @@ export default function ProductDetail() {
                           {/* ── Lot number row ── */}
                           <div className="px-5 py-3 border-b border-white/10">
                             <div className="grid grid-cols-[1fr_auto] items-center gap-3 max-w-lg mx-auto">
-                              <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Lot</p>
+                              <p className="font-bold tracking-widest uppercase text-muted-foreground text-[12px]">Lot</p>
                               <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
                             </div>
                           </div>
@@ -2140,7 +2140,7 @@ export default function ProductDetail() {
                               {resultRows.map((row, i) => (
                                 <div key={i} className="px-5 py-2.5 border-b border-white/[0.06] last:border-0">
                                   <div className="grid grid-cols-[1fr_auto] items-center gap-4 max-w-lg mx-auto">
-                                    <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
+                                    <p className="font-bold tracking-widest uppercase text-muted-foreground text-[12px]">{row.label}</p>
                                     <p className="text-sm font-semibold text-foreground text-right">{row.actual || "—"}</p>
                                   </div>
                                 </div>
