@@ -15,6 +15,13 @@
       "when": 1777755181379,
       "tag": "0001_dapper_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780203712556,
+      "tag": "0002_add_coa_preview_image_url",
+      "breakpoints": true
     }
   ]
 }

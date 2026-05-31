@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { CoaPdfViewer } from "@/components/coa-pdf-viewer";
 import { ImageLoader } from "@/components/image-loader";
 import { addToRecentlyViewed, RecentlyViewed } from "@/components/recently-viewed";
 import { renderChemicalFormula } from "@/lib/chemistry";
@@ -2022,61 +2023,261 @@ export default function ProductDetail() {
                       );
                     })()}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {productCoas.slice(0, 4).map((coa) => (
-                        <Card
-                          key={coa.id}
-                          className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors"
-                          data-testid={`card-coa-${coa.id}`}
-                        >
-                          <div className="flex items-start justify-between mb-3">
+                    {/* Most recent batch — REVIVE lab results card */}
+                    {(() => {
+                      const latestCoa = productCoas[0];
+                      if (!latestCoa) return null;
+
+                      const parseResults = (rows: string[] | null) =>
+                        (rows || []).map(r => {
+                          if (r.includes("|")) {
+                            // Pipe-delimited: label|expected|actual|status
+                            const [label, expected, actual, status] = r.split("|");
+                            return { label: label?.trim(), expected: expected?.trim(), actual: actual?.trim(), status: status?.trim() };
+                          } else if (r.includes(":")) {
+                            // Colon-delimited: label: value
+                            const idx = r.indexOf(":");
+                            const label = r.slice(0, idx).trim();
+                            const actual = r.slice(idx + 1).trim();
+                            return { label, expected: "", actual, status: "" };
+                          }
+                          return { label: r.trim(), expected: "", actual: "", status: "" };
+                        }).filter(r => r.label);
+
+                      const resultRows = parseResults(latestCoa.results);
+                      const rawPurity = latestCoa.purity || "—";
+                      const purityValue = rawPurity !== "—" && !rawPurity.includes("%") ? `${rawPurity}%` : rawPurity;
+
+                      return (
+                        <div className="mb-6 rounded-lg border border-[#D4FF1F]/20 bg-[#1a1a1f] overflow-hidden" data-testid="section-latest-coa-preview">
+
+                          {/* ── Top header: lab + method split ── */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
+                            <div className="px-5 py-4">
+                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">Testing Laboratory</p>
+                              <p className="font-semibold text-sm text-foreground">{latestCoa.labName}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">Independent third-party verification</p>
+                              {latestCoa.labVerificationUrl && (
+                                <a
+                                  href={latestCoa.labVerificationUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline mt-2"
+                                  data-testid={`link-verify-lab-${latestCoa.batchNumber}`}
+                                >
+                                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                  Verify with lab
+                                </a>
+                              )}
+                            </div>
+                            <div className="px-5 py-4">
+                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#21d8ff] mb-1">Method</p>
+                              <p className="font-semibold text-sm text-foreground">HPLC-UV / Mass Spectrometry</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">Identity confirmed via observed [M+nH]ⁿ⁺ values</p>
+                            </div>
+                          </div>
+
+                          {/* ── Purity hero ── */}
+                          <div className="px-5 py-5 flex items-end justify-between gap-4 border-b border-white/10">
                             <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-mono font-bold text-sm">{coa.batchNumber}</span>
-                                {coa.dosage && (
-                                  <Badge variant="outline" className="text-xs border-[#9d4edd]/30">{coa.dosage}</Badge>
-                                )}
-                                {coa.verified && (
-                                  <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
-                                )}
-                              </div>
-                              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                Tested: {coa.testDate}
+                              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">HPLC Purity</p>
+                              <p className="font-display text-5xl md:text-6xl font-bold text-white leading-none tracking-tight">
+                                {purityValue}
                               </p>
                             </div>
-                            <Link href={`/batch?batch=${coa.batchNumber}`}>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold hover:bg-[#9d4edd]/10 hover:border-[#9d4edd] h-9 gap-2 px-3"
-                                data-testid={`button-verify-coa-${coa.id}`}
-                              >
-                                <Eye className="h-4 w-4" />
-                                Verify
-                              </Button>
-                            </Link>
-                          </div>
-                          <div className="space-y-2">
-                            <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                                Purity: {coa.purity}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                                Lab: {coa.labName}
-                              </Badge>
+                            <div className="text-right">
+                              <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1">Lot</p>
+                              <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
+                              {latestCoa.dosage && (
+                                <p className="text-xs text-muted-foreground mt-0.5">{latestCoa.dosage}</p>
+                              )}
                             </div>
-                            {coa.labVerificationUrl && (
-                              <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${coa.batchNumber}`}>
-                                <ExternalLink className="h-3 w-3" />
-                                Verify with Lab
-                              </a>
+                          </div>
+
+                          {/* ── Inline PDF / image preview ── */}
+                          {(latestCoa.imageUrl || latestCoa.previewImageUrl) && (
+                            <div className="border-b border-white/10" data-testid="coa-inline-preview">
+                              {latestCoa.imageUrl ? (
+                                /* Render PDF page 1 to canvas using PDF.js */
+                                <CoaPdfViewer
+                                  pdfUrl={latestCoa.imageUrl}
+                                  batchNumber={latestCoa.batchNumber}
+                                />
+                              ) : latestCoa.previewImageUrl ? (
+                                /* Fallback: PNG preview image */
+                                <div className="bg-white">
+                                  <img
+                                    src={latestCoa.previewImageUrl}
+                                    alt={`Certificate of Analysis — ${latestCoa.batchNumber}`}
+                                    className="w-full h-auto block"
+                                    loading="lazy"
+                                    data-testid="img-coa-preview"
+                                  />
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
+
+                          {/* ── Structured results table ── */}
+                          {resultRows.length > 0 && (
+                            <div className="border-b border-white/10">
+                              {resultRows.map((row, i) => (
+                                <div
+                                  key={i}
+                                  className={`grid grid-cols-[1fr_auto_auto] items-center gap-3 px-5 py-3 ${i < resultRows.length - 1 ? "border-b border-white/5" : ""}`}
+                                >
+                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
+                                  <div className="flex items-center gap-3 text-right">
+                                    {row.expected && (
+                                      <span className="text-xs text-muted-foreground hidden sm:block">Spec: {row.expected}</span>
+                                    )}
+                                    {row.actual && (
+                                      <span className="text-sm font-semibold text-foreground">{row.actual}</span>
+                                    )}
+                                  </div>
+                                  {row.status && (
+                                    <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-sm ${
+                                      row.status.toLowerCase() === "pass"
+                                        ? "bg-[#D4FF1F]/15 text-[#D4FF1F]"
+                                        : row.status.toLowerCase() === "fail"
+                                        ? "bg-red-500/15 text-red-400"
+                                        : "bg-white/10 text-muted-foreground"
+                                    }`}>
+                                      {row.status}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* ── Data-trust notice ── */}
+                          {resultRows.length > 0 && (
+                            <div className="px-5 py-2.5 flex items-center gap-2 border-b border-white/10 bg-white/[0.02]">
+                              <div className="h-1.5 w-1.5 rounded-full bg-[#D4FF1F]/60 flex-shrink-0" />
+                              <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                                Values above are transcribed directly from the certificate. If you spot a discrepancy, please{" "}
+                                <a href="/contact" className="underline underline-offset-2 hover:text-muted-foreground transition-colors">contact us</a>.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* ── Date row ── */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
+                            <div className="px-5 py-3 flex items-center gap-3">
+                              <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                              <div>
+                                <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Sample Tested</p>
+                                <p className="text-sm text-foreground mt-0.5">{latestCoa.testDate}</p>
+                              </div>
+                            </div>
+                            {latestCoa.expirationDate && (
+                              <div className="px-5 py-3 flex items-center gap-3">
+                                <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                                <div>
+                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Expiration</p>
+                                  <p className="text-sm text-foreground mt-0.5">{latestCoa.expirationDate}</p>
+                                </div>
+                              </div>
                             )}
                           </div>
-                        </Card>
-                      ))}
-                    </div>
+
+                          {/* ── Methodology footer ── */}
+                          <div className="px-5 py-4 bg-white/[0.03] border-b border-white/10">
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                              <span className="font-semibold text-foreground/70">Methodology.</span>{" "}
+                              High-Performance Liquid Chromatography with UV detection coupled with mass spectrometry (HPLC-UV/MS).
+                              Tested by <span className="text-foreground/70 font-medium">{latestCoa.labName}</span>,
+                              an independent third-party laboratory separate from Revive Research.
+                            </p>
+                          </div>
+
+                          {/* ── Download + View All Batches ── */}
+                          <div className="px-5 py-4 flex flex-wrap items-center gap-4">
+                            {latestCoa.imageUrl && (
+                              <a
+                                href={latestCoa.imageUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-[#D4FF1F] hover:underline"
+                                data-testid="link-download-coa-pdf"
+                              >
+                                <FileCheck className="h-4 w-4 flex-shrink-0" />
+                                Download Full COA (PDF)
+                              </a>
+                            )}
+                            <Link href="/coa/batch-testing-archive">
+                              <button
+                                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                data-testid="link-view-all-batches"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
+                                View All Batches
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Older batches card grid */}
+                    {productCoas.length > 1 && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {productCoas.slice(1, 5).map((coa) => (
+                          <Card
+                            key={coa.id}
+                            className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors"
+                            data-testid={`card-coa-${coa.id}`}
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-mono font-bold text-sm">{coa.batchNumber}</span>
+                                  {coa.dosage && (
+                                    <Badge variant="outline" className="text-xs border-[#9d4edd]/30">{coa.dosage}</Badge>
+                                  )}
+                                  {coa.verified && (
+                                    <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  Tested: {coa.testDate}
+                                </p>
+                              </div>
+                              <Link href={`/batch?batch=${coa.batchNumber}`}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold hover:bg-[#9d4edd]/10 hover:border-[#9d4edd] h-9 gap-2 px-3"
+                                  data-testid={`button-verify-coa-${coa.id}`}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  Verify
+                                </Button>
+                              </Link>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
+                              <div className="flex flex-wrap gap-2">
+                                <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                                  Purity: {coa.purity}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                                  Lab: {coa.labName}
+                                </Badge>
+                              </div>
+                              {coa.labVerificationUrl && (
+                                <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${coa.batchNumber}`}>
+                                  <ExternalLink className="h-3 w-3" />
+                                  Verify with Lab
+                                </a>
+                              )}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
                   </motion.div>
                 )}
                 </>

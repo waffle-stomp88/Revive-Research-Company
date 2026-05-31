@@ -3625,6 +3625,7 @@ export async function registerRoutes(
       
       const coa = await storage.createCoa(validatedData);
       res.status(201).json(coa);
+
     } catch (error) {
       console.error("Error creating COA:", error);
       if (error instanceof Error && error.name === "ZodError") {
