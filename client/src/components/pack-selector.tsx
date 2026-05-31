@@ -192,16 +192,15 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
             {productId && <PriceTrendBadge productId={productId} variant="compact" />}
           </div>
         )}
+        {showSavings && !softGated && (
+          <div className="flex flex-col items-end" data-testid="order-summary-savings">
+            <span className="text-[11px] text-green-400/60 uppercase tracking-widest font-mono">You save</span>
+            <span className="font-bold text-green-400" style={{ fontSize: "18px" }}>
+              ${perVialDiff * effectiveQty}
+            </span>
+          </div>
+        )}
       </div>
-      {showSavings && !softGated && (
-        <p
-          className="text-right mt-1 text-gray-500 text-[10px]"
-          style={{ fontSize: "9px" }}
-          data-testid="order-summary-savings"
-        >
-          ${perVialDiff} less per vial than single
-        </p>
-      )}
     </div>
   );
 }
