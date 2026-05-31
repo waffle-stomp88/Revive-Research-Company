@@ -1408,6 +1408,7 @@ export async function registerRoutes(
         paymentMethod: 'paypal',
         paymentConfirmed: true,
         paypalOrderId,
+        paypalCapturedAmount: paypalDetails.capturedAmount.toFixed(2),
         isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
         fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}`,
       };

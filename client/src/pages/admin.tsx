@@ -4264,7 +4264,39 @@ function OrderViewDialog({
                 <p><span className="text-muted-foreground">Type:</span> {order.orderType === 'subscription' ? 'Subscription' : 'One-time'}</p>
                 <p><span className="text-muted-foreground">Product:</span> {product?.name || "Unknown"}</p>
                 <p><span className="text-muted-foreground">Quantity:</span> {order.quantity}</p>
-                <p><span className="text-muted-foreground">Total:</span> ${Number(order.totalAmount).toFixed(2)}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-muted-foreground">Order Total:</span>
+                  <span>${Number(order.totalAmount).toFixed(2)}</span>
+                  {order.paymentMethod === 'paypal' && order.paypalCapturedAmount != null && (() => {
+                    const stored = Number(order.totalAmount);
+                    const captured = Number(order.paypalCapturedAmount);
+                    const diff = Math.abs(stored - captured);
+                    if (diff > 0.50) {
+                      return (
+                        <Badge variant="destructive" className="text-xs" data-testid="badge-paypal-mismatch">
+                          PayPal captured ${captured.toFixed(2)} — mismatch
+                        </Badge>
+                      );
+                    }
+                    if (diff > 0.005) {
+                      return (
+                        <Badge variant="secondary" className="text-xs" data-testid="badge-paypal-rounding">
+                          PayPal ${captured.toFixed(2)} (rounding)
+                        </Badge>
+                      );
+                    }
+                    return (
+                      <Badge variant="default" className="text-xs bg-green-600/20 text-green-400 border-green-600/30" data-testid="badge-paypal-matched">
+                        PayPal ${captured.toFixed(2)} matched
+                      </Badge>
+                    );
+                  })()}
+                  {order.paymentMethod === 'paypal' && order.paypalCapturedAmount == null && (
+                    <Badge variant="secondary" className="text-xs" data-testid="badge-paypal-no-capture">
+                      PayPal capture not recorded
+                    </Badge>
+                  )}
+                </div>
                 <p><span className="text-muted-foreground">Date:</span> {new Date(order.createdAt!).toLocaleString()}</p>
               </div>
             </div>

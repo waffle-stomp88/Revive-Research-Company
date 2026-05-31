@@ -201,6 +201,8 @@ export const orders = pgTable("orders", {
   emailError: text("email_error"),
   // PayPal order ID (unique) for replay-attack prevention
   paypalOrderId: text("paypal_order_id").unique(),
+  // PayPal captured amount — what PayPal actually charged, stored at order creation
+  paypalCapturedAmount: decimal("paypal_captured_amount", { precision: 10, scale: 2 }),
   // Test/sandbox indicator - true for PayPal sandbox or test orders
   isTest: boolean("is_test").default(false),
   createdAt: timestamp("created_at").defaultNow(),
