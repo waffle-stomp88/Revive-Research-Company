@@ -1078,7 +1078,7 @@ export const firstOrderPromos = pgTable("first_order_promos", {
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   orderId: varchar("order_id"),
   status: text("status").notNull(), // 'redeemed' | 'declined'
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  redeemedAt: timestamp("redeemed_at").defaultNow().notNull(),
 });
 
 export type FirstOrderPromo = typeof firstOrderPromos.$inferSelect;

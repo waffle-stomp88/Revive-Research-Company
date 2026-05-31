@@ -9,7 +9,7 @@ import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db, pool } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote, firstOrderPromos } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
 import { setupAuth, isAuthenticated } from "./sessionAuth";
 import { verifySupabaseToken } from "./supabaseAuth";
@@ -746,6 +746,7 @@ export async function registerRoutes(
         bacWaterName: bacWater.name,
         bacWaterImageUrl: bacWater.imageUrl || null,
         bacWaterDosage: threeMlDosage,
+        bacWaterPrice: Number(threeMlStock.price) || Number(bacWater.price) || null,
       });
     } catch (error) {
       console.error("Error checking first order status:", error);
@@ -759,6 +760,7 @@ export async function registerRoutes(
     try {
       const userId = (req.session as any)?.userId;
       if (userId) {
+        await db.insert(firstOrderPromos).values({ userId, status: 'declined' }).catch(() => {});
         console.log(`[Promo] First-order BAC water declined by user=${userId}`);
       }
       res.status(204).end();
@@ -1352,6 +1354,7 @@ export async function registerRoutes(
       }
 
       // Cart prices are authoritative — items passed through as-is.
+      const hasFreeBacWater = zeroPricedBacItems.length === 1;
       const sanitizedItems = items;
 
       // Pack-tier discount table — MUST stay in sync with PACK_TIERS in
@@ -1470,6 +1473,15 @@ export async function registerRoutes(
       const order = await storage.createOrder(validatedData);
       
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
+
+      // Track promo redemption if a free BAC water unit was included
+      if (hasFreeBacWater) {
+        db.insert(firstOrderPromos).values({
+          userId: sessionUserId,
+          orderId: order.id,
+          status: 'redeemed',
+        }).catch((e: any) => console.error('[Promo] Failed to track redemption:', e.message));
+      }
       
       // Decrement stock for all items in this order
       try {

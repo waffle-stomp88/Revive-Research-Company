@@ -182,7 +182,9 @@ export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart, declineFreeItem } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(() =>
+    typeof window !== "undefined" && !!localStorage.getItem("revive-bac-banner-dismissed")
+  );
   const [discountCode, setDiscountCode] = useState("");
   const [showDiscountInput, setShowDiscountInput] = useState(false);
   const [inlineCTAVisible, setInlineCTAVisible] = useState(false);
@@ -432,7 +434,7 @@ export default function CartPage() {
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-[#22c55e]/60 hover:text-[#22c55e]"
-                  onClick={() => setBannerDismissed(true)}
+                  onClick={() => { setBannerDismissed(true); localStorage.setItem("revive-bac-banner-dismissed", "1"); }}
                   data-testid="button-dismiss-first-order-banner"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -494,9 +496,15 @@ export default function CartPage() {
                         </div>
                         {/* Price only — no icon here so this row stays text-height */}
                         {item.isFree ? (
-                          <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5 flex-shrink-0" data-testid={`badge-free-${item.productId}`}>
-                            <Gift className="h-3 w-3" />Free — First Order
-                          </Badge>
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <span className="font-display font-bold text-lg text-[#22c55e]">$0.00</span>
+                            {item.originalPrice && (
+                              <span className="text-xs text-muted-foreground line-through">${item.originalPrice}</span>
+                            )}
+                            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
+                              <Gift className="h-3 w-3" />First Order Perk
+                            </Badge>
+                          </div>
                         ) : (
                           <span
                             className="font-display font-bold text-lg text-[#D4FF1F] flex-shrink-0"
@@ -603,18 +611,24 @@ export default function CartPage() {
                     </div>
                     <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
                       {item.isFree ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-display font-bold text-2xl text-[#22c55e]" data-testid={`cart-item-total-${item.productId}`}>$0.00</span>
+                            {item.originalPrice && (
+                              <span className="text-sm text-muted-foreground line-through">${item.originalPrice}</span>
+                            )}
+                            <Button
+                              variant="ghost" size="icon"
+                              className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
+                              data-testid={`button-decline-free-${item.productId}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
                           <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
-                            <Gift className="h-3 w-3" />Free — First Order
+                            <Gift className="h-3 w-3" />First Order Perk
                           </Badge>
-                          <Button
-                            variant="ghost" size="icon"
-                            className="text-muted-foreground hover:text-red-400 h-7 w-7"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
-                            data-testid={`button-decline-free-${item.productId}`}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
                         </div>
                       ) : (
                         <>
@@ -664,7 +678,7 @@ export default function CartPage() {
 
               return (
                 <motion.div
-                  key={`${item.productId}-${item.dosage}`}
+                  key={`${item.productId}-${item.dosage}-${item.isFree ? 'free' : 'paid'}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}

@@ -88,6 +88,7 @@ interface FirstOrderStatusData {
   bacWaterName: string | null;
   bacWaterImageUrl: string | null;
   bacWaterDosage: string | null;
+  bacWaterPrice: number | null;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -221,6 +222,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           productId: firstOrderStatus.bacWaterProductId!,
           name: firstOrderStatus.bacWaterName || "Bacteriostatic Water",
           price: 0,
+          originalPrice: firstOrderStatus.bacWaterPrice || undefined,
           quantity: 1,
           dosage: firstOrderStatus.bacWaterDosage || "3ml",
           image: firstOrderStatus.bacWaterImageUrl || undefined,

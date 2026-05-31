@@ -66,6 +66,8 @@ import {
   MapPin,
   CheckCircle2,
   XCircle,
+  Gift,
+  X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -185,6 +187,22 @@ export default function ProductDetail() {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const { isAuthenticated, login } = useAuth();
+  const [pdBannerDismissed, setPdBannerDismissed] = useState(() =>
+    typeof window !== "undefined" && !!localStorage.getItem("revive-bac-pd-banner-dismissed")
+  );
+  const { data: pdFirstOrderStatus } = useQuery<{
+    isFirstOrder: boolean;
+    bacWaterProductId: string | null;
+  } | null>({
+    queryKey: ["/api/my-first-order-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/my-first-order-status", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 60_000,
+    enabled: isAuthenticated,
+  });
   const softGateEnabled = SOFT_GATE_ENABLED;
   const [quantity, setQuantity] = useState(1);
   const [packQty, setPackQty] = useState<PackQty>(1);
@@ -878,6 +896,23 @@ export default function ProductDetail() {
         </motion.div>
 
         {softGateEnabled && !isAuthenticated && <SoftGateBanner />}
+
+        {isAuthenticated && pdFirstOrderStatus?.isFirstOrder && !!pdFirstOrderStatus.bacWaterProductId && !pdBannerDismissed && (
+          <div className="flex items-center justify-between px-4 py-2.5 mb-4 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/30" data-testid="banner-first-order-promo">
+            <div className="flex items-center gap-2 text-sm text-[#22c55e]">
+              <Gift className="h-4 w-4 flex-shrink-0" />
+              <span>First-time buyer perk: a <strong>free 3ml Bacteriostatic Water</strong> is automatically added to your cart on your first order.</span>
+            </div>
+            <Button
+              variant="ghost" size="icon"
+              className="text-[#22c55e]/70 hover:text-[#22c55e] h-7 w-7 flex-shrink-0 ml-2"
+              onClick={() => { setPdBannerDismissed(true); localStorage.setItem("revive-bac-pd-banner-dismissed", "1"); }}
+              data-testid="button-dismiss-pd-promo-banner"
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
 
         <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-4 md:gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
           <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
