@@ -2711,8 +2711,12 @@ function CoasTab() {
       const response = await apiRequest("POST", "/api/admin/coas", data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (coa: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      if (coa?.productId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/products", coa.productId, "coas"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/products", coa.productId, "batches"] });
+      }
       toast({ title: "COA created successfully" });
       setIsDialogOpen(false);
       form.reset();
@@ -2727,8 +2731,12 @@ function CoasTab() {
       const response = await apiRequest("PATCH", `/api/admin/coas/${id}`, data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (coa: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      if (coa?.productId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/products", coa.productId, "coas"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/products", coa.productId, "batches"] });
+      }
       toast({ title: "COA updated successfully" });
       setIsDialogOpen(false);
       setEditingCoa(null);
