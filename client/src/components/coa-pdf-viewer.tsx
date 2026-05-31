@@ -189,22 +189,14 @@ function MobileImageViewer({
             <DialogTitle>Certificate of Analysis — {batchNumber}</DialogTitle>
           </VisuallyHidden>
 
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#1a1a1f]">
-            <div>
-              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F]">Certificate of Analysis</p>
-              <p className="text-xs text-muted-foreground font-mono mt-0.5">{batchNumber}</p>
-            </div>
-            <div className="flex items-center gap-1">
-              <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)))} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Zoom out" data-testid="button-lightbox-zoom-out"><ZoomOut className="h-4 w-4" /></button>
-              <span className="text-xs font-mono text-muted-foreground w-10 text-center select-none">{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Zoom in" data-testid="button-lightbox-zoom-in"><ZoomIn className="h-4 w-4" /></button>
-              <button onClick={() => setZoom(1)} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Reset zoom"><RotateCcw className="h-3.5 w-3.5" /></button>
-              <div className="w-px h-4 bg-white/10 mx-1" />
-              <button onClick={() => setLightboxOpen(false)} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Close" data-testid="button-lightbox-close"><X className="h-4 w-4" /></button>
-            </div>
+          {/* Title bar — minimal, no controls */}
+          <div className="px-4 py-2.5 border-b border-white/10 bg-[#1a1a1f]">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F]">Certificate of Analysis</p>
+            <p className="text-xs text-muted-foreground font-mono">{batchNumber}</p>
           </div>
 
-          <div className="overflow-auto bg-[#111]" style={{ maxHeight: "82vh" }}>
+          {/* Scrollable image */}
+          <div className="overflow-auto bg-[#111]" style={{ maxHeight: "78vh" }}>
             <div className="flex justify-center py-4 px-4">
               <img
                 src={imageUrl}
@@ -214,6 +206,23 @@ function MobileImageViewer({
                 style={{ width: `${Math.round(100 * zoom)}%`, maxWidth: zoom > 1 ? "none" : "100%", height: "auto", display: "block" }}
               />
             </div>
+          </div>
+
+          {/* Bottom controls — thumb-reachable zone */}
+          <div className="flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-[#1a1a1f]">
+            <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)))} className="p-2 rounded hover-elevate text-muted-foreground" aria-label="Zoom out" data-testid="button-lightbox-zoom-out"><ZoomOut className="h-4 w-4" /></button>
+            <span className="text-xs font-mono text-muted-foreground w-10 text-center select-none">{Math.round(zoom * 100)}%</span>
+            <button onClick={() => setZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))} className="p-2 rounded hover-elevate text-muted-foreground" aria-label="Zoom in" data-testid="button-lightbox-zoom-in"><ZoomIn className="h-4 w-4" /></button>
+            <button onClick={() => setZoom(1)} className="p-2 rounded hover-elevate text-muted-foreground" aria-label="Reset zoom" data-testid="button-lightbox-reset"><RotateCcw className="h-4 w-4" /></button>
+            <button
+              onClick={() => setLightboxOpen(false)}
+              className="ml-auto flex items-center gap-2 px-5 py-2 rounded-full bg-white text-black font-semibold text-sm active:opacity-80"
+              aria-label="Close"
+              data-testid="button-lightbox-close"
+            >
+              <X className="h-4 w-4" />
+              Close
+            </button>
           </div>
         </DialogContent>
       </Dialog>
