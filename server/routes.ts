@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import type { Express } from "express";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
-import { applyBacWaterPromo } from "./lib/bac-water-pricing";
 import { calculateTax } from "@shared/taxRates";
 import express from "express";
 import { createServer, type Server } from "http";
@@ -754,6 +753,20 @@ export async function registerRoutes(
     }
   });
 
+  // Record when a user declines the first-order BAC water promo.
+  // Fire-and-forget from the client — no body required, just the session.
+  app.post('/api/promo/bac-water-declined', async (req: any, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (userId) {
+        console.log(`[Promo] First-order BAC water declined by user=${userId}`);
+      }
+      res.status(204).end();
+    } catch {
+      res.status(204).end();
+    }
+  });
+
   // Logout - clear server session
   app.post('/api/auth/logout', (req: any, res) => {
     try {
@@ -1310,25 +1323,36 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Authentication required to create an order" });
       }
 
-      // First-time buyer check: 0 prior orders → free 3ml BAC water promo.
-      const priorOrders = await storage.getOrdersByUserId(sessionUserId);
-      const isUserFirstOrder = priorOrders.length === 0;
-
-      // Always identify the BAC water product so we can enforce promo rules
-      // regardless of first-order status.
+      // Identify the BAC water product for the eligibility abuse guard below.
       const allProds = await storage.getAllProducts();
       const bacWaterProduct = allProds.find((p) =>
         p.slug === 'bacteriostatic-water' || p.name.toLowerCase().includes('bacteriostatic')
       );
       const bacWaterProductId = bacWaterProduct?.id ?? null;
 
-      // Build a server-authoritative sanitized items list.
-      // Pricing rules are centralised in server/lib/bac-water-pricing.ts so
-      // they can be unit-tested independently of the full route pipeline.
-      if (isUserFirstOrder) {
-        console.log(`[PayPal Order] First-order buyer (user=${sessionUserId ?? "guest"}) — 3ml BAC water will be free`);
+      // --- Free BAC water abuse guard ---
+      // The cart layer is responsible for setting the promo price ($0) before
+      // PayPal order creation. The server only verifies eligibility at confirmation
+      // time — it does NOT reprice items. Cart prices are authoritative.
+      const zeroPricedBacItems = items.filter((item: any) =>
+        bacWaterProductId &&
+        item.productId === bacWaterProductId &&
+        parseFloat(String(item.price ?? '0')) === 0
+      );
+      if (zeroPricedBacItems.length > 1) {
+        return res.status(400).json({ error: "Only one complimentary BAC water item is allowed per order" });
       }
-      const sanitizedItems = applyBacWaterPromo(items, bacWaterProductId, isUserFirstOrder);
+      if (zeroPricedBacItems.length === 1) {
+        const priorOrders = await storage.getOrdersByUserId(sessionUserId);
+        const isUserFirstOrder = priorOrders.length === 0;
+        if (!isUserFirstOrder) {
+          return res.status(400).json({ error: "Free BAC water promo is only available on your first order" });
+        }
+        console.log(`[Promo] First-order BAC water confirmed for user=${sessionUserId}`);
+      }
+
+      // Cart prices are authoritative — items passed through as-is.
+      const sanitizedItems = items;
 
       // Pack-tier discount table — MUST stay in sync with PACK_TIERS in
       // client/src/lib/pack-tiers.ts. If you change volume pricing percentages
@@ -1339,8 +1363,8 @@ export async function registerRoutes(
       for (const item of sanitizedItems) {
         const qty = Number(item.quantity);
 
-        // Free 3ml BAC water (first order) — contributes $0 to server subtotal
-        if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage === '3ml' && parseFloat(String(item.price ?? '0')) === 0) {
+        // Free BAC water (first order) — contributes $0 to server subtotal
+        if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage?.toLowerCase() === '3ml' && parseFloat(String(item.price ?? '0')) === 0) {
           continue;
         }
 

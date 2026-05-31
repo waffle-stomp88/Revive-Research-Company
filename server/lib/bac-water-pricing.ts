@@ -55,7 +55,7 @@ export function applyBacWaterPromo(
     const qty = Math.max(1, Number(rawItem.quantity) || 1);
     const priceNum = parseFloat(String(rawItem.price ?? "0"));
 
-    if (isUserFirstOrder && rawItem.dosage === "3ml") {
+    if (isUserFirstOrder && rawItem.dosage?.toLowerCase() === "3ml") {
       if (!freeUnitGranted) {
         // First qualifying line — grant exactly one free unit.
         freeUnitGranted = true;

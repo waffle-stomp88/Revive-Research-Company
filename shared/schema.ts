@@ -1071,3 +1071,14 @@ export const userCarts = pgTable("user_carts", {
 });
 
 export type UserCart = typeof userCarts.$inferSelect;
+
+// First Order Promos — tracks redeemed and declined first-order BAC water promo events
+export const firstOrderPromos = pgTable("first_order_promos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  orderId: varchar("order_id"),
+  status: text("status").notNull(), // 'redeemed' | 'declined'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type FirstOrderPromo = typeof firstOrderPromos.$inferSelect;

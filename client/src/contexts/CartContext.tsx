@@ -26,6 +26,7 @@ interface CartContextType {
   updateQuantity: (productId: string, dosage: string, quantity: number, packSize?: number) => void;
   clearCart: () => void;
   removeFreeItems: () => void;
+  declineFreeItem: (productId: string) => void;
   getItemCount: () => number;
   getSubtotal: () => number;
 }
@@ -33,6 +34,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "revive-research-cart";
+export const BAC_PROMO_DECLINED_KEY = "revive-bac-promo-declined";
 const SYNC_DEBOUNCE_MS = 500;
 
 export function stripFreeItemsFromStorage(): void {
@@ -80,6 +82,14 @@ function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
   return result;
 }
 
+interface FirstOrderStatusData {
+  isFirstOrder: boolean;
+  bacWaterProductId: string | null;
+  bacWaterName: string | null;
+  bacWaterImageUrl: string | null;
+  bacWaterDosage: string | null;
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
@@ -100,9 +110,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const prevAuthUserRef = useRef<{ id: string } | null | undefined>(undefined);
   const authUserRef = useRef<{ id: string } | null | undefined>(undefined);
 
-  // Persist to localStorage on every change
+  // Persist to localStorage on every change (strip free items so they are never persisted)
   useEffect(() => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.filter((i) => !i.isFree)));
   }, [items]);
 
   // Watch auth state
@@ -121,6 +131,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     authUserRef.current = authUser;
   }, [authUser]);
 
+  // Query first-order status to auto-inject the free BAC water promo
+  const { data: firstOrderStatus } = useQuery<FirstOrderStatusData | null>({
+    queryKey: ["/api/my-first-order-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/my-first-order-status", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 60_000,
+    enabled: !!authUser,
+  });
+
   // Handle auth state transitions
   useEffect(() => {
     const prev = prevAuthUserRef.current;
@@ -132,9 +154,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // LOGGED OUT: clear the local cart so guest sessions start clean
     if (authUser === null) {
       if (prev !== undefined && prev !== null) {
-        // Was logged in, now logged out — wipe local cart
+        // Was logged in, now logged out — wipe local cart and clear promo decline flag
         setItems([]);
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
+        localStorage.removeItem(BAC_PROMO_DECLINED_KEY);
       }
       return;
     }
@@ -182,7 +205,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [authUser, toast]);
 
+  // Auto-inject free BAC water for first-time buyers
+  useEffect(() => {
+    if (!authUser || !firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterProductId) return;
+    // Respect the user's explicit decline
+    if (typeof window !== "undefined" && localStorage.getItem(BAC_PROMO_DECLINED_KEY)) return;
+    setItems((prev) => {
+      const alreadyFree = prev.some(
+        (i) => i.isFree && i.productId === firstOrderStatus.bacWaterProductId
+      );
+      if (alreadyFree) return prev;
+      return [
+        ...prev,
+        {
+          productId: firstOrderStatus.bacWaterProductId!,
+          name: firstOrderStatus.bacWaterName || "Bacteriostatic Water",
+          price: 0,
+          quantity: 1,
+          dosage: firstOrderStatus.bacWaterDosage || "3ml",
+          image: firstOrderStatus.bacWaterImageUrl || undefined,
+          isFree: true,
+        },
+      ];
+    });
+  }, [authUser, firstOrderStatus]);
+
   // Debounced server sync — runs on every cart change while logged in
+  // Free items are excluded from server persistence.
   useEffect(() => {
     const user = authUserRef.current;
     if (!user || isRestoringRef.current) return;
@@ -194,7 +243,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items: items.filter((i) => !i.isFree) }),
       }).catch(() => {
         // Best-effort
       });
@@ -323,6 +372,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => !i.isFree));
   }, []);
 
+  // Remove a specific free item and record the user's decline so it isn't re-injected.
+  const declineFreeItem = useCallback((productId: string) => {
+    setItems((prev) => prev.filter((i) => !(i.isFree && i.productId === productId)));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(BAC_PROMO_DECLINED_KEY, "1");
+    }
+    // Fire-and-forget: let the server know the promo was declined
+    fetch("/api/promo/bac-water-declined", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    }).catch(() => {});
+  }, []);
+
   const getItemCount = () => {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   };
@@ -343,6 +406,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         clearCart,
         removeFreeItems,
+        declineFreeItem,
         getItemCount,
         getSubtotal,
       }}

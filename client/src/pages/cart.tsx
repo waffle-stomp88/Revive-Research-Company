@@ -179,7 +179,7 @@ interface AppliedDiscount {
 }
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
+  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart, declineFreeItem } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [bannerDismissed, setBannerDismissed] = useState(false);
@@ -285,23 +285,7 @@ export default function CartPage() {
     staleTime: 60_000,
   });
 
-  // Auto-inject free 3ml BAC water for first-time buyers
-  useEffect(() => {
-    if (!firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterProductId) return;
-    const alreadyInCart = items.some(
-      (i) => i.isFree && i.productId === firstOrderStatus.bacWaterProductId
-    );
-    if (alreadyInCart) return;
-    addToCart({
-      productId: firstOrderStatus.bacWaterProductId,
-      name: firstOrderStatus.bacWaterName || "Bacteriostatic Water",
-      price: 0,
-      quantity: 1,
-      dosage: firstOrderStatus.bacWaterDosage || "3ml",
-      image: firstOrderStatus.bacWaterImageUrl || undefined,
-      isFree: true,
-    });
-  }, [firstOrderStatus, items, addToCart]);
+  // Free BAC water injection is handled by CartContext — no duplicate effect here.
 
   // BAC water paid upsell — shown when BAC water isn't already in cart
   const bacWaterUpsell = allProducts.find(p =>
@@ -536,7 +520,16 @@ export default function CartPage() {
                             </p>
                           )}
                         </div>
-                        {!item.isFree && (
+                        {item.isFree ? (
+                          <Button
+                            variant="ghost" size="icon"
+                            className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
+                            data-testid={`button-decline-free-${item.productId}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        ) : (
                           <div className="flex items-center gap-1.5">
                             <div className="flex items-center border border-border rounded-md">
                               <Button
@@ -610,9 +603,19 @@ export default function CartPage() {
                     </div>
                     <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
                       {item.isFree ? (
-                        <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
-                          <Gift className="h-3 w-3" />Free — First Order
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
+                            <Gift className="h-3 w-3" />Free — First Order
+                          </Badge>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
+                            data-testid={`button-decline-free-${item.productId}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
                       ) : (
                         <>
                           <div className="flex items-center gap-1.5">

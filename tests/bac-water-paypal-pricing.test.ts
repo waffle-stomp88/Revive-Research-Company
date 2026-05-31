@@ -2,23 +2,28 @@
  * Unit tests for the BAC water first-order promo pricing logic.
  *
  * Tests the pure `applyBacWaterPromo` function from
- * `server/lib/bac-water-pricing.ts`, which is called by the
- * POST /api/orders/paypal route to enforce server-authoritative pricing.
+ * `server/lib/bac-water-pricing.ts`.
  *
- * Checkout is behind a ProtectedRoute (login required), so every real
- * call to /api/orders/paypal has an authenticated session. These unit
- * tests cover the business-logic rules without a live server:
+ * Architecture note: As of the cart-layer refactor, the cart is the source of
+ * truth for the $0 promo price. The POST /api/orders/paypal route no longer
+ * calls applyBacWaterPromo to reprice items — instead it runs a lightweight
+ * eligibility abuse guard (reject $0 BAC water if user is not first-order).
  *
- *   • First-order user (0 prior orders) + 3ml BAC water → price $0
+ * This function is kept for reference and its tests document the business rules
+ * that the cart layer and abuse guard together enforce:
+ *
+ *   • First-order user + 3ml BAC water → price $0 (case-insensitive dosage)
  *   • First-order user + other dosage → full price (promo only for 3ml)
  *   • First-order user + qty > 1 → exactly 1 unit free, rest at full price
  *   • Repeat buyer + $0 BAC water → stripped (abuse prevention)
  *   • Repeat buyer + full-price BAC water → kept unchanged
  *   • Non-BAC items are never affected
+ *   • Dosage matching is case-insensitive ("3mL", "3ML" → treated as "3ml")
  *
  * Relevant files:
  *   server/lib/bac-water-pricing.ts  — pure function under test
- *   server/routes.ts                 — POST /api/orders/paypal (~line 1220)
+ *   server/routes.ts                 — POST /api/orders/paypal abuse guard
+ *   client/src/contexts/CartContext.tsx — cart-layer promo injection
  */
 
 import { describe, it, expect } from "vitest";
@@ -83,12 +88,26 @@ describe("applyBacWaterPromo — first-order user (isUserFirstOrder: true)", () 
   });
 
   it("strips a $0-priced non-3ml BAC water even on a first order (no free pass for wrong dosage)", () => {
-    // A first-time buyer who submits a 10ml BAC water at $0 must NOT receive
-    // it for free. Only the 3ml SKU qualifies for the first-order promo.
     const result = applyBacWaterPromo([peptideItem(), bacItem({ dosage: "10ml", price: "0" })], BAC_ID, true);
 
     expect(result.find((i) => i.productId === BAC_ID)).toBeUndefined();
     expect(result.find((i) => i.productId === PEPTIDE_ID)).toBeDefined();
+  });
+
+  it("treats dosage '3mL' (mixed case) the same as '3ml' — case-insensitive match", () => {
+    const result = applyBacWaterPromo([bacItem({ dosage: "3mL" })], BAC_ID, true);
+
+    const bac = result.find((i) => i.productId === BAC_ID);
+    expect(bac).toBeDefined();
+    expect(bac?.price).toBe("0.00");
+  });
+
+  it("treats dosage '3ML' (all caps) the same as '3ml' — case-insensitive match", () => {
+    const result = applyBacWaterPromo([bacItem({ dosage: "3ML" })], BAC_ID, true);
+
+    const bac = result.find((i) => i.productId === BAC_ID);
+    expect(bac).toBeDefined();
+    expect(bac?.price).toBe("0.00");
   });
 });
 
