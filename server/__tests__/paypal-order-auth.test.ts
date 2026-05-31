@@ -590,7 +590,114 @@ describe('POST /api/orders/paypal — BAC water quantity cap (multi-unit, first-
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Suite 5 — Non-3ml BAC water at $0 is never free, even for first-time buyers
+// Suite 5 (new) — Server-computed totalAmount stored on order, not client total
+//
+// Guards against the scenario where a client submits a `total` that does not
+// match the authoritative server-side computation (e.g. because the client
+// cart included a $0 BAC water that was stripped, or any other price tamper).
+// The stored `totalAmount` must always equal what the server computed, not what
+// the client sent.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — totalAmount is server-computed, not client-submitted', () => {
+  beforeEach(() => {
+    setTestSession('user-total-integrity');
+
+    // Repeat buyer — no promo entitlements
+    mockGetOrdersByUserId.mockResolvedValue([{ id: 'prior-order-xyz' }]);
+
+    mockGetAllProducts.mockResolvedValue([
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    // BPC-157: $300 per 5 mg vial; subtotal $300 → above $250 → free shipping
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    // PayPal captured $300, which matches the server-computed total.
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('stores the server-computed total even when the client submits a different total', async () => {
+    // Client submits total: '999' — an inflated (or deflated) value.
+    // The server must ignore this and store serverTotal instead.
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+      ],
+      subtotal: '999',
+      shipping: '0',
+      tax: '0',
+      total: '999',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    // Order should succeed — the captured PayPal amount ($300) exceeds the
+    // server-computed total ($300), so verification passes.
+    expect(res.status).toBe(201);
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    // The critical assertion: stored totalAmount must be the server-computed
+    // value ($300.00), not the client-submitted value ($999).
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.totalAmount).toBe('300.00');
+    expect(orderArg.totalAmount).not.toBe('999');
+  });
+
+  it('stores the server-computed total when the client submits the correct value too', async () => {
+    // Happy path: client and server agree. The stored value still comes from
+    // the server (the test just confirms it ends up as the expected amount).
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+      ],
+      subtotal: '300',
+      shipping: '0',
+      tax: '0',
+      total: '300',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toBe(201);
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.totalAmount).toBe('300.00');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 6 — Non-3ml BAC water at $0 is never free, even for first-time buyers
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('POST /api/orders/paypal — non-3ml BAC water at $0 is stripped for first-time buyers', () => {

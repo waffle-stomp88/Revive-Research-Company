@@ -1394,7 +1394,7 @@ export async function registerRoutes(
       const orderData: any = {
         productId: primaryItem?.productId || 'multi-item',
         quantity: sanitizedItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
-        totalAmount: total.toString(),
+        totalAmount: serverTotal.toFixed(2),
         email: customerEmail,
         firstName,
         lastName,
@@ -1452,11 +1452,11 @@ export async function registerRoutes(
         price: parseFloat(item.price) || 0,
       }));
       
-      // Calculate shipping and tax info for email (use passed values or calculate from items)
-      const orderSubtotal = subtotal || orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-      const orderShipping = typeof shipping === 'number' ? shipping : parseFloat(shipping) || 0;
-      const orderTax = typeof tax === 'number' ? tax : parseFloat(tax) || 0;
-      const orderTaxState = taxState || shippingAddress?.state || '';
+      // Use server-computed totals for email — never trust client-submitted values
+      const orderSubtotal = serverSubtotal;
+      const orderShipping = serverShipping;
+      const orderTax = serverTax;
+      const orderTaxState = shippingState || taxState || shippingAddress?.state || '';
       
       // Send confirmation email with all items, shipping, and tax info
       let emailSent = false;
