@@ -1209,15 +1209,23 @@ export default function ProductDetail() {
                 </div>
               ) : (
               <div className="flex flex-col gap-2" data-testid="stack-cta">
-                {/* Social proof */}
-                <div className="flex items-center justify-center gap-1.5 py-0.5">
-                  <div className="flex text-[#D4FF1F]">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="h-3 w-3 fill-current" />)}
-                  </div>
-                  <span className="text-[11px] font-semibold text-foreground/90">4.9</span>
-                  <span className="text-border/60 text-[11px]">·</span>
-                  <span className="text-[11px] text-muted-foreground">47 verified researchers</span>
-                </div>
+                {/* Batch link */}
+                {batchesWithCoas.length > 0 && (
+                  <button
+                    type="button"
+                    className="flex items-center justify-center gap-1 text-[11px] text-[#21d8ff]/70 hover:text-[#21d8ff] transition-colors py-0.5"
+                    onClick={() => {
+                      setActiveResearchTab("cert");
+                      setTimeout(() => {
+                        const el = document.getElementById("mobile-cert-accordion");
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 50);
+                    }}
+                  >
+                    <FlaskConical className="h-3 w-3" />
+                    Batch {batchesWithCoas[0].batchNumber}
+                  </button>
+                )}
 
                 {/* Buy Now — full-width dominant */}
                 <Button
@@ -1363,49 +1371,24 @@ export default function ProductDetail() {
               </motion.div>)
             )}
 
-            {/* Unified trust strip */}
+            {/* Trust strip */}
             <div
-              className="flex flex-wrap items-stretch text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-3 mb-4 border border-[#21d8ff]/20 rounded-md bg-[#21d8ff]/[0.04]"
+              className="flex items-stretch text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-3 mb-4 border border-[#21d8ff]/20 rounded-md overflow-hidden bg-[#21d8ff]/[0.04]"
               data-testid="bar-trust-badges"
             >
-              <div className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
+              <div className="flex flex-1 items-center justify-center gap-1.5 py-3 px-2">
                 <Shield className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
               </div>
-              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
-              <div className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
+              <div className="w-px self-stretch bg-[#21d8ff]/20" />
+              <div className="flex flex-1 items-center justify-center gap-1.5 py-3 px-2">
                 <Snowflake className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
-                <span>Cold Chain</span>
+                <span>Cold Chain Shipping</span>
               </div>
-              {batchesWithCoas.length > 0 && (
-                <>
-                  <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
-                  <button
-                    type="button"
-                    className="flex flex-1 min-w-[33%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2 text-[#21d8ff] hover:bg-[#21d8ff]/10 transition-colors"
-                    data-testid="text-batch-number"
-                    onClick={() => {
-                      setActiveResearchTab("cert");
-                      setTimeout(() => {
-                        const el = document.getElementById("mobile-cert-accordion");
-                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                      }, 50);
-                    }}
-                  >
-                    <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span>Batch {batchesWithCoas[0].batchNumber}</span>
-                  </button>
-                </>
-              )}
-              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
-              <div className="flex flex-1 min-w-[40%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2" data-testid="text-shipping-info">
+              <div className="w-px self-stretch bg-[#21d8ff]/20" />
+              <div className="flex flex-1 items-center justify-center gap-1.5 py-3 px-2" data-testid="text-shipping-info">
                 <Truck className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
                 <span>Ships from USA</span>
-              </div>
-              <div className="w-px self-stretch bg-[#21d8ff]/20 hidden sm:block" />
-              <div className="flex flex-1 min-w-[40%] sm:min-w-0 items-center justify-center gap-1.5 py-2.5 px-2">
-                <Clock className="h-3.5 w-3.5 flex-shrink-0 text-[#21d8ff]" />
-                <span>Same Day by 12PM CT</span>
               </div>
             </div>
 
