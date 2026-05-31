@@ -8,16 +8,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_STATE_PATH = path.join(__dirname, "auth-storage-state.json");
 
-function httpPost(url: string): Promise<{ status: number; body: string; setCookieHeaders: string[] }> {
+function httpPost(
+  url: string,
+  cookieHeader?: string
+): Promise<{ status: number; body: string; setCookieHeaders: string[] }> {
   return new Promise((resolve, reject) => {
     const u = new URL(url);
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "Content-Length": "0",
+    };
+    if (cookieHeader) headers["Cookie"] = cookieHeader;
+
     const req = http.request(
       {
         hostname: u.hostname,
         port: u.port ? parseInt(u.port, 10) : 80,
         path: u.pathname + u.search,
         method: "POST",
-        headers: { "Content-Type": "application/json", "Content-Length": "0" },
+        headers,
       },
       (res) => {
         let body = "";
@@ -60,12 +69,24 @@ export default async function globalSetup(config: FullConfig) {
   const baseURL = (config.projects[0]?.use as { baseURL?: string })?.baseURL ?? "http://localhost:5000";
   const { hostname } = new URL(baseURL);
 
-  const { status, body, setCookieHeaders } = await httpPost(`${baseURL}/api/test/login`);
-  if (status !== 200) {
-    throw new Error(`[global-setup] /api/test/login returned ${status}: ${body}`);
+  // Step 1 — create a stable test session
+  const loginRes = await httpPost(`${baseURL}/api/test/login`);
+  if (loginRes.status !== 200) {
+    throw new Error(`[global-setup] /api/test/login returned ${loginRes.status}: ${loginRes.body}`);
   }
 
-  const cookies = setCookieHeaders.map((h) => parseSetCookie(h, hostname));
+  const cookies = loginRes.setCookieHeaders.map((h) => parseSetCookie(h, hostname));
+
+  // Build a Cookie header string from the Set-Cookie values so we can
+  // attach the session to the next request.
+  const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+
+  // Step 2 — record RUO attestation for the test user so the attestation
+  // modal (z-[9999], intercepts all pointer events) never appears in tests.
+  const attestRes = await httpPost(`${baseURL}/api/auth/attest-ruo`, cookieHeader);
+  if (attestRes.status !== 200) {
+    console.warn(`[global-setup] /api/auth/attest-ruo returned ${attestRes.status}: ${attestRes.body}`);
+  }
 
   const storageState = {
     cookies,

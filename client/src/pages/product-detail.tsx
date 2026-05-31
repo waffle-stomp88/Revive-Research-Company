@@ -1178,6 +1178,54 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {/* Purchase Type Toggle */}
+            {!isOutOfStock && !(softGateEnabled && !isAuthenticated) && (
+              <div className="mb-2">
+                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Purchase Option</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div
+                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      purchaseType === "one-time"
+                        ? "border-[#D4FF1F] bg-[#D4FF1F]/5"
+                        : "border-border hover:border-border/80"
+                    }`}
+                    onClick={() => setPurchaseType("one-time")}
+                    data-testid="option-one-time"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                        <span className="font-medium text-sm">One-time</span>
+                      </div>
+                    </div>
+                    {purchaseType === "one-time" && (
+                      <Check className="h-4 w-4 text-[#D4FF1F] shrink-0" data-testid="check-one-time" />
+                    )}
+                  </div>
+                  <div
+                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      purchaseType === "subscription"
+                        ? "border-[#21d8ff] bg-[#21d8ff]/5"
+                        : "border-border hover:border-border/80"
+                    }`}
+                    onClick={() => setPurchaseType("subscription")}
+                    data-testid="option-subscription"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <Repeat className="h-3.5 w-3.5" />
+                        <span className="font-medium text-sm">Subscribe</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">Auto-delivery</p>
+                    </div>
+                    {purchaseType === "subscription" && (
+                      <Check className="h-4 w-4 text-[#21d8ff] shrink-0" data-testid="check-subscription" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Order Summary */}
             {!isOutOfStock && (
               <div className="mb-2">
