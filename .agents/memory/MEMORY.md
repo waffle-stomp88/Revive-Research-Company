@@ -1,2 +1,3 @@
 - [Email GIF rendering pipeline](email-gif-pipeline.md) — animated HTML→GIF via Playwright+FFmpeg; 2x capture + dither=none is the only way to get clean text
 - [Zoho Campaigns integration](zoho-integration.md) — list lookup is case-insensitive+trim; ignored_contacts = Zoho deliverability filter not a code bug; debug endpoint at /api/admin/debug/zoho-newsletter
+- [Playwright age gate bypass](playwright-age-gate-bypass.md) — storageState in playwright.config.ts pre-sets localStorage to skip the age gate for all e2e tests

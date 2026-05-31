@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5000",
+      "localStorage": [
+        {
+          "name": "revive-research-age-verified",
+          "value": "9999999999999"
+        }
+      ]
+    }
+  ]
+}

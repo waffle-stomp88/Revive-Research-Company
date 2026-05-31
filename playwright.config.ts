@@ -27,6 +27,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:5000",
     headless: true,
+    storageState: "tests/setup/storage-state.json",
     launchOptions: {
       executablePath: resolveChromiumPath(),
       args: [
