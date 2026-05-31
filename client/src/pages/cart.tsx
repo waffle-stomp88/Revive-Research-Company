@@ -282,7 +282,6 @@ export default function CartPage() {
       if (!res.ok) return null;
       return res.json();
     },
-    enabled: !!currentUser,
     staleTime: 60_000,
   });
 

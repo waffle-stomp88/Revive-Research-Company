@@ -402,7 +402,6 @@ export default function Checkout() {
       if (!res.ok) return null;
       return res.json();
     },
-    enabled: !!user,
     staleTime: 60_000,
   });
 

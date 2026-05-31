@@ -673,14 +673,14 @@ export async function registerRoutes(
   });
 
   // First-order status — used to inject free 3ml BAC water for first-time buyers
-  app.get('/api/my-first-order-status', isAuthenticated, async (req: any, res) => {
+  // No auth required — guests are always first-time buyers
+  app.get('/api/my-first-order-status', async (req: any, res) => {
     try {
       const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const existingOrders = await storage.getOrdersByUserId(userId);
-      const isFirstOrder = existingOrders.length === 0;
+      // Guests have no orders → treat as first-time buyer
+      const isFirstOrder = userId
+        ? (await storage.getOrdersByUserId(userId)).length === 0
+        : true;
 
       const allProducts = await storage.getAllProducts();
       const bacWater = allProducts.find((p) =>
@@ -692,8 +692,10 @@ export async function registerRoutes(
       }
 
       // Promo is only valid for the 3ml dosage — disable if 3ml is not in stock
+      // Case-insensitive match so '3mL' and '3ml' both work
       const bacWaterStocks = await storage.getProductDosageStocks(bacWater.id);
-      const threeMlStock = bacWaterStocks.find((s) => s.dosage === '3ml' && s.inStock);
+      const threeMlStock = bacWaterStocks.find((s) => s.dosage.toLowerCase() === '3ml' && s.inStock);
+      const threeMlDosage = threeMlStock?.dosage || '3ml';
 
       if (!threeMlStock) {
         // 3ml is out of stock — promo unavailable
@@ -705,7 +707,7 @@ export async function registerRoutes(
         bacWaterProductId: bacWater.id,
         bacWaterName: bacWater.name,
         bacWaterImageUrl: bacWater.imageUrl || null,
-        bacWaterDosage: '3ml',
+        bacWaterDosage: threeMlDosage,
       });
     } catch (error) {
       console.error("Error checking first order status:", error);
