@@ -2945,7 +2945,21 @@ function CoasTab() {
       if (data.testDate) form.setValue("testDate", data.testDate);
       if (data.expirationDate) form.setValue("expirationDate", data.expirationDate);
       if (data.labName) form.setValue("labName", data.labName);
-      const filled = [data.searchCode, data.batchNumber, data.purity, data.testDate, data.labName].filter(Boolean).length;
+      if (data.testHplcPurity) form.setValue("testHplcPurity", data.testHplcPurity);
+      if (data.testMassSpec) form.setValue("testMassSpec", data.testMassSpec);
+      if (data.testSterility) form.setValue("testSterility", data.testSterility);
+      if (data.testEndotoxins) form.setValue("testEndotoxins", data.testEndotoxins);
+      if (data.testAminoAcid) form.setValue("testAminoAcid", data.testAminoAcid);
+      if (data.testPeptideContent) form.setValue("testPeptideContent", data.testPeptideContent);
+      if (data.testAppearance) form.setValue("testAppearance", data.testAppearance);
+      if (data.testTfaContent) form.setValue("testTfaContent", data.testTfaContent);
+      if (data.testWaterContent) form.setValue("testWaterContent", data.testWaterContent);
+      if (data.testSolubility) form.setValue("testSolubility", data.testSolubility);
+      const filled = [
+        data.searchCode, data.batchNumber, data.purity, data.testDate, data.labName,
+        data.testMassSpec, data.testSterility, data.testEndotoxins, data.testAminoAcid,
+        data.testPeptideContent, data.testAppearance, data.testTfaContent, data.testWaterContent, data.testSolubility,
+      ].filter(Boolean).length;
       toast({
         title: filled > 0 ? `Extracted ${filled} field${filled !== 1 ? "s" : ""}` : "Nothing detected",
         description: filled > 0 ? "Review and adjust any values before saving." : "Could not read fields from this image.",

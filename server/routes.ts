@@ -3634,20 +3634,30 @@ export async function registerRoutes(
               },
               {
                 type: "text",
-                text: `You are a document parser. Extract the following fields from this Certificate of Analysis (COA) lab document and return ONLY a JSON object with these keys (use null for any field not found):
-- searchCode: the unique search/verification/report code or ID (often labeled "Search Code", "Report Number", "Certificate No", "Order #", or similar — a short alphanumeric code customers use to look up this report on the lab's website)
+                text: `You are a document parser. Extract the following fields from this Certificate of Analysis (COA) lab document and return ONLY a JSON object with these exact keys (use null for any field not found):
+- searchCode: the unique search/verification/report code or ID (often labeled "Search Code", "Report Number", "Certificate No", "Order #", or similar)
 - batchNumber: the batch, lot, or sample number
-- purity: the purity percentage (just the number and %, e.g. "99.4%")
+- purity: the HPLC purity percentage (just the number and %, e.g. "99.4%")
 - testDate: the test or analysis date in YYYY-MM-DD format
 - expirationDate: expiration or best-before date in YYYY-MM-DD format (if present)
 - labName: the testing laboratory name
+- testHplcPurity: same as purity — the HPLC purity value (number and %, e.g. "99.4%")
+- testMassSpec: mass spectrometry result (e.g. "Confirmed", "Pass", observed m/z value)
+- testSterility: sterility test result (e.g. "Pass", "Sterile")
+- testEndotoxins: endotoxin test result (e.g. "<0.5 EU/mg", "Pass")
+- testAminoAcid: amino acid analysis result (e.g. "Consistent", "Pass")
+- testPeptideContent: peptide content value in mg (just the number, e.g. "12.83")
+- testAppearance: appearance description (e.g. "White lyophilized powder")
+- testTfaContent: TFA/trifluoroacetic acid content (e.g. "<1%")
+- testWaterContent: water content (e.g. "<5%")
+- testSolubility: solubility result (e.g. "Freely soluble in water")
 
 Return ONLY valid JSON, no markdown, no explanation.`,
               },
             ],
           },
         ],
-        max_tokens: 400,
+        max_tokens: 800,
       });
 
       const raw = completion.choices[0]?.message?.content?.trim() || "{}";
