@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
+import { Loader2, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 // Vite bundles this as a classic IIFE worker (not ESM) in production,
@@ -12,9 +12,24 @@ function getSharedPdfWorker(): Worker {
   return _sharedPdfWorker;
 }
 
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
+}
+
 interface CoaPdfViewerProps {
   pdfUrl: string;
   batchNumber: string;
+  previewImageUrl?: string | null;
   maxWidth?: number;
   maxHeight?: number;
 }
@@ -74,9 +89,151 @@ function cropWhitespace(src: HTMLCanvasElement, padding = 8): HTMLCanvasElement 
 export function CoaPdfViewer({
   pdfUrl,
   batchNumber,
+  previewImageUrl,
   maxWidth = 560,
   maxHeight = 720,
 }: CoaPdfViewerProps) {
+  const isMobile = useIsMobile();
+
+  // ── Mobile: render static image instead of PDF.js ──────────────────────────
+  if (isMobile) {
+    return (
+      <MobileImageViewer
+        imageUrl={previewImageUrl || pdfUrl}
+        batchNumber={batchNumber}
+        maxWidth={maxWidth}
+        maxHeight={maxHeight}
+      />
+    );
+  }
+
+  // ── Desktop: PDF.js canvas renderer ────────────────────────────────────────
+  return (
+    <DesktopPdfViewer
+      pdfUrl={pdfUrl}
+      batchNumber={batchNumber}
+      maxWidth={maxWidth}
+      maxHeight={maxHeight}
+    />
+  );
+}
+
+// ── Mobile image viewer ───────────────────────────────────────────────────────
+
+function MobileImageViewer({
+  imageUrl,
+  batchNumber,
+  maxWidth,
+  maxHeight,
+}: {
+  imageUrl: string;
+  batchNumber: string;
+  maxWidth: number;
+  maxHeight: number;
+}) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [imgFailed, setImgFailed] = useState(false);
+
+  // If the imageUrl is a PDF (not renderable as <img>), show a download link
+  if (imgFailed) {
+    return (
+      <div className="w-full flex flex-col items-center gap-3 py-10 bg-[#1a1a1f]" data-testid="coa-inline-pdf-viewer">
+        <p className="text-sm text-gray-400">Certificate of Analysis</p>
+        <a
+          href={imageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-4 py-2 rounded bg-[#D4FF1F] text-black text-sm font-semibold"
+          data-testid="link-coa-view-pdf"
+        >
+          View Full COA PDF
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="w-full flex flex-col items-center bg-[#1a1a1f]" data-testid="coa-inline-pdf-viewer">
+        <div
+          className="relative group cursor-zoom-in w-full"
+          onClick={() => { setZoom(1); setLightboxOpen(true); }}
+          data-testid="coa-thumbnail-click-target"
+          title="Tap to enlarge"
+        >
+          <img
+            src={imageUrl}
+            alt={`Certificate of Analysis — ${batchNumber}`}
+            className="h-auto shadow-lg block mx-auto"
+            style={{ maxWidth: `${maxWidth}px`, maxHeight: `${maxHeight}px`, width: "100%" }}
+            data-testid="img-coa-mobile"
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+          />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/15">
+            <span className="flex items-center gap-1.5 bg-black/70 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow">
+              <ZoomIn className="h-3.5 w-3.5" />
+              Tap to enlarge
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent
+          className="max-w-5xl w-full p-0 bg-[#111] border-white/10 overflow-hidden"
+          data-testid="dialog-coa-lightbox"
+        >
+          <VisuallyHidden>
+            <DialogTitle>Certificate of Analysis — {batchNumber}</DialogTitle>
+          </VisuallyHidden>
+
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#1a1a1f]">
+            <div>
+              <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F]">Certificate of Analysis</p>
+              <p className="text-xs text-muted-foreground font-mono mt-0.5">{batchNumber}</p>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)))} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Zoom out" data-testid="button-lightbox-zoom-out"><ZoomOut className="h-4 w-4" /></button>
+              <span className="text-xs font-mono text-muted-foreground w-10 text-center select-none">{Math.round(zoom * 100)}%</span>
+              <button onClick={() => setZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Zoom in" data-testid="button-lightbox-zoom-in"><ZoomIn className="h-4 w-4" /></button>
+              <button onClick={() => setZoom(1)} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Reset zoom"><RotateCcw className="h-3.5 w-3.5" /></button>
+              <div className="w-px h-4 bg-white/10 mx-1" />
+              <button onClick={() => setLightboxOpen(false)} className="p-1.5 rounded hover-elevate text-muted-foreground hover:text-foreground" aria-label="Close" data-testid="button-lightbox-close"><X className="h-4 w-4" /></button>
+            </div>
+          </div>
+
+          <div className="overflow-auto bg-[#111]" style={{ maxHeight: "82vh" }}>
+            <div className="flex justify-center py-4 px-4">
+              <img
+                src={imageUrl}
+                alt={`Certificate of Analysis — ${batchNumber}`}
+                draggable={false}
+                data-testid="img-lightbox-coa"
+                style={{ width: `${Math.round(900 * zoom)}px`, maxWidth: "none", height: "auto", display: "block" }}
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+// ── Desktop PDF.js viewer ─────────────────────────────────────────────────────
+
+function DesktopPdfViewer({
+  pdfUrl,
+  batchNumber,
+  maxWidth,
+  maxHeight,
+}: {
+  pdfUrl: string;
+  batchNumber: string;
+  maxWidth: number;
+  maxHeight: number;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<"loading" | "rendered" | "error">("loading");
   const [dataUrl, setDataUrl] = useState<string | null>(null);
@@ -91,9 +248,6 @@ export function CoaPdfViewer({
       setDataUrl(null);
       try {
         const pdfjsLib = await import("pdfjs-dist");
-        // Use a Vite-bundled worker (classic IIFE format) so it works in
-        // Samsung Browser, Firefox, and every other browser — no ESM worker
-        // support required.
         pdfjsLib.GlobalWorkerOptions.workerPort = getSharedPdfWorker() as any;
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, useSystemFonts: true }).promise;
@@ -103,7 +257,7 @@ export function CoaPdfViewer({
 
         const unscaled = page.getViewport({ scale: 1 });
 
-        // ── Hi-res render for lightbox (1000 px wide) → crop → JPEG data URL ──
+        // Hi-res render for lightbox (1000 px wide) → crop → JPEG data URL
         const hiScale = 1000 / unscaled.width;
         const hiViewport = page.getViewport({ scale: hiScale });
         const hiRaw = document.createElement("canvas");
@@ -114,7 +268,7 @@ export function CoaPdfViewer({
         const hiCropped = cropWhitespace(hiRaw);
         setDataUrl(hiCropped.toDataURL("image/jpeg", 0.93));
 
-        // ── Thumbnail → crop → draw into persistent canvas ref ──
+        // Thumbnail → crop → draw into persistent canvas ref
         const thumbScale = Math.min(maxWidth / unscaled.width, maxHeight / unscaled.height);
         const thumbViewport = page.getViewport({ scale: thumbScale });
         const thumbRaw = document.createElement("canvas");
@@ -142,7 +296,6 @@ export function CoaPdfViewer({
 
   return (
     <>
-      {/* ── Thumbnail ── */}
       <div className="w-full flex flex-col items-center bg-[#1a1a1f]" data-testid="coa-inline-pdf-viewer">
         {status === "loading" && (
           <div className="flex flex-col items-center gap-3 py-16 w-full">
@@ -152,12 +305,10 @@ export function CoaPdfViewer({
         )}
         {status === "error" && (
           <div className="flex flex-col items-center gap-3 py-14 w-full">
-            <AlertCircle className="h-7 w-7 text-red-400" />
             <p className="text-sm text-gray-500">Unable to preview document</p>
           </div>
         )}
 
-        {/* Wrapper visibility is CSS-toggled — canvas stays in DOM so ref is stable */}
         <div
           className={`relative group cursor-zoom-in w-full ${status === "rendered" ? "block" : "invisible h-0 overflow-hidden"}`}
           onClick={() => { setZoom(1); setLightboxOpen(true); }}
@@ -180,7 +331,6 @@ export function CoaPdfViewer({
         </div>
       </div>
 
-      {/* ── Lightbox ── */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent
           className="max-w-5xl w-full p-0 bg-[#111] border-white/10 overflow-hidden"
@@ -190,7 +340,6 @@ export function CoaPdfViewer({
             <DialogTitle>Certificate of Analysis — {batchNumber}</DialogTitle>
           </VisuallyHidden>
 
-          {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#1a1a1f]">
             <div>
               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F]">Certificate of Analysis</p>
@@ -206,7 +355,6 @@ export function CoaPdfViewer({
             </div>
           </div>
 
-          {/* Zoomable image */}
           <div className="overflow-auto bg-[#111]" style={{ maxHeight: "82vh" }}>
             {dataUrl ? (
               <div className="flex justify-center py-4 px-4">

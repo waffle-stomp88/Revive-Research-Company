@@ -2075,6 +2075,7 @@ export default function ProductDetail() {
                                 (<CoaPdfViewer
                                   pdfUrl={latestCoa.imageUrl}
                                   batchNumber={latestCoa.batchNumber}
+                                  previewImageUrl={latestCoa.previewImageUrl}
                                 />)
                               ) : latestCoa.previewImageUrl ? (
                                 /* Fallback: PNG preview image */
