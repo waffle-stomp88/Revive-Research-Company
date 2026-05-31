@@ -425,7 +425,6 @@ export async function registerRoutes(
     '/batch-archive':    '/coa/batch-testing-archive',
     '/buyer-checklist':  '/guides/peptide-vendor-ethics-standards',
     '/ethical-pricing':  '/guides/peptide-pricing-breakdown',
-    '/wholesale':        '/contact',
     '/products':         '/peptides',
     '/troubleshooting':  '/guides/peptide-handling-troubleshooting',
   };
