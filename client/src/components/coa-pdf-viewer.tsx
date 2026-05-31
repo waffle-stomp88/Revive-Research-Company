@@ -211,7 +211,7 @@ function MobileImageViewer({
                 alt={`Certificate of Analysis — ${batchNumber}`}
                 draggable={false}
                 data-testid="img-lightbox-coa"
-                style={{ width: `${Math.round(900 * zoom)}px`, maxWidth: "none", height: "auto", display: "block" }}
+                style={{ width: `${Math.round(100 * zoom)}%`, maxWidth: zoom > 1 ? "none" : "100%", height: "auto", display: "block" }}
               />
             </div>
           </div>
@@ -363,7 +363,7 @@ function DesktopPdfViewer({
                   alt={`Certificate of Analysis — ${batchNumber}`}
                   draggable={false}
                   data-testid="img-lightbox-coa"
-                  style={{ width: `${Math.round(900 * zoom)}px`, maxWidth: "none", height: "auto", display: "block" }}
+                  style={{ width: `${Math.round(100 * zoom)}%`, maxWidth: zoom > 1 ? "none" : "100%", height: "auto", display: "block" }}
                 />
               </div>
             ) : (
