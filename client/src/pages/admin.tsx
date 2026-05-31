@@ -2918,10 +2918,25 @@ function CoasTab() {
   };
 
   const handleScanCoa = async () => {
-    const scannableUrl = !coaIsPdf ? coaImageUrl : coaPreviewImageUrl;
-    if (!scannableUrl) return;
+    if (!coaImageUrl) return;
     setIsScanning(true);
     try {
+      let scannableUrl: string;
+      if (coaIsPdf) {
+        const pdfjsLib = await import("pdfjs-dist");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+        const pdf = await pdfjsLib.getDocument(coaImageUrl).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d")!;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        scannableUrl = canvas.toDataURL("image/png");
+      } else {
+        scannableUrl = coaPreviewImageUrl || coaImageUrl;
+      }
       const res = await apiRequest("POST", "/api/admin/coas/scan-image", { imageUrl: scannableUrl });
       const data = await res.json();
       if (data.searchCode) form.setValue("searchCode", data.searchCode);
@@ -3365,7 +3380,7 @@ function CoasTab() {
                         </Button>
                       </div>
                       <div className="flex flex-col gap-2">
-                        {(!coaIsPdf ? coaImageUrl : coaPreviewImageUrl) && (
+                        {coaImageUrl && (
                           <Button
                             type="button"
                             variant="outline"
