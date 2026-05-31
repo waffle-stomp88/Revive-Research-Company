@@ -165,7 +165,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         ) : (
           <span
             className="font-black tracking-tight flex-shrink-0"
-            style={{ fontSize: "34px", color: "#21d8ff", lineHeight: 1 }}
+            style={{ fontSize: "34px", color: "#ffffff", lineHeight: 1 }}
             data-testid="order-summary-total"
           >
             ${totalRounded}
