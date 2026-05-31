@@ -64,6 +64,7 @@ const MOCK_FIRST_ORDER_STATUS = {
   bacWaterName: "Bacteriostatic Water",
   bacWaterDosage: "3mL",
   bacWaterImageUrl: null,
+  bacWaterPrice: 9,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -175,7 +176,7 @@ test.describe("BAC water promo — cart badge", () => {
         .locator(`[data-testid="badge-free-${BAC_WATER_PRODUCT_ID}"]`)
         .nth(1);
       await expect(freeBadge).toBeVisible({ timeout: 10_000 });
-      await expect(freeBadge).toContainText("Free — First Order");
+      await expect(freeBadge).toContainText("First Order Perk");
     }
   );
 });

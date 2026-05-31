@@ -419,7 +419,7 @@ export default function CartPage() {
           {/* ====== CART ITEMS — order 1 on mobile, left col on desktop ====== */}
           <div className="order-1 lg:col-span-2 space-y-3">
             {/* First-order free BAC water banner */}
-            {firstOrderStatus?.isFirstOrder && !!firstOrderStatus.bacWaterProductId && !bannerDismissed && (
+            {!!currentUser && firstOrderStatus?.isFirstOrder && !!firstOrderStatus.bacWaterProductId && !bannerDismissed && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}

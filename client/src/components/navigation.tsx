@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useHoverCapable, hoverIf } from "@/hooks/use-hover-capable";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, ChevronRight, FileCheck, GraduationCap, BookOpen, Package, FlaskConical, Building2, Calculator, Layers, Search, Trash2, Mail, Sparkles, HelpCircle, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -58,7 +58,7 @@ export function Navigation() {
   const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
-  const { items, getItemCount, getSubtotal, removeFromCart, removeBundleFromCart } = useCart();
+  const { items, getItemCount, getSubtotal, removeFromCart, removeBundleFromCart, declineFreeItem } = useCart();
   const cartItemCount = getItemCount();
   const regularItems = items.filter(item => !item.isBundle);
   const bundleItems = items.filter(item => item.isBundle);
@@ -420,7 +420,7 @@ export function Navigation() {
                       <>
                         <div className="max-h-64 overflow-y-auto scrollbar-hide">
                           {regularItems.slice(0, 3).map((item) => {
-                            const itemKey = `${item.productId}-${item.dosage}${item.packSize ? `-pack${item.packSize}` : ''}`;
+                            const itemKey = `${item.productId}-${item.dosage}${item.packSize ? `-pack${item.packSize}` : ''}${item.isFree ? '-free' : ''}`;
                             return (
                             <div 
                               key={itemKey} 
@@ -432,8 +432,8 @@ export function Navigation() {
                                 {item.image ? (
                                   <img src={item.image} alt={`${item.name} ${item.dosage} research peptide`} className="w-full h-full object-contain p-1" />
                                 ) : (
-                                  <div className="flex items-center justify-center h-full bg-[#D4FF1F]/10">
-                                    <Package className="h-5 w-5 text-[#D4FF1F]" />
+                                  <div className={`flex items-center justify-center h-full ${item.isFree ? 'bg-[#22c55e]/10' : 'bg-[#D4FF1F]/10'}`}>
+                                    {item.isFree ? <Gift className="h-5 w-5 text-[#22c55e]" /> : <Package className="h-5 w-5 text-[#D4FF1F]" />}
                                   </div>
                                 )}
                               </div>
@@ -442,11 +442,34 @@ export function Navigation() {
                                   {item.name}
                                   {item.packSize && <span className="text-[#D4FF1F] ml-1 text-xs">({item.packSize}-Pack)</span>}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {item.dosage} × {item.quantity}
-                                </p>
+                                {item.isFree ? (
+                                  <span className="text-xs text-[#22c55e] font-medium">First Order Perk</span>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground">
+                                    {item.dosage} × {item.quantity}
+                                  </p>
+                                )}
                               </div>
-                              {hoveredCartItem === itemKey ? (
+                              {item.isFree ? (
+                                hoveredCartItem === itemKey ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-muted-foreground hover:text-foreground h-auto"
+                                    onClick={() => declineFreeItem(item.productId)}
+                                    data-testid={`button-decline-free-item-${item.productId}`}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                ) : (
+                                  <div className="text-right">
+                                    <p className="text-sm font-semibold text-[#22c55e]">$0.00</p>
+                                    {item.originalPrice != null && (
+                                      <p className="text-xs text-muted-foreground line-through">${item.originalPrice}</p>
+                                    )}
+                                  </div>
+                                )
+                              ) : hoveredCartItem === itemKey ? (
                                 <Button
                                   variant="ghost"
                                   size="sm"
