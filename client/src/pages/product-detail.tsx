@@ -2071,7 +2071,7 @@ export default function ProductDetail() {
                             </div>
                             <div className="px-5 py-4">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#21d8ff] mb-1">Method</p>
-                              <p className="font-semibold text-sm text-foreground">HPLC-UV / Mass Spectrometry</p>
+                              <p className="font-semibold text-foreground text-[20px]">HPLC-UV / Mass Spectrometry</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Identity confirmed via observed [M+nH]ⁿ⁺ values</p>
                             </div>
                           </div>
