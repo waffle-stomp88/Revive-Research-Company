@@ -2050,12 +2050,11 @@ export default function ProductDetail() {
 
                       return (
                         <div className="mb-6 rounded-lg border border-[#D4FF1F]/20 bg-[#1a1a1f] overflow-hidden" data-testid="section-latest-coa-preview">
-
                           {/* ── Top header: lab + method split ── */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
                             <div className="px-5 py-4">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">Testing Laboratory</p>
-                              <p className="font-semibold text-sm text-foreground">{latestCoa.labName}</p>
+                              <p className="font-semibold text-foreground text-[20px]">{latestCoa.labName}</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Independent third-party verification</p>
                               {latestCoa.labVerificationUrl && (
                                 <a
@@ -2076,7 +2075,6 @@ export default function ProductDetail() {
                               <p className="text-xs text-muted-foreground mt-0.5">Identity confirmed via observed [M+nH]ⁿ⁺ values</p>
                             </div>
                           </div>
-
                           {/* ── Purity hero ── */}
                           <div className="px-5 py-5 flex items-end justify-between gap-4 border-b border-white/10">
                             <div>
@@ -2093,19 +2091,18 @@ export default function ProductDetail() {
                               )}
                             </div>
                           </div>
-
                           {/* ── Inline PDF / image preview ── */}
                           {(latestCoa.imageUrl || latestCoa.previewImageUrl) && (
                             <div className="border-b border-white/10" data-testid="coa-inline-preview">
                               {latestCoa.imageUrl ? (
                                 /* Render PDF page 1 to canvas using PDF.js */
-                                <CoaPdfViewer
+                                (<CoaPdfViewer
                                   pdfUrl={latestCoa.imageUrl}
                                   batchNumber={latestCoa.batchNumber}
-                                />
+                                />)
                               ) : latestCoa.previewImageUrl ? (
                                 /* Fallback: PNG preview image */
-                                <div className="bg-white">
+                                (<div className="bg-white">
                                   <img
                                     src={latestCoa.previewImageUrl}
                                     alt={`Certificate of Analysis — ${latestCoa.batchNumber}`}
@@ -2113,11 +2110,10 @@ export default function ProductDetail() {
                                     loading="lazy"
                                     data-testid="img-coa-preview"
                                   />
-                                </div>
+                                </div>)
                               ) : null}
                             </div>
                           )}
-
                           {/* ── Structured results table ── */}
                           {resultRows.length > 0 && (
                             <div className="border-b border-white/10">
@@ -2150,7 +2146,6 @@ export default function ProductDetail() {
                               ))}
                             </div>
                           )}
-
                           {/* ── Data-trust notice ── */}
                           {resultRows.length > 0 && (
                             <div className="px-5 py-2.5 flex items-center gap-2 border-b border-white/10 bg-white/[0.02]">
@@ -2161,7 +2156,6 @@ export default function ProductDetail() {
                               </p>
                             </div>
                           )}
-
                           {/* ── Date row ── */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
                             <div className="px-5 py-3 flex items-center gap-3">
@@ -2181,7 +2175,6 @@ export default function ProductDetail() {
                               </div>
                             )}
                           </div>
-
                           {/* ── Methodology footer ── */}
                           <div className="px-5 py-4 bg-white/[0.03] border-b border-white/10">
                             <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -2191,7 +2184,6 @@ export default function ProductDetail() {
                               an independent third-party laboratory separate from Revive Research.
                             </p>
                           </div>
-
                           {/* ── Download + View All Batches ── */}
                           <div className="px-5 py-4 flex flex-wrap items-center gap-4">
                             {latestCoa.imageUrl && (
