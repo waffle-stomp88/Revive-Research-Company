@@ -6,8 +6,10 @@
  *
  * Rules (server-authoritative):
  *   1. First-order user + BAC water @ dosage "3ml"
- *      → quantity clamped to 1, price forced to "0.00"
- *      → any extra units kept at the item's original price
+ *      → exactly ONE unit is free across ALL cart lines (cross-line cap)
+ *      → the first qualifying line gets qty clamped to 1, price forced to "0.00"
+ *      → any extra units on that line are kept at the item's original price
+ *      → any subsequent $0 BAC water lines (split-line attack) are stripped
  *   2. Any BAC water submitted at price ≤ $0 that does NOT match rule 1
  *      (wrong dosage on a first order, or any dosage on a repeat order)
  *      → item stripped entirely. Non-qualifying $0 items are never
@@ -28,7 +30,7 @@ export type CartItemInput = {
  * Returns a server-sanitized copy of `items` with the BAC water first-order
  * promo applied (or blocked).
  *
- * @param items          Raw cart items from the client request body
+ * @param items              Raw cart items from the client request body
  * @param bacWaterProductId  DB id of the BAC water product, or null if not found
  * @param isUserFirstOrder   True when the authenticated user has 0 prior orders
  */
@@ -38,6 +40,11 @@ export function applyBacWaterPromo(
   isUserFirstOrder: boolean
 ): CartItemInput[] {
   const sanitized: CartItemInput[] = [];
+
+  // Tracks whether the single allowed free unit has already been granted across
+  // all cart lines in this request. This prevents a split-line attack where a
+  // buyer submits two separate line items (each qty=1, price=$0) for BAC water.
+  let freeUnitGranted = false;
 
   for (const rawItem of items) {
     if (!bacWaterProductId || rawItem.productId !== bacWaterProductId) {
@@ -49,11 +56,22 @@ export function applyBacWaterPromo(
     const priceNum = parseFloat(String(rawItem.price ?? "0"));
 
     if (isUserFirstOrder && rawItem.dosage === "3ml") {
-      // Exactly one unit is free on the first order.
-      sanitized.push({ ...rawItem, quantity: 1, price: "0.00" });
-      if (qty > 1) {
-        // Additional units beyond the free one are priced normally.
-        sanitized.push({ ...rawItem, quantity: qty - 1 });
+      if (!freeUnitGranted) {
+        // First qualifying line — grant exactly one free unit.
+        freeUnitGranted = true;
+        sanitized.push({ ...rawItem, quantity: 1, price: "0.00" });
+        if (qty > 1) {
+          // Additional units beyond the free one are priced normally.
+          sanitized.push({ ...rawItem, quantity: qty - 1 });
+        }
+      } else {
+        // Free unit already granted by a prior cart line.
+        // A $0-priced duplicate is a split-line attack — strip it.
+        // A full-price line is legitimate and passes through unchanged.
+        if (priceNum > 0) {
+          sanitized.push(rawItem);
+        }
+        // priceNum <= 0: strip silently (split-line promo abuse)
       }
     } else if (priceNum <= 0) {
       // Any BAC water submitted at $0 that did not qualify for the 3ml

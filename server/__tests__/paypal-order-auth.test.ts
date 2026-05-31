@@ -780,3 +780,140 @@ describe('POST /api/orders/paypal — non-3ml BAC water at $0 is stripped for fi
     expect(orderArg.fulfillmentNotes).toContain('BPC-157');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 6 — BAC water split-line attack: two separate $0 lines for first-time buyer
+//
+// A savvy buyer could attempt to game the promo by submitting two *separate*
+// cart line items (each qty=1, price=$0) for the same BAC water product
+// instead of a single line with qty=2. applyBacWaterPromo must recognise this
+// cross-line pattern and honour only the first free unit, stripping the second
+// $0 line entirely.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — BAC water split-line attack (first-time buyer)', () => {
+  beforeEach(() => {
+    setTestSession('user-first-time-buyer-splitline');
+
+    // First-time buyer: zero prior orders
+    mockGetOrdersByUserId.mockResolvedValue([]);
+
+    // Product catalogue includes BAC water
+    mockGetAllProducts.mockResolvedValue([
+      {
+        id: BAC_WATER_ID,
+        slug: 'bacteriostatic-water',
+        name: 'Bacteriostatic Water',
+      },
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    // BPC-157: $300 per 5mg vial (above $250 free-shipping threshold → $0 shipping)
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    // PayPal captured $300 (only BPC-157). The two $0 BAC water lines are
+    // the attack; only one $0 unit should survive after sanitisation.
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('returns 201 when a first-time buyer submits two separate $0 BAC water lines', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+        {
+          // First $0 BAC water line — legitimate first-order promo
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+        {
+          // Second $0 BAC water line — split-line attack attempt
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+      ],
+      total: '300',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toBe(201);
+  });
+
+  it('strips the second $0 BAC water line so only one free unit appears in fulfillmentNotes', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+        {
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+        {
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+      ],
+      total: '300',
+    });
+
+    await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.fulfillmentNotes).toBeDefined();
+
+    // BPC-157 must be present — it is a normal paid item.
+    expect(orderArg.fulfillmentNotes).toContain('BPC-157');
+
+    // Exactly one free BAC water unit must appear (the first line).
+    expect(orderArg.fulfillmentNotes).toContain('Bacteriostatic Water (3ml) x1 @ $0.00');
+
+    // The second $0 line must have been stripped. The free-unit entry must
+    // appear exactly once — count occurrences to verify no duplicate.
+    const freeUnitOccurrences = (
+      orderArg.fulfillmentNotes.match(/Bacteriostatic Water \(3ml\) x1 @ \$0\.00/g) ?? []
+    ).length;
+    expect(freeUnitOccurrences).toBe(1);
+  });
+});
