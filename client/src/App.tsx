@@ -190,7 +190,7 @@ function Router() {
           </ProtectedRoute>
         </Route>
         <Route path="/checkout">
-          <ProtectedRoute title="Checkout" description="Sign in to complete your order and receive your free BAC water with qualifying purchases.">
+          <ProtectedRoute title="Checkout" description="Sign in to complete your order. First-time customers receive a free 3ml BAC water with their first order.">
             <Checkout />
           </ProtectedRoute>
         </Route>

@@ -1821,8 +1821,12 @@ export default function Checkout() {
                             )}
                           </p>
                         </div>
-                        <p className="text-sm font-semibold text-[#D4FF1F] tabular-nums flex-shrink-0">
-                          {item.isFree ? 'FREE' : `$${Math.round(item.price * item.quantity)}`}
+                        <p className="text-sm font-semibold tabular-nums flex-shrink-0">
+                          {item.isFree ? (
+                            <span className="text-[#22c55e]">Free — First Order</span>
+                          ) : (
+                            <span className="text-[#D4FF1F]">${Math.round(item.price * item.quantity)}</span>
+                          )}
                         </p>
                       </div>
                     ))}

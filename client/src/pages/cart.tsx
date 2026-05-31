@@ -511,7 +511,7 @@ export default function CartPage() {
                         {/* Price only — no icon here so this row stays text-height */}
                         {item.isFree ? (
                           <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5 flex-shrink-0" data-testid={`badge-free-${item.productId}`}>
-                            <Gift className="h-3 w-3" />FREE
+                            <Gift className="h-3 w-3" />Free — First Order
                           </Badge>
                         ) : (
                           <span
@@ -611,7 +611,7 @@ export default function CartPage() {
                     <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
                       {item.isFree ? (
                         <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
-                          <Gift className="h-3 w-3" />FREE
+                          <Gift className="h-3 w-3" />Free — First Order
                         </Badge>
                       ) : (
                         <>
