@@ -2132,43 +2132,18 @@ export default function ProductDetail() {
                             <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Lot</p>
                             <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
                           </div>
-                          {/* ── HPLC results table ── */}
+                          {/* ── HPLC results rows ── */}
                           {resultRows.length > 0 && (
                             <div className="border-b border-white/10" data-testid="section-coa-results-table">
-                              <table className="w-full text-xs">
-                                <thead>
-                                  <tr className="border-b border-white/10 bg-white/[0.02]">
-                                    <th className="text-left px-5 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Test</th>
-                                    <th className="text-center px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground hidden sm:table-cell">Spec</th>
-                                    <th className="text-center px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Result</th>
-                                    <th className="text-center px-5 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Status</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {resultRows.map((row, i) => (
-                                    <tr key={i} className="border-b border-white/[0.06] last:border-0">
-                                      <td className="px-5 py-2.5 text-foreground/80 font-medium">{row.label}</td>
-                                      <td className="px-3 py-2.5 text-center text-muted-foreground hidden sm:table-cell">{row.expected || "—"}</td>
-                                      <td className="px-3 py-2.5 text-center font-semibold text-foreground">{row.actual || "—"}</td>
-                                      <td className="px-5 py-2.5 text-center">
-                                        {row.status?.toLowerCase() === "pass" ? (
-                                          <span className="inline-flex items-center gap-1 text-[#D4FF1F] font-semibold text-[11px]">
-                                            <CheckCircle2 className="h-3 w-3 flex-shrink-0" />
-                                            Pass
-                                          </span>
-                                        ) : row.status?.toLowerCase() === "fail" ? (
-                                          <span className="inline-flex items-center gap-1 text-red-400 font-semibold text-[11px]">
-                                            <XCircle className="h-3 w-3 flex-shrink-0" />
-                                            Fail
-                                          </span>
-                                        ) : row.status ? (
-                                          <span className="text-muted-foreground text-[11px]">{row.status}</span>
-                                        ) : null}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                              {resultRows.map((row, i) => (
+                                <div
+                                  key={i}
+                                  className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-2.5 border-b border-white/[0.06] last:border-0"
+                                >
+                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
+                                  <p className="text-sm font-semibold text-foreground text-right">{row.actual || "—"}</p>
+                                </div>
+                              ))}
                               <div className="px-5 py-2 flex items-center gap-2 bg-white/[0.02]">
                                 <div className="h-1.5 w-1.5 rounded-full bg-[#D4FF1F]/60 flex-shrink-0" />
                                 <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
