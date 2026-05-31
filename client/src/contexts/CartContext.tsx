@@ -50,6 +50,23 @@ export function stripFreeItemsFromStorage(): void {
   }
 }
 
+// Maximum quantity allowed for a single cart line to prevent silent runaway accumulation.
+const MAX_CART_QTY = 20;
+
+/**
+ * Merge a local (localStorage) cart with the authoritative server cart.
+ *
+ * Three scenarios:
+ *   (a) Item only in server  → keep as-is (server is source of truth).
+ *   (b) Item only in local   → push it (guest-session addition not yet on server).
+ *   (c) Item in both         → use Math.max(serverQty, localQty).
+ *       Using max (not sum) prevents exponential doubling: after the first restore
+ *       the local cart is a mirror of the server, so adding them would double on
+ *       every subsequent page load. Max still honours a guest who added more than
+ *       the server has (e.g. guest +3, server 1 → max = 3).
+ *
+ * All quantities are clamped to MAX_CART_QTY as a safety ceiling.
+ */
 function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
   const result = [...server];
   for (const localItem of local) {
@@ -71,15 +88,24 @@ function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
       );
     });
     if (existingIndex >= 0) {
+      // (c) Item in both — take the higher of the two, but never add them together.
+      const merged = Math.max(result[existingIndex].quantity, localItem.quantity);
       result[existingIndex] = {
         ...result[existingIndex],
-        quantity: result[existingIndex].quantity + localItem.quantity,
+        quantity: Math.min(merged, MAX_CART_QTY),
       };
     } else {
-      result.push(localItem);
+      // (b) Item only in local — add it (guest-session addition).
+      result.push({
+        ...localItem,
+        quantity: Math.min(localItem.quantity, MAX_CART_QTY),
+      });
     }
   }
-  return result;
+  // (a) Items only in server were already in `result` from the spread — apply ceiling too.
+  return result.map((item) =>
+    item.isFree ? item : { ...item, quantity: Math.min(item.quantity, MAX_CART_QTY) }
+  );
 }
 
 interface FirstOrderStatusData {
