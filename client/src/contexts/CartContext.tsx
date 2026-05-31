@@ -90,22 +90,29 @@ function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
     if (existingIndex >= 0) {
       // (c) Item in both — take the higher of the two, but never add them together.
       const merged = Math.max(result[existingIndex].quantity, localItem.quantity);
-      result[existingIndex] = {
-        ...result[existingIndex],
-        quantity: Math.min(merged, MAX_CART_QTY),
-      };
+      const clamped = Math.min(merged, MAX_CART_QTY);
+      if (merged > MAX_CART_QTY) {
+        console.warn(`[cart] quantity clamped for ${localItem.productId}: ${merged} → ${clamped}`);
+      }
+      result[existingIndex] = { ...result[existingIndex], quantity: clamped };
     } else {
       // (b) Item only in local — add it (guest-session addition).
-      result.push({
-        ...localItem,
-        quantity: Math.min(localItem.quantity, MAX_CART_QTY),
-      });
+      const clamped = Math.min(localItem.quantity, MAX_CART_QTY);
+      if (localItem.quantity > MAX_CART_QTY) {
+        console.warn(`[cart] quantity clamped for ${localItem.productId}: ${localItem.quantity} → ${clamped}`);
+      }
+      result.push({ ...localItem, quantity: clamped });
     }
   }
   // (a) Items only in server were already in `result` from the spread — apply ceiling too.
-  return result.map((item) =>
-    item.isFree ? item : { ...item, quantity: Math.min(item.quantity, MAX_CART_QTY) }
-  );
+  return result.map((item) => {
+    if (item.isFree) return item;
+    const clamped = Math.min(item.quantity, MAX_CART_QTY);
+    if (item.quantity > MAX_CART_QTY) {
+      console.warn(`[cart] quantity clamped for ${item.productId}: ${item.quantity} → ${clamped}`);
+    }
+    return { ...item, quantity: clamped };
+  });
 }
 
 interface FirstOrderStatusData {
