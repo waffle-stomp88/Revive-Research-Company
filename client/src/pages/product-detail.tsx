@@ -2094,19 +2094,12 @@ export default function ProductDetail() {
                             </div>
                           </div>
                           {/* ── Purity hero ── */}
-                          <div className="px-5 py-5 relative border-b border-white/10">
+                          <div className="px-5 py-5 border-b border-white/10">
                             <div className="text-center">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">HPLC Purity</p>
                               <p className="font-display text-5xl md:text-6xl font-bold text-white leading-none tracking-tight">
                                 {purityValue}
                               </p>
-                            </div>
-                            <div className="absolute bottom-5 right-5 text-right">
-                              <p className="text-[8px] md:text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-0.5">Lot</p>
-                              <p className="font-mono text-xs md:text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
-                              {latestCoa.dosage && (
-                                <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">{latestCoa.dosage}</p>
-                              )}
                             </div>
                           </div>
                           {/* ── Inline PDF / image preview ── */}
@@ -2132,38 +2125,11 @@ export default function ProductDetail() {
                               ) : null}
                             </div>
                           )}
-                          {/* ── Structured results table ── */}
-                          {resultRows.length > 0 && (
-                            <div className="border-b border-white/10">
-                              {resultRows.map((row, i) => (
-                                <div
-                                  key={i}
-                                  className={`grid grid-cols-[1fr_auto_auto] items-center gap-3 px-5 py-3 ${i < resultRows.length - 1 ? "border-b border-white/5" : ""}`}
-                                >
-                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
-                                  <div className="flex items-center gap-3 text-right">
-                                    {row.expected && (
-                                      <span className="text-xs text-muted-foreground hidden sm:block">Spec: {row.expected}</span>
-                                    )}
-                                    {row.actual && (
-                                      <span className="text-sm font-semibold text-foreground">{row.actual}</span>
-                                    )}
-                                  </div>
-                                  {row.status && (
-                                    <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-sm ${
-                                      row.status.toLowerCase() === "pass"
-                                        ? "bg-[#D4FF1F]/15 text-[#D4FF1F]"
-                                        : row.status.toLowerCase() === "fail"
-                                        ? "bg-red-500/15 text-red-400"
-                                        : "bg-white/10 text-muted-foreground"
-                                    }`}>
-                                      {row.status}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          {/* ── Lot number row ── */}
+                          <div className="grid grid-cols-[1fr_auto] items-center gap-3 px-5 py-3 border-b border-white/10">
+                            <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Lot</p>
+                            <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
+                          </div>
                           {/* ── Data-trust notice ── */}
                           {resultRows.length > 0 && (
                             <div className="px-5 py-2.5 flex items-center gap-2 border-b border-white/10 bg-white/[0.02]">
