@@ -637,7 +637,7 @@ export async function registerRoutes(
   // Disabled in production. Used by Playwright global setup to pre-authenticate
   // browser contexts so tests that require login don't hit the AuthGate.
   if (process.env.NODE_ENV !== 'production') {
-    app.post('/api/test/login', async (req, res) => {
+    const testLoginHandler = async (req: any, res: any) => {
       try {
         const TEST_USER_ID = 'e2e-test-user-00000000';
         await storage.upsertUser({
@@ -647,16 +647,27 @@ export async function registerRoutes(
           lastName: 'Test',
           isAdmin: false,
         });
+        // Also record RUO attestation so the modal never appears in tests
+        await storage.updateUserAttestation(TEST_USER_ID, new Date());
         (req.session as any).userId = TEST_USER_ID;
         await new Promise<void>((resolve, reject) =>
           req.session.save((err: unknown) => (err ? reject(err) : resolve()))
         );
-        res.json({ ok: true, userId: TEST_USER_ID });
+        const returnTo = req.query.returnTo || null;
+        if (returnTo && typeof returnTo === 'string' && returnTo.startsWith('/')) {
+          res.redirect(returnTo);
+        } else {
+          res.json({ ok: true, userId: TEST_USER_ID });
+        }
       } catch (err) {
         console.error('[test/login]', err);
         res.status(500).json({ error: String(err) });
       }
-    });
+    };
+    app.post('/api/test/login', testLoginHandler);
+    // GET variant: navigating to this URL sets the session + redirects to ?returnTo=
+    // Allows Playwright to authenticate without needing JS execution or POST forms.
+    app.get('/api/test/login', testLoginHandler);
   }
 
   // Get authenticated user
