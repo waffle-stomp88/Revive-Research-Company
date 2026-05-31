@@ -632,6 +632,32 @@ export async function registerRoutes(
     }
   });
 
+  // Dev/test-only: create a stable test session without Supabase auth.
+  // Disabled in production. Used by Playwright global setup to pre-authenticate
+  // browser contexts so tests that require login don't hit the AuthGate.
+  if (process.env.NODE_ENV !== 'production') {
+    app.post('/api/test/login', async (req, res) => {
+      try {
+        const TEST_USER_ID = 'e2e-test-user-00000000';
+        await storage.upsertUser({
+          id: TEST_USER_ID,
+          email: 'e2e@reviveresearch.dev',
+          firstName: 'E2E',
+          lastName: 'Test',
+          isAdmin: false,
+        });
+        (req.session as any).userId = TEST_USER_ID;
+        await new Promise<void>((resolve, reject) =>
+          req.session.save((err: unknown) => (err ? reject(err) : resolve()))
+        );
+        res.json({ ok: true, userId: TEST_USER_ID });
+      } catch (err) {
+        console.error('[test/login]', err);
+        res.status(500).json({ error: String(err) });
+      }
+    });
+  }
+
   // Get authenticated user
   app.get('/api/auth/user', async (req: any, res) => {
     try {
