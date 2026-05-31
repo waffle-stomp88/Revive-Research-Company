@@ -18,6 +18,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail, sendRestockSignupConfirmationEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
+import { validateFreeBacWater } from "./lib/bac-water-guard";
 import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { generateCoaPreview, backfillCoaPreviews } from "./coaPreview";
@@ -1341,16 +1342,19 @@ export async function registerRoutes(
         item.productId === bacWaterProductId &&
         parseFloat(String(item.price ?? '0')) === 0
       );
-      if (zeroPricedBacItems.length > 1) {
-        return res.status(400).json({ error: "Only one complimentary BAC water item is allowed per order" });
-      }
-      if (zeroPricedBacItems.length === 1) {
-        const priorOrders = await storage.getOrdersByUserId(sessionUserId);
-        const isUserFirstOrder = priorOrders.length === 0;
-        if (!isUserFirstOrder) {
-          return res.status(400).json({ error: "Free BAC water promo is only available on your first order" });
+      // Pre-check: line count and item shape; first-order DB check runs inside
+      {
+        // Determine first-order status only if there is a free BAC item to evaluate
+        const isUserFirstOrderForGuard = zeroPricedBacItems.length === 1
+          ? (await storage.getOrdersByUserId(sessionUserId)).length === 0
+          : false;
+        const guardError = validateFreeBacWater(zeroPricedBacItems, isUserFirstOrderForGuard);
+        if (guardError) {
+          return res.status(400).json({ error: guardError });
         }
-        console.log(`[Promo] First-order BAC water confirmed for user=${sessionUserId}`);
+        if (zeroPricedBacItems.length === 1) {
+          console.log(`[Promo] First-order BAC water confirmed for user=${sessionUserId}`);
+        }
       }
 
       // Cart prices are authoritative — items passed through as-is.
