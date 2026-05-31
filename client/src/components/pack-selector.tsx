@@ -172,7 +172,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         )}
       </div>
       <div className="my-2 border-t border-[#1e1e2a]" />
-      <div className="flex items-center gap-3">
+      <div className="flex items-baseline gap-2.5 flex-wrap">
         {softGated ? (
           <div className="flex items-center gap-1.5">
             <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
@@ -182,15 +182,6 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
           </div>
         ) : (
           <>
-            {showSavings && (
-              <span
-                className="font-bold line-through"
-                style={{ fontSize: "22px", color: "#4b5563", textDecorationColor: "#4b5563", lineHeight: 1 }}
-                data-testid="order-summary-original"
-              >
-                ${singlePerVialRounded * effectiveQty}
-              </span>
-            )}
             <span
               className="font-black tracking-tight"
               style={{ fontSize: "34px", color: "#D4FF1F", lineHeight: 1 }}
@@ -199,6 +190,14 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
               ${totalRounded}
             </span>
             {productId && <PriceTrendBadge productId={productId} variant="compact" />}
+            {showSavings && (
+              <span
+                className="text-[11px] text-gray-500 font-normal"
+                data-testid="order-summary-comparison"
+              >
+                vs ${singlePerVialRounded * effectiveQty} at single-vial pricing
+              </span>
+            )}
           </>
         )}
       </div>
