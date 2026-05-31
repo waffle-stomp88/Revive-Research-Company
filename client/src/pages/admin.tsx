@@ -2645,8 +2645,10 @@ function CoasTab() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoa, setEditingCoa] = useState<Coa | null>(null);
   const [coaImageUrl, setCoaImageUrl] = useState<string | null>(null);
+  const [coaPreviewImageUrl, setCoaPreviewImageUrl] = useState<string | null>(null);
   const [coaIsPdf, setCoaIsPdf] = useState(false);
   const [isUploadingCoaImage, setIsUploadingCoaImage] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const { toast } = useToast();
 
@@ -2783,6 +2785,7 @@ function CoasTab() {
     if (coa) {
       setEditingCoa(coa);
       setCoaImageUrl(coa.imageUrl || null);
+      setCoaPreviewImageUrl(coa.previewImageUrl || null);
       const url = (coa.imageUrl || "").toLowerCase();
       const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/.test(url);
       setCoaIsPdf(!isImage && !!coa.imageUrl);
@@ -2829,6 +2832,7 @@ function CoasTab() {
     } else {
       setEditingCoa(null);
       setCoaImageUrl(null);
+      setCoaPreviewImageUrl(null);
       setCoaIsPdf(false);
       form.reset({
         batchNumber: "",
@@ -2903,6 +2907,31 @@ function CoasTab() {
     }
     setCoaImageUrl(null);
     setCoaIsPdf(false);
+  };
+
+  const handleScanCoa = async () => {
+    const scannableUrl = !coaIsPdf ? coaImageUrl : coaPreviewImageUrl;
+    if (!scannableUrl) return;
+    setIsScanning(true);
+    try {
+      const res = await apiRequest("POST", "/api/admin/coas/scan-image", { imageUrl: scannableUrl });
+      const data = await res.json();
+      if (data.searchCode) form.setValue("searchCode", data.searchCode);
+      if (data.batchNumber) form.setValue("batchNumber", data.batchNumber);
+      if (data.purity) form.setValue("purity", data.purity);
+      if (data.testDate) form.setValue("testDate", data.testDate);
+      if (data.expirationDate) form.setValue("expirationDate", data.expirationDate);
+      if (data.labName) form.setValue("labName", data.labName);
+      const filled = [data.searchCode, data.batchNumber, data.purity, data.testDate, data.labName].filter(Boolean).length;
+      toast({
+        title: filled > 0 ? `Extracted ${filled} field${filled !== 1 ? "s" : ""}` : "Nothing detected",
+        description: filled > 0 ? "Review and adjust any values before saving." : "Could not read fields from this image.",
+      });
+    } catch {
+      toast({ title: "Scan failed", description: "Could not reach the AI scanner.", variant: "destructive" });
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   const onSubmit = (values: CoaFormValues) => {
@@ -3327,26 +3356,50 @@ function CoasTab() {
                           <X className="h-3 w-3" />
                         </Button>
                       </div>
-                      <ObjectUploader
-                        onGetUploadParameters={handleCoaImageUpload}
-                        onComplete={handleCoaImageComplete}
-                        allowedFileTypes={["image/*", "application/pdf"]}
-                        buttonVariant="outline"
-                        buttonSize="sm"
-                        disabled={isUploadingCoaImage}
-                      >
-                        {isUploadingCoaImage ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="h-4 w-4 mr-2" />
-                            Replace Document
-                          </>
+                      <div className="flex flex-col gap-2">
+                        {(!coaIsPdf ? coaImageUrl : coaPreviewImageUrl) && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleScanCoa}
+                            disabled={isScanning}
+                            data-testid="button-scan-coa"
+                          >
+                            {isScanning ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Scanning...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Scan with AI
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </ObjectUploader>
+                        <ObjectUploader
+                          onGetUploadParameters={handleCoaImageUpload}
+                          onComplete={handleCoaImageComplete}
+                          allowedFileTypes={["image/*", "application/pdf"]}
+                          buttonVariant="outline"
+                          buttonSize="sm"
+                          disabled={isUploadingCoaImage}
+                        >
+                          {isUploadingCoaImage ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Uploading...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-4 w-4 mr-2" />
+                              Replace Document
+                            </>
+                          )}
+                        </ObjectUploader>
+                      </div>
                     </div>
                   ) : (
                     <ObjectUploader

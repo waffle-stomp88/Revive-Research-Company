@@ -3605,6 +3605,59 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: AI scan a COA image and extract fields
+  app.post("/api/admin/coas/scan-image", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      if (!imageUrl || typeof imageUrl !== "string") {
+        return res.status(400).json({ error: "imageUrl is required" });
+      }
+
+      const completion = await openaiClient.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: { url: imageUrl, detail: "high" },
+              },
+              {
+                type: "text",
+                text: `You are a document parser. Extract the following fields from this Certificate of Analysis (COA) lab document and return ONLY a JSON object with these keys (use null for any field not found):
+- searchCode: the unique search/verification/report code or ID (often labeled "Search Code", "Report Number", "Certificate No", "Order #", or similar — a short alphanumeric code customers use to look up this report on the lab's website)
+- batchNumber: the batch, lot, or sample number
+- purity: the purity percentage (just the number and %, e.g. "99.4%")
+- testDate: the test or analysis date in YYYY-MM-DD format
+- expirationDate: expiration or best-before date in YYYY-MM-DD format (if present)
+- labName: the testing laboratory name
+
+Return ONLY valid JSON, no markdown, no explanation.`,
+              },
+            ],
+          },
+        ],
+        max_tokens: 400,
+      });
+
+      const raw = completion.choices[0]?.message?.content?.trim() || "{}";
+      // Strip markdown fences if present
+      const clean = raw.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "").trim();
+      let extracted: Record<string, string | null> = {};
+      try {
+        extracted = JSON.parse(clean);
+      } catch {
+        return res.status(200).json({ searchCode: null, batchNumber: null, purity: null, testDate: null, expirationDate: null, labName: null });
+      }
+
+      res.json(extracted);
+    } catch (error) {
+      console.error("Error scanning COA image:", error);
+      res.status(500).json({ error: "Failed to scan COA image" });
+    }
+  });
+
   // Admin: Create COA (auto-creates batch record if needed)
   app.post("/api/admin/coas", isAuthenticated, isAdmin, async (req, res) => {
     try {
