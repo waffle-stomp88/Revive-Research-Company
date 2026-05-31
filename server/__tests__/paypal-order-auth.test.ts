@@ -2,17 +2,23 @@
 /**
  * Route-level tests for POST /api/orders/paypal
  *
- * Two security boundaries are guarded:
+ * Three correctness boundaries are guarded:
  *
  *   1. AUTHENTICATION GUARD — unauthenticated requests (no session userId)
  *      must receive 401 and never proceed to order creation. A future
  *      refactor that removes or moves the auth check will immediately
  *      fail this test.
  *
- *   2. BAC WATER PROMO INTEGRITY — repeat buyers must never receive the
- *      free 3ml BAC water promo. A $0-priced BAC water item submitted by a
- *      repeat buyer must be stripped from the sanitized items list so it
- *      does not appear in the created order.
+ *   2. BAC WATER PROMO INTEGRITY (repeat buyers) — repeat buyers must never
+ *      receive the free 3ml BAC water promo. A $0-priced BAC water item
+ *      submitted by a repeat buyer must be stripped from the sanitized items
+ *      list so it does not appear in the created order.
+ *
+ *   3. BAC WATER PROMO PRESERVATION (first-time buyers) — a genuine
+ *      first-time buyer's $0-priced 3ml BAC water item must survive
+ *      sanitization and appear in fulfillmentNotes. A future refactor that
+ *      accidentally removes the first-order grant will immediately fail this
+ *      test.
  *
  * Implementation notes:
  *  - All external dependencies (DB, PayPal API, storage, email, etc.) are
@@ -385,6 +391,88 @@ describe('POST /api/orders/paypal — BAC water promo blocked for repeat buyers'
     const orderArg = mockCreateOrder.mock.calls[0][0];
     expect(orderArg.fulfillmentNotes).toBeDefined();
     expect(orderArg.fulfillmentNotes).not.toContain('Bacteriostatic Water');
+    expect(orderArg.fulfillmentNotes).toContain('BPC-157');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 3 — BAC water promo preserved for first-time buyers
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — BAC water promo preserved for first-time buyers', () => {
+  beforeEach(() => {
+    setTestSession('user-first-time-buyer');
+
+    // First-time buyer: zero prior orders
+    mockGetOrdersByUserId.mockResolvedValue([]);
+
+    // Product catalogue includes BAC water
+    mockGetAllProducts.mockResolvedValue([
+      {
+        id: BAC_WATER_ID,
+        slug: 'bacteriostatic-water',
+        name: 'Bacteriostatic Water',
+      },
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    // BPC-157: $300 per 5 mg vial (above $250 free-shipping threshold → $0 shipping)
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    // PayPal captured $300. The $0 BAC water item is legitimately free on a
+    // first order, so the captured amount correctly excludes it.
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('accepts the order (201) and keeps the $0 BAC water in the created record', async () => {
+    const body = buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+        {
+          // Legitimate first-order free promo — must NOT be stripped
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+      ],
+      total: '300',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toBe(201);
+
+    // createOrder must have been called exactly once
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+
+    // fulfillmentNotes is the authoritative record of what was ordered.
+    // The free BAC water MUST still be present — it is a legitimate line item
+    // for a first-time buyer.
+    const orderArg = mockCreateOrder.mock.calls[0][0];
+    expect(orderArg.fulfillmentNotes).toBeDefined();
+    expect(orderArg.fulfillmentNotes).toContain('Bacteriostatic Water');
     expect(orderArg.fulfillmentNotes).toContain('BPC-157');
   });
 });
