@@ -934,7 +934,7 @@ export default function ProductDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <GraduationCap className="h-5 w-5 text-[#ec4899]" />
-                    <h3 className="font-display text-lg font-bold">Learn About This Peptide</h3>
+                    <h3 className="font-display font-bold text-[19px]">Learn About This Peptide</h3>
                   </div>
                   <Link href="/guides/peptide-education-center">
                     <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
