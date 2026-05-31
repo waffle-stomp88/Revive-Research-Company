@@ -110,6 +110,7 @@ export interface IStorage {
   searchProducts(query: string): Promise<Product[]>;
   
   getCoaByBatchNumber(batchNumber: string): Promise<Coa | undefined>;
+  getCoa(id: string): Promise<Coa | undefined>;
   getAllCoas(includeArchived?: boolean): Promise<Coa[]>;
   getCoasByProductId(productId: string, includeArchived?: boolean): Promise<Coa[]>;
   createCoa(coa: InsertCoa): Promise<Coa>;
@@ -632,6 +633,11 @@ export class DatabaseStorage implements IStorage {
 
   async getCoaByBatchNumber(batchNumber: string): Promise<Coa | undefined> {
     const [coa] = await db.select().from(coas).where(eq(coas.batchNumber, batchNumber));
+    return coa || undefined;
+  }
+
+  async getCoa(id: string): Promise<Coa | undefined> {
+    const [coa] = await db.select().from(coas).where(eq(coas.id, id));
     return coa || undefined;
   }
 

@@ -21,6 +21,7 @@ import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail,
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
+import { generateCoaPreview, backfillCoaPreviews } from "./coaPreview";
 import { 
   createPaypalOrder, 
   capturePaypalOrder, 
@@ -3709,6 +3710,13 @@ Return ONLY valid JSON, no markdown, no explanation.`,
       const coa = await storage.createCoa(validatedData);
       res.status(201).json(coa);
 
+      // Fire-and-forget: generate PNG preview if this COA has a PDF image
+      if (coa.imageUrl && !coa.previewImageUrl) {
+        generateCoaPreview(coa.id, coa.imageUrl, storage).catch((err) => {
+          console.warn("[coaPreview] async preview after create failed:", err?.message ?? err);
+        });
+      }
+
     } catch (error) {
       console.error("Error creating COA:", error);
       if (error instanceof Error && error.name === "ZodError") {
@@ -3726,9 +3734,48 @@ Return ONLY valid JSON, no markdown, no explanation.`,
         return res.status(404).json({ error: "COA not found" });
       }
       res.json(coa);
+
+      // Fire-and-forget: regenerate PNG preview if imageUrl changed and preview doesn't exist yet
+      if (coa.imageUrl && !coa.previewImageUrl) {
+        generateCoaPreview(coa.id, coa.imageUrl, storage).catch((err) => {
+          console.warn("[coaPreview] async preview after update failed:", err?.message ?? err);
+        });
+      }
     } catch (error) {
       console.error("Error updating COA:", error);
       res.status(500).json({ error: "Failed to update COA" });
+    }
+  });
+
+  // Admin: Generate PNG preview for a single COA (on-demand)
+  app.post("/api/admin/coas/:id/generate-preview", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const coa = await storage.getCoa(req.params.id);
+      if (!coa) {
+        return res.status(404).json({ error: "COA not found" });
+      }
+      if (!coa.imageUrl) {
+        return res.status(400).json({ error: "COA has no imageUrl — upload a PDF first" });
+      }
+      const previewImageUrl = await generateCoaPreview(coa.id, coa.imageUrl, storage);
+      if (!previewImageUrl) {
+        return res.status(422).json({ error: "Preview could not be generated (not a PDF or conversion failed)" });
+      }
+      res.json({ previewImageUrl });
+    } catch (error) {
+      console.error("Error generating COA preview:", error);
+      res.status(500).json({ error: "Failed to generate COA preview" });
+    }
+  });
+
+  // Admin: Bulk-generate PNG previews for all COAs that need one
+  app.post("/api/admin/coas/generate-previews", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { processed, skipped } = await backfillCoaPreviews(storage);
+      res.json({ processed, skipped });
+    } catch (error) {
+      console.error("Error bulk-generating COA previews:", error);
+      res.status(500).json({ error: "Failed to generate COA previews" });
     }
   });
 

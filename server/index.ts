@@ -6,8 +6,9 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
-import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty, seedResearchStacksIfEmpty } from "./storage";
+import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty, seedResearchStacksIfEmpty, storage } from "./storage";
 import { runMigrations } from "./migrate";
+import { backfillCoaPreviews } from "./coaPreview";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -167,6 +168,9 @@ export function log(message: string, source = "express") {
     }))
     .then(() => seedResearchStacksIfEmpty().catch((err) => {
       console.warn("[startup] seedResearchStacksIfEmpty failed (non-fatal):", err?.message ?? err);
+    }))
+    .then(() => backfillCoaPreviews(storage).catch((err) => {
+      console.warn("[startup] backfillCoaPreviews failed (non-fatal):", err?.message ?? err);
     }));
 
   await registerRoutes(httpServer, app);

@@ -2789,6 +2789,34 @@ function CoasTab() {
     },
   });
 
+  const generatePreviewMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/coas/${id}/generate-preview`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      toast({ title: "Preview generated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to generate preview", variant: "destructive" });
+    },
+  });
+
+  const bulkGeneratePreviewsMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/admin/coas/generate-previews");
+      return response.json() as Promise<{ processed: number; skipped: number }>;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      toast({ title: `Previews generated: ${data.processed} converted, ${data.skipped} skipped` });
+    },
+    onError: () => {
+      toast({ title: "Failed to generate previews", variant: "destructive" });
+    },
+  });
+
   const handleOpenDialog = (coa?: Coa) => {
     if (coa) {
       setEditingCoa(coa);
@@ -3024,7 +3052,7 @@ function CoasTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <h2 className="text-xl font-semibold">Certificates of Analysis ({allCoas?.filter(c => !c.archived).length || 0})</h2>
           <Button 
             variant={showArchived ? "secondary" : "outline"} 
@@ -3034,6 +3062,20 @@ function CoasTab() {
           >
             <Archive className="h-4 w-4 mr-1" />
             {showArchived ? "Hide Archived" : "Show Archived"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => bulkGeneratePreviewsMutation.mutate()}
+            disabled={bulkGeneratePreviewsMutation.isPending}
+            data-testid="button-bulk-generate-previews"
+          >
+            {bulkGeneratePreviewsMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+            ) : (
+              <ImageIcon className="h-4 w-4 mr-1" />
+            )}
+            Generate All Previews
           </Button>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -3558,6 +3600,22 @@ function CoasTab() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
+                      {coa.imageUrl && !coa.previewImageUrl && !coa.archived && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => generatePreviewMutation.mutate(coa.id)}
+                          disabled={generatePreviewMutation.isPending && generatePreviewMutation.variables === coa.id}
+                          title="Generate mobile preview image"
+                          data-testid={`button-generate-preview-coa-${coa.id}`}
+                        >
+                          {generatePreviewMutation.isPending && generatePreviewMutation.variables === coa.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ImageIcon className="h-4 w-4 text-[#21d8ff]" />
+                          )}
+                        </Button>
+                      )}
                       {!coa.archived && (
                         <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(coa)} data-testid={`button-edit-coa-${coa.id}`}>
                           <Pencil className="h-4 w-4" />
