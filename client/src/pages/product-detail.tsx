@@ -2076,14 +2076,14 @@ export default function ProductDetail() {
                             </div>
                           </div>
                           {/* ── Purity hero ── */}
-                          <div className="px-5 py-5 flex items-end justify-between gap-4 border-b border-white/10">
-                            <div className="flex-1 text-center">
+                          <div className="px-5 py-5 relative border-b border-white/10">
+                            <div className="text-center">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">HPLC Purity</p>
                               <p className="font-display text-5xl md:text-6xl font-bold text-white leading-none tracking-tight">
                                 {purityValue}
                               </p>
                             </div>
-                            <div className="text-right">
+                            <div className="absolute bottom-5 right-5 text-right">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1">Lot</p>
                               <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
                               {latestCoa.dosage && (
