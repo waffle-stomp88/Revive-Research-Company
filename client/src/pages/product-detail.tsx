@@ -2138,10 +2138,10 @@ export default function ProductDetail() {
                               {resultRows.map((row, i) => (
                                 <div
                                   key={i}
-                                  className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-2.5 border-b border-white/[0.06] last:border-0"
+                                  className="flex items-center gap-6 px-5 py-2.5 border-b border-white/[0.06] last:border-0"
                                 >
-                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
-                                  <p className="text-sm font-semibold text-foreground text-right">{row.actual || "—"}</p>
+                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground w-44 flex-shrink-0">{row.label}</p>
+                                  <p className="text-sm font-semibold text-foreground">{row.actual || "—"}</p>
                                 </div>
                               ))}
                               <div className="px-5 py-2 flex items-center gap-2 bg-white/[0.02]">
