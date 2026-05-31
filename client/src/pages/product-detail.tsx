@@ -2128,20 +2128,21 @@ export default function ProductDetail() {
                             </div>
                           )}
                           {/* ── Lot number row ── */}
-                          <div className="grid grid-cols-[1fr_auto] items-center gap-3 px-[140px] py-3 border-b border-white/10">
-                            <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Lot</p>
-                            <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
+                          <div className="px-5 py-3 border-b border-white/10">
+                            <div className="grid grid-cols-[1fr_auto] items-center gap-3 max-w-lg mx-auto">
+                              <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Lot</p>
+                              <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
+                            </div>
                           </div>
                           {/* ── HPLC results rows ── */}
                           {resultRows.length > 0 && (
                             <div className="border-b border-white/10" data-testid="section-coa-results-table">
                               {resultRows.map((row, i) => (
-                                <div
-                                  key={i}
-                                  className="grid grid-cols-[1fr_auto] items-center gap-4 px-[140px] py-2.5 border-b border-white/[0.06] last:border-0"
-                                >
-                                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
-                                  <p className="text-sm font-semibold text-foreground text-right">{row.actual || "—"}</p>
+                                <div key={i} className="px-5 py-2.5 border-b border-white/[0.06] last:border-0">
+                                  <div className="grid grid-cols-[1fr_auto] items-center gap-4 max-w-lg mx-auto">
+                                    <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{row.label}</p>
+                                    <p className="text-sm font-semibold text-foreground text-right">{row.actual || "—"}</p>
+                                  </div>
                                 </div>
                               ))}
                               <div className="px-5 py-2 flex items-center gap-2 bg-white/[0.02]">
