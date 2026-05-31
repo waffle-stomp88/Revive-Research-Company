@@ -3,3 +3,4 @@
 - [Playwright age gate bypass](playwright-age-gate-bypass.md) — storageState in playwright.config.ts pre-sets localStorage to skip the age gate for all e2e tests
 - [pdfjs-dist polyfills](pdfjs-polyfills.md) — 5 APIs missing in Playwright Chromium 125; polyfilled in both main thread AND worker; Promise.try must forward args
 - [pdfjs worker blob URL](pdfjs-worker-blob.md) — Vite dev appends ?import to any workerSrc URL; fix is fetch→Blob→createObjectURL so Vite never sees the path
+- [pdfjs worker route placement](pdfjs-worker-route.md) — must be in server/index.ts before registerRoutes(); inside registerRoutes() it is silently shadowed by Vite's catch-all

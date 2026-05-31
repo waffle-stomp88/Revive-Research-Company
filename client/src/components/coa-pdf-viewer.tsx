@@ -3,41 +3,33 @@ import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-reac
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-// Vite resolves this to the real worker asset URL at build time.
-// In dev it's served directly through Vite's dev server (no Express routing race).
-// In prod it becomes a hashed asset URL in /assets/.
-// Using ?url prevents Vite from trying to bundle/transform the worker as a module.
-import pdfjsWorkerAssetUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-
-// Polyfills for older Chromium builds (Chrome < 126) used in automated tests.
-// Each guard is a no-op on modern browsers.
-const WORKER_POLYFILLS = [
-  "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};}",
-  "if(typeof Promise.try==='undefined'){Promise.try=function(f,...a){return new Promise((r,j)=>{try{r(f(...a));}catch(e){j(e);}});};}",
-  "if(typeof Promise.withResolvers==='undefined'){Promise.withResolvers=function(){let r,j;const p=new Promise((a,b)=>{r=a;j=b;});return{promise:p,resolve:r,reject:j};};}",
-  "if(typeof Uint8Array.prototype.toHex==='undefined'){Uint8Array.prototype.toHex=function(){return Array.from(this).map(b=>b.toString(16).padStart(2,'0')).join('');};}",
-  "if(typeof Map.prototype.getOrInsertComputed==='undefined'){Map.prototype.getOrInsertComputed=function(k,fn){if(this.has(k))return this.get(k);const v=fn(k);this.set(k,v);return v;};}",
-].join('\n');
-
-/**
- * Fetches the pdfjs worker via Vite's asset URL (no Express routing involved),
- * prepends polyfills, wraps in a Blob URL, and caches the result for the
- * lifetime of the page. Blob URLs are invisible to Vite's module graph so
- * pdfjs can't accidentally intercept them with ?import rewrites.
- */
+// /api/pdfjs-worker is an Express route that reads the worker directly from
+// node_modules WITHOUT going through Vite's dev server. This is essential:
+// any URL served through Vite gets /@vite/client injected for HMR, and that
+// relative specifier is unresolvable inside a Web Worker context.
+//
+// We then wrap the raw JS in a Blob URL so pdfjs-dist's internal dynamic
+// import() can't have ?import appended to it by Vite's module graph.
+//
+// The Promise is cached at module level so the ~1.5 MB worker is only
+// fetched once per page load regardless of how many viewers mount/unmount.
 let _workerBlobUrlPromise: Promise<string> | null = null;
 function getWorkerBlobUrl(): Promise<string> {
   if (!_workerBlobUrlPromise) {
-    _workerBlobUrlPromise = fetch(pdfjsWorkerAssetUrl)
+    _workerBlobUrlPromise = fetch("/api/pdfjs-worker", { cache: "no-store" })
       .then(r => {
         if (!r.ok) throw new Error(`Worker fetch failed: ${r.status}`);
+        // Guard: if Vite's catch-all returned HTML instead of JS, fail fast
+        // so the retry logic can try again on the next render
+        const ct = r.headers.get("content-type") ?? "";
+        if (ct.includes("text/html")) throw new Error("Worker route returned HTML — browser cache may be stale");
         return r.text();
       })
       .then(code => URL.createObjectURL(
-        new Blob([WORKER_POLYFILLS + '\n' + code], { type: "application/javascript" })
+        new Blob([code], { type: "application/javascript" })
       ))
       .catch(err => {
-        // Reset so the next render can retry
+        // Reset so the next render can retry after a transient startup race
         _workerBlobUrlPromise = null;
         throw err;
       });

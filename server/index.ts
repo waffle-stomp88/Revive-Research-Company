@@ -1,5 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { execSync } from "child_process";
+import path from "path";
+import fs from "fs";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -110,6 +112,32 @@ export function log(message: string, source = "express") {
 
     next();
   });
+
+  // ---------------------------------------------------------------------------
+  // pdfjs worker — registered here (not inside registerRoutes) so it sits at
+  // the very top of the Express stack, before Vite middleware and before any
+  // other route handler that could accidentally shadow it.
+  // ---------------------------------------------------------------------------
+  {
+    let _pdfjsWorkerCache: string | null = null;
+    app.get('/api/pdfjs-worker', (_req, res) => {
+      if (!_pdfjsWorkerCache) {
+        const workerPath = path.resolve(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
+        const workerCode = fs.readFileSync(workerPath, 'utf-8');
+        const polyfills = [
+          "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};} ",
+          "if(typeof Promise.try==='undefined'){Promise.try=function(f){var a=Array.prototype.slice.call(arguments,1);return new Promise(function(res,rej){try{res(f.apply(this,a));}catch(e){rej(e);}});};}",
+          "if(typeof Promise.withResolvers==='undefined'){Promise.withResolvers=function(){var res,rej,p=new Promise(function(r,j){res=r;rej=j;});return{promise:p,resolve:res,reject:rej};};}",
+          "if(typeof Uint8Array.prototype.toHex==='undefined'){Uint8Array.prototype.toHex=function(){return Array.from(this).map(function(b){return b.toString(16).padStart(2,'0');}).join('');};}",
+          "if(typeof Map.prototype.getOrInsertComputed==='undefined'){Map.prototype.getOrInsertComputed=function(k,fn){if(this.has(k))return this.get(k);var v=fn(k);this.set(k,v);return v;};}",
+        ].join('\n');
+        _pdfjsWorkerCache = polyfills + '\n' + workerCode;
+      }
+      res.set('Content-Type', 'application/javascript');
+      res.set('Cache-Control', 'public, max-age=86400');
+      res.send(_pdfjsWorkerCache);
+    });
+  }
 
   // Run DB seed/migration tasks in the background so they never block
   // the server from binding to port 5000. Each task is independently
