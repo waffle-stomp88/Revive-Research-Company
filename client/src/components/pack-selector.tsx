@@ -158,7 +158,12 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         {softGated ? (
           <div className="flex items-center gap-1.5">
             <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
-            <Link href="/login" className="text-sm font-medium" style={{ color: "#21d8ff" }}>
+            <Link
+              href="/login"
+              className="text-sm font-medium"
+              style={{ color: "#21d8ff" }}
+              onClick={() => sessionStorage.setItem("auth_return_to", window.location.pathname + window.location.search)}
+            >
               Sign in
             </Link>
           </div>

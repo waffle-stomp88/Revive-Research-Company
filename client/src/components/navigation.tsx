@@ -527,7 +527,10 @@ export function Navigation() {
                 </DropdownMenu>
                 
                 {!isLoading && !isAuthenticated && (
-                  <Link href="/login">
+                  <Link
+                    href="/login"
+                    onClick={() => sessionStorage.setItem("auth_return_to", window.location.pathname + window.location.search)}
+                  >
                     <Button 
                       variant="outline" 
                       className="hidden md:inline-flex border-[#D4FF1F]/50 text-[#D4FF1F] hover:bg-[#D4FF1F]/10 hover:border-[#D4FF1F] transition-all duration-300"
@@ -962,7 +965,7 @@ export function Navigation() {
                   </div>
                 </Link>
               ) : (
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link href="/login" onClick={() => { setIsMobileMenuOpen(false); sessionStorage.setItem("auth_return_to", window.location.pathname + window.location.search); }}>
                 <button
                   className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-left"
                   data-testid="button-mobile-panel-sign-in"
