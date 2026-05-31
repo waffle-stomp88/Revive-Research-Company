@@ -2176,20 +2176,20 @@ export default function ProductDetail() {
                           )}
                           {/* ── Date row ── */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/10 border-b border-white/10">
-                            <div className="px-5 py-3 flex items-center gap-3">
-                              <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                              <div>
+                            <div className="px-5 py-3 flex flex-col items-center justify-center text-center gap-1">
+                              <div className="flex items-center gap-1.5">
+                                <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                 <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Sample Tested</p>
-                                <p className="text-sm text-foreground mt-0.5">{latestCoa.testDate}</p>
                               </div>
+                              <p className="text-sm text-foreground">{latestCoa.testDate}</p>
                             </div>
                             {latestCoa.expirationDate && (
-                              <div className="px-5 py-3 flex items-center gap-3">
-                                <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                                <div>
+                              <div className="px-5 py-3 flex flex-col items-center justify-center text-center gap-1">
+                                <div className="flex items-center gap-1.5">
+                                  <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                   <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">Expiration</p>
-                                  <p className="text-sm text-foreground mt-0.5">{latestCoa.expirationDate}</p>
                                 </div>
+                                <p className="text-sm text-foreground">{latestCoa.expirationDate}</p>
                               </div>
                             )}
                           </div>
