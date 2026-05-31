@@ -50,6 +50,7 @@ import {
   Clock,
   Beaker,
   ExternalLink,
+  Copy,
   Calendar,
   GraduationCap,
   BookOpen,
@@ -2056,18 +2057,35 @@ export default function ProductDetail() {
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#D4FF1F] mb-1">Testing Laboratory</p>
                               <p className="font-semibold text-foreground text-[20px]">{latestCoa.labName}</p>
                               <p className="text-xs text-muted-foreground mt-0.5">Independent third-party verification</p>
-                              {latestCoa.labVerificationUrl && (
-                                <a
-                                  href={latestCoa.labVerificationUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline mt-2"
-                                  data-testid={`link-verify-lab-${latestCoa.batchNumber}`}
-                                >
-                                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                                  Verify with lab
-                                </a>
-                              )}
+                              <div className="flex flex-col items-center gap-1 mt-2">
+                                {latestCoa.labVerificationUrl && (
+                                  <a
+                                    href={latestCoa.labVerificationUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline"
+                                    data-testid={`link-verify-lab-${latestCoa.batchNumber}`}
+                                  >
+                                    <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                                    Verify with lab
+                                  </a>
+                                )}
+                                {latestCoa.searchCode && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(latestCoa.searchCode!);
+                                      toast({ title: "Search code copied", description: latestCoa.searchCode });
+                                    }}
+                                    className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                    data-testid="button-copy-search-code"
+                                    title="Copy search code"
+                                  >
+                                    <Copy className="h-3 w-3 flex-shrink-0" />
+                                    {latestCoa.searchCode}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                             <div className="px-5 py-4 text-center">
                               <p className="text-[10px] font-bold tracking-widest uppercase text-[#21d8ff] mb-1">Method</p>

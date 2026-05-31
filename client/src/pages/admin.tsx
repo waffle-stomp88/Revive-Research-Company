@@ -207,6 +207,7 @@ const coaFormSchema = insertCoaSchema.extend({
   testTfaContent: z.string().optional(),
   testWaterContent: z.string().optional(),
   testSolubility: z.string().optional(),
+  searchCode: z.string().optional(),
   publiclyVisible: z.boolean().default(true),
   notes: z.string().optional(),
 });
@@ -2692,6 +2693,7 @@ function CoasTab() {
       testWaterContent: "",
       testSolubility: "",
       labVerificationUrl: DEFAULT_LAB_VERIFICATION_URL,
+      searchCode: "",
       publiclyVisible: true,
       notes: "",
     },
@@ -2820,6 +2822,7 @@ function CoasTab() {
         testWaterContent: parsedTests.testWaterContent || "",
         testSolubility: parsedTests.testSolubility || "",
         labVerificationUrl: coa.labVerificationUrl || DEFAULT_LAB_VERIFICATION_URL,
+        searchCode: coa.searchCode || "",
         publiclyVisible: coa.publiclyVisible ?? true,
         notes: coa.notes || "",
       });
@@ -3253,6 +3256,23 @@ function CoasTab() {
                   )}
                 />
                 
+                <FormField
+                  control={form.control}
+                  name="searchCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Search Code</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} placeholder="e.g. FD-2024-0391" className="font-mono text-sm" data-testid="input-coa-search-code" />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground">
+                        The code from the testing PDF that customers enter on the lab's verification portal.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {/* Internal Notes (Admin-only) */}
                 <FormField
                   control={form.control}

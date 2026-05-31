@@ -145,6 +145,7 @@ export const coas = pgTable("coas", {
   imageUrl: text("image_url"),
   previewImageUrl: text("preview_image_url"),
   labVerificationUrl: text("lab_verification_url"),
+  searchCode: text("search_code"),
   publiclyVisible: boolean("publicly_visible").default(true),
   archived: boolean("archived").default(false),
   notes: text("notes"),
