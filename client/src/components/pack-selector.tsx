@@ -172,7 +172,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         )}
       </div>
       <div className="my-2 border-t border-[#1e1e2a]" />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
         {softGated ? (
           <div className="flex items-center gap-1.5">
             <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
@@ -181,7 +181,16 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
             </Link>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <>
+            {showSavings && (
+              <span
+                className="font-bold line-through"
+                style={{ fontSize: "22px", color: "#4b5563", textDecorationColor: "#4b5563", lineHeight: 1 }}
+                data-testid="order-summary-original"
+              >
+                ${singlePerVialRounded * effectiveQty}
+              </span>
+            )}
             <span
               className="font-black tracking-tight"
               style={{ fontSize: "34px", color: "#D4FF1F", lineHeight: 1 }}
@@ -190,15 +199,7 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
               ${totalRounded}
             </span>
             {productId && <PriceTrendBadge productId={productId} variant="compact" />}
-          </div>
-        )}
-        {showSavings && !softGated && (
-          <div className="flex flex-col items-end" data-testid="order-summary-savings">
-            <span className="text-[11px] text-green-400/60 uppercase tracking-widest font-mono">You save</span>
-            <span className="font-bold text-green-400" style={{ fontSize: "18px" }}>
-              ${perVialDiff * effectiveQty}
-            </span>
-          </div>
+          </>
         )}
       </div>
     </div>
