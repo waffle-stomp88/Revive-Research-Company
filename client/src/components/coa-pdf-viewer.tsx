@@ -121,9 +121,15 @@ export function CoaPdfViewer({
         }
 
         const pdfjsLib = await import("pdfjs-dist");
-        // /api/pdfjs-worker serves the pdfjs worker with polyfills injected,
-        // bypassing Vite's dev-server module transformations.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "/api/pdfjs-worker";
+        // /api/pdfjs-worker serves the pdfjs worker with polyfills injected.
+        // In Vite's dev environment, dynamic import() calls get ?import appended
+        // to relative/absolute URLs, which breaks the plain-JS Express route.
+        // Fetching the script as text and wrapping it in a Blob URL bypasses
+        // Vite's module graph entirely — blob: URLs are never intercepted.
+        const workerResp = await fetch("/api/pdfjs-worker");
+        const workerCode = await workerResp.text();
+        const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+        pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
         if (cancelled) return;
