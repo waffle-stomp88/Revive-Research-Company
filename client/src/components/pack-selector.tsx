@@ -68,7 +68,6 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                   />
                 )}
               </span>
-
               {/* Label + savings */}
               <span className="flex-1 flex flex-col gap-0.5">
                 <span
@@ -86,18 +85,16 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                   </span>
                 )}
               </span>
-
               {/* Popular badge — inline, left of price */}
               {tier.popular && (
                 <span
-                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm flex-shrink-0"
+                  className="font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm flex-shrink-0 text-[10px]"
                   style={{ background: "#D4FF1F", color: "#000" }}
                   data-testid="badge-popular"
                 >
                   POPULAR
                 </span>
               )}
-
               {/* Price or lock */}
               {softGated ? (
                 <Lock
