@@ -9,7 +9,20 @@ import type { IStorage } from "./storage";
 
 const execFileAsync = promisify(execFile);
 
+// pdftoppm (poppler-utils) is used for server-side PDF→PNG conversion.
+// The canvas npm package (node-canvas) cannot be used in this environment:
+// it fails with "libuuid.so.1: cannot open shared object file" because the
+// NixOS sandbox does not expose that shared library to Node's dlopen path.
+// pdftoppm is pre-installed via the Nix runtime and produces high-quality
+// rasterised output without any native Node bindings.
 const PREVIEW_SCALE_TO_X = 1400; // px width for high-quality preview
+
+export interface BackfillResult {
+  processed: number;
+  succeeded: number;
+  failed: number;
+  errors: Array<{ coaId: string; message: string }>;
+}
 
 /**
  * Render the first page of a PDF buffer to an optimised PNG buffer
@@ -108,31 +121,41 @@ export async function generateCoaPreview(
 }
 
 /**
- * Backfill: generate previews for every COA that has an imageUrl
- * but no previewImageUrl. Safe to run repeatedly — no-op when complete.
+ * Backfill: generate previews for every COA that has an imageUrl but no
+ * previewImageUrl yet. Uses a DB-level filter (getCoasNeedingPreview) so
+ * the query returns zero rows after the first successful run — truly a no-op.
  */
-export async function backfillCoaPreviews(storage: IStorage): Promise<{ processed: number; skipped: number }> {
-  const allCoas = await storage.getAllCoas(true /* includeArchived */);
-  const needsPreview = allCoas.filter((c) => c.imageUrl && !c.previewImageUrl);
+export async function backfillCoaPreviews(storage: IStorage): Promise<BackfillResult> {
+  // DB-level filter: WHERE image_url IS NOT NULL AND preview_image_url IS NULL
+  const needsPreview = await storage.getCoasNeedingPreview();
 
   if (needsPreview.length === 0) {
     console.log("[coaPreview] Backfill: all COAs already have previews (or no imageUrl).");
-    return { processed: 0, skipped: 0 };
+    return { processed: 0, succeeded: 0, failed: 0, errors: [] };
   }
 
   console.log(`[coaPreview] Backfill: processing ${needsPreview.length} COA(s)...`);
-  let processed = 0;
-  let skipped = 0;
+  const errors: Array<{ coaId: string; message: string }> = [];
+  let succeeded = 0;
+  let failed = 0;
 
   for (const coa of needsPreview) {
-    const result = await generateCoaPreview(coa.id, coa.imageUrl!, storage);
-    if (result) {
-      processed++;
-    } else {
-      skipped++;
+    try {
+      const result = await generateCoaPreview(coa.id, coa.imageUrl!, storage);
+      if (result) {
+        succeeded++;
+      } else {
+        // Not a PDF or conversion returned null — count as failed
+        failed++;
+        errors.push({ coaId: coa.id, message: "Not a PDF or conversion produced no output" });
+      }
+    } catch (err) {
+      failed++;
+      errors.push({ coaId: coa.id, message: (err as Error)?.message ?? String(err) });
     }
   }
 
-  console.log(`[coaPreview] Backfill complete — ${processed} converted, ${skipped} skipped.`);
-  return { processed, skipped };
+  const processed = succeeded + failed;
+  console.log(`[coaPreview] Backfill complete — ${succeeded} succeeded, ${failed} failed.`);
+  return { processed, succeeded, failed, errors };
 }

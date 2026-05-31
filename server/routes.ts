@@ -3735,8 +3735,9 @@ Return ONLY valid JSON, no markdown, no explanation.`,
       }
       res.json(coa);
 
-      // Fire-and-forget: regenerate PNG preview if imageUrl changed and preview doesn't exist yet
-      if (coa.imageUrl && !coa.previewImageUrl) {
+      // Fire-and-forget: always regenerate preview when imageUrl is present,
+      // including when admin replaces an existing PDF (stale preview case).
+      if (coa.imageUrl) {
         generateCoaPreview(coa.id, coa.imageUrl, storage).catch((err) => {
           console.warn("[coaPreview] async preview after update failed:", err?.message ?? err);
         });
@@ -3747,7 +3748,7 @@ Return ONLY valid JSON, no markdown, no explanation.`,
     }
   });
 
-  // Admin: Generate PNG preview for a single COA (on-demand)
+  // Admin: Generate (or re-generate) PNG preview for a single COA
   app.post("/api/admin/coas/:id/generate-preview", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const coa = await storage.getCoa(req.params.id);
@@ -3768,11 +3769,13 @@ Return ONLY valid JSON, no markdown, no explanation.`,
     }
   });
 
-  // Admin: Bulk-generate PNG previews for all COAs that need one
+  // Admin: Bulk-generate PNG previews for all COAs that still need one
+  // Uses DB-level filter (image_url IS NOT NULL AND preview_image_url IS NULL)
+  // so this is a true no-op after the first successful backfill.
   app.post("/api/admin/coas/generate-previews", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { processed, skipped } = await backfillCoaPreviews(storage);
-      res.json({ processed, skipped });
+      const result = await backfillCoaPreviews(storage);
+      res.json(result);
     } catch (error) {
       console.error("Error bulk-generating COA previews:", error);
       res.status(500).json({ error: "Failed to generate COA previews" });

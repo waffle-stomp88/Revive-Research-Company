@@ -2806,11 +2806,15 @@ function CoasTab() {
   const bulkGeneratePreviewsMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/admin/coas/generate-previews");
-      return response.json() as Promise<{ processed: number; skipped: number }>;
+      return response.json() as Promise<{ processed: number; succeeded: number; failed: number; errors: Array<{ coaId: string; message: string }> }>;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
-      toast({ title: `Previews generated: ${data.processed} converted, ${data.skipped} skipped` });
+      if (data.processed === 0) {
+        toast({ title: "All previews are already up to date" });
+      } else {
+        toast({ title: `Previews: ${data.succeeded} generated, ${data.failed} failed` });
+      }
     },
     onError: () => {
       toast({ title: "Failed to generate previews", variant: "destructive" });
@@ -3458,6 +3462,28 @@ function CoasTab() {
                             )}
                           </Button>
                         )}
+                        {coaImageUrl && editingCoa && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => generatePreviewMutation.mutate(editingCoa.id)}
+                            disabled={generatePreviewMutation.isPending}
+                            data-testid="button-regenerate-preview-dialog"
+                          >
+                            {generatePreviewMutation.isPending ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Generating...
+                              </>
+                            ) : (
+                              <>
+                                <ImageIcon className="h-4 w-4 mr-2" />
+                                {coaPreviewImageUrl ? "Re-generate Preview" : "Generate Preview"}
+                              </>
+                            )}
+                          </Button>
+                        )}
                         <ObjectUploader
                           onGetUploadParameters={handleCoaImageUpload}
                           onComplete={handleCoaImageComplete}
@@ -3600,19 +3626,19 @@ function CoasTab() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {coa.imageUrl && !coa.previewImageUrl && !coa.archived && (
+                      {coa.imageUrl && !coa.archived && (
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => generatePreviewMutation.mutate(coa.id)}
                           disabled={generatePreviewMutation.isPending && generatePreviewMutation.variables === coa.id}
-                          title="Generate mobile preview image"
+                          title={coa.previewImageUrl ? "Re-generate mobile preview" : "Generate mobile preview image"}
                           data-testid={`button-generate-preview-coa-${coa.id}`}
                         >
                           {generatePreviewMutation.isPending && generatePreviewMutation.variables === coa.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
-                            <ImageIcon className="h-4 w-4 text-[#21d8ff]" />
+                            <ImageIcon className={`h-4 w-4 ${coa.previewImageUrl ? "text-green-500" : "text-[#21d8ff]"}`} />
                           )}
                         </Button>
                       )}

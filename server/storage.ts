@@ -111,6 +111,7 @@ export interface IStorage {
   
   getCoaByBatchNumber(batchNumber: string): Promise<Coa | undefined>;
   getCoa(id: string): Promise<Coa | undefined>;
+  getCoasNeedingPreview(): Promise<Coa[]>;
   getAllCoas(includeArchived?: boolean): Promise<Coa[]>;
   getCoasByProductId(productId: string, includeArchived?: boolean): Promise<Coa[]>;
   createCoa(coa: InsertCoa): Promise<Coa>;
@@ -639,6 +640,18 @@ export class DatabaseStorage implements IStorage {
   async getCoa(id: string): Promise<Coa | undefined> {
     const [coa] = await db.select().from(coas).where(eq(coas.id, id));
     return coa || undefined;
+  }
+
+  /** Returns only COAs that have an imageUrl but no previewImageUrl yet. DB-level filter — cheap no-op after backfill. */
+  async getCoasNeedingPreview(): Promise<Coa[]> {
+    return db
+      .select()
+      .from(coas)
+      .where(and(
+        sql`${coas.imageUrl} IS NOT NULL`,
+        isNull(coas.previewImageUrl)
+      ))
+      .orderBy(desc(coas.testDate));
   }
 
   async getAllCoas(includeArchived: boolean = false): Promise<Coa[]> {
