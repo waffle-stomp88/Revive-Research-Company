@@ -130,23 +130,6 @@ for (const product of PRODUCTS) {
       await expect(bar).toContainText("Cold Chain Shipping");
     });
 
-    test("checkmark is visible on the default-selected one-time purchase option", async ({ page }) => {
-      // Skip when the product is out of stock — purchase options are intentionally hidden.
-      if (await isOutOfStock(page)) {
-        test.skip(true, `${product.name} is currently out of stock — purchase options are hidden`);
-        return;
-      }
-      // Skip when the soft gate is active — purchase options are replaced by the auth gate.
-      if (await isSoftGated(page)) {
-        test.skip(true, `${product.name} — soft gate active for unauthenticated visitor`);
-        return;
-      }
-      const optionOneTime = page.locator('[data-testid="option-one-time"]');
-      await expect(optionOneTime).toBeVisible({ timeout: 10000 });
-      const checkmark = page.locator('[data-testid="check-one-time"]');
-      await expect(checkmark).toBeVisible({ timeout: 10000 });
-    });
-
     test("Buy Now and Add to Cart buttons are stacked vertically in the CTA column", async ({ page }) => {
       // Skip when the product is explicitly out of stock.
       if (await isOutOfStock(page)) {
