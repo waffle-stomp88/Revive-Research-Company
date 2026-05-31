@@ -154,35 +154,29 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
       style={{ background: "#0e0e14", border: "1px solid #1e1e2a" }}
       data-testid="order-summary"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-gray-500" style={{ fontSize: "10px" }}>
-          {effectiveQty} × {productName} {dosage}
-        </span>
-        {!softGated && (
-          <span className="text-gray-500" style={{ fontSize: "10px" }}>
-            ${perVialRounded} / vial
-          </span>
-        )}
-      </div>
-      <div className="my-2 border-t border-[#1e1e2a]" />
-      {softGated ? (
-        <div className="flex items-center gap-1.5">
-          <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
-          <Link href="/login" className="text-sm font-medium" style={{ color: "#21d8ff" }}>
-            Sign in
-          </Link>
-        </div>
-      ) : (
-        <>
+      <div className="flex items-center justify-between gap-3">
+        {softGated ? (
+          <div className="flex items-center gap-1.5">
+            <Lock className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "#21d8ff80" }} />
+            <Link href="/login" className="text-sm font-medium" style={{ color: "#21d8ff" }}>
+              Sign in
+            </Link>
+          </div>
+        ) : (
           <span
-            className="font-black tracking-tight block"
+            className="font-black tracking-tight flex-shrink-0"
             style={{ fontSize: "34px", color: "#21d8ff", lineHeight: 1 }}
             data-testid="order-summary-total"
           >
             ${totalRounded}
           </span>
-        </>
-      )}
+        )}
+        {!softGated && (
+          <span className="text-gray-500 text-right" style={{ fontSize: "11px", lineHeight: 1.4 }}>
+            {effectiveQty} × {productName} {dosage}&nbsp;·&nbsp;${perVialRounded}/vial
+          </span>
+        )}
+      </div>
     </div>
   );
 }
