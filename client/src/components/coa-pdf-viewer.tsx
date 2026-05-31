@@ -3,6 +3,48 @@ import { Loader2, AlertCircle, ZoomIn, ZoomOut, RotateCcw, X } from "lucide-reac
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
+// Vite resolves this to the real worker asset URL at build time.
+// In dev it's served directly through Vite's dev server (no Express routing race).
+// In prod it becomes a hashed asset URL in /assets/.
+// Using ?url prevents Vite from trying to bundle/transform the worker as a module.
+import pdfjsWorkerAssetUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+// Polyfills for older Chromium builds (Chrome < 126) used in automated tests.
+// Each guard is a no-op on modern browsers.
+const WORKER_POLYFILLS = [
+  "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};}",
+  "if(typeof Promise.try==='undefined'){Promise.try=function(f,...a){return new Promise((r,j)=>{try{r(f(...a));}catch(e){j(e);}});};}",
+  "if(typeof Promise.withResolvers==='undefined'){Promise.withResolvers=function(){let r,j;const p=new Promise((a,b)=>{r=a;j=b;});return{promise:p,resolve:r,reject:j};};}",
+  "if(typeof Uint8Array.prototype.toHex==='undefined'){Uint8Array.prototype.toHex=function(){return Array.from(this).map(b=>b.toString(16).padStart(2,'0')).join('');};}",
+  "if(typeof Map.prototype.getOrInsertComputed==='undefined'){Map.prototype.getOrInsertComputed=function(k,fn){if(this.has(k))return this.get(k);const v=fn(k);this.set(k,v);return v;};}",
+].join('\n');
+
+/**
+ * Fetches the pdfjs worker via Vite's asset URL (no Express routing involved),
+ * prepends polyfills, wraps in a Blob URL, and caches the result for the
+ * lifetime of the page. Blob URLs are invisible to Vite's module graph so
+ * pdfjs can't accidentally intercept them with ?import rewrites.
+ */
+let _workerBlobUrlPromise: Promise<string> | null = null;
+function getWorkerBlobUrl(): Promise<string> {
+  if (!_workerBlobUrlPromise) {
+    _workerBlobUrlPromise = fetch(pdfjsWorkerAssetUrl)
+      .then(r => {
+        if (!r.ok) throw new Error(`Worker fetch failed: ${r.status}`);
+        return r.text();
+      })
+      .then(code => URL.createObjectURL(
+        new Blob([WORKER_POLYFILLS + '\n' + code], { type: "application/javascript" })
+      ))
+      .catch(err => {
+        // Reset so the next render can retry
+        _workerBlobUrlPromise = null;
+        throw err;
+      });
+  }
+  return _workerBlobUrlPromise;
+}
+
 interface CoaPdfViewerProps {
   pdfUrl: string;
   batchNumber: string;
@@ -46,7 +88,6 @@ function cropWhitespace(src: HTMLCanvasElement, padding = 8): HTMLCanvasElement 
     }
   }
 
-  // Add small padding so content doesn't touch edge
   top    = Math.max(0, top - padding);
   bottom = Math.min(height - 1, bottom + padding);
   left   = Math.max(0, left - padding);
@@ -82,13 +123,7 @@ export function CoaPdfViewer({
       setStatus("loading");
       setDataUrl(null);
       try {
-        // pdfjs-dist ≥ 5 internally calls URL.parse() (Chrome 126+) and
-        // Promise.try() (Chrome 127+) in both the main library AND the Web Worker.
-        // Web Workers run in a separate global scope that won't see main-thread polyfills,
-        // so the worker is served via /api/pdfjs-worker — an Express route that prepends
-        // the polyfills to the raw worker script before sending it to the browser.
-        //
-        // We still need the main-thread polyfills here for pdf.mjs itself.
+        // Apply main-thread polyfills (mirrors the worker polyfills above).
         if (typeof URL.parse === "undefined") {
           (URL as unknown as Record<string, unknown>).parse = (u: string, b?: string) => {
             try { return new URL(u, b); } catch { return null; }
@@ -120,16 +155,12 @@ export function CoaPdfViewer({
           };
         }
 
-        const pdfjsLib = await import("pdfjs-dist");
-        // /api/pdfjs-worker serves the pdfjs worker with polyfills injected.
-        // In Vite's dev environment, dynamic import() calls get ?import appended
-        // to relative/absolute URLs, which breaks the plain-JS Express route.
-        // Fetching the script as text and wrapping it in a Blob URL bypasses
-        // Vite's module graph entirely — blob: URLs are never intercepted.
-        const workerResp = await fetch("/api/pdfjs-worker");
-        const workerCode = await workerResp.text();
-        const workerBlob = new Blob([workerCode], { type: "application/javascript" });
-        pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+        const [pdfjsLib, workerBlobUrl] = await Promise.all([
+          import("pdfjs-dist"),
+          getWorkerBlobUrl(),
+        ]);
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerBlobUrl;
 
         const pdf = await pdfjsLib.getDocument({ url: pdfUrl, isEvalSupported: false, useSystemFonts: true }).promise;
         if (cancelled) return;

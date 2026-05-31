@@ -1,18 +1,39 @@
 ---
 name: pdfjs worker blob URL
-description: Why CoaPdfViewer uses fetch+Blob+createObjectURL instead of a direct path for the pdfjs worker in dev
+description: Why CoaPdfViewer uses ?url import + Blob + createObjectURL instead of a direct path for the pdfjs worker
 ---
 
 ## Rule
-Always set `pdfjsLib.GlobalWorkerOptions.workerSrc` to a `blob:` URL created from the fetched worker script, never to a plain relative or absolute path.
+Always load the pdfjs worker via Vite's `?url` import + a module-level cached blob URL. Never point `GlobalWorkerOptions.workerSrc` directly at a path string.
 
-**Why:** Vite's dev server intercepts dynamic `import()` calls made inside pdfjs-dist and appends `?import` to the URL (e.g. `/api/pdfjs-worker?import`). The Express route only matches the bare path, so the fetch fails with "Failed to fetch dynamically imported module". This does not affect production builds (no Vite dev server), which is why it only shows up in the Replit workspace preview iframe, not on real browsers or deployed apps.
+**Why:** Two separate Vite dev-server traps:
+1. `new Worker("/api/pdfjs-worker")` or `import("/api/pdfjs-worker")` — Vite appends `?import` to the URL inside pdfjs's dynamic import(), turning it into a module request that fails.
+2. `fetch("/api/pdfjs-worker")` — Vite's catch-all `app.use("*", ...)` handler in `server/vite.ts` can race with the Express route and return `index.html` instead of JS, causing "Unexpected token '<'".
+
+Neither issue affects production builds (no Vite dev server). That's why the prod app works but dev is intermittent.
 
 **How to apply:**
-```js
-const workerResp = await fetch("/api/pdfjs-worker");
-const workerCode = await workerResp.text();
-const workerBlob = new Blob([workerCode], { type: "application/javascript" });
-pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+```ts
+// Top of file — Vite resolves this at build time, no routing race
+import pdfjsWorkerAssetUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+// Module-level cache — fetched once per page load
+let _workerBlobUrlPromise: Promise<string> | null = null;
+function getWorkerBlobUrl(): Promise<string> {
+  if (!_workerBlobUrlPromise) {
+    _workerBlobUrlPromise = fetch(pdfjsWorkerAssetUrl)
+      .then(r => r.text())
+      .then(code => URL.createObjectURL(
+        new Blob([POLYFILLS + '\n' + code], { type: "application/javascript" })
+      ))
+      .catch(err => { _workerBlobUrlPromise = null; throw err; });
+  }
+  return _workerBlobUrlPromise;
+}
+
+// In component effect:
+const [pdfjsLib, workerBlobUrl] = await Promise.all([import("pdfjs-dist"), getWorkerBlobUrl()]);
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerBlobUrl;
 ```
-`blob:` URLs are invisible to Vite's module graph and are never rewritten. This works in both dev and production.
+
+Blob URLs are invisible to Vite's module graph so they're never rewritten. The `?url` import ensures the fetch always hits Vite's asset server, not Express. The module-level cache prevents the 1.5 MB worker from being fetched more than once.
