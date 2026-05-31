@@ -2102,10 +2102,10 @@ export default function ProductDetail() {
                               </p>
                             </div>
                             <div className="absolute bottom-5 right-5 text-right">
-                              <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1">Lot</p>
-                              <p className="font-mono text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
+                              <p className="text-[8px] md:text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-0.5">Lot</p>
+                              <p className="font-mono text-xs md:text-sm font-semibold text-foreground">{latestCoa.batchNumber}</p>
                               {latestCoa.dosage && (
-                                <p className="text-xs text-muted-foreground mt-0.5">{latestCoa.dosage}</p>
+                                <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">{latestCoa.dosage}</p>
                               )}
                             </div>
                           </div>
