@@ -183,8 +183,8 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
         ) : (
           <div className="flex items-center gap-2">
             <span
-              className="font-bold text-white"
-              style={{ fontSize: "22px" }}
+              className="font-black tracking-tight"
+              style={{ fontSize: "34px", color: "#D4FF1F", lineHeight: 1 }}
               data-testid="order-summary-total"
             >
               ${totalRounded}
@@ -192,11 +192,6 @@ export function OrderSummary({ basePrice, selectedQty, singleVialQty = 1, produc
             {productId && <PriceTrendBadge productId={productId} variant="compact" />}
           </div>
         )}
-
-        <div className="flex items-center gap-1.5">
-          <CheckCircle className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />
-          <span className="text-xs text-green-500">{stockAmount > 0 ? `${stockAmount} in stock` : "In stock"}</span>
-        </div>
       </div>
       {showSavings && !softGated && (
         <p
