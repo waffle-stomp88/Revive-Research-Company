@@ -634,7 +634,7 @@ export function CyclesTab() {
             </p>
           </div>
           <Button asChild variant="outline" className="gap-2">
-            <a href="/dashboard?tab=logbook" data-testid="link-cycles-go-to-logbook">
+            <a href="/dashboard#section-logbook" data-testid="link-cycles-go-to-logbook">
               <BookMarked className="h-4 w-4" />
               Open the logbook
             </a>

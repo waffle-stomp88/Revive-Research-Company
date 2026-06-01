@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -17,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Package,
   FileCheck,
@@ -141,22 +140,6 @@ export default function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [activeTab, setActiveTab] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get("tab");
-    return ["general", "orders", "stacks", "logbook", "cycles", "education", "settings"].includes(tab || "") ? tab! : "general";
-  });
-  const tabsListRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const list = tabsListRef.current;
-    if (!list) return;
-    const activeEl = list.querySelector<HTMLElement>('[data-state="active"]');
-    if (!activeEl) return;
-    const listRect = list.getBoundingClientRect();
-    const elRect = activeEl.getBoundingClientRect();
-    const scrollLeft = list.scrollLeft + (elRect.left - listRect.left) - (listRect.width / 2 - elRect.width / 2);
-    list.scrollTo({ left: scrollLeft, behavior: "smooth" });
-  }, [activeTab]);
   const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addressEditDialogOpen, setAddressEditDialogOpen] = useState(false);
@@ -195,6 +178,24 @@ export default function Dashboard() {
       }
     }
   }, [authLoading, isAuthenticated, toast]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    const validTabs = ["general", "orders", "stacks", "logbook", "cycles", "education", "settings"];
+    if (tab && validTabs.includes(tab)) {
+      const sectionId = `section-${tab}`;
+      const scroll = () => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+          history.replaceState(null, "", `/dashboard#${sectionId}`);
+        }
+      };
+      const timer = setTimeout(scroll, 300);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders/my-orders"],
@@ -847,47 +848,10 @@ export default function Dashboard() {
 
             {/* 6-Tab Layout */}
             <motion.div variants={itemVariants}>
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList ref={tabsListRef} className="flex justify-start w-full overflow-x-auto scrollbar-hide sm:grid sm:grid-cols-7 sm:overflow-visible gap-1 mb-6 h-auto">
-                  <TabsTrigger value="general" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-general">
-                    <Home className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Home</span>
-                    <span className="hidden sm:inline sm:text-sm">General</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="orders" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-orders">
-                    <ShoppingBag className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Orders</span>
-                    <span className="hidden sm:inline sm:text-sm">Orders</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="stacks" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-stacks">
-                    <FlaskConical className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Stacks</span>
-                    <span className="hidden sm:inline sm:text-sm">Stacks</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="logbook" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-logbook">
-                    <BookMarked className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Log</span>
-                    <span className="hidden sm:inline sm:text-sm">Logbook</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="cycles" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-cycles">
-                    <Activity className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Cycles</span>
-                    <span className="hidden sm:inline sm:text-sm">Cycles</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="education" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-education">
-                    <GraduationCap className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Edu</span>
-                    <span className="hidden sm:inline sm:text-sm">Education</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="settings" className="flex-shrink-0 flex-col sm:flex-row items-center gap-1 px-3 py-2 min-h-[44px]" data-testid="tab-settings">
-                    <Settings className="h-4 w-4" />
-                    <span className="text-[10px] sm:hidden">Settings</span>
-                    <span className="hidden sm:inline sm:text-sm">Settings</span>
-                  </TabsTrigger>
-                </TabsList>
+              <div className="w-full space-y-12">
 
-                {/* General Tab */}
-                <TabsContent value="general" className="space-y-6">
+                {/* General Section */}
+                <section id="section-general" className="space-y-6">
                   {/* Quick Stats - Glassmorphism Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-all duration-300 group">
@@ -959,7 +923,7 @@ export default function Dashboard() {
                           {/* Orders Link */}
                           <div 
                             className="flex items-center gap-3 p-3 rounded-xl border border-[#D4FF1F]/30 bg-[#D4FF1F]/5 cursor-pointer hover-elevate transition-all"
-                            onClick={() => setActiveTab("orders")}
+                            onClick={() => document.getElementById("section-orders")?.scrollIntoView({ behavior: "smooth" })}
                             data-testid="nav-orders"
                           >
                             <div className="p-2 rounded-full bg-[#D4FF1F]/20">
@@ -1414,10 +1378,10 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   )}
-                </TabsContent>
+                </section>
 
-                {/* Orders Tab */}
-                <TabsContent value="orders" className="space-y-6">
+                {/* Orders Section */}
+                <section id="section-orders" className="space-y-6">
                   {/* Subscriptions Section */}
                   {subscriptions && subscriptions.length > 0 && (
                     <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
@@ -1579,10 +1543,10 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
-                </TabsContent>
+                </section>
 
-                {/* Stacks Tab */}
-                <TabsContent value="stacks" className="space-y-6">
+                {/* Stacks Section */}
+                <section id="section-stacks" className="space-y-6">
                   {/* My Stacks */}
                   <Card className="border-[#2a2a32]">
                     <CardHeader>
@@ -1796,20 +1760,20 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
-                </TabsContent>
+                </section>
 
-                {/* Logbook Tab */}
-                <TabsContent value="logbook" className="space-y-6">
+                {/* Logbook Section */}
+                <section id="section-logbook" className="space-y-6">
                   <Suspense fallback={null}><LogbookTab /></Suspense>
-                </TabsContent>
+                </section>
 
-                {/* Cycles Tab */}
-                <TabsContent value="cycles" className="space-y-6">
+                {/* Cycles Section */}
+                <section id="section-cycles" className="space-y-6">
                   <Suspense fallback={null}><CyclesTab /></Suspense>
-                </TabsContent>
+                </section>
 
-                {/* Education Tab */}
-                <TabsContent value="education" className="space-y-6">
+                {/* Education Section */}
+                <section id="section-education" className="space-y-6">
                   {/* Research Progress */}
                   {researchProfile && (
                     <Card className="border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
@@ -2126,10 +2090,10 @@ export default function Dashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                </TabsContent>
+                </section>
 
-                {/* Settings Tab */}
-                <TabsContent value="settings">
+                {/* Settings Section */}
+                <section id="section-settings">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Left Column */}
                     <div className="space-y-6">
@@ -2522,8 +2486,8 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
                   </div>
-                </TabsContent>
-              </Tabs>
+                </section>
+              </div>
             </motion.div>
           </motion.div>
         </div>

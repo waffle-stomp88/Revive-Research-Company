@@ -1940,7 +1940,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         navigate(`/stacks/${saved.shareCode}`);
       } else {
         toast({ title: "Stack Saved!", description: "Your stack is saved privately. Manage it from your dashboard." });
-        navigate("/dashboard?tab=stacks");
+        window.location.href = "/dashboard#section-stacks";
       }
     },
     onError: () => {
