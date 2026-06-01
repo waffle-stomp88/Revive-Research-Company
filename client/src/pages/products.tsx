@@ -1053,7 +1053,7 @@ function ProductsComponent() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-[29px] font-black mb-0 md:group-hover:text-[#D4FF1F] transition-colors line-clamp-2 text-center">
+                                <h3 className="font-display text-[29px] font-black mb-0 sm:mb-0.5 md:group-hover:text-[#D4FF1F] transition-colors line-clamp-2 text-center">
                                   {/bacteriostatic/i.test(product.name) ? (
                                     <>
                                       <span className="sm:hidden">BAC WATER</span>
