@@ -1,0 +1,176 @@
+# Revive Research — Account Experience Redesign · Replit Build Brief
+
+**Reference mockups (hand to Replit alongside this brief):**
+- `revive-account-mockup.html` — populated / returning-user state
+- `revive-account-mockup-empty.html` — first-session / empty state
+
+**How to use this brief:** Phases are sequential. Do not start a phase until the prior one is browser-verified and approved. Within each phase: show the diff, wait for explicit approval, apply, restart, then I (Grayson) verify in-browser before you continue. Do not mark any phase complete without my browser verification.
+
+**Standing dev rules (apply to every phase):**
+- Lazy load at the component level inside pages. No App.tsx-level lazy loading.
+- Tailwind utility classes preferred over inline styles.
+- `vite.config.ts` changes require explicit approval each time before applying.
+- Mobile-first. Desktop is secondary (note: confirm current mobile/desktop traffic split; single-column scroll is acceptable on desktop for now but flag if desktop traffic is significant).
+- Preserve all existing compliance and privacy framing. Do not drop the logbook "private to you / wiped from Settings / not a medical record" language.
+
+---
+
+## Global Design Direction (read before any phase)
+
+This redesign replaces the convoluted current account area. Core principles:
+
+1. **One internal navigation layer, not two.** REMOVE the in-account horizontal scrolling tab strip (Home/Orders/Stacks/Log/Cycles/Edu/Settings). The existing bottom app nav (Home/Shop/Cart/Education/Account) stays exactly as is and is the only nav. Everything the strip pointed to becomes sections on the account page or lives in the Research Tools group.
+
+2. **Reorder leads.** Peptides are a high-reorder category. The returning-user hero is "Order Again." This is the #1 priority of the page.
+
+3. **Consolidated gamification.** The current seven overlapping mechanics (Achievements 2/5, Research Badges 2/6, XP, Early Access progress, Academy rewards) collapse into ONE "Research Standing" tier ladder (3 tiers) plus the logbook continuity. Badges still exist but live in a quiet gallery one tap deeper, never as loud grids on the home view.
+
+4. **One dominant accent.** Chartreuse `#D4FF1F` is the only loud color, used sparingly for true focal points. Cyan `#21d8ff` and purple `#9d4edd` are semantic-only (cyan = informational/verification, purple = a single category cue). Do not distribute accents evenly.
+
+5. **Section order (populated home), top to bottom:**
+   1. Greeting + standing chips
+   2. Reorder reminder banner (conditional — see Phase 4)
+   3. Order Again (hero)
+   4. Your Research Standing
+   5. Continue
+   6. Your Research Summary / recap (conditional — see Phase 3)
+   7. Research Tools group
+   8. Account rows (Orders, Benefits, Affiliate, Settings)
+
+### Premium execution requirements (do not ship the default-looking version)
+- **Typography:** Load a distinctive display typeface for headings (greeting, section heroes, card titles). Do NOT ship system fonts or Inter/Roboto/Arial. Body copy can be a clean refined sans. This is the single highest-impact premium signal — treat it as required, not optional.
+- **Accent discipline:** Let more elements sit in white/grey. Reserve chartreuse for one or two focal points per screen (e.g., the primary CTA and the active state). Avoid chartreuse on greeting + bar + buttons + chrome all at once.
+- **No emoji in UI chrome.** Replace the shipping-bar truck and cart emoji with real icons (the mockups use emoji as placeholders only).
+- **Restrained glow/motion.** Subtle glow on the single hero/standing element only. One staggered load-in on first paint. No confetti, no per-card motion, no spin effects.
+
+---
+
+## PHASE 1 — Navigation cleanup (structural, do first)
+
+**Goal:** Remove the redundant inner tab strip so the account page is a single clean scroll under the existing bottom nav.
+
+**Tasks:**
+- Remove the in-account horizontal scrolling tab bar component entirely.
+- Confirm the existing bottom nav (Home/Shop/Cart/Education/Account) is untouched and remains the sole navigation.
+- The account page becomes one vertical scroll. Sections will be filled in by later phases; for this phase, just establish the single-scroll container and remove the strip.
+
+**Acceptance:** No horizontal tab strip anywhere in the account area. Bottom nav unchanged. Page scrolls as one column.
+
+---
+
+## PHASE 2 — Home layout, populated + empty states
+
+**Goal:** Build the account home to match the two mockups, both states.
+
+**Build both states. State is determined by user data:**
+- **Empty / first-session** (no orders, no logbook entries, no Founding badge): match `revive-account-mockup-empty.html`.
+- **Populated / returning** (≥1 order and/or logbook activity): match `revive-account-mockup.html`.
+
+**Section specs:**
+
+**Greeting + standing chips**
+- Populated: "Good morning/afternoon/evening, [Name]" + standing chip (tier) + Founding Member chip IF earned.
+- Empty: "Welcome, [Name]" + Tier 1 chip only, no Founding chip.
+- Reduce greeting vertical footprint: smaller than the mockup's three-line stack, and put the status chips on a single row where they fit. The hero below should be reachable with minimal scroll.
+
+**Order Again (hero — populated only)**
+- Horizontal scroll row of the user's actual past compounds (most recent first).
+- Each card: compound name, dose, last-order qty, price, "Reorder" button.
+- Reorder PRE-FILLS the last order's quantity but is EDITABLE in the cart before purchase. Do not dump straight to checkout.
+- "All orders →" link to full history.
+
+**Get Started (replaces Order Again — empty only)**
+- Single centered prompt tying first purchase to Founding Member status (first 50, permanent 25%).
+- Primary CTA: "Browse Compounds."
+
+**Your Research Standing (both states)**
+- One tier ladder, 3 tiers. Single progress bar + one "next unlock" line.
+- Progress bar MUST be paired with a text label (e.g., "Tier 2 of 3") — never color alone.
+- Populated example: "Early Access Researcher · Tier 2 of 3 · Place 2 more orders to unlock Founding Fellow."
+- Empty: "Researcher · Tier 1 · Place your first order to become a Founding Member."
+- (Tier names, thresholds, and perks are placeholders — see Flagged Assumptions.)
+
+**Continue / Start Here (both states)**
+- Populated: "Continue" — the user's in-progress item (e.g., half-read Academy module).
+- Empty: "Start Here" — points to the first Academy module.
+
+**Research Tools group (both states)**
+- One grouped card containing: My Stacks, Logbook, Cycles, Verify COA, Research Academy.
+- Populated: show counts ("4 entries," "1 active cycle," "2/6 modules").
+- Empty: show action prompts ("Build your first stack," "Log your first entry," "Start learning · 0/6").
+- **Cycles locked state:** reframe as forward progress, NOT a dead "locked" card. Show "3 log entries to unlock" with a clear path, greyed but inviting. This is a required fix, not optional styling.
+
+**Account rows (both states)**
+- Quiet list rows: My Orders, Your Benefits, Affiliate Earnings, Settings.
+- Affiliate Earnings is its OWN row (income), kept separate from Your Benefits (perks). Do not merge them.
+- The four old vanity stat cards (Orders/Products/Badges/Member Since count tiles) are REMOVED from the home view. Do not bring them back as prominent tiles.
+
+**Acceptance:** Both states render correctly based on user data, match the mockups' structure and order, and respect the premium execution requirements above (real display font, accent discipline, no emoji, restrained glow).
+
+---
+
+## PHASE 3 — Research Summary / recap card (data-gated)
+
+**Goal:** Add the "Your Research Summary" recap teaser — the data-reflection feature that drives return visits.
+
+**Tasks:**
+- Card reflects the user's own logged activity back as a short summary (e.g., "You tracked 3 compounds this month · 1 order placed · 4 observations logged · 1 active research cycle").
+- Links to a fuller summary view. **For launch, the linked detail page can be a basic summary or a "fuller recap coming soon" — do NOT build a full Wrapped-style detail experience yet. That is a later phase.**
+- **DATA THRESHOLD (required):** Only render this card once the user has at least [N] logbook entries OR [N] orders. Below threshold, do not render the section at all (no empty/placeholder version). Threshold value to be set by Grayson — implement as a single configurable constant, not hardcoded inline.
+
+**Compliance:** Copy reports the user's logging activity and orders ONLY. Never effects, outcomes, or efficacy. "Studies you've tracked" / "observations logged" framing. Mark all new copy strings as pending a compliance pass before launch.
+
+**Acceptance:** Card appears only above threshold, reflects real user data, compliant copy, links to a basic summary.
+
+---
+
+## PHASE 4 — Reorder reminder (email + dashboard prompt)
+
+**Goal:** Surface a natural-cadence reorder nudge, since reorder is the #1 priority.
+
+**Two surfaces:**
+
+1. **Dashboard prompt (account home):** A thin banner ABOVE the Order Again hero, appearing ONLY when a previously-ordered compound is "due" per the cadence threshold. Leads into the hero, does not compete with it.
+   - Example copy: "It's been [N] weeks since your last [compound] order — restock your research supply."
+   - Never shown on empty/new accounts (no order history).
+   - Tapping it scrolls to / pre-fills the relevant Order Again card.
+
+2. **Email:** The same nudge as a transactional email (Amazon SES, consistent with existing infra).
+
+**Compliance (critical):** Frame as research-SUPPLY / record continuity. NEVER name a usage cadence, dosing schedule, or imply consumption. "Restock your research supply" / "your logbook for [compound] has been active for [N] weeks" — never "time for your next dose." Mark copy pending compliance pass.
+
+**Cadence threshold:** Placeholder — set by Grayson against real order-frequency data post-launch. Implement as a configurable constant.
+
+**Acceptance:** Banner appears only when due and only for users with order history; email fires on the same trigger; all copy is supply/record-framed; threshold is configurable.
+
+---
+
+## PHASE 5 — Polish & states
+
+**Goal:** Production-grade finish.
+
+**Tasks:**
+- **Loading states:** Skeleton loaders (not spinners or blank flashes) for any DB-backed section: Order Again, Research Standing, recap, order history.
+- **Accessibility:** All tap targets ≥48px (verify reorder buttons and list rows). Never rely on color alone for status — pair with text/icon. Sufficient contrast for muted text on near-black.
+- **Motion:** One staggered load-in on first paint only. No scattered micro-interactions.
+- **Empty-state polish:** Every section's empty state follows "explain + show the path + one CTA." No bare "nothing here yet" dead ends.
+
+**Acceptance:** No layout shift / blank flashes on load; accessible tap targets and contrast; calm, single load-in animation.
+
+---
+
+## Flagged Assumptions (resolve, do not hardcode-and-forget)
+
+1. **All thresholds are placeholders** — recap data gate, tier requirements, reorder cadence timing. Implement each as a configurable constant. Set against real data after launch.
+2. **Reorder-leads assumption is confirmed** (peptides are high-reorder) — this one is validated, layout is correct.
+3. **New user-facing copy is pending a compliance pass** — recap strings, reorder-reminder strings, "active research cycle," "log your first entry." Route through legal counsel (Paper 4 item) before launch.
+4. **Privacy framing must be preserved** — logbook stays "private to you, wiped from Settings, not a medical record." The redesign must not quietly drop it.
+5. **Desktop** — built mobile-first by design. Confirm mobile/desktop split; revisit desktop layout only if desktop traffic is meaningful.
+
+---
+
+## Out of Scope (do NOT build yet)
+- Full Wrapped-style recap detail experience (Phase 3 ships a teaser + basic summary only).
+- Subscriptions (deferred per existing decision).
+- Any new gamification mechanic beyond the single consolidated tier ladder + logbook continuity.
+- Confetti / celebratory animation / spin mechanics (off-brand for premium positioning).

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revive Account — Redesign Mockup</title>
+<style>
+  :root{
+    --bg:#0a0a0c;
+    --surface:#141416;
+    --surface-2:#1a1a1e;
+    --border:#26262b;
+    --chartreuse:#D4FF1F;
+    --cyan:#21d8ff;
+    --purple:#9d4edd;
+    --text:#f4f4f5;
+    --muted:#8a8a93;
+    --muted-2:#5e5e66;
+    --green:#3ddc84;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--bg);width:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--text);
+  }
+  .phone{
+    width:100%;
+    background:var(--bg);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* shipping bar */
+  .ship{
+    background:var(--chartreuse);color:#000;
+    font-size:12px;font-weight:700;
+    text-align:center;padding:11px 12px;
+    letter-spacing:.2px;
+  }
+  .ship a{color:#000;text-decoration:underline;font-weight:800;}
+
+  /* top header */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px 10px;
+  }
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:2px;font-size:18px;}
+  .logo .mark{
+    width:30px;height:30px;border:2.5px solid #fff;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;font-size:15px;transform:skewX(-6deg);
+  }
+  .top-right{display:flex;align-items:center;gap:16px;}
+  .cart{position:relative;font-size:20px;}
+  .cart .badge{
+    position:absolute;top:-8px;right:-9px;background:var(--chartreuse);color:#000;
+    font-size:10px;font-weight:800;border-radius:6px;padding:1px 5px;
+  }
+  .ham{font-size:20px;color:var(--muted);}
+
+  .scroll{padding:6px 18px 120px;width:100%;}
+  .greet,.sec-label,.standing-card,.continue-card,.recap,.hub,.row,.reorder-row{width:100%;}
+
+  /* greeting + standing strip */
+  .greet{margin:14px 0 4px;}
+  .greet h1{
+    font-size:25px;font-weight:800;line-height:1.15;letter-spacing:-.3px;
+    text-transform:uppercase;
+  }
+  .greet h1 .name{color:var(--chartreuse);}
+  .standing-chip{
+    display:inline-flex;align-items:center;gap:7px;margin-top:11px;
+    background:rgba(212,255,31,.08);border:1px solid rgba(212,255,31,.35);
+    border-radius:999px;padding:6px 13px 6px 10px;font-size:12.5px;font-weight:700;
+    color:var(--chartreuse);
+  }
+  .standing-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--chartreuse);box-shadow:0 0 8px var(--chartreuse);}
+  .founding{
+    display:inline-flex;align-items:center;gap:6px;margin-top:11px;margin-left:7px;
+    background:rgba(157,78,221,.1);border:1px solid rgba(157,78,221,.4);
+    border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:#c89bf0;
+  }
+
+  /* section label */
+  .sec-label{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:30px 0 12px;
+  }
+  .sec-label h2{font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+  .sec-label a{font-size:12px;color:var(--chartreuse);font-weight:700;text-decoration:none;white-space:nowrap;}
+
+  /* ORDER AGAIN — hero */
+  .reorder-row{display:flex;gap:11px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+  .reorder-row::-webkit-scrollbar{display:none;}
+  .reorder-card{
+    flex:0 0 158px;background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:14px;position:relative;
+  }
+  .reorder-card .pic{
+    width:100%;height:74px;border-radius:10px;margin-bottom:11px;
+    background:radial-gradient(circle at 30% 30%,#1f2a14,#0d0d0f);
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid #222;
+  }
+  .reorder-card .pic svg{width:30px;height:30px;}
+  .reorder-card .name{font-size:15px;font-weight:800;margin-bottom:2px;}
+  .reorder-card .meta{font-size:11px;color:var(--muted);margin-bottom:11px;}
+  .reorder-card .btn{
+    width:100%;background:var(--chartreuse);color:#000;border:none;
+    font-weight:800;font-size:13px;border-radius:9px;padding:9px 0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .reorder-card .last{position:absolute;top:12px;right:12px;font-size:10px;color:var(--muted-2);}
+
+  /* RESEARCH STANDING card */
+  .standing-card{
+    background:linear-gradient(160deg,#16170f,#101012);
+    border:1px solid rgba(212,255,31,.22);
+    border-radius:18px;padding:18px;position:relative;overflow:hidden;
+  }
+  .standing-card::after{
+    content:"";position:absolute;top:-40px;right:-40px;width:130px;height:130px;
+    background:radial-gradient(circle,rgba(212,255,31,.14),transparent 70%);
+  }
+  .standing-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .standing-top .tier{font-size:18px;font-weight:800;}
+  .standing-top .tier span{color:var(--chartreuse);}
+  .standing-top .lvl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .progress-track{height:8px;background:#000;border-radius:999px;overflow:hidden;border:1px solid #222;}
+  .progress-fill{height:100%;width:60%;background:linear-gradient(90deg,#7d9a12,var(--chartreuse));border-radius:999px;}
+  .standing-next{font-size:12.5px;color:var(--muted);margin-top:11px;}
+  .standing-next b{color:var(--text);font-weight:700;}
+
+  /* CONTINUE card */
+  .continue-card{
+    display:flex;align-items:center;gap:14px;background:var(--surface);
+    border:1px solid var(--border);border-radius:16px;padding:15px;
+  }
+  .continue-card .ic{
+    width:46px;height:46px;border-radius:12px;flex:0 0 46px;
+    background:rgba(33,216,255,.1);border:1px solid rgba(33,216,255,.3);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .continue-card .ic svg{width:22px;height:22px;}
+  .continue-card .body{flex:1;}
+  .continue-card .body .k{font-size:11px;color:var(--cyan);font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+  .continue-card .body .t{font-size:15px;font-weight:700;margin:2px 0;}
+  .continue-card .body .s{font-size:12px;color:var(--muted);}
+  .continue-card .arrow{color:var(--muted);font-size:20px;}
+
+  /* RECAP teaser */
+  .recap{
+    background:linear-gradient(135deg,#101622,#0c0c0e);
+    border:1px solid rgba(33,216,255,.22);border-radius:18px;padding:18px;
+    position:relative;overflow:hidden;
+  }
+  .recap::after{
+    content:"";position:absolute;bottom:-30px;left:-20px;width:120px;height:120px;
+    background:radial-gradient(circle,rgba(33,216,255,.12),transparent 70%);
+  }
+  .recap .tag{font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--cyan);}
+  .recap h3{font-size:18px;font-weight:800;margin:7px 0 4px;}
+  .recap p{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+  .recap .btn{
+    background:transparent;border:1px solid var(--cyan);color:var(--cyan);
+    font-weight:700;font-size:13px;border-radius:9px;padding:9px 16px;cursor:pointer;
+  }
+
+  /* RESEARCH HUB card */
+  .hub{
+    background:var(--surface);border:1px solid var(--border);border-radius:18px;
+    padding:6px 6px 6px;overflow:hidden;
+  }
+  .hub-head{padding:14px 14px 10px;display:flex;align-items:center;gap:11px;}
+  .hub-head .ic{width:38px;height:38px;border-radius:11px;background:rgba(212,255,31,.1);border:1px solid rgba(212,255,31,.3);display:flex;align-items:center;justify-content:center;}
+  .hub-head .ic svg{width:19px;height:19px;}
+  .hub-head .t{font-size:16px;font-weight:800;}
+  .hub-head .s{font-size:11.5px;color:var(--muted);}
+  .hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:13px;overflow:hidden;margin:4px;}
+  .hub-item{background:var(--surface);padding:15px 13px;display:flex;flex-direction:column;gap:8px;cursor:pointer;}
+  .hub-item:hover{background:var(--surface-2);}
+  .hub-item .hic{width:26px;height:26px;}
+  .hub-item .hl{font-size:13.5px;font-weight:700;}
+  .hub-item .hs{font-size:11px;color:var(--muted);}
+  .hub-item.wide{grid-column:1 / -1;flex-direction:row;align-items:center;justify-content:space-between;}
+  .hub-item.wide .left{display:flex;align-items:center;gap:11px;}
+
+  /* simple list rows */
+  .row{
+    display:flex;align-items:center;gap:13px;background:var(--surface);
+    border:1px solid var(--border);border-radius:14px;padding:14px 15px;margin-bottom:11px;cursor:pointer;
+  }
+  .row .ic{width:40px;height:40px;border-radius:11px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;}
+  .row .ic svg{width:19px;height:19px;}
+  .row .body{flex:1;}
+  .row .body .t{font-size:14.5px;font-weight:700;}
+  .row .body .s{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .row .arrow{color:var(--muted-2);font-size:18px;}
+  .row .val{font-size:14px;font-weight:800;color:var(--chartreuse);}
+  .ic.cyan{background:rgba(33,216,255,.1);border:1px solid rgba(33,216,255,.3);}
+  .ic.cyan svg{stroke:var(--cyan);}
+  .ic.purple{background:rgba(157,78,221,.12);border:1px solid rgba(157,78,221,.35);}
+  .ic.purple svg{stroke:#c89bf0;}
+  .ic.muted{background:var(--surface-2);border:1px solid var(--border);}
+  .ic.muted svg{stroke:var(--muted);}
+
+  /* EMPTY-STATE specific */
+  .first-order{
+    background:linear-gradient(160deg,#16170f,#101012);
+    border:1px solid rgba(212,255,31,.3);border-radius:18px;padding:22px 18px;
+    text-align:center;position:relative;overflow:hidden;
+  }
+  .first-order::after{content:"";position:absolute;top:-50px;right:-30px;width:150px;height:150px;background:radial-gradient(circle,rgba(212,255,31,.16),transparent 70%);}
+  .first-order .ico{width:52px;height:52px;border-radius:14px;margin:0 auto 14px;background:rgba(212,255,31,.12);border:1px solid rgba(212,255,31,.35);display:flex;align-items:center;justify-content:center;}
+  .first-order .ico svg{width:26px;height:26px;}
+  .first-order h3{font-size:19px;font-weight:800;margin-bottom:6px;}
+  .first-order p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px;max-width:280px;margin-left:auto;margin-right:auto;}
+  .first-order .btn{background:var(--chartreuse);color:#000;border:none;font-weight:800;font-size:14px;border-radius:11px;padding:13px 28px;cursor:pointer;}
+
+  .empty-tools .hub-item .hs{color:var(--chartreuse);font-weight:600;}
+  .start-pill{display:inline-block;margin-top:2px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--chartreuse);}
+
+  /* bottom nav (UNCHANGED from current) */
+  .bottomnav{
+    position:fixed;bottom:0;left:0;right:0;
+    background:#0c0c0e;border-top:1px solid var(--border);
+    display:flex;justify-content:space-around;align-items:flex-end;
+    padding:9px 8px 12px;z-index:50;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);font-weight:600;}
+  .nav-item svg{width:22px;height:22px;stroke:var(--muted);}
+  .nav-item.active{color:var(--chartreuse);}
+  .nav-item.active svg{stroke:var(--chartreuse);}
+  .nav-cart{position:relative;}
+  .nav-cart .b{position:absolute;top:-6px;right:6px;background:var(--chartreuse);color:#000;font-size:9px;font-weight:800;border-radius:5px;padding:0 4px;}
+
+  .note{font-size:10px;color:var(--muted-2);text-align:center;padding:8px 20px 0;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="ship">🚚 FREE SHIPPING on orders over $250 &nbsp; <a href="#">Shop Now</a></div>
+
+  <div class="topbar">
+    <div class="logo"><span class="mark">R</span>REVIVE</div>
+    <div class="top-right">
+      <div class="cart">🛒<span class="badge">4</span></div>
+      <div class="ham">☰</div>
+    </div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- GREETING + STANDING (empty: no Founding Member badge yet) -->
+    <div class="greet">
+      <h1>Welcome,<br><span class="name">Grayson</span></h1>
+      <div>
+        <span class="standing-chip"><span class="dot"></span>Researcher · Tier 1</span>
+      </div>
+    </div>
+
+    <!-- FIRST ORDER prompt (empty: no orders yet) -->
+    <div class="sec-label"><h2>Get Started</h2></div>
+    <div class="first-order">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#D4FF1F" stroke-width="1.6"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></div>
+      <h3>Place your first order</h3>
+      <p>Browse the catalog to get started. Your first order unlocks Founding Member status — a permanent 25% standing.</p>
+      <button class="btn">Browse Compounds →</button>
+    </div>
+
+    <!-- RESEARCH STANDING (empty: Tier 1, first order is the unlock) -->
+    <div class="sec-label"><h2>Your Research Standing</h2></div>
+    <div class="standing-card">
+      <div class="standing-top">
+        <div class="tier">Researcher <span>· Tier 1</span></div>
+        <div class="lvl">Tier 1 of 3</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:8%"></div></div>
+      <div class="standing-next">Place your <b>first order</b> to become a <b>Founding Member</b> — a permanent 25% standing, reserved for the first 50.</div>
+    </div>
+
+    <!-- CONTINUE (empty: nothing in progress, prompt to start) -->
+    <div class="sec-label"><h2>Start Here</h2></div>
+    <div class="continue-card">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#21d8ff" stroke-width="1.7"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <div class="body">
+        <div class="k">Research Academy</div>
+        <div class="t">Peptide Basics</div>
+        <div class="s">Your first module · 5 min · earns standing</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <!-- RECAP teaser HIDDEN below data threshold.
+         Show only once user has >= [N] logbook entries OR >= [N] orders.
+         Replit: do not render this section until threshold met. -->
+
+    <!-- RESEARCH HUB (empty: action prompts, locked reframed as progress) -->
+    <div class="sec-label"><h2>Research Tools</h2></div>
+    <div class="hub empty-tools">
+      <div class="hub-head">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#D4FF1F" stroke-width="1.7"><path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2"/><path d="M9 2h6"/></svg></div>
+        <div><div class="t">Research Tools</div><div class="s">Build stacks, log research, verify batches</div></div>
+      </div>
+      <div class="hub-grid">
+        <div class="hub-item">
+          <svg class="hic" viewBox="0 0 24 24" fill="none" stroke="#21d8ff" stroke-width="1.6"><path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2"/></svg>
+          <div class="hl">My Stacks</div><div class="hs">Build your first stack</div>
+        </div>
+        <div class="hub-item">
+          <svg class="hic" viewBox="0 0 24 24" fill="none" stroke="#21d8ff" stroke-width="1.6"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <div class="hl">Logbook</div><div class="hs">Log your first entry</div>
+        </div>
+        <div class="hub-item">
+          <svg class="hic" viewBox="0 0 24 24" fill="none" stroke="#5e5e66" stroke-width="1.6"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <div class="hl" style="color:var(--muted)">Cycles</div><div class="hs" style="color:var(--muted-2);font-weight:500">3 log entries to unlock</div>
+        </div>
+        <div class="hub-item">
+          <svg class="hic" viewBox="0 0 24 24" fill="none" stroke="#21d8ff" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="m9 15 2 2 4-4"/></svg>
+          <div class="hl">Verify COA</div><div class="hs">Check any batch</div>
+        </div>
+        <div class="hub-item wide">
+          <div class="left">
+            <svg class="hic" viewBox="0 0 24 24" fill="none" stroke="#9d4edd" stroke-width="1.6"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2 3 6 3s6-2 6-3v-5"/></svg>
+            <div><div class="hl">Research Academy</div><div class="hs">Start learning · earn standing · 0/6</div></div>
+          </div>
+          <span style="color:var(--muted);font-size:18px;">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT-LEVEL ROWS -->
+    <div class="sec-label"><h2>Account</h2></div>
+    <div class="row">
+      <div class="ic cyan"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div class="body"><div class="t">My Orders</div><div class="s">No orders yet · start browsing</div></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="row">
+      <div class="ic purple"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div class="body"><div class="t">Your Benefits</div><div class="s">Free shipping · Academy reward · perks</div></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="row">
+      <div class="ic muted"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+      <div class="body"><div class="t">Affiliate Earnings</div><div class="s">10% per referral · track payouts</div></div>
+      <div class="val">$0</div>
+    </div>
+    <div class="row">
+      <div class="ic muted"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <div class="body"><div class="t">Settings</div><div class="s">Profile, email, sign out</div></div>
+      <div class="arrow">›</div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV — unchanged from current -->
+  <div class="bottomnav">
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>Home</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Shop</div>
+    <div class="nav-item nav-cart"><span class="b">4</span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Cart</div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2 3 6 3s6-2 6-3v-5"/></svg>Education</div>
+    <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>Account</div>
+  </div>
+
+</div>
+<div class="note">Static mockup · EMPTY / first-session state · no orders, no logs, no Founding badge · recap hidden below data threshold</div>
+</body>
+</html>
