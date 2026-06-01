@@ -2,11 +2,11 @@
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/GalaxyVfxComparison.tsx": () => import("../components/mockups/GalaxyVfxComparison.tsx"),
+  "./components/mockups/pk-cards/DataLed.tsx": () => import("../components/mockups/pk-cards/DataLed.tsx"),
+  "./components/mockups/pk-cards/RouteStriped.tsx": () => import("../components/mockups/pk-cards/RouteStriped.tsx"),
+  "./components/mockups/pk-cards/Timeline.tsx": () => import("../components/mockups/pk-cards/Timeline.tsx"),
   "./components/mockups/savings-display/PerVialMath.tsx": () => import("../components/mockups/savings-display/PerVialMath.tsx"),
   "./components/mockups/savings-display/SaveChip.tsx": () => import("../components/mockups/savings-display/SaveChip.tsx"),
   "./components/mockups/savings-display/Strikethrough.tsx": () => import("../components/mockups/savings-display/Strikethrough.tsx"),
-  "./components/mockups/savings-display/VsComparison.tsx": () => import("../components/mockups/savings-display/VsComparison.tsx"),
-  "./components/mockups/pk-cards/DataLed.tsx": () => import("../components/mockups/pk-cards/DataLed.tsx"),
-  "./components/mockups/pk-cards/RouteStriped.tsx": () => import("../components/mockups/pk-cards/RouteStriped.tsx"),
-  "./components/mockups/pk-cards/Timeline.tsx": () => import("../components/mockups/pk-cards/Timeline.tsx")
+  "./components/mockups/savings-display/VsComparison.tsx": () => import("../components/mockups/savings-display/VsComparison.tsx")
 };
