@@ -81,7 +81,7 @@ export function PackSelector({ basePrice, selectedQty, onSelect, softGated = fal
                     className="text-[10px] font-medium"
                     style={{ color: isSelected ? "rgba(212,255,31,0.75)" : "rgba(212,255,31,0.45)" }}
                   >
-                    save ${Math.round(basePrice * tier.discount)}/vial
+                    save ${Math.round(basePrice) - perVialRounded}/vial
                   </span>
                 )}
               </span>
