@@ -1,0 +1,42 @@
+# Account redesign — Phase 6: Link COAs to past orders
+
+## What & Why
+Show the relevant Certificate of Analysis on each past order so customers can reference the COA for what they bought. It's a trust/peace-of-mind artifact and a premium signal — most grey-market vendors don't do it. We already have QR-verified batch COAs and a COA verification lookup page; this connects existing pieces rather than building new infrastructure.
+
+## ⚠️ BLOCKING DATA QUESTION — answer before specifying the build
+COAs are per-BATCH/LOT (each label roll of 100 = one discrete lot). To show the COA for a specific past order accurately, the order must record WHICH batch/lot shipped in it.
+
+**Step 0 (do this first, read-only): Does the order or order-item record store a batch/lot number?**
+- Inspect the orders and any order-items schema (`shared/schema.ts`) plus the fulfillment/checkout write path.
+- Note: prior investigation found the orders table stores only product + quantity + totalAmount, no per-item unit price. Batch is likely also absent — confirm.
+
+The answer splits the task into two paths:
+
+### Path A — order DOES capture batch/lot
+- Link each line item to that exact lot's COA: "COA for this order" → the specific certificate.
+- Cleanest, fully accurate, most premium.
+
+### Path B — order does NOT capture batch/lot (likely)
+Do NOT link the product's *current* batch COA to old orders and call it "your order's COA" — that's an inaccurate verifiability claim on our most trust-sensitive feature, and it's worse than showing nothing for a research-compliance brand.
+Options:
+- B1: Start capturing batch-at-fulfillment going forward; link accurately for NEW orders only; older orders show the product-level COA history instead.
+- B2: Show "View COAs for [product]" linking to the product's COA history / verification page, framed honestly as product-level, not "your specific lot."
+
+## Done looks like
+- Step 0 answered with evidence (batch on order: yes/no), and the chosen path (A / B1 / B2) confirmed by Grayson before building.
+- Each past order line item shows a COA reference appropriate to the chosen path.
+- Placement: on the order detail / order-history row (a small "COA" link or shield icon per line item) — NOT on the account landing/hero view. This is reference depth, lives one tap deep.
+- Copy is accurate to what's actually being shown (order-specific lot vs. product-level) — no overclaiming verifiability. Mark new copy // COMPLIANCE PENDING.
+- Uses existing COA verification page / lookup rather than new COA infrastructure.
+
+## Out of scope
+- New COA generation or storage infrastructure (reuse what exists)
+- Retroactively backfilling batch data onto historical orders (only if it genuinely exists)
+- Any change to the COA verification page itself
+
+## Dependencies
+- Account redesign Phases 1–5 (order history / account rows must exist first)
+
+## Notes
+- Same "confirm what the data actually holds before specifying the feature" discipline that surfaced the reorder-pricing and migration issues — Step 0 is non-negotiable.
+- If batch capture needs to be added at fulfillment, that may interact with ShipStation / the order-creation flow — flag scope before building.

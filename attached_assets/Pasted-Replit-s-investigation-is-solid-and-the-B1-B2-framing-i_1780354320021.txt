@@ -1,0 +1,26 @@
+Replit's investigation is solid and the B1/B2 framing is exactly right. Let me give you a clear recommendation, because there's a detail in here that makes the decision easier than it looks.
+
+**Go B1, with B2 as the built-in fallback.** Here's the reasoning, including the part Replit flagged as the risk.
+
+Replit's hesitation is the admin-discipline question: B1 only pays off if whoever packs orders reliably picks the batch at pack time, and you're a solo operation right now, so "the admin team" is *you*. That's actually the argument *for* B1, not against it. You're not coordinating a warehouse crew who might skip the step. You're one person who already knows exactly which lot ships, because your label rolls *are* your lots (each roll of 100 = one batch, that's your own setup). At your volume, selecting the batch at pack time is one dropdown click, and you're the one motivated to get it right because the whole brand is built on verifiability. The discipline risk is real at scale; it's near-zero for a founder who already thinks in batches.
+
+And the fallback removes the downside entirely. If B1 ships *with* B2 as the catch-all, then:
+- New orders where you picked the batch → exact lot COA, the premium version
+- Old orders, or any order where the batch wasn't selected → honest product-level COA link
+- Nothing ever shows a *wrong* claim, the worst case is the honest B2 view
+
+So you're never worse off than B2-alone, and you climb toward the accurate version automatically as you fulfill. That's strictly better than shipping B2 and "maybe upgrading later," because later usually doesn't happen, and retrofitting batch capture after months of un-batched orders means those orders are permanently stuck at product-level.
+
+The schema cost is genuinely small and, importantly, you *just* built the muscle for it: one nullable `batchNumber` column on orders, added through `server/migrations/` as a numbered idempotent file (you now know that's the only path that reaches prod), plus one dropdown in the fulfillment panel. No ShipStation integration risk since fulfillment is manual. This is a much smaller migration than the ones you just shipped.
+
+Two things I'd require in the build so B1 doesn't have a sharp edge:
+
+**1. The batch dropdown should be filtered to the order's product.** When you mark an order fulfilling, the dropdown shows only batches for *that* product (joined on `productId`), not every batch you've ever made. Otherwise it's easy to misclick a batch from the wrong compound, which would attach a COA for a product the customer didn't buy, worse than no link. Filter it to the product, and ideally default to the most recent in-stock batch.
+
+**2. The customer-facing copy must be exact about which case it's showing.** Order with a batch → "COA for your batch: [batchNumber]" linking to that exact certificate. Order without → "View COAs for [product]" framed as product history. Same honesty rule as before: never let a product-level link wear order-specific language. Mark the strings compliance-pending.
+
+One scope note so this doesn't balloon: **don't backfill old orders.** Replit's investigation says there's no join path from existing orders to batches, and you can't reconstruct which lot shipped six months ago from data you didn't capture. So old orders stay on the B2 fallback, permanently and honestly. Trying to guess-assign batches retroactively would manufacture exactly the false verifiability claim we're avoiding. Leave them on product-level; only new fulfillments get the exact link.
+
+So my answer to Replit's question: **B1, shipping with B2 as the fallback for un-batched and historical orders, batch dropdown filtered to the order's product, no retroactive backfill.**
+
+Want me to write that up as the task with those two requirements and the no-backfill boundary baked in, or do you want to hand the decision back to Replit as a short directive and let it plan from there?
