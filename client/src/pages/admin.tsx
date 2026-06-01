@@ -2839,7 +2839,15 @@ function CoasTab() {
             (f) => f.label.toLowerCase() === label.toLowerCase()
           );
           if (matchedField) {
-            parsedTests[`test${matchedField.key.charAt(0).toUpperCase() + matchedField.key.slice(1)}`] = value;
+            let parsedValue = value;
+            // Peptide Content is stored as "12.83mg (128.3%)" — strip the formatted
+            // suffix so the edit input shows only the raw number, preventing drift
+            // on every re-save (the onSubmit formatter re-applies the suffix).
+            if (matchedField.key === "peptideContent") {
+              const mgMatch = parsedValue.match(/^([\d.]+)\s*mg/i);
+              if (mgMatch) parsedValue = mgMatch[1];
+            }
+            parsedTests[`test${matchedField.key.charAt(0).toUpperCase() + matchedField.key.slice(1)}`] = parsedValue;
           }
         }
       }
@@ -3009,7 +3017,10 @@ function CoasTab() {
       const fieldKey = `test${field.key.charAt(0).toUpperCase() + field.key.slice(1)}` as keyof CoaFormValues;
       let val = (values[fieldKey] as string)?.trim();
       if (val && field.key === "peptideContent") {
-        const mgNum = parseFloat(val.replace(/[^\d.]/g, ""));
+        // Strip any previously-formatted "mg (...%)" suffix before parsing so a
+        // pre-populated or autofilled formatted value can't silently accumulate digits.
+        const cleanedVal = val.replace(/\s*mg\s*\([^)]*\)/i, "").replace(/\s*mg$/i, "").trim();
+        const mgNum = parseFloat(cleanedVal.replace(/[^\d.]/g, ""));
         const dosageStr = values.dosage || "";
         const dosageNum = parseFloat(dosageStr.replace(/[^\d.]/g, ""));
         if (!isNaN(mgNum) && !isNaN(dosageNum) && dosageNum > 0) {
