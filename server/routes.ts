@@ -3807,13 +3807,16 @@ Return ONLY valid JSON, no markdown, no explanation.`,
         return res.status(404).json({ error: "COA not found" });
       }
       if (!coa.imageUrl) {
-        return res.status(400).json({ error: "COA has no imageUrl — upload a PDF first" });
+        return res.status(400).json({ error: "COA has no file — upload a PDF first" });
       }
-      const previewImageUrl = await generateCoaPreview(coa.id, coa.imageUrl, storage);
-      if (!previewImageUrl) {
-        return res.status(422).json({ error: "Preview could not be generated (not a PDF or conversion failed)" });
+      try {
+        const previewImageUrl = await generateCoaPreview(coa.id, coa.imageUrl, storage);
+        res.json({ previewImageUrl });
+      } catch (previewErr) {
+        const message = (previewErr as Error)?.message ?? "Preview could not be generated";
+        console.error("Error generating COA preview:", message);
+        return res.status(422).json({ error: message });
       }
-      res.json({ previewImageUrl });
     } catch (error) {
       console.error("Error generating COA preview:", error);
       res.status(500).json({ error: "Failed to generate COA preview" });

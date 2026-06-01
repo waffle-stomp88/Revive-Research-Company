@@ -2798,8 +2798,19 @@ function CoasTab() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
       toast({ title: "Preview generated successfully" });
     },
-    onError: () => {
-      toast({ title: "Failed to generate preview", variant: "destructive" });
+    onError: (err: Error) => {
+      let description: string | undefined;
+      try {
+        const colonIdx = err.message.indexOf(": ");
+        if (colonIdx !== -1) {
+          const body = JSON.parse(err.message.slice(colonIdx + 2));
+          if (typeof body?.error === "string") description = body.error;
+        }
+      } catch {
+        // fall through to raw message fallback
+      }
+      description ??= err.message;
+      toast({ title: "Failed to generate preview", description, variant: "destructive" });
     },
   });
 
@@ -2812,12 +2823,20 @@ function CoasTab() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
       if (data.processed === 0) {
         toast({ title: "All previews are already up to date" });
+      } else if (data.failed === 0) {
+        toast({ title: `${data.succeeded} preview${data.succeeded === 1 ? "" : "s"} generated successfully` });
       } else {
-        toast({ title: `Previews: ${data.succeeded} generated, ${data.failed} failed` });
+        const reasons = data.errors.slice(0, 3).map((e) => e.message).join("; ");
+        const suffix = data.errors.length > 3 ? ` (+${data.errors.length - 3} more)` : "";
+        toast({
+          title: `Previews: ${data.succeeded} generated, ${data.failed} failed`,
+          description: reasons + suffix,
+          variant: data.succeeded === 0 ? "destructive" : "default",
+        });
       }
     },
-    onError: () => {
-      toast({ title: "Failed to generate previews", variant: "destructive" });
+    onError: (err: Error) => {
+      toast({ title: "Failed to generate previews", description: err.message, variant: "destructive" });
     },
   });
 

@@ -27,8 +27,9 @@ export interface BackfillResult {
 /**
  * Render the first page of a PDF buffer to an optimised PNG buffer
  * using pdftoppm (poppler-utils, pre-installed in the Nix environment).
+ * Throws with a descriptive message on failure instead of returning null.
  */
-async function pdfBufferToPng(pdfBuffer: Buffer): Promise<Buffer | null> {
+async function pdfBufferToPng(pdfBuffer: Buffer): Promise<Buffer> {
   let tmpDir: string | null = null;
   try {
     tmpDir = await mkdtemp(join(tmpdir(), "coa-preview-"));
@@ -56,8 +57,9 @@ async function pdfBufferToPng(pdfBuffer: Buffer): Promise<Buffer | null> {
 
     return optimised;
   } catch (err) {
-    console.error("[coaPreview] pdftoppm error:", (err as Error)?.message ?? err);
-    return null;
+    const msg = (err as Error)?.message ?? String(err);
+    console.error("[coaPreview] pdftoppm error:", msg);
+    throw new Error(`PDF conversion failed: ${msg}`);
   } finally {
     if (tmpDir) {
       await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
@@ -76,59 +78,69 @@ function looksLikePdf(buf: Buffer): boolean {
  *  - If it is a PDF, converts the first page to PNG with pdftoppm.
  *  - Uploads the PNG, marks it public, updates the DB record.
  *
- * Returns the new previewImageUrl on success, null on failure / skip.
+ * Returns the new previewImageUrl on success. Throws with a human-readable
+ * message on every failure mode so callers can surface the reason to the user.
  */
 export async function generateCoaPreview(
   coaId: string,
   imageUrl: string,
   storage: IStorage
-): Promise<string | null> {
+): Promise<string> {
+  const svc = new ObjectStorageService();
+
+  // imageUrl may be a full GCS HTTPS URL or an /objects/ path.
+  // getObjectEntityFile requires /objects/ form — normalize first.
+  let normalizedPath: string;
   try {
-    const svc = new ObjectStorageService();
+    normalizedPath = svc.normalizeObjectEntityPath(imageUrl);
+  } catch (normErr) {
+    const msg = (normErr as Error)?.message ?? String(normErr);
+    console.warn(`[coaPreview] Cannot normalize imageUrl "${imageUrl}":`, msg);
+    throw new Error(`Cannot locate the COA file in storage — the stored URL is not a recognized object-storage path (${msg})`);
+  }
 
-    // imageUrl may be a full GCS HTTPS URL or an /objects/ path.
-    // getObjectEntityFile requires /objects/ form — normalize first.
-    let normalizedPath: string;
-    try {
-      normalizedPath = svc.normalizeObjectEntityPath(imageUrl);
-    } catch (normErr) {
-      console.warn(`[coaPreview] Cannot normalize imageUrl "${imageUrl}":`, (normErr as Error)?.message ?? normErr);
-      return null;
-    }
-
+  let buf: Buffer;
+  try {
     const file = await svc.getObjectEntityFile(normalizedPath);
     const [downloaded] = await file.download();
-    const buf = Buffer.from(downloaded);
+    buf = Buffer.from(downloaded);
+  } catch (dlErr) {
+    const msg = (dlErr as Error)?.message ?? String(dlErr);
+    console.error(`[coaPreview] Download failed for COA ${coaId}:`, msg);
+    throw new Error(`Failed to download the COA file from storage: ${msg}`);
+  }
 
-    if (!looksLikePdf(buf)) {
-      // Already an image — nothing to convert
-      console.log(`[coaPreview] ${imageUrl} is not a PDF — skipping conversion`);
-      return null;
-    }
+  if (!looksLikePdf(buf)) {
+    console.log(`[coaPreview] ${imageUrl} is not a PDF — skipping conversion`);
+    throw new Error("The uploaded file is not a PDF. Only PDF files can be converted to preview images.");
+  }
 
-    const pngBuffer = await pdfBufferToPng(buf);
-    if (!pngBuffer) return null;
+  // pdfBufferToPng now throws with a descriptive message on failure
+  const pngBuffer = await pdfBufferToPng(buf);
 
-    const previewPath = await svc.uploadProcessedImage(
+  let previewPath: string;
+  try {
+    previewPath = await svc.uploadProcessedImage(
       pngBuffer,
       "image/png",
       `coa-preview-${coaId}.png`
     );
-
-    // Make the preview publicly readable
-    await svc.trySetObjectEntityAclPolicy(previewPath, {
-      owner: "system",
-      visibility: "public",
-    });
-
-    await storage.updateCoa(coaId, { previewImageUrl: previewPath });
-
-    console.log(`[coaPreview] ✓ COA ${coaId} → ${previewPath}`);
-    return previewPath;
-  } catch (err) {
-    console.error(`[coaPreview] Failed for COA ${coaId}:`, (err as Error)?.message ?? err);
-    return null;
+  } catch (upErr) {
+    const msg = (upErr as Error)?.message ?? String(upErr);
+    console.error(`[coaPreview] Upload failed for COA ${coaId}:`, msg);
+    throw new Error(`Failed to upload the generated preview image: ${msg}`);
   }
+
+  // Make the preview publicly readable
+  await svc.trySetObjectEntityAclPolicy(previewPath, {
+    owner: "system",
+    visibility: "public",
+  });
+
+  await storage.updateCoa(coaId, { previewImageUrl: previewPath });
+
+  console.log(`[coaPreview] ✓ COA ${coaId} → ${previewPath}`);
+  return previewPath;
 }
 
 /**
@@ -152,14 +164,8 @@ export async function backfillCoaPreviews(storage: IStorage): Promise<BackfillRe
 
   for (const coa of needsPreview) {
     try {
-      const result = await generateCoaPreview(coa.id, coa.imageUrl!, storage);
-      if (result) {
-        succeeded++;
-      } else {
-        // Not a PDF or conversion returned null — count as failed
-        failed++;
-        errors.push({ coaId: coa.id, message: "Not a PDF or conversion produced no output" });
-      }
+      await generateCoaPreview(coa.id, coa.imageUrl!, storage);
+      succeeded++;
     } catch (err) {
       failed++;
       errors.push({ coaId: coa.id, message: (err as Error)?.message ?? String(err) });
