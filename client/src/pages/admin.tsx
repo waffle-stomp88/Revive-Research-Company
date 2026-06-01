@@ -2650,6 +2650,7 @@ function CoasTab() {
   const [isUploadingCoaImage, setIsUploadingCoaImage] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [bulkFailedCoas, setBulkFailedCoas] = useState<Array<{ coaId: string; message: string }>>([]);
   const { toast } = useToast();
 
   const { data: allCoas, isLoading } = useQuery<Coa[]>({
@@ -2814,29 +2815,47 @@ function CoasTab() {
     },
   });
 
+  type BulkPreviewResult = { processed: number; succeeded: number; failed: number; errors: Array<{ coaId: string; message: string }> };
+
+  const handleBulkPreviewResult = (data: BulkPreviewResult, label: string) => {
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+    if (data.processed === 0) {
+      toast({ title: "All previews are already up to date" });
+      setBulkFailedCoas([]);
+    } else if (data.failed === 0) {
+      toast({ title: `${data.succeeded} preview${data.succeeded === 1 ? "" : "s"} generated successfully` });
+      setBulkFailedCoas([]);
+    } else {
+      setBulkFailedCoas(data.errors);
+      const reasons = data.errors.slice(0, 3).map((e) => e.message).join("; ");
+      const suffix = data.errors.length > 3 ? ` (+${data.errors.length - 3} more)` : "";
+      toast({
+        title: `${label}: ${data.succeeded} generated, ${data.failed} failed`,
+        description: reasons + suffix,
+        variant: data.succeeded === 0 ? "destructive" : "default",
+      });
+    }
+  };
+
   const bulkGeneratePreviewsMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/admin/coas/generate-previews");
-      return response.json() as Promise<{ processed: number; succeeded: number; failed: number; errors: Array<{ coaId: string; message: string }> }>;
+      return response.json() as Promise<BulkPreviewResult>;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
-      if (data.processed === 0) {
-        toast({ title: "All previews are already up to date" });
-      } else if (data.failed === 0) {
-        toast({ title: `${data.succeeded} preview${data.succeeded === 1 ? "" : "s"} generated successfully` });
-      } else {
-        const reasons = data.errors.slice(0, 3).map((e) => e.message).join("; ");
-        const suffix = data.errors.length > 3 ? ` (+${data.errors.length - 3} more)` : "";
-        toast({
-          title: `Previews: ${data.succeeded} generated, ${data.failed} failed`,
-          description: reasons + suffix,
-          variant: data.succeeded === 0 ? "destructive" : "default",
-        });
-      }
-    },
+    onSuccess: (data) => handleBulkPreviewResult(data, "Previews"),
     onError: (err: Error) => {
       toast({ title: "Failed to generate previews", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const retryFailedPreviewsMutation = useMutation({
+    mutationFn: async (coaIds: string[]) => {
+      const response = await apiRequest("POST", "/api/admin/coas/generate-previews/retry", { coaIds });
+      return response.json() as Promise<BulkPreviewResult>;
+    },
+    onSuccess: (data) => handleBulkPreviewResult(data, "Retry"),
+    onError: (err: Error) => {
+      toast({ title: "Failed to retry previews", description: err.message, variant: "destructive" });
     },
   });
 
@@ -3101,7 +3120,7 @@ function CoasTab() {
             variant="outline"
             size="sm"
             onClick={() => bulkGeneratePreviewsMutation.mutate()}
-            disabled={bulkGeneratePreviewsMutation.isPending}
+            disabled={bulkGeneratePreviewsMutation.isPending || retryFailedPreviewsMutation.isPending}
             data-testid="button-bulk-generate-previews"
           >
             {bulkGeneratePreviewsMutation.isPending ? (
@@ -3111,6 +3130,22 @@ function CoasTab() {
             )}
             Generate All Previews
           </Button>
+          {bulkFailedCoas.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => retryFailedPreviewsMutation.mutate(bulkFailedCoas.map((e) => e.coaId))}
+              disabled={retryFailedPreviewsMutation.isPending || bulkGeneratePreviewsMutation.isPending}
+              data-testid="button-retry-failed-previews"
+            >
+              {retryFailedPreviewsMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-1" />
+              )}
+              Retry Failed ({bulkFailedCoas.length})
+            </Button>
+          )}
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -3566,6 +3601,52 @@ function CoasTab() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {bulkFailedCoas.length > 0 && (
+        <div className="rounded-md border border-destructive/40 bg-destructive/5 p-4 space-y-3" data-testid="panel-bulk-preview-failures">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium text-destructive">
+              {bulkFailedCoas.length} COA{bulkFailedCoas.length === 1 ? "" : "s"} failed to generate a preview
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setBulkFailedCoas([])}
+              data-testid="button-dismiss-preview-failures"
+            >
+              Dismiss
+            </Button>
+          </div>
+          <ul className="space-y-1.5" data-testid="list-failed-coas">
+            {bulkFailedCoas.map((entry) => {
+              const coa = allCoas?.find((c) => c.id === entry.coaId);
+              const label = coa
+                ? `${coa.productName} — Batch ${coa.batchNumber}`
+                : `COA ${entry.coaId}`;
+              return (
+                <li key={entry.coaId} className="text-sm flex gap-2" data-testid={`failed-coa-${entry.coaId}`}>
+                  <span className="font-medium shrink-0">{label}:</span>
+                  <span className="text-muted-foreground">{entry.message}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => retryFailedPreviewsMutation.mutate(bulkFailedCoas.map((e) => e.coaId))}
+            disabled={retryFailedPreviewsMutation.isPending || bulkGeneratePreviewsMutation.isPending}
+            data-testid="button-retry-failed-previews-panel"
+          >
+            {retryFailedPreviewsMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-1" />
+            )}
+            Retry {bulkFailedCoas.length} Failed
+          </Button>
+        </div>
+      )}
 
       <div className="rounded-md border">
         <Table>

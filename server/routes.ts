@@ -3836,6 +3836,45 @@ Return ONLY valid JSON, no markdown, no explanation.`,
     }
   });
 
+  // Admin: Retry preview generation for specific COA IDs (e.g. those that failed a bulk run)
+  app.post("/api/admin/coas/generate-previews/retry", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { coaIds } = req.body as { coaIds?: unknown };
+      if (!Array.isArray(coaIds) || coaIds.length === 0) {
+        return res.status(400).json({ error: "coaIds must be a non-empty array" });
+      }
+      const ids = coaIds.filter((id): id is string => typeof id === "string");
+      if (ids.length === 0) {
+        return res.status(400).json({ error: "coaIds must contain string values" });
+      }
+
+      const errors: Array<{ coaId: string; message: string }> = [];
+      let succeeded = 0;
+      let failed = 0;
+
+      for (const id of ids) {
+        const coa = await storage.getCoa(id);
+        if (!coa || !coa.imageUrl) {
+          failed++;
+          errors.push({ coaId: id, message: coa ? "No imageUrl on this COA" : "COA not found" });
+          continue;
+        }
+        try {
+          await generateCoaPreview(coa.id, coa.imageUrl, storage);
+          succeeded++;
+        } catch (err) {
+          failed++;
+          errors.push({ coaId: id, message: (err as Error)?.message ?? String(err) });
+        }
+      }
+
+      res.json({ processed: succeeded + failed, succeeded, failed, errors });
+    } catch (error) {
+      console.error("Error retrying COA preview generation:", error);
+      res.status(500).json({ error: "Failed to retry COA preview generation" });
+    }
+  });
+
   // Admin: Archive COA
   app.patch("/api/admin/coas/:id/archive", isAuthenticated, isAdmin, async (req, res) => {
     try {
