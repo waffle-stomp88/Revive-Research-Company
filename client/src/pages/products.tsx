@@ -1061,7 +1061,7 @@ function ProductsComponent() {
                                     </>
                                   ) : product.name}
                                 </h3>
-                                <p className="text-muted-foreground/70 mb-0 sm:mb-1 line-clamp-1 text-center text-[11px]">
+                                <p className="hidden sm:block text-muted-foreground/70 sm:mb-1 line-clamp-1 text-center text-[11px]">
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
