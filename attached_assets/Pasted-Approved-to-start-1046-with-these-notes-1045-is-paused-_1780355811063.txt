@@ -1,0 +1,13 @@
+Approved to start #1046, with these notes. #1045 is paused/not merged, so the ideal order holds: run #1046 first, then #1045 builds the COA link directly in the already-routed /dashboard/orders page. Confirm #1045 is fully idle (not editing dashboard.tsx in the background) before you begin, so your inventory reads a stable file and the line numbers don't go stale mid-task.
+
+Three things to handle carefully during the move:
+
+1. SHARED-QUERY TRAP (most important). Step 2 says copy the data hooks into the new page; Step 7 says remove queries only used by stripped sections. Before deleting ANY query from dashboard.tsx, confirm it is used ONLY by the section being moved. If a query also feeds something that stays on the home — e.g. the Order Again hero, the Research Standing card, the recap — do NOT relocate it. Shared queries stay on the home (or get duplicated into the sub-page), they never get moved out wholesale. A relocated shared query is a silent break: the section moves fine but the home loses its data. Call out any query you find that's used in more than one place before touching it.
+
+2. VERIFY THE CODE ACTUALLY SPLITS. The "home loads lighter" payoff only holds if the lazy imports genuinely keep sub-page code out of the home's initial bundle. After wiring, confirm the build produces separate chunks for the sub-pages (not one bundle that still loads everything). Don't report "lazy-loaded" on faith — confirm the chunks split.
+
+3. ACADEMY ROUTE IS A GRAB-BAG — flag, don't fix. /dashboard/academy absorbs Research Progress + Batch Verification History + Badges + Academy embed + Quiz (5 things). Move them as-is per the plan, but when you do the walk-through in Step 9, note whether the page reads as coherent or as an "education junk drawer." If it's a drawer, just flag it for a possible future split — do not redesign it in this task.
+
+Everything else in the plan is approved as written: routes registered before /dashboard to avoid shadowing, back-nav via Link href="/dashboard" (not history.back), bottom-nav prefix match for the Account tab, move-don't-refactor for LogbookTab/CyclesTab, and the /account-settings overlap stays flagged-not-fixed.
+
+Run your Step 1 inventory audit first and report the confirmed line boundaries + anything not captured in the plan's inventory BEFORE creating any page files or stripping anything. I want to see the inventory result before you start moving code.

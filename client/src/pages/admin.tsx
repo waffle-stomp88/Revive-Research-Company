@@ -4410,6 +4410,7 @@ function OrderViewDialog({
   const [packed, setPacked] = useState(order?.packed || false);
   const [trackingNumber, setTrackingNumber] = useState(order?.trackingNumber || "");
   const [carrier, setCarrier] = useState(order?.carrier || "");
+  const [estimatedDelivery, setEstimatedDelivery] = useState("");
 
   useEffect(() => {
     if (order) {
@@ -4426,6 +4427,12 @@ function OrderViewDialog({
 
   const product = products.find(p => p.id === order.productId);
 
+  const formatEstimatedDelivery = (dateStr: string) => {
+    if (!dateStr) return undefined;
+    const d = new Date(dateStr + "T12:00:00");
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  };
+
   const handleSaveChecklist = () => {
     onUpdateFulfillment({
       paymentConfirmed,
@@ -4434,6 +4441,7 @@ function OrderViewDialog({
       fulfillmentNotes: notes,
       trackingNumber: trackingNumber || undefined,
       carrier: carrier || undefined,
+      estimatedDelivery: formatEstimatedDelivery(estimatedDelivery),
     });
   };
 
@@ -4446,6 +4454,7 @@ function OrderViewDialog({
       fulfillmentNotes: notes,
       trackingNumber: trackingNumber || undefined,
       carrier: carrier || undefined,
+      estimatedDelivery: formatEstimatedDelivery(estimatedDelivery),
     }, true);
   };
 
@@ -4643,6 +4652,15 @@ function OrderViewDialog({
                       data-testid="input-tracking-number"
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">Estimated Delivery <span className="text-xs opacity-60">(optional — shown in shipping email)</span></label>
+                  <Input
+                    type="date"
+                    value={estimatedDelivery}
+                    onChange={(e) => setEstimatedDelivery(e.target.value)}
+                    data-testid="input-estimated-delivery"
+                  />
                 </div>
                 <p className="text-xs text-muted-foreground">Adding tracking info will automatically send a branded shipping notification email to the customer.</p>
               </div>

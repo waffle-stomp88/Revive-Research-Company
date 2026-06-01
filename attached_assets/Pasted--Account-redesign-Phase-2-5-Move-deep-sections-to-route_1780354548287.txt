@@ -1,0 +1,89 @@
+# Account redesign — Phase 2.5: Move deep sections to routed sub-pages
+
+## What & Why
+The account home is now a single page a mile long. The new top sections (greeting, Order Again, Research Standing, Continue, Research Tools hub, account rows) were built correctly — but ALL the old dashboard content (full Order History, My Stacks, Saved from Community, the Research Logbook form + Filters, Cycles, Batch Verification, Research Badges, Academy, Verify COA, Wishlist, Quiz, Profile, Addresses, Notifications, Security, Affiliate, Danger Zone) is still stacked inline BELOW the account rows.
+
+This is the gap from Phase 1: the tab content was preserved as inline sections "temporarily," but no phase ever moved it into sub-pages. The Research Tools hub cards and account rows were always meant to NAVIGATE to dedicated pages, not sit as previews on top of the full inline content. Right now we have the new navigation AND the old everything-on-one-page at the same time.
+
+This task finishes that architecture. It is NOT a redesign and NOT new features — it's relocating existing, working components into their own routes.
+
+## Approach (decided)
+**Separate routed pages**, each lazy-loaded, living under the Account section. Tapping a hub card or account row navigates to its route. The account home keeps ONLY the top sections.
+
+## Done looks like
+
+### Account home (`/account` or current dashboard route) contains ONLY:
+1. Greeting + standing chips
+2. Reorder reminder banner (conditional)
+3. Order Again hero (populated) / Get Started (empty)
+4. Your Research Standing
+5. Continue / Start Here
+6. Research Summary recap (conditional, data-gated)
+7. Research Tools hub (the card grid — now navigation, not previews)
+8. Account rows (My Orders, Your Benefits, Affiliate Earnings, Settings)
+
+Everything below the account rows that is currently inline is REMOVED from the home and MOVED to the routes below.
+
+### New routed sub-pages (each lazy-loaded per the component-level lazy-load rule):
+| Route | Contains (moved from the current inline home) |
+|---|---|
+| `/account/orders` | Full Order History |
+| `/account/stacks` | My Stacks + Saved from Community |
+| `/account/logbook` | Research Logbook (privacy note + "log new entry" form + Filters + entries list) |
+| `/account/cycles` | Cycles |
+| `/account/verify` | Batch Verification + Verify COA |
+| `/account/academy` | Research Badges + Research Academy + Research Knowledge Quiz |
+| `/account/settings` | Profile Information + Saved Addresses + Notification Preferences + Security & Login Activity + Affiliate Program + Danger Zone |
+| `/account/wishlist` | Wishlist (or fold into another page if it fits better — flag your recommendation) |
+
+(Exact route names are a suggestion — keep them consistent with existing routing conventions in App.tsx.)
+
+### Navigation wiring:
+- Research Tools hub cards (My Stacks, Logbook, Cycles, Verify COA, Research Academy) navigate to their routes — NOT scroll-to-section, NOT expand-in-place.
+- Account rows (My Orders, Your Benefits, Affiliate Earnings, Settings) navigate to their routes.
+- "Your Benefits" needs a home — either its own route or a section on settings; flag your recommendation.
+
+### Back navigation (required):
+- Each sub-page's back action returns to the account home (`/account`), NOT out of the account area entirely.
+- The bottom nav "Account" tab stays highlighted while on any sub-page.
+- Browser/device back button behaves correctly (sub-page → home → wherever).
+
+## Critical: do not lose content in the move
+This is a large relocation of existing components. The Phase 1 risk applies again:
+- Every section currently inline must end up on exactly one route — none dropped, none duplicated.
+- After the move, verify each former section renders correctly on its new route with its real data and all its sub-states (empty states, forms, filters, privacy notes).
+- The Logbook privacy note ("Private to you · wiped from Settings · not a medical record") must survive the move.
+- Compliance copy and RUO framing must survive the move unchanged.
+
+## Out of scope
+- Redesigning any moved section's internal layout (move as-is; polish later if needed)
+- New features
+- Changing the bottom nav component
+- Changing the top account-home sections (those are done)
+
+## Steps
+1. **Inventory** — list every inline section currently on the account home below the account rows. Confirm the mapping to routes above. Flag anything that doesn't have an obvious home (Wishlist, Your Benefits).
+2. **Create lazy-loaded routes** — register each `/account/*` route in App.tsx, lazy-loaded at the component level (per standing rule). Do NOT add App.tsx-level lazy loading.
+3. **Move components** — relocate each inline section into its route's page component. Move, don't rewrite.
+4. **Wire navigation** — hub cards and account rows navigate to routes (replace any scroll-to-section/expand behavior).
+5. **Wire back-nav** — each sub-page returns to `/account`; Account tab stays active; device back button correct.
+6. **Strip the home** — remove all the now-moved inline sections from the account home so it ends at the account rows (+ recap).
+7. **Verify no content lost** — walk every route, confirm each former section is present exactly once, renders with real data, retains its sub-states/forms/privacy notes.
+
+## Relevant files
+- client/src/pages/dashboard.tsx (strip inline sections from here)
+- client/src/App.tsx (register lazy-loaded routes)
+- client/src/components/logbook-tab.tsx, client/src/components/cycles/CyclesTab.tsx (and other section components being moved)
+
+## Dependencies
+- Account redesign Phases 1–5 (the top sections and the moved sections must already exist)
+
+## Verification checklist (browser, before marking complete)
+- [ ] Account home ends at the account rows + recap — no inline deep sections below it
+- [ ] Every hub card and account row navigates to a real route (not scroll, not expand)
+- [ ] Every former inline section is present on exactly one route — none lost, none duplicated
+- [ ] Each sub-page renders real data + its empty/form/filter sub-states
+- [ ] Logbook privacy note and all RUO/compliance copy survived the move
+- [ ] Back-nav from any sub-page returns to account home; Account tab stays active
+- [ ] Account home initial load is noticeably lighter (sub-page code no longer loaded up front)
+- [ ] No horizontal overflow on any route

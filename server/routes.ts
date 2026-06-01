@@ -3268,7 +3268,7 @@ export async function registerRoutes(
   // Admin: Update order fulfillment
   app.patch("/api/admin/orders/:id/fulfillment", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { fulfillmentStatus, fulfillmentNotes, paymentConfirmed, addressCollected, packed, trackingNumber, carrier } = req.body;
+      const { fulfillmentStatus, fulfillmentNotes, paymentConfirmed, addressCollected, packed, trackingNumber, carrier, estimatedDelivery } = req.body;
       const userId = (req.user as any)?.id || (req.user as any)?.claims?.sub;
       
       if (trackingNumber && !carrier) {
@@ -3310,7 +3310,7 @@ export async function registerRoutes(
       if (isNewTracking) {
         try {
           const { sendShippedNotificationEmail } = await import('./email');
-          await sendShippedNotificationEmail(order, trackingNumber, carrier);
+          await sendShippedNotificationEmail(order, trackingNumber, carrier, estimatedDelivery || undefined);
           console.log(`[Shipping] Sent shipping notification for order ${order.id} - ${carrier} ${trackingNumber}`);
         } catch (emailError) {
           console.error(`[Shipping] Failed to send shipping email for order ${order.id}:`, emailError);
