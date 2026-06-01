@@ -12,4 +12,13 @@ if (!process.env.DATABASE_URL) {
 }
 
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// Without this handler, any idle-connection error emitted by the pg Pool
+// (e.g. Neon terminating the connection for maintenance) becomes an unhandled
+// Node.js 'error' event, which crashes the process.  Logging and continuing
+// is safe — Neon re-establishes connections automatically on the next query.
+pool.on("error", (err) => {
+  console.error("[db] Pool error (non-fatal — Neon will reconnect):", err.message);
+});
+
 export const db = drizzle({ client: pool, schema });
