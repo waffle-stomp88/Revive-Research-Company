@@ -1488,31 +1488,6 @@ export default function Checkout() {
                       )}
                     </button>
 
-                    {/* ACH / Bank Transfer */}
-                    <button
-                      className={`flex items-center gap-3 px-4 py-4 rounded-lg border-2 transition-all text-left ${
-                        selectedPaymentMethod === "bank"
-                          ? "border-[#d4ed1f]/60 bg-[#d4ed1f]/8 text-white"
-                          : "border-border bg-transparent text-white"
-                      }`}
-                      onClick={() => { setSelectedPaymentMethod("bank"); setManualPaymentStep("instructions"); }}
-                      data-testid="payment-method-ach"
-                    >
-                      <div className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${
-                        selectedPaymentMethod === "bank" ? "bg-[#d4ed1f]/20" : "bg-[#d4ed1f]/10"
-                      }`}>
-                        <Building2 className="h-4 w-4 text-[#d4ed1f]" />
-                      </div>
-                      <div className="min-w-0 flex-1 flex flex-col justify-center">
-                        <p className="text-sm font-semibold leading-tight">ACH / Bank Transfer</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Wire · Zelle · Link Money
-                        </p>
-                      </div>
-                      {selectedPaymentMethod === "bank" && (
-                        <CheckCircle className="h-3.5 w-3.5 text-[#d4ed1f] flex-shrink-0" />
-                      )}
-                    </button>
                   </div>
 
                   {selectedPaymentMethod === "paypal" && (
