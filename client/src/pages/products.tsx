@@ -974,14 +974,14 @@ function ProductsComponent() {
                           const isOutOfStock = product.inStock === false || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-2 sm:p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-1.5 sm:p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-red-500/40 opacity-80 md:hover:border-red-500 md:hover:opacity-95 md:hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                                   : "border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                               }`}
                               data-testid={`card-product-${product.id}`}
                             >
-                              <div className="relative aspect-[5/4] sm:aspect-[4/3] mb-2 sm:mb-3 rounded-md overflow-hidden">
+                              <div className="relative aspect-[5/4] sm:aspect-[4/3] mb-1 sm:mb-3 rounded-md overflow-hidden">
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={`${product.name} research peptide - third party lab tested`}
@@ -1031,7 +1031,7 @@ function ProductsComponent() {
                                 )}
                               </div>
                               <div className="flex-1 flex flex-col min-h-0">
-                                <div className="mb-0.5 sm:mb-1 text-center">
+                                <div className="mb-0 sm:mb-1 text-center">
                                   {(() => {
                                     const peptideGroup = getPeptideGroup(product.name);
                                     return peptideGroup ? (
@@ -1054,7 +1054,12 @@ function ProductsComponent() {
                                   })()}
                                 </div>
                                 <h3 className="font-display text-[29px] font-black mb-0.5 md:group-hover:text-[#D4FF1F] transition-colors line-clamp-2 text-center">
-                                  {product.name}
+                                  {/bacteriostatic/i.test(product.name) ? (
+                                    <>
+                                      <span className="sm:hidden">BAC WATER</span>
+                                      <span className="hidden sm:inline">{product.name}</span>
+                                    </>
+                                  ) : product.name}
                                 </h3>
                                 <p className="text-muted-foreground/70 mb-0.5 sm:mb-1 line-clamp-1 text-center text-[11px]">
                                   {product.shortDescription}
