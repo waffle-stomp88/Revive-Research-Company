@@ -4,3 +4,4 @@
 - [pdfjs-dist polyfills](pdfjs-polyfills.md) — 5 APIs missing in Playwright Chromium 125; polyfilled in both main thread AND worker; Promise.try must forward args
 - [pdfjs worker blob URL](pdfjs-worker-blob.md) — Vite dev appends ?import to any workerSrc URL; fix is fetch→Blob→createObjectURL so Vite never sees the path
 - [pdfjs worker route placement](pdfjs-worker-route.md) — must be in server/index.ts before registerRoutes(); inside registerRoutes() it is silently shadowed by Vite's catch-all
+- [Drizzle migration discipline](drizzle-migration-discipline.md) — all schema changes must go through drizzle-kit generate; only acceptable hand-edit is IF NOT EXISTS / DO block guards; journal repair pattern documented

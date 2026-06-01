@@ -1923,6 +1923,111 @@ export async function registerRoutes(
     }
   });
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Reorder cadence lookup — structured to allow per-category or per-product
+  // overrides post-launch without a refactor.
+  // All threshold values are Grayson's to set post-launch against real
+  // order-frequency data. Default is a placeholder only.
+  // ─────────────────────────────────────────────────────────────────────────
+  const REORDER_CADENCE: {
+    default: number;                       // weeks — fallback for anything not overridden
+    byCategory?: Record<string, number>;   // e.g. { "glp1": 4, "recovery": 8 }
+    byProductId?: Record<string, number>;  // product-level overrides, highest priority
+  } = {
+    default: 6, // placeholder — Grayson sets real values post-launch
+    // byCategory: { "glp1": 4, "recovery": 8, "cosmetic": 12, "longevity": 10 },
+    // byProductId: {},
+  };
+
+  function resolveReorderWeeks(
+    productId: string,
+    category: string | null | undefined
+  ): number {
+    if (REORDER_CADENCE.byProductId?.[productId] != null) {
+      return REORDER_CADENCE.byProductId[productId];
+    }
+    if (category && REORDER_CADENCE.byCategory?.[category] != null) {
+      return REORDER_CADENCE.byCategory[category];
+    }
+    return REORDER_CADENCE.default;
+  }
+
+  // GET /api/user/reorder-nudge
+  // Authenticated. Returns { dueCompounds: [...] } for the current user.
+  // Returns { dueCompounds: [] } for users with no order history — never 404.
+  // This endpoint is the canonical source of truth; Phase 4b email will consume it unchanged.
+  app.get("/api/user/reorder-nudge", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+
+      let userOrders = await storage.getOrdersByUserId(userId);
+      if (userOrders.length === 0 && userEmail) {
+        userOrders = await storage.getOrdersByEmail(userEmail);
+      }
+
+      if (userOrders.length === 0) {
+        return res.json({ dueCompounds: [] });
+      }
+
+      // Build a map of productId → most-recent paid order
+      const latestByProduct = new Map<string, { date: Date; qty: number }>();
+      for (const order of userOrders) {
+        if (!order.productId) continue;
+        // Only count paid/completed orders
+        if (order.status !== "paid" && order.status !== "completed") continue;
+        const orderDate = order.createdAt ? new Date(order.createdAt) : null;
+        if (!orderDate) continue;
+        const existing = latestByProduct.get(order.productId);
+        if (!existing || orderDate > existing.date) {
+          latestByProduct.set(order.productId, { date: orderDate, qty: order.quantity ?? 1 });
+        }
+      }
+
+      if (latestByProduct.size === 0) {
+        return res.json({ dueCompounds: [] });
+      }
+
+      // Fetch all products once to resolve names and categories
+      const allProducts = await storage.getAllProducts();
+      const productMap = new Map(allProducts.map(p => [p.id, p]));
+
+      const now = Date.now();
+      const dueCompounds: Array<{
+        productId: string;
+        name: string;
+        weeksSince: number;
+        lastQty: number;
+      }> = [];
+
+      for (const [productId, { date, qty }] of latestByProduct) {
+        const product = productMap.get(productId);
+        const category = product?.category ?? null;
+        const cadenceWeeks = resolveReorderWeeks(productId, category);
+        const msSinceLast = now - date.getTime();
+        const daysSince = msSinceLast / (1000 * 60 * 60 * 24);
+        const weeksSince = Math.floor(daysSince / 7);
+
+        if (daysSince > cadenceWeeks * 7) {
+          dueCompounds.push({
+            productId,
+            name: product?.name ?? "Unknown compound",
+            weeksSince,
+            lastQty: qty,
+          });
+        }
+      }
+
+      // Sort most-overdue first (highest weeksSince)
+      dueCompounds.sort((a, b) => b.weeksSince - a.weeksSince);
+
+      return res.json({ dueCompounds });
+    } catch (error) {
+      console.error("Error fetching reorder nudge:", error);
+      res.status(500).json({ error: "Failed to fetch reorder nudge" });
+    }
+  });
+
   // Get order by ID - requires authentication and ownership or admin
   app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
     try {

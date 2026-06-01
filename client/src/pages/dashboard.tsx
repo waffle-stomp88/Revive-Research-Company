@@ -353,6 +353,18 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  const { data: reorderNudge } = useQuery<{
+    dueCompounds: Array<{
+      productId: string;
+      name: string;
+      weeksSince: number;
+      lastQty: number;
+    }>;
+  }>({
+    queryKey: ["/api/user/reorder-nudge"],
+    enabled: isAuthenticated,
+  });
+
   const deleteStackMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/saved-stacks/${id}`, { method: "DELETE", credentials: "include" });
@@ -855,6 +867,50 @@ export default function Dashboard() {
 
                 {/* General Section — rebuilt Phase 2 */}
                 <section id="section-general" className="space-y-5">
+
+                  {/* ── Reorder reminder banner ─────────────────────────────────
+                      Only rendered when at least one compound is due per cadence.
+                      Suppressed entirely for empty/new accounts (dueCompounds=[]).
+                      All copy strings are COMPLIANCE PENDING.
+                  ─────────────────────────────────────────────────────────────── */}
+                  {reorderNudge && reorderNudge.dueCompounds.length > 0 && (() => {
+                    const top = reorderNudge.dueCompounds[0];
+                    const handleBannerClick = () => {
+                      const card = document.querySelector(
+                        `[data-testid="card-reorder-${top.productId}"]`
+                      );
+                      if (card) {
+                        card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                        (card as HTMLElement).classList.add("ring-1", "ring-[#D4FF1F]/40");
+                        setTimeout(() => {
+                          (card as HTMLElement).classList.remove("ring-1", "ring-[#D4FF1F]/40");
+                        }, 1800);
+                      }
+                    };
+                    return (
+                      <motion.div variants={itemVariants}>
+                        <button
+                          type="button"
+                          onClick={handleBannerClick}
+                          className="w-full text-left"
+                          data-testid="banner-reorder-nudge"
+                          aria-label={`Restock reminder for ${top.name}`}
+                        >
+                          <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#D4FF1F]/[0.06] border border-[#D4FF1F]/20 hover:bg-[#D4FF1F]/[0.10] transition-colors">
+                            <Bell className="h-4 w-4 text-[#D4FF1F] shrink-0" />
+                            <p className="text-sm text-[#D4FF1F]/90 flex-1 min-w-0">
+                              {/* COMPLIANCE PENDING */}
+                              It's been <span className="font-semibold">{top.weeksSince} {top.weeksSince === 1 ? "week" : "weeks"}</span> since your last{" "}
+                              <span className="font-semibold">{top.name}</span> order — restock your research supply.
+                              {/* COMPLIANCE PENDING */}
+                            </p>
+                            <ChevronRight className="h-4 w-4 text-[#D4FF1F]/60 shrink-0" />
+                          </div>
+                        </button>
+                      </motion.div>
+                    );
+                  })()}
+
                   {/* ── 1. Order Again / Get Started ──────────────────────────── */}
                   {isEmpty ? (
                     /* ── Empty state: first-order prompt ── */
