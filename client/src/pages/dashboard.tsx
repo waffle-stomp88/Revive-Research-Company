@@ -64,6 +64,7 @@ import {
   MapPin,
   Bell,
   Lock,
+  FileText,
   Monitor,
   Smartphone,
   Mail,
@@ -86,17 +87,29 @@ const CyclesTab = lazy(() =>
   import("@/components/cycles/CyclesTab").then((m) => ({ default: m.CyclesTab }))
 );
 
+// ── Configurable research tier ladder ──────────────────────────────────────
+// Thresholds are placeholders; Grayson to tune post-launch. All tier names
+// and progress copy are COMPLIANCE PENDING — route through legal before launch.
+const RESEARCH_TIERS = [
+  { name: "Researcher", minOrders: 0, label: "Tier 1" },           // COMPLIANCE PENDING
+  { name: "Early Access Researcher", minOrders: 3, label: "Tier 2" }, // COMPLIANCE PENDING
+  { name: "Founding Fellow", minOrders: 10, label: "Tier 3" },     // COMPLIANCE PENDING
+] as const;
+
+// Number of logbook entries required before the Cycles tool unlocks.
+const CYCLES_UNLOCK_THRESHOLD = 3; // tunable post-launch
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
 function getStatusIcon(status: string | null) {
@@ -221,8 +234,22 @@ export default function Dashboard() {
     safetyCompleted: boolean;
     coaEducationViewed: boolean;
     earlyAccessMember: boolean;
+    isFoundingMember: boolean;
+    orderCount: number;
+    completedLessons: string[];
+    currentModuleId: string | null;
   }>({
     queryKey: ["/api/user/research-profile"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: logbookEntries } = useQuery<{ id: string }[]>({
+    queryKey: ["/api/logbook"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: cyclesData } = useQuery<{ cycles: { status: string }[]; totalLogbookEntries: number }>({
+    queryKey: ["/api/cycles"],
     enabled: isAuthenticated,
   });
 
@@ -590,6 +617,46 @@ export default function Dashboard() {
     },
   ], [orderCount, uniqueProducts]);
 
+  // ── Dashboard Home derived state ─────────────────────────────────────────
+  const logbookCount = logbookEntries?.length ?? 0;
+  const completedLessons = researchProfile?.completedLessons ?? [];
+  const isFoundingMember = researchProfile?.isFoundingMember ?? false;
+  const cyclesUnlocked = logbookCount >= CYCLES_UNLOCK_THRESHOLD;
+
+  // isEmpty: no orders AND no logbook activity at all
+  const isEmpty = orderCount === 0 && logbookCount === 0;
+
+  // Resolve current tier based on real order count
+  const currentTierIndex = RESEARCH_TIERS.reduce<number>((best, tier, i) =>
+    orderCount >= tier.minOrders ? i : best, 0);
+  const currentTier = RESEARCH_TIERS[currentTierIndex];
+  const nextTier = currentTierIndex + 1 < RESEARCH_TIERS.length
+    ? RESEARCH_TIERS[currentTierIndex + 1] : null;
+  const ordersToNextTier = nextTier ? Math.max(0, nextTier.minOrders - orderCount) : 0;
+  const tierProgress = nextTier
+    ? (orderCount - currentTier.minOrders) / (nextTier.minOrders - currentTier.minOrders)
+    : 1;
+
+  // Deduplicated "order again" cards — one card per distinct product, most recent
+  // order wins, live catalog price used (NOT historical order amount). Products
+  // absent from the catalog are silently omitted.
+  const reorderCards = useMemo(() => {
+    if (!orders?.length || !products?.length) return [];
+    const byProduct = new Map<string, Order>();
+    [...orders]
+      .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+      .forEach(o => {
+        if (o.productId && !byProduct.has(o.productId)) byProduct.set(o.productId, o);
+      });
+    return Array.from(byProduct.values())
+      .map(o => {
+        const product = products.find(p => p.id === o.productId);
+        return product ? { order: o, product } : null;
+      })
+      .filter((x): x is { order: Order; product: Product } => x !== null);
+    // No artificial cap — spec calls for all distinct past compounds in a horizontal scroll row
+  }, [orders, products]);
+
   const handleAddToCart = (product: Product) => {
     const dosage = product.dosageOptions?.[0];
     if (!dosage) {
@@ -731,114 +798,50 @@ export default function Dashboard() {
         
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
-            {/* Stylish Header with Gradient Accent */}
-            <motion.div variants={itemVariants} className="relative mb-8">
-              {/* Decorative gradient line */}
-              <div className="absolute -top-4 left-0 right-0 h-1 bg-gradient-to-r from-[#D4FF1F] via-[#21d8ff] to-[#9d4edd] rounded-full opacity-60" />
-              
-              <div className="flex items-center justify-between gap-4 pt-4 pb-6">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <Avatar className={`h-16 w-16 ring-2 ring-offset-2 ring-offset-background shadow-lg ${affiliate?.id ? 'ring-[#9d4edd]/70 shadow-[#9d4edd]/30' : 'ring-[#21d8ff]/50 shadow-[#21d8ff]/20'}`}>
-                      {user?.profileImageUrl && (
-                        <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
-                      )}
-                      <AvatarFallback className={`text-xl font-bold ${affiliate?.id ? 'bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/30' : 'bg-gradient-to-br from-[#D4FF1F]/30 to-[#21d8ff]/30'}`}>
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    {/* Affiliate diamond or member sparkle indicator */}
-                    {affiliate?.id ? (
-                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-gradient-to-br from-[#9d4edd] to-[#ec4899] rounded-full border-2 border-background flex items-center justify-center diamond-sparkle">
-                        <Diamond className="h-3.5 w-3.5 text-white" />
-                      </div>
-                    ) : (
-                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-background flex items-center justify-center">
-                        <Sparkles className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    {/* Holographic Welcome Greeting with Time-Based Message */}
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-user-name">
-                        {(() => {
+            {/* Compact Greeting Header */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h1
+                    className="font-['Bebas_Neue'] text-3xl md:text-4xl tracking-wide text-white leading-none"
+                    data-testid="text-user-name"
+                  >
+                    {isEmpty
+                      ? `Welcome, ${user?.firstName || 'Researcher'}`
+                      : (() => {
                           const hour = new Date().getHours();
-                          const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-                          return `${greeting}, ${user?.firstName || 'Guest'}!`;
+                          const g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                          return `${g}, ${user?.firstName || 'Researcher'}`;
                         })()}
-                      </h1>
-                      {/* Verified checkmark like affiliate dashboard */}
-                      {user?.id && (
-                        <div data-testid="badge-verified-member" title="Verified Member">
-                          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" fill="#21d8ff" />
-                            <path d="M9 12.5l2.5 2.5 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Status Badges Row */}
-                    <div className="flex items-center gap-2 flex-wrap mt-1.5">
-                      {/* Early Access Badge - based on join date before 2026 */}
-                      {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge className="bg-[#D4FF1F]/15 border-[#D4FF1F]/50 text-[#D4FF1F] badge-glow-yellow text-xs px-2 py-0.5">
-                              <Rocket className="h-3 w-3 mr-1" />
-                              Early Access
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>Joined during Early Access phase</TooltipContent>
-                        </Tooltip>
-                      )}
-                      
-                      {/* Affiliate Partner Badge */}
-                      {affiliate?.id && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge className="bg-[#9d4edd]/15 border-[#9d4edd]/50 text-[#9d4edd] badge-glow-purple text-xs px-2 py-0.5">
-                              <Diamond className="h-3 w-3 mr-1" />
-                              Affiliate Partner
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>Verified affiliate earning commissions</TooltipContent>
-                        </Tooltip>
-                      )}
-                      
-                      {/* Research Phase Badge */}
-                      {researchProfile && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge className="bg-[#21d8ff]/15 border-[#21d8ff]/50 text-[#21d8ff] badge-glow-cyan text-xs px-2 py-0.5">
-                              <FlaskConical className="h-3 w-3 mr-1" />
-                              {researchProfile.phase}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>Research phase: {researchProfile.phase}</TooltipContent>
-                        </Tooltip>
-                      )}
-                      
-                      {/* Research Title Badge */}
-                      {researchProfile?.title && researchProfile.title !== 'Getting Started' && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge className="bg-green-500/15 border-green-500/50 text-green-400 text-xs px-2 py-0.5">
-                              <Award className="h-3 w-3 mr-1" />
-                              {researchProfile.title}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>Earned title: {researchProfile.title}</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground mt-1.5" data-testid="text-user-email">{user?.email}</p>
+                  </h1>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    {/* Standing tier chip — chartreuse */}
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#D4FF1F]/40 bg-[#D4FF1F]/10 text-[#D4FF1F] text-xs font-medium"
+                      data-testid="badge-standing-tier"
+                    >
+                      <FlaskConical className="h-3 w-3" />
+                      {currentTier.name}{/* COMPLIANCE PENDING */}
+                    </span>
+                    {/* Founding Member chip — only in populated state (spec: empty state shows Tier 1 chip only) */}
+                    {isFoundingMember && !isEmpty && (
+                      <span
+                        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#9d4edd]/40 bg-[#9d4edd]/10 text-[#9d4edd] text-xs font-medium"
+                        data-testid="badge-founding-member"
+                      >
+                        <Crown className="h-3 w-3" />
+                        Founding Member{/* COMPLIANCE PENDING */}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <a href="/api/logout">
-                  <Button variant="outline" size="sm" className="border-white/20 hover:border-[#21d8ff]/50 transition-colors" data-testid="button-logout">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-white/20 shrink-0"
+                    data-testid="button-logout"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
@@ -850,534 +853,471 @@ export default function Dashboard() {
             <motion.div variants={itemVariants}>
               <div className="w-full space-y-12">
 
-                {/* General Section */}
-                <section id="section-general" className="space-y-6">
-                  {/* Quick Stats - Glassmorphism Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent border-[#D4FF1F]/20 hover:border-[#D4FF1F]/40 transition-all duration-300 group">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#D4FF1F]/10 rounded-full blur-2xl group-hover:bg-[#D4FF1F]/20 transition-colors" />
-                      <div className="relative flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-[#D4FF1F]/15 shadow-lg shadow-[#D4FF1F]/10">
-                          <ShoppingBag className="h-5 w-5 text-[#D4FF1F]" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-[#D4FF1F]" data-testid="text-order-count">{orderCount}</p>
-                          <p className="text-xs text-muted-foreground">Orders</p>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#21d8ff]/5 to-transparent border-[#21d8ff]/20 hover:border-[#21d8ff]/40 transition-all duration-300 group">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#21d8ff]/10 rounded-full blur-2xl group-hover:bg-[#21d8ff]/20 transition-colors" />
-                      <div className="relative flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-[#21d8ff]/15 shadow-lg shadow-[#21d8ff]/10">
-                          <Package className="h-5 w-5 text-[#21d8ff]" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-[#21d8ff]" data-testid="text-products-count">{uniqueProducts}</p>
-                          <p className="text-xs text-muted-foreground">Products</p>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#9d4edd]/5 to-transparent border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-all duration-300 group">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#9d4edd]/10 rounded-full blur-2xl group-hover:bg-[#9d4edd]/20 transition-colors" />
-                      <div className="relative flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-[#9d4edd]/15 shadow-lg shadow-[#9d4edd]/10">
-                          <Award className="h-5 w-5 text-[#9d4edd]" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-[#9d4edd]" data-testid="text-badges-count">{badges.filter(b => b.earned).length}</p>
-                          <p className="text-xs text-muted-foreground">Badges</p>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-green-500/5 to-transparent border-green-500/20 hover:border-green-500/40 transition-all duration-300 group">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-colors" />
-                      <div className="relative flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-green-500/15 shadow-lg shadow-green-500/10">
-                          <Calendar className="h-5 w-5 text-green-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-green-400" data-testid="text-member-since">
-                            {user?.createdAt ? formatDate(user.createdAt) : 'Recently'}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Member Since</p>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-
-                  {/* Two Column: Quick Navigation + Achievements */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Quick Navigation - Left Column (Vertical Stack) */}
-                    <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-transparent">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <div className="p-1.5 rounded-lg bg-[#21d8ff]/20">
-                            <Rocket className="h-4 w-4 text-[#21d8ff]" />
+                {/* General Section — rebuilt Phase 2 */}
+                <section id="section-general" className="space-y-5">
+                  {/* ── 1. Order Again / Get Started ──────────────────────────── */}
+                  {isEmpty ? (
+                    /* ── Empty state: first-order prompt ── */
+                    <motion.div variants={itemVariants}>
+                      <Card className="border-white/10 bg-white/[0.03]">
+                        <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                          <div className="p-3 rounded-xl bg-[#D4FF1F]/10 border border-[#D4FF1F]/20 shrink-0">
+                            <ShoppingBag className="h-6 w-6 text-[#D4FF1F]" />
                           </div>
-                          Quick Navigation
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          {/* Orders Link */}
-                          <div 
-                            className="flex items-center gap-3 p-3 rounded-xl border border-[#D4FF1F]/30 bg-[#D4FF1F]/5 cursor-pointer hover-elevate transition-all"
-                            onClick={() => document.getElementById("section-orders")?.scrollIntoView({ behavior: "smooth" })}
-                            data-testid="nav-orders"
-                          >
-                            <div className="p-2 rounded-full bg-[#D4FF1F]/20">
-                              <ShoppingBag className="h-5 w-5 text-[#D4FF1F]" />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">My Orders</p>
-                              <p className="text-xs text-muted-foreground">{orders?.length || 0} order{orders?.length !== 1 ? 's' : ''} • View history & track</p>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-[#D4FF1F]" />
-                          </div>
-                          
-                          {/* Academy Link */}
-                          <Link href="/academy" data-testid="nav-academy">
-                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#9d4edd]/30 bg-[#9d4edd]/5 cursor-pointer hover-elevate transition-all">
-                              <div className="p-2 rounded-full bg-[#9d4edd]/20">
-                                <GraduationCap className="h-5 w-5 text-[#9d4edd]" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">Research Academy</p>
-                                <p className="text-xs text-muted-foreground">Learn & earn XP badges</p>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-[#9d4edd]" />
-                            </div>
-                          </Link>
-                          
-                          {/* Verify COA Link */}
-                          <Link href="/coa/verify-certificate-of-analysis" data-testid="nav-coa">
-                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#21d8ff]/30 bg-[#21d8ff]/5 cursor-pointer hover-elevate transition-all">
-                              <div className="p-2 rounded-full bg-[#21d8ff]/20">
-                                <FileCheck className="h-5 w-5 text-[#21d8ff]" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">Verify COA</p>
-                                <p className="text-xs text-muted-foreground">Check batch authenticity</p>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-[#21d8ff]" />
-                            </div>
-                          </Link>
-                          
-                          {/* Products Link */}
-                          <Link href="/products" data-testid="nav-products">
-                            <div className="flex items-center gap-3 p-3 rounded-xl border border-green-500/30 bg-green-500/5 cursor-pointer hover-elevate transition-all">
-                              <div className="p-2 rounded-full bg-green-500/20">
-                                <FlaskConical className="h-5 w-5 text-green-500" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">Browse Products</p>
-                                <p className="text-xs text-muted-foreground">Explore our catalog</p>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-green-500" />
-                            </div>
-                          </Link>
-                          
-                          {/* Support Link */}
-                          <Link href="/contact" data-testid="nav-support">
-                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#ec4899]/30 bg-[#ec4899]/5 cursor-pointer hover-elevate transition-all">
-                              <div className="p-2 rounded-full bg-[#ec4899]/20">
-                                <MessageSquare className="h-5 w-5 text-[#ec4899]" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">Support</p>
-                                <p className="text-xs text-muted-foreground">Get help & contact us</p>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-[#ec4899]" />
-                            </div>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Achievements - Right Column (Vertical Stack) */}
-                    <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <div className="p-1.5 rounded-lg bg-[#f97316]/20">
-                              <Trophy className="h-4 w-4 text-[#f97316]" />
-                            </div>
-                            Achievements
-                          </CardTitle>
-                          <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
-                            {(() => {
-                              let count = 0;
-                              if (orders && orders.length > 0) count++;
-                              if (orders && orders.length >= 5) count++;
-                              if (researchProfile && researchProfile.educationCount >= 3) count++;
-                              if (researchProfile && researchProfile.batchVerificationCount > 0) count++;
-                              if (affiliate?.id) count++;
-                              return count;
-                            })()}/5 Unlocked
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2">
-                          {/* First Order Achievement */}
-                          <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#D4FF1F]/10 border-[#D4FF1F]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                            data-testid="achievement-first-order"
-                          >
-                            <motion.div 
-                              className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#D4FF1F]/20' : 'bg-muted/30'}`}
-                              animate={orders && orders.length > 0 ? { 
-                                scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(212, 255, 31, 0)', '0 0 15px rgba(212, 255, 31, 0.6)', '0 0 0px rgba(212, 255, 31, 0)']
-                              } : {}}
-                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                              <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
-                            </motion.div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="font-medium text-sm">First Order</p>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-[200px]">
-                                    <p className="text-xs">Complete your first purchase to unlock this achievement</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{orders && orders.length > 0 ? 'Unlocked!' : 'Make your first purchase'}</p>
-                            </div>
-                            {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#D4FF1F]" />}
-                          </div>
-
-                          {/* Loyal Customer Achievement */}
-                          <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                            data-testid="achievement-loyal"
-                          >
-                            <motion.div 
-                              className={`p-2 rounded-full ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}
-                              animate={orders && orders.length >= 5 ? { 
-                                scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(33, 216, 255, 0)', '0 0 15px rgba(33, 216, 255, 0.6)', '0 0 0px rgba(33, 216, 255, 0)']
-                              } : {}}
-                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-                            >
-                              <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
-                            </motion.div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="font-medium text-sm">Loyal Customer</p>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-[200px]">
-                                    <p className="text-xs">Complete 5 orders to become a loyal customer</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{orders && orders.length >= 5 ? 'Unlocked!' : `${orders?.length || 0}/5 orders`}</p>
-                            </div>
-                            {orders && orders.length >= 5 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
-                          </div>
-
-                          {/* Academy Scholar Achievement */}
-                          <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                            data-testid="achievement-scholar"
-                          >
-                            <motion.div 
-                              className={`p-2 rounded-full ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}
-                              animate={researchProfile && researchProfile.educationCount >= 3 ? { 
-                                scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(157, 78, 221, 0)', '0 0 15px rgba(157, 78, 221, 0.6)', '0 0 0px rgba(157, 78, 221, 0)']
-                              } : {}}
-                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-                            >
-                              <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
-                            </motion.div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="font-medium text-sm">Academy Scholar</p>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-[200px]">
-                                    <p className="text-xs">Read 3 education articles in the Academy to unlock</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.educationCount >= 3 ? 'Unlocked!' : `${researchProfile?.educationCount || 0}/3 articles`}</p>
-                            </div>
-                            {researchProfile && researchProfile.educationCount >= 3 && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
-                          </div>
-
-                          {/* COA Verified Achievement */}
-                          <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/10 border-green-500/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                            data-testid="achievement-coa"
-                          >
-                            <motion.div 
-                              className={`p-2 rounded-full ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/20' : 'bg-muted/30'}`}
-                              animate={researchProfile && researchProfile.batchVerificationCount > 0 ? { 
-                                scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(34, 197, 94, 0)', '0 0 15px rgba(34, 197, 94, 0.6)', '0 0 0px rgba(34, 197, 94, 0)']
-                              } : {}}
-                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
-                            >
-                              <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-green-500' : 'text-muted-foreground'}`} />
-                            </motion.div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="font-medium text-sm">COA Verified</p>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-[200px]">
-                                    <p className="text-xs">Verify a batch Certificate of Analysis to unlock</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Unlocked!' : 'Verify a batch COA'}</p>
-                            </div>
-                            {researchProfile && researchProfile.batchVerificationCount > 0 && <CheckCircle className="h-4 w-4 text-green-500" />}
-                          </div>
-
-                          {/* Affiliate Achievement */}
-                          <div 
-                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-[#ec4899]/10 border-[#ec4899]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                            data-testid="achievement-affiliate"
-                          >
-                            <motion.div 
-                              className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}
-                              animate={affiliate?.id ? { 
-                                scale: [1, 1.15, 1],
-                                boxShadow: ['0 0 0px rgba(236, 72, 153, 0)', '0 0 15px rgba(236, 72, 153, 0.6)', '0 0 0px rgba(236, 72, 153, 0)']
-                              } : {}}
-                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-                            >
-                              <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
-                            </motion.div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <p className="font-medium text-sm">Affiliate Partner</p>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-[200px]">
-                                    <p className="text-xs">Apply and get approved for the affiliate program to unlock</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{affiliate?.id ? 'Unlocked!' : 'Join the affiliate program'}</p>
-                            </div>
-                            {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#ec4899]" />}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Member Benefits Card */}
-                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <div className="p-1.5 rounded-lg bg-[#21d8ff]/20">
-                          <Gem className="h-4 w-4 text-[#21d8ff]" />
-                        </div>
-                        Your Benefits
-                      </CardTitle>
-                      <CardDescription className="text-xs">Real value you've earned as a member</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {/* Registered Member Benefits - Always unlocked */}
-                        <div>
-                          <p className="text-xs font-medium text-[#21d8ff] mb-2 flex items-center gap-1.5">
-                            <CheckCircle className="h-3 w-3" />
-                            MEMBER BENEFITS
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
-                              <ShoppingBag className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
-                              <span className="text-xs">Order history & tracking</span>
-                            </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
-                              <Bookmark className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
-                              <span className="text-xs">Saved stacks & wishlist</span>
-                            </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
-                              <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
-                              <span className="text-xs">Research phase progression</span>
-                            </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
-                              <Target className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
-                              <span className="text-xs">Compound Finder tool</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Shipping Perk */}
-                        <div className="flex items-center gap-3 p-3 rounded-xl border border-green-500/30 bg-green-500/5">
-                          <div className="p-2 rounded-full bg-green-500/20">
-                            <Truck className="h-4 w-4 text-green-500" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">Free Shipping</p>
-                            <p className="text-xs text-muted-foreground">{`On all orders over $${FREE_SHIPPING_THRESHOLD}`}</p>
-                          </div>
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        </div>
-
-                        {/* Academy Graduate Reward */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
-                          graduateReward?.isGraduate
-                            ? 'border-[#D4FF1F]/40 bg-[#D4FF1F]/10'
-                            : 'border-muted/20 bg-muted/5'
-                        }`}>
-                          <div className={`p-2 rounded-full ${graduateReward?.isGraduate ? 'bg-[#D4FF1F]/20' : 'bg-muted/20'}`}>
-                            <GraduationCap className={`h-4 w-4 ${graduateReward?.isGraduate ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">Academy Graduate Reward</p>
-                            <p className="text-xs text-muted-foreground">
-                              {graduateReward?.discountCode
-                                ? <>Your code: <span className="font-mono font-semibold text-[#D4FF1F] select-text">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
-                                : graduateReward?.isGraduate
-                                  ? 'You earned it — claim your 15% discount below'
-                                  : `Complete all ${graduateReward?.totalLessons || 17} Academy lessons to earn 15% off (${graduateReward?.completedCount || 0}/${graduateReward?.totalLessons || 17})`}
+                          <div className="flex-1 min-w-0">
+                            <h2 className="font-semibold text-base mb-1">
+                              Place your first order{/* COMPLIANCE PENDING */}
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                              {/* COMPLIANCE PENDING: founding-member offer & "25% off for life" copy needs legal review */}
+                              The first 50 customers receive Founding Member status — a permanent 25% discount on every future order.{/* COMPLIANCE PENDING */}
                             </p>
                           </div>
-                          {graduateReward?.discountCode ? (
+                          <Link href="/peptides">
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              className="shrink-0 min-h-[44px] min-w-[44px]"
-                              data-testid="button-copy-grad-code"
-                              onClick={() => {
-                                navigator.clipboard.writeText(graduateReward.discountCode!);
-                                toast({ title: "Copied", description: "Discount code copied to clipboard" });
-                              }}
+                              className="bg-[#D4FF1F] text-black font-semibold shrink-0"
+                              data-testid="button-get-started-shop"
                             >
-                              <Copy className="h-4 w-4 text-[#D4FF1F]" />
-                            </Button>
-                          ) : graduateReward?.isGraduate ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-xs shrink-0 min-h-[44px] border-[#D4FF1F]/40 text-[#D4FF1F]"
-                              onClick={() => claimGraduateRewardMutation.mutate()}
-                              disabled={claimGraduateRewardMutation.isPending}
-                              data-testid="button-claim-graduate-reward"
-                            >
-                              {claimGraduateRewardMutation.isPending ? "Claiming..." : "Claim"}
-                            </Button>
-                          ) : (
-                            <Link href="/academy">
-                              <Button variant="ghost" size="sm" className="text-xs shrink-0 min-h-[44px] min-w-[44px]" data-testid="button-go-academy">
-                                <ArrowRight className="h-3 w-3" />
-                              </Button>
-                            </Link>
-                          )}
-                        </div>
-
-                        {/* Loyalty: Early Access */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
-                          (orders?.length || 0) >= 5
-                            ? 'border-[#D4FF1F]/40 bg-[#D4FF1F]/10'
-                            : 'border-muted/20 bg-muted/5'
-                        }`}>
-                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 5 ? 'bg-[#D4FF1F]/20' : 'bg-muted/20'}`}>
-                            <Rocket className={`h-4 w-4 ${(orders?.length || 0) >= 5 ? 'text-[#D4FF1F]' : 'text-muted-foreground'}`} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">Early Access to New Launches</p>
-                            <p className="text-xs text-muted-foreground">
-                              {(orders?.length || 0) >= 5
-                                ? 'Unlocked — you get first access to new compounds'
-                                : `Place ${Math.max(0, 5 - (orders?.length || 0))} more order${Math.max(0, 5 - (orders?.length || 0)) === 1 ? '' : 's'} to unlock`}
-                            </p>
-                          </div>
-                          {(orders?.length || 0) >= 5 && <CheckCircle className="h-4 w-4 text-[#D4FF1F]" />}
-                        </div>
-
-                        {/* Affiliate Program */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
-                          affiliate?.id
-                            ? 'border-[#9d4edd]/40 bg-[#9d4edd]/10'
-                            : 'border-muted/20 bg-muted/5'
-                        }`}>
-                          <div className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#9d4edd]/20' : 'bg-muted/20'}`}>
-                            <Diamond className={`h-4 w-4 ${affiliate?.id ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">Affiliate Earnings</p>
-                            <p className="text-xs text-muted-foreground">
-                              {affiliate?.id
-                                ? 'Earn 10% on every referral'
-                                : 'Apply to earn 10% commission on referrals'}
-                            </p>
-                          </div>
-                          {affiliate?.id ? (
-                            <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
-                          ) : (
-                            <Link href="/affiliate">
-                              <Button variant="ghost" size="sm" className="text-xs shrink-0 min-h-[44px] min-w-[44px]" data-testid="button-apply-affiliate">
-                                <ArrowRight className="h-3 w-3" />
-                              </Button>
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Compound Finder */}
-                  <CompoundFinder
-                    products={products || []}
-                    onAddToCart={(product) => {
-                      const defaultDosage = product.dosageOptions?.[0] || "";
-                      addToCart({
-                        productId: product.id,
-                        name: product.name,
-                        price: Number(product.price),
-                        quantity: 1,
-                        dosage: defaultDosage,
-                        image: product.imageUrl || undefined,
-                      });
-                      toast({ title: "Added to Cart", description: `${product.name} has been added to your cart.` });
-                    }}
-                  />
-
-                  {/* Join Affiliate Program CTA - Only show if not already an affiliate */}
-                  {!affiliate?.id && (
-                    <Card className="relative overflow-hidden border-[#9d4edd]/30 bg-gradient-to-r from-[#9d4edd]/10 via-[#ec4899]/5 to-transparent">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-[#9d4edd]/20 rounded-full blur-3xl" />
-                      <CardContent className="p-5">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                          <div className="p-3 rounded-xl bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/20 shadow-lg">
-                            <Diamond className="h-7 w-7 text-[#9d4edd]" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg mb-1">Become an Affiliate Partner</h3>
-                            <p className="text-sm text-muted-foreground">Earn 10% commission on every referral. Share your unique code and build passive income.</p>
-                          </div>
-                          <Link href="/affiliate">
-                            <Button className="bg-[#9d4edd] text-white shrink-0" data-testid="button-join-affiliate">
-                              <Sparkles className="h-4 w-4 mr-2" />
-                              Apply Now
+                              Browse Compounds{/* COMPLIANCE PENDING */}
+                              <ArrowRight className="h-4 w-4 ml-2" />
                             </Button>
                           </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ) : (
+                    /* ── Populated state: horizontal scroll row of reorder cards ── */
+                    <motion.div variants={itemVariants} className="space-y-2">
+                      <div className="flex items-center justify-between px-0.5">
+                        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                          Order Again
+                        </h2>
+                        <Link
+                          href="#section-orders"
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-0.5"
+                          data-testid="link-all-orders"
+                        >
+                          All orders
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      </div>
+                      {/* Horizontal scroll — prevents layout overflow per spec (f) */}
+                      <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scroll-smooth">
+                        {reorderCards.map(({ order, product }) => {
+                          const doseVariant = product.dosageOptions?.[0] ?? null;
+                          return (
+                            <Card
+                              key={product.id}
+                              className="border-white/10 bg-white/[0.03] shrink-0 w-48"
+                              data-testid={`card-reorder-${product.id}`}
+                            >
+                              <CardContent className="p-4 flex flex-col gap-3 h-full">
+                                {product.imageUrl ? (
+                                  <img
+                                    src={product.imageUrl}
+                                    alt={product.name}
+                                    className="h-10 w-10 rounded-md object-cover border border-white/10"
+                                  />
+                                ) : (
+                                  <div className="h-10 w-10 rounded-md bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <Package className="h-4 w-4 text-muted-foreground" />
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0 space-y-0.5">
+                                  <p
+                                    className="font-medium text-sm leading-tight line-clamp-2"
+                                    data-testid={`text-reorder-name-${product.id}`}
+                                  >
+                                    {product.name}
+                                  </p>
+                                  {doseVariant && (
+                                    <p className="text-xs text-muted-foreground truncate" data-testid={`text-reorder-variant-${product.id}`}>
+                                      {doseVariant}
+                                    </p>
+                                  )}
+                                  <p className="text-xs text-muted-foreground" data-testid={`text-reorder-qty-${product.id}`}>
+                                    Qty: {order.quantity}
+                                  </p>
+                                  <p className="text-xs font-medium text-white" data-testid={`text-reorder-price-${product.id}`}>
+                                    ${Number(product.price).toFixed(2)}
+                                  </p>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-full border-white/15 text-xs"
+                                  onClick={() => handleReorder(order)}
+                                  data-testid={`button-reorder-${product.id}`}
+                                >
+                                  <RefreshCw className="h-3 w-3 mr-1.5" />
+                                  Reorder
+                                </Button>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
                   )}
+
+                  {/* ── 2. Your Research Standing ──────────────────────────────── */}
+                  {/* Chartreuse border glow is ONLY on this card — nowhere else in the section */}
+                  <motion.div variants={itemVariants}>
+                    <Card
+                      className="border-[#D4FF1F]/25 bg-white/[0.03] shadow-[0_0_24px_0_rgba(212,255,31,0.06)]"
+                      data-testid="card-research-standing"
+                    >
+                      <CardContent className="p-5 space-y-3">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">
+                              Your Research Standing{/* COMPLIANCE PENDING */}
+                            </p>
+                            <h3 className="text-xl font-semibold text-[#D4FF1F]" data-testid="text-tier-name">
+                              {currentTier.name}{/* COMPLIANCE PENDING */}
+                            </h3>
+                          </div>
+                          <span
+                            className="text-xs text-muted-foreground shrink-0 mt-1"
+                            data-testid="text-tier-label"
+                          >
+                            Tier {currentTierIndex + 1} of {RESEARCH_TIERS.length}{/* COMPLIANCE PENDING */}
+                          </span>
+                        </div>
+                        {/* Progress bar — always paired with a text label */}
+                        <div>
+                          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#D4FF1F] rounded-full transition-all duration-700"
+                              style={{ width: `${Math.round(tierProgress * 100)}%` }}
+                              data-testid="bar-tier-progress"
+                            />
+                          </div>
+                        </div>
+                        {/* Next unlock text — below the bar */}
+                        <p
+                          className="text-xs text-muted-foreground"
+                          data-testid="text-tier-next-unlock"
+                        >
+                          {nextTier
+                            ? `Place ${ordersToNextTier} more order${ordersToNextTier !== 1 ? 's' : ''} to unlock ${nextTier.name}`
+                            : `${currentTier.name} — highest tier reached`
+                          }{/* COMPLIANCE PENDING */}
+                        </p>
+                        {/* Tier ladder pills */}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {RESEARCH_TIERS.map((tier, i) => (
+                            <span
+                              key={tier.name}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${
+                                i <= currentTierIndex
+                                  ? 'bg-[#D4FF1F]/15 border border-[#D4FF1F]/35 text-[#D4FF1F]'
+                                  : 'bg-white/5 border border-white/10 text-muted-foreground'
+                              }`}
+                              data-testid={`badge-tier-${i}`}
+                            >
+                              {i <= currentTierIndex && <CheckCircle className="h-2.5 w-2.5" />}
+                              {tier.label}{/* COMPLIANCE PENDING */}
+                            </span>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  {/* ── 3. Continue / Start Here ───────────────────────────────── */}
+                  {/* Decision is driven by currentModuleId (in-progress module), NOT completedLessons.length */}
+                  <motion.div variants={itemVariants}>
+                    <Card className="border-white/10 bg-white/[0.03]" data-testid="card-continue-here">
+                      <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div className="p-2.5 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 shrink-0">
+                          <BookOpen className="h-5 w-5 text-[#21d8ff]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {researchProfile?.currentModuleId ? (
+                            <>
+                              <p className="font-semibold text-sm">Continue the Academy</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Pick up where you left off · {completedLessons.length} lesson{completedLessons.length !== 1 ? 's' : ''} completed
+                                {/* COMPLIANCE PENDING */}
+                              </p>
+                            </>
+                          ) : isEmpty ? (
+                            <>
+                              <p className="font-semibold text-sm">Start Here</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Build your research foundation · 0 / 6 modules{/* COMPLIANCE PENDING */}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="font-semibold text-sm">Start the Academy</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                0 / 6 modules complete · begin your research education{/* COMPLIANCE PENDING */}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <Link
+                          href={
+                            researchProfile?.currentModuleId
+                              ? `/academy?module=${researchProfile.currentModuleId}`
+                              : '/academy'
+                          }
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#21d8ff]/25 text-[#21d8ff] shrink-0"
+                            data-testid="button-go-to-academy"
+                          >
+                            {researchProfile?.currentModuleId ? 'Continue' : isEmpty ? 'Start Here' : 'Start the Academy'}
+                            <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+
+                  {/* ── 4. Research Tools Hub ──────────────────────────────────── */}
+                  {/* 2-col grid: Stacks | Logbook, Cycles | Verify COA + full-width Academy row */}
+                  <motion.div variants={itemVariants} className="space-y-3">
+                    <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider px-0.5">
+                      Research Tools
+                    </h2>
+                    <div className="grid grid-cols-2 gap-3">
+                      {/* Stacks */}
+                      <Link href="#section-stacks">
+                        <Card
+                          className="border-white/10 bg-white/[0.03] hover-elevate cursor-pointer"
+                          data-testid="card-tool-stacks"
+                        >
+                          <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/20 shrink-0">
+                              <Boxes className="h-4 w-4 text-[#9d4edd]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium">My Stacks</p>
+                              <p className="text-xs text-muted-foreground" data-testid="text-tool-stacks-count">
+                                {(savedStacks?.length ?? 0) === 0
+                                  ? 'Build your first stack'
+                                  : `${savedStacks!.length} saved`}
+                              </p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                          </CardContent>
+                        </Card>
+                      </Link>
+
+                      {/* Logbook — privacy note in both states */}
+                      <Link href="#section-logbook">
+                        <Card
+                          className="border-white/10 bg-white/[0.03] hover-elevate cursor-pointer"
+                          data-testid="card-tool-logbook"
+                        >
+                          <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 shrink-0">
+                              <FileText className="h-4 w-4 text-[#21d8ff]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium">Logbook</p>
+                              <p className="text-xs text-muted-foreground" data-testid="text-tool-logbook-count">
+                                {logbookCount === 0 ? 'Log your first entry' : `${logbookCount} entr${logbookCount === 1 ? 'y' : 'ies'}`}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground/60 mt-0.5 leading-tight" data-testid="text-tool-logbook-privacy">
+                                Private · wiped from Settings · not a medical record
+                              </p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                          </CardContent>
+                        </Card>
+                      </Link>
+
+                      {/* Cycles — locked state shows real progress toward threshold */}
+                      {cyclesUnlocked ? (
+                        <Link href="#section-cycles">
+                          <Card
+                            className="border-white/10 bg-white/[0.03] hover-elevate cursor-pointer"
+                            data-testid="card-tool-cycles"
+                          >
+                            <CardContent className="p-4 flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-[#D4FF1F]/10 border border-[#D4FF1F]/20 shrink-0">
+                                <RefreshCw className="h-4 w-4 text-[#D4FF1F]" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium">Cycles</p>
+                                <p className="text-xs text-muted-foreground" data-testid="text-tool-cycles-count">
+                                  {(() => {
+                                    const activeCycles = cyclesData?.cycles?.filter(c => c.status === 'active').length ?? 0;
+                                    return activeCycles === 0
+                                      ? 'No active cycles'
+                                      : `${activeCycles} active cycle${activeCycles !== 1 ? 's' : ''}`;
+                                  })()}
+                                </p>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      ) : (
+                        /* Locked — forward-looking progress, not a dead label */
+                        <Card
+                          className="border-white/8 bg-white/[0.015]"
+                          data-testid="card-tool-cycles-locked"
+                        >
+                          <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-white/5 border border-white/8 shrink-0">
+                              <Lock className="h-4 w-4 text-muted-foreground/60" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-muted-foreground">Cycles</p>
+                              <p className="text-xs text-muted-foreground/70" data-testid="text-tool-cycles-locked-hint">
+                                Add {CYCLES_UNLOCK_THRESHOLD - logbookCount} more log {CYCLES_UNLOCK_THRESHOLD - logbookCount === 1 ? 'entry' : 'entries'} to unlock
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Verify COA — links to the real COA verification route */}
+                      <Link href="/coa/verify-certificate-of-analysis">
+                        <Card
+                          className="border-white/10 bg-white/[0.03] hover-elevate cursor-pointer"
+                          data-testid="card-tool-verify-coa"
+                        >
+                          <CardContent className="p-4 flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20 shrink-0">
+                              <FileCheck className="h-4 w-4 text-green-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium">Verify COA</p>
+                              <p className="text-xs text-muted-foreground" data-testid="text-tool-verify-coa-hint">
+                                {researchProfile?.batchVerificationCount
+                                  ? `${researchProfile.batchVerificationCount} batch${researchProfile.batchVerificationCount !== 1 ? 'es' : ''} verified`
+                                  : 'Check batch certificates'}
+                              </p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </div>
+
+                    {/* Academy — full-width row below the 2-col grid */}
+                    <Link href="/academy">
+                      <Card
+                        className="border-white/10 bg-white/[0.03] hover-elevate cursor-pointer"
+                        data-testid="card-tool-academy"
+                      >
+                        <CardContent className="p-4 flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#ec4899]/10 border border-[#ec4899]/20 shrink-0">
+                            <GraduationCap className="h-4 w-4 text-[#ec4899]" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium">Research Academy</p>
+                            <p className="text-xs text-muted-foreground" data-testid="text-tool-academy-count">
+                              {completedLessons.length === 0
+                                ? 'Start learning · 0 / 6 modules'
+                                : `${completedLessons.length} / 17 lessons complete`}{/* COMPLIANCE PENDING */}
+                            </p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
+
+                  {/* ── 5. Account Rows ────────────────────────────────────────── */}
+                  <motion.div variants={itemVariants}>
+                    <Card className="border-white/10 bg-white/[0.03] divide-y divide-white/8" data-testid="card-account-rows">
+                      {/* My Orders */}
+                      <button
+                        className="w-full flex items-center gap-3 px-5 py-4 text-left hover-elevate"
+                        onClick={() => document.getElementById('section-orders')?.scrollIntoView({ behavior: 'smooth' })}
+                        data-testid="button-nav-orders"
+                      >
+                        <div className="p-1.5 rounded-md bg-white/5 shrink-0">
+                          <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">My Orders</p>
+                          <p className="text-xs text-muted-foreground">
+                            {orderCount === 0 ? 'No orders yet' : `${orderCount} order${orderCount !== 1 ? 's' : ''}`}
+                          </p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      </button>
+
+                      {/* Your Benefits */}
+                      <Link
+                        href="/benefits"
+                        className="w-full flex items-center gap-3 px-5 py-4 text-left hover-elevate"
+                        data-testid="button-nav-benefits"
+                      >
+                        <div className="p-1.5 rounded-md bg-white/5 shrink-0">
+                          <Sparkles className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">Your Benefits</p>
+                          <p className="text-xs text-muted-foreground">
+                            {isFoundingMember ? 'Founding member perks active' : 'Loyalty rewards & perks'}
+                            {/* COMPLIANCE PENDING */}
+                          </p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      </Link>
+
+                      {/* Affiliate Earnings */}
+                      {affiliate?.id ? (
+                        <Link
+                          href="/affiliate"
+                          className="w-full flex items-center gap-3 px-5 py-4 text-left hover-elevate"
+                          data-testid="button-nav-affiliate"
+                        >
+                          <div className="p-1.5 rounded-md bg-white/5 shrink-0">
+                            <Diamond className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium">Affiliate Earnings</p>
+                            <p className="text-xs text-muted-foreground">View commissions &amp; payouts</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/affiliate"
+                          className="w-full flex items-center gap-3 px-5 py-4 text-left hover-elevate"
+                          data-testid="button-nav-affiliate-apply"
+                        >
+                          <div className="p-1.5 rounded-md bg-white/5 shrink-0">
+                            <Diamond className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium">Affiliate Earnings</p>
+                            <p className="text-xs text-muted-foreground">Apply to earn commissions</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                        </Link>
+                      )}
+
+                      {/* Settings */}
+                      <button
+                        className="w-full flex items-center gap-3 px-5 py-4 text-left hover-elevate"
+                        onClick={() => document.getElementById('section-settings')?.scrollIntoView({ behavior: 'smooth' })}
+                        data-testid="button-nav-settings"
+                      >
+                        <div className="p-1.5 rounded-md bg-white/5 shrink-0">
+                          <Settings className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">Settings</p>
+                          <p className="text-xs text-muted-foreground">Profile &amp; notifications</p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      </button>
+                    </Card>
+                  </motion.div>
+
                 </section>
 
                 {/* Orders Section */}

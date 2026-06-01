@@ -23,6 +23,9 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   isAdmin: boolean("is_admin").default(false),
   ruoAttestationAt: timestamp("ruo_attestation_at"),
+  // Permanent founding member status — set once on first login when user's email
+  // matches a waitlistSignups row with foundingMember: true. Never recomputed.
+  isFoundingMember: boolean("is_founding_member").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

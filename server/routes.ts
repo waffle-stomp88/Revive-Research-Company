@@ -5792,6 +5792,39 @@ Return ONLY valid JSON in this exact format:
   });
 
   // User Research Profile - Get computed phase, title, and counts
+  // Unified research profile endpoint for the account home — includes
+  // isFoundingMember from the users row (not a live waitlistSignups join).
+  app.get("/api/user/research-profile", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userRow = await storage.getUser(userId);
+      let profile = await storage.getUserResearchProfile(userId);
+      if (!profile) {
+        profile = await storage.createOrUpdateUserResearchProfile(userId, { earlyAccessMember: true });
+      }
+      const orders = await storage.getOrdersByUserId(userId);
+      const phase = storage.computeResearchPhase(profile);
+      const title = storage.computeResearchTitle(profile);
+      res.json({
+        phase,
+        title,
+        educationCount: profile.educationCount || 0,
+        safetyCompleted: profile.safetyCompleted || false,
+        coaEducationViewed: profile.coaEducationViewed || false,
+        batchVerificationCount: profile.batchVerificationCount || 0,
+        compoundsTrackedCount: profile.compoundsTrackedCount || 0,
+        earlyAccessMember: profile.earlyAccessMember || false,
+        isFoundingMember: userRow?.isFoundingMember ?? false,
+        orderCount: orders.length,
+        completedLessons: (profile as any).completedLessons || [],
+        currentModuleId: (profile as any).currentModuleId || null,
+      });
+    } catch (error) {
+      console.error("Error fetching user research profile:", error);
+      res.status(500).json({ error: "Failed to fetch research profile" });
+    }
+  });
+
   app.get("/api/research-profile", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

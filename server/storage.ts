@@ -498,6 +498,26 @@ export class DatabaseStorage implements IStorage {
         },
       })
       .returning();
+
+    // One-time founding member persistence: if this user doesn't yet have
+    // isFoundingMember set, check whether their email matches a waitlist
+    // signup row with foundingMember: true. Write it once and never re-check.
+    if (!user.isFoundingMember && user.email) {
+      const [waitlistRow] = await db
+        .select({ foundingMember: waitlistSignups.foundingMember })
+        .from(waitlistSignups)
+        .where(eq(waitlistSignups.email, user.email.toLowerCase()))
+        .limit(1);
+      if (waitlistRow?.foundingMember) {
+        const [updated] = await db
+          .update(users)
+          .set({ isFoundingMember: true, updatedAt: new Date() })
+          .where(eq(users.id, user.id))
+          .returning();
+        return updated;
+      }
+    }
+
     return user;
   }
 
