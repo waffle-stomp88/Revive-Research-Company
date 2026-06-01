@@ -29,6 +29,7 @@ import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
 import CoaLibrary from "@/pages/coa-library";
 import Dashboard from "@/pages/dashboard";
+import DashboardSummary from "@/pages/dashboard-summary";
 import AccountSettings from "@/pages/account-settings";
 import Admin from "@/pages/admin";
 import CompoundAudit from "@/pages/admin/compound-audit";
@@ -213,6 +214,11 @@ function Router() {
         <Route path="/coa-library">
           <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
             <CoaLibrary />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/summary">
+          <ProtectedRoute>
+            <DashboardSummary />
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard" component={Dashboard} />

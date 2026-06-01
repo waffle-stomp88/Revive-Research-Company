@@ -99,6 +99,10 @@ const RESEARCH_TIERS = [
 // Number of logbook entries required before the Cycles tool unlocks.
 const CYCLES_UNLOCK_THRESHOLD = 3; // tunable post-launch
 
+// Minimum lifetime logbook entries before the Research Summary recap card appears.
+// Grayson to tune post-launch — this is the sole gate; order count is NOT used.
+const RECAP_ENTRY_THRESHOLD = 3; // COMPLIANCE PENDING
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -243,7 +247,13 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const { data: logbookEntries } = useQuery<{ id: string }[]>({
+  const { data: logbookEntries } = useQuery<{
+    id: string;
+    productId: string | null;
+    tags: string[] | null;
+    createdAt: string;
+    administeredAt: string | null;
+  }[]>({
     queryKey: ["/api/logbook"],
     enabled: isAuthenticated,
   });
@@ -634,6 +644,46 @@ export default function Dashboard() {
   const completedLessons = researchProfile?.completedLessons ?? [];
   const isFoundingMember = researchProfile?.isFoundingMember ?? false;
   const cyclesUnlocked = logbookCount >= CYCLES_UNLOCK_THRESHOLD;
+
+  // ── Research Summary recap gate & rolling-30-day stats ──────────────────
+  // Gate uses lifetime entry count (not windowed) — card stays visible even
+  // if the user hasn't logged in the past 30 days.
+  const showRecap = logbookCount >= RECAP_ENTRY_THRESHOLD;
+
+  const recapStats = useMemo(() => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const windowedEntries = (logbookEntries ?? []).filter((e) => {
+      const ts = e.administeredAt ?? e.createdAt;
+      return new Date(ts) >= thirtyDaysAgo;
+    });
+
+    // Distinct compounds tracked — prefer productId, fall back to compound: tags
+    const compoundSet = new Set<string>();
+    for (const e of windowedEntries) {
+      if (e.productId) {
+        compoundSet.add(e.productId);
+      } else {
+        for (const tag of e.tags ?? []) {
+          if (tag.startsWith("compound:")) compoundSet.add(tag);
+        }
+      }
+    }
+
+    const windowedOrders = (orders ?? []).filter(
+      (o) => o.createdAt && new Date(o.createdAt) >= thirtyDaysAgo,
+    );
+
+    const activeCycles =
+      cyclesData?.cycles?.filter((c) => c.status === "active").length ?? 0;
+
+    return {
+      distinctCompounds: compoundSet.size,
+      entriesLogged: windowedEntries.length,
+      activeCycles,
+      ordersPlaced: windowedOrders.length,
+    };
+  }, [logbookEntries, orders, cyclesData]);
 
   // isEmpty: no orders AND no logbook activity at all
   const isEmpty = orderCount === 0 && logbookCount === 0;
@@ -1134,6 +1184,103 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   </motion.div>
+
+                  {/* ── 3b. Research Summary Recap Card (data-gated) ───────────── */}
+                  {/* Renders only when lifetime logbook entries >= RECAP_ENTRY_THRESHOLD.
+                      No placeholder shown below threshold — card is simply absent. */}
+                  {showRecap && (
+                    <motion.div variants={itemVariants}>
+                      <Card
+                        className="border-[#21d8ff]/25 bg-white/[0.03] shadow-[0_0_20px_0_rgba(33,216,255,0.05)]"
+                        data-testid="card-research-summary"
+                      >
+                        <CardContent className="p-5 space-y-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">
+                                Your Research Summary{/* COMPLIANCE PENDING */}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                Last 30 days of activity{/* COMPLIANCE PENDING */}
+                              </p>
+                            </div>
+                            <div className="p-2 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 shrink-0">
+                              <Activity className="h-4 w-4 text-[#21d8ff]" />
+                            </div>
+                          </div>
+
+                          {/* 4-stat grid */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div
+                              className="rounded-md bg-white/[0.03] border border-white/8 px-3 py-2.5"
+                              data-testid="stat-recap-compounds"
+                            >
+                              <p className="text-xl font-semibold text-white">
+                                {recapStats.distinctCompounds}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {recapStats.distinctCompounds === 1
+                                  ? "compound tracked" // COMPLIANCE PENDING
+                                  : "compounds tracked"}{/* COMPLIANCE PENDING */}
+                              </p>
+                            </div>
+                            <div
+                              className="rounded-md bg-white/[0.03] border border-white/8 px-3 py-2.5"
+                              data-testid="stat-recap-entries"
+                            >
+                              <p className="text-xl font-semibold text-white">
+                                {recapStats.entriesLogged}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {recapStats.entriesLogged === 1
+                                  ? "observation logged" // COMPLIANCE PENDING
+                                  : "observations logged"}{/* COMPLIANCE PENDING */}
+                              </p>
+                            </div>
+                            <div
+                              className="rounded-md bg-white/[0.03] border border-white/8 px-3 py-2.5"
+                              data-testid="stat-recap-cycles"
+                            >
+                              <p className="text-xl font-semibold text-white">
+                                {recapStats.activeCycles}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {recapStats.activeCycles === 1
+                                  ? "active research cycle" // COMPLIANCE PENDING
+                                  : "active research cycles"}{/* COMPLIANCE PENDING */}
+                              </p>
+                            </div>
+                            <div
+                              className="rounded-md bg-white/[0.03] border border-white/8 px-3 py-2.5"
+                              data-testid="stat-recap-orders"
+                            >
+                              <p className="text-xl font-semibold text-white">
+                                {recapStats.ordersPlaced}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {recapStats.ordersPlaced === 1
+                                  ? "order placed" // COMPLIANCE PENDING
+                                  : "orders placed"}{/* COMPLIANCE PENDING */}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* CTA — soft label; does not promise a full Wrapped experience */}
+                          <Link href="/dashboard/summary">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full border border-[#21d8ff]/20 text-[#21d8ff] hover:text-[#21d8ff]"
+                              data-testid="button-recap-see-activity"
+                            >
+                              See recent activity{/* COMPLIANCE PENDING */}
+                              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
 
                   {/* ── 4. Research Tools Hub ──────────────────────────────────── */}
                   {/* 2-col grid: Stacks | Logbook, Cycles | Verify COA + full-width Academy row */}
