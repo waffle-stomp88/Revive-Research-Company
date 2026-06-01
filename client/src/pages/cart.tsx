@@ -501,9 +501,6 @@ export default function CartPage() {
                             {item.originalPrice && (
                               <span className="text-xs text-muted-foreground line-through">${item.originalPrice}</span>
                             )}
-                            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-xs px-2 py-0.5" data-testid={`badge-free-${item.productId}`}>
-                              <Gift className="h-3 w-3" />First Order Perk
-                            </Badge>
                           </div>
                         ) : (
                           <span
@@ -529,14 +526,19 @@ export default function CartPage() {
                           )}
                         </div>
                         {item.isFree ? (
-                          <Button
-                            variant="ghost" size="icon"
-                            className="text-muted-foreground hover:text-red-400 h-7 w-7"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
-                            data-testid={`button-decline-free-${item.productId}`}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
+                          <div className="flex items-center gap-1.5">
+                            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-free-${item.productId}`}>
+                              <Gift className="h-2.5 w-2.5" />First Order Perk
+                            </Badge>
+                            <Button
+                              variant="ghost" size="icon"
+                              className="text-muted-foreground hover:text-red-400 h-7 w-7"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); declineFreeItem(item.productId); }}
+                              data-testid={`button-decline-free-${item.productId}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
                         ) : (
                           <div className="flex items-center gap-1.5">
                             <div className="flex items-center border border-border rounded-md">
