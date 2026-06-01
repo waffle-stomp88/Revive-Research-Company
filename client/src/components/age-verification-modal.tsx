@@ -100,11 +100,11 @@ export function AgeVerificationModal() {
             <div className="p-3 sm:p-8">
 
               {/* 1. Logo */}
-              <div className="flex items-center justify-center mb-6 sm:mb-10">
+              <div className="flex items-center justify-center mb-5 sm:mb-8">
                 <motion.img
                   src={logoUrl}
                   alt="Revive Research"
-                  className="h-16 sm:h-24 object-contain"
+                  className="h-10 sm:h-20 object-contain"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
