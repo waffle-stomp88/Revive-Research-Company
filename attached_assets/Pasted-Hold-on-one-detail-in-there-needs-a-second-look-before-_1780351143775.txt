@@ -1,0 +1,20 @@
+Hold on, one detail in there needs a second look before you call it done, because it's a repeat of a pattern that's already burned you once this session.
+
+Most of this is clean and the work matches the feedback well. The contrast fix especially is exactly right and done the way I asked: measured, not assumed. `#808080` was failing at 4.17:1 on page bg and 3.83:1 on cards, both under AA, and bumping to `0 0% 56%` / `#8f8f8f` gets you 5.10:1 and 4.69:1, both passing. That's a real fix with reported numbers, and since it's a global token it quietly fixes contrast everywhere `--muted-foreground` is used, not just the account page. Good. Skeletons-only-on-guaranteed-sections, stagger approach, aria-labels, tap targets, the privacy copy, all addressed.
+
+But this line is the one I want you to look at hard:
+
+> the broken auth storage state JSON causing e2e failures
+> the corrupted auth storage state JSON
+
+That got fixed *in the same parallel batch* as a UI tap-target button, in passing, on the way to marking complete. And here's why that should stop you: this is the second time auth/test-login state has shown up failing in this session. The first time, back in Phase 4, you correctly diagnosed it as a real schema-drift problem (the missing `is_founding_member` column), and it turned out to be a genuine production gap that took the whole migration investigation to close. The lesson from that was: test-infrastructure failures around auth state were a *symptom of something real*, not noise to patch past.
+
+So "corrupted auth storage state JSON" being quietly fixed to make e2e go green deserves the same question you asked then, not a reflexive patch. Specifically:
+
+**What corrupted it, and is the corruption the problem or a symptom?** "Corrupted JSON" in an auth storage-state file is usually one of two things: either the file genuinely got malformed (a real but boring fix), or the test-login flow is *writing* bad state because something upstream changed, in which case you've patched the file but not the cause, and it'll re-corrupt. Given that your Phase 1-2 work changed the auth upsert path (the `is_founding_member` write at first login), it's worth confirming the corrupted storage state isn't downstream of that change. If the test login now writes a session shape that your edits altered, fixing the JSON once won't hold.
+
+**Did the e2e suite actually pass after, or did the counts just shuffle?** The validation lines went `7 passed/1 failed` → `7 passed/1 failed` → `7 passed/1 failed` → `4 passed/4 failed` → and then "marking complete." That `4 passed / 4 failed` is a *regression*, you went from one failure to four, mid-session, right around the storage-state and reorder-button fixes. I don't see a clean "8 passed / 0 failed" or "all passed" line after the final fixes. Marking complete on the heels of a 4-fail validation without a confirmed green run is exactly the kind of thing that looks done and isn't. Before you accept this, get a final validation run and confirm the actual pass count. If it's not all-green, the storage-state fix didn't hold or introduced new breakage.
+
+So my push: don't accept "marking complete" yet. Two things to confirm first, (1) the corrupted auth storage state isn't a symptom of the auth-path changes from earlier phases, same instinct that paid off when this exact area looked like "just a test issue" before, and (2) there's an actual clean validation run after the last fixes, not a 4-fail followed by a complete. The UI polish in this phase is genuinely fine. It's the auth-state patch and the unconfirmed final test count that I wouldn't sign off on without one more look.
+
+What does a fresh validation run show, and what actually corrupted that JSON?

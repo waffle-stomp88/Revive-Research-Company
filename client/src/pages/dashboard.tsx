@@ -107,12 +107,12 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 },
+    transition: { staggerChildren: 0.06 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
@@ -229,7 +229,7 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const { data: researchProfile } = useQuery<{
+  const { data: researchProfile, isLoading: researchProfileLoading } = useQuery<{
     phase: ResearchPhase;
     title: ResearchTitle;
     educationCount: number;
@@ -247,7 +247,7 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const { data: logbookEntries } = useQuery<{
+  const { data: logbookEntries, isLoading: logbookEntriesLoading } = useQuery<{
     id: string;
     productId: string | null;
     tags: string[] | null;
@@ -946,7 +946,7 @@ export default function Dashboard() {
                           data-testid="banner-reorder-nudge"
                           aria-label={`Restock reminder for ${top.name}`}
                         >
-                          <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#D4FF1F]/[0.06] border border-[#D4FF1F]/20 hover:bg-[#D4FF1F]/[0.10] transition-colors">
+                          <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#D4FF1F]/[0.06] border border-[#D4FF1F]/20 hover:bg-[#D4FF1F]/[0.10] transition-colors min-h-[48px]">
                             <Bell className="h-4 w-4 text-[#D4FF1F] shrink-0" />
                             <p className="text-sm text-[#D4FF1F]/90 flex-1 min-w-0">
                               {/* COMPLIANCE PENDING */}
@@ -962,7 +962,22 @@ export default function Dashboard() {
                   })()}
 
                   {/* ── 1. Order Again / Get Started ──────────────────────────── */}
-                  {isEmpty ? (
+                  {ordersLoading ? (
+                    /* ── Skeleton: resolves to Order Again row once orders load ── */
+                    <motion.div variants={itemVariants}>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between px-0.5">
+                          <Skeleton className="h-3.5 w-24" />
+                          <Skeleton className="h-3.5 w-16" />
+                        </div>
+                        <div className="flex gap-3 overflow-hidden">
+                          {[1, 2, 3].map((i) => (
+                            <Skeleton key={i} className="h-[152px] w-48 shrink-0 rounded-lg" />
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : isEmpty ? (
                     /* ── Empty state: first-order prompt ── */
                     <motion.div variants={itemVariants}>
                       <Card className="border-white/10 bg-white/[0.03]">
@@ -1000,7 +1015,7 @@ export default function Dashboard() {
                         </h2>
                         <Link
                           href="#section-orders"
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-0.5"
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-0.5 min-h-[48px] px-1"
                           data-testid="link-all-orders"
                         >
                           All orders
@@ -1049,9 +1064,8 @@ export default function Dashboard() {
                                   </p>
                                 </div>
                                 <Button
-                                  size="sm"
                                   variant="outline"
-                                  className="w-full border-white/15 text-xs"
+                                  className="w-full border-white/15 text-xs min-h-[48px]"
                                   onClick={() => handleReorder(order)}
                                   data-testid={`button-reorder-${product.id}`}
                                 >
@@ -1068,6 +1082,28 @@ export default function Dashboard() {
 
                   {/* ── 2. Your Research Standing ──────────────────────────────── */}
                   {/* Chartreuse border glow is ONLY on this card — nowhere else in the section */}
+                  {ordersLoading ? (
+                    <motion.div variants={itemVariants}>
+                      <Card className="border-[#D4FF1F]/25 bg-white/[0.03] shadow-[0_0_24px_0_rgba(212,255,31,0.06)]">
+                        <CardContent className="p-5 space-y-3">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-1.5">
+                              <Skeleton className="h-3 w-36" />
+                              <Skeleton className="h-7 w-44" />
+                            </div>
+                            <Skeleton className="h-3 w-16 mt-1 shrink-0" />
+                          </div>
+                          <Skeleton className="h-1.5 w-full rounded-full" />
+                          <Skeleton className="h-3 w-56" />
+                          <div className="flex gap-2 pt-1">
+                            {[1, 2, 3].map((i) => (
+                              <Skeleton key={i} className="h-5 w-14 rounded-md" />
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ) : (
                   <motion.div variants={itemVariants}>
                     <Card
                       className="border-[#D4FF1F]/25 bg-white/[0.03] shadow-[0_0_24px_0_rgba(212,255,31,0.06)]"
@@ -1130,9 +1166,24 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   </motion.div>
+                  )}
 
                   {/* ── 3. Continue / Start Here ───────────────────────────────── */}
                   {/* Decision is driven by currentModuleId (in-progress module), NOT completedLessons.length */}
+                  {researchProfileLoading ? (
+                    <motion.div variants={itemVariants}>
+                      <Card className="border-white/10 bg-white/[0.03]">
+                        <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                          <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                          <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-36" />
+                            <Skeleton className="h-3 w-52" />
+                          </div>
+                          <Skeleton className="h-9 w-28 shrink-0 rounded-md" />
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ) : (
                   <motion.div variants={itemVariants}>
                     <Card className="border-white/10 bg-white/[0.03]" data-testid="card-continue-here">
                       <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -1184,11 +1235,31 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   </motion.div>
+                  )}
 
                   {/* ── 3b. Research Summary Recap Card (data-gated) ───────────── */}
-                  {/* Renders only when lifetime logbook entries >= RECAP_ENTRY_THRESHOLD.
-                      No placeholder shown below threshold — card is simply absent. */}
-                  {showRecap && (
+                  {/* Shows skeleton while logbook data loads; once resolved, renders only
+                      when lifetime entries >= RECAP_ENTRY_THRESHOLD — otherwise absent. */}
+                  {logbookEntriesLoading ? (
+                    <motion.div variants={itemVariants}>
+                      <Card className="border-[#21d8ff]/25 bg-white/[0.03]">
+                        <CardContent className="p-5 space-y-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-1.5">
+                              <Skeleton className="h-3 w-36" />
+                              <Skeleton className="h-5 w-44" />
+                            </div>
+                            <Skeleton className="h-5 w-14 rounded-md" />
+                          </div>
+                          <div className="grid grid-cols-3 gap-3">
+                            {[1, 2, 3].map((i) => (
+                              <Skeleton key={i} className="h-12 rounded-lg" />
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ) : showRecap && (
                     <motion.div variants={itemVariants}>
                       <Card
                         className="border-[#21d8ff]/25 bg-white/[0.03] shadow-[0_0_20px_0_rgba(33,216,255,0.05)]"
@@ -1328,7 +1399,7 @@ export default function Dashboard() {
                                 {logbookCount === 0 ? 'Log your first entry' : `${logbookCount} entr${logbookCount === 1 ? 'y' : 'ies'}`}
                               </p>
                               <p className="text-[10px] text-muted-foreground/60 mt-0.5 leading-tight" data-testid="text-tool-logbook-privacy">
-                                Private · wiped from Settings · not a medical record
+                                Private to you · wiped from Settings · not a medical record
                               </p>
                             </div>
                             <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -1444,9 +1515,13 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium">My Orders</p>
-                          <p className="text-xs text-muted-foreground">
-                            {orderCount === 0 ? 'No orders yet' : `${orderCount} order${orderCount !== 1 ? 's' : ''}`}
-                          </p>
+                          {ordersLoading ? (
+                            <Skeleton className="h-3 w-24 mt-0.5" />
+                          ) : (
+                            <p className="text-xs text-muted-foreground">
+                              {orderCount === 0 ? 'No orders yet' : `${orderCount} order${orderCount !== 1 ? 's' : ''}`}
+                            </p>
+                          )}
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                       </button>
@@ -1462,10 +1537,14 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium">Your Benefits</p>
-                          <p className="text-xs text-muted-foreground">
-                            {isFoundingMember ? 'Founding member perks active' : 'Loyalty rewards & perks'}
-                            {/* COMPLIANCE PENDING */}
-                          </p>
+                          {ordersLoading ? (
+                            <Skeleton className="h-3 w-32 mt-0.5" />
+                          ) : (
+                            <p className="text-xs text-muted-foreground">
+                              {isFoundingMember ? 'Founding member perks active' : 'Loyalty rewards & perks'}
+                              {/* COMPLIANCE PENDING */}
+                            </p>
+                          )}
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                       </Link>
@@ -1623,7 +1702,7 @@ export default function Dashboard() {
                                     <Button 
                                       size="sm" 
                                       variant="ghost" 
-                                      className="text-[#21d8ff]"
+                                      className="text-[#21d8ff] min-h-[48px]"
                                       onClick={() => handleReorder(order)}
                                       data-testid={`button-reorder-${order.id}`}
                                     >
@@ -1788,7 +1867,8 @@ export default function Dashboard() {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className="border-red-500/20 text-red-400"
+                                  className="border-red-500/20 text-red-400 min-h-[48px] min-w-[48px]"
+                                  aria-label={`Delete stack "${stack.name}"`}
                                   onClick={() => {
                                     if (confirm(`Delete "${stack.name}"? This action cannot be undone.`)) {
                                       deleteStackMutation.mutate(stack.id);
@@ -1885,7 +1965,8 @@ export default function Dashboard() {
                                 <Button
                                   variant="outline"
                                   size="icon"
-                                  className="border-red-500/20 text-red-400"
+                                  className="border-red-500/20 text-red-400 min-h-[48px] min-w-[48px]"
+                                  aria-label={`Remove community stack "${stack.name}"`}
                                   onClick={() => {
                                     if (confirm(`Remove "${stack.name}" from your collection? This action cannot be undone.`)) {
                                       deleteStackMutation.mutate(stack.id);
@@ -2075,17 +2156,12 @@ export default function Dashboard() {
                                 style={badge.earned ? { borderColor: `${badge.color}66`, backgroundColor: `${badge.color}15` } : undefined}
                                 data-testid={`badge-education-${badge.id}`}
                               >
-                                <motion.div 
+                                <div 
                                   className="p-2 rounded-full" 
                                   style={badge.earned ? { backgroundColor: `${badge.color}25` } : { backgroundColor: 'hsl(var(--muted)/0.3)' }}
-                                  animate={badge.earned ? { 
-                                    scale: [1, 1.15, 1],
-                                    boxShadow: [`0 0 0px rgba(${hexToRgb(badge.color)}, 0)`, `0 0 15px rgba(${hexToRgb(badge.color)}, 0.6)`, `0 0 0px rgba(${hexToRgb(badge.color)}, 0)`]
-                                  } : {}}
-                                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
                                 >
                                   <Icon className="h-5 w-5" style={{ color: badge.earned ? badge.color : 'hsl(var(--muted-foreground))' }} />
-                                </motion.div>
+                                </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-1.5">
                                     <p className="font-medium text-sm">{badge.title}</p>
@@ -2179,10 +2255,10 @@ export default function Dashboard() {
                                 </Link>
                                 <p className="text-xs text-muted-foreground">${Math.round(Number(product.price))}</p>
                               </div>
-                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} className="shrink-0" data-testid={`button-add-to-cart-${product.id}`}>
+                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} className="shrink-0 min-h-[48px] min-w-[48px]" aria-label={`Add ${product.name} to cart`} data-testid={`button-add-to-cart-${product.id}`}>
                                 <Plus className="h-4 w-4" />
                               </Button>
-                              <Button size="icon" variant="ghost" className="text-muted-foreground shrink-0" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
+                              <Button size="icon" variant="ghost" className="text-muted-foreground shrink-0 min-h-[48px] min-w-[48px]" onClick={() => removeMutation.mutate(product.id)} aria-label={`Remove ${product.name} from wishlist`} data-testid={`button-remove-wishlist-${product.id}`}>
                                 <X className="h-4 w-4" />
                               </Button>
                             </div>
@@ -2212,13 +2288,9 @@ export default function Dashboard() {
                     <div className="absolute top-0 right-0 w-40 h-40 bg-[#f97316]/20 rounded-full blur-3xl" />
                     <CardContent className="p-5">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <motion.div 
-                          className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#D4FF1F]/20 shadow-lg"
-                          animate={{ rotate: [0, 5, -5, 0] }}
-                          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                        >
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#D4FF1F]/20 shadow-lg">
                           <Brain className="h-7 w-7 text-[#f97316]" />
-                        </motion.div>
+                        </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
                             Research Knowledge Quiz
