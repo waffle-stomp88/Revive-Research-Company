@@ -85,7 +85,18 @@ export async function generateCoaPreview(
 ): Promise<string | null> {
   try {
     const svc = new ObjectStorageService();
-    const file = await svc.getObjectEntityFile(imageUrl);
+
+    // imageUrl may be a full GCS HTTPS URL or an /objects/ path.
+    // getObjectEntityFile requires /objects/ form — normalize first.
+    let normalizedPath: string;
+    try {
+      normalizedPath = svc.normalizeObjectEntityPath(imageUrl);
+    } catch (normErr) {
+      console.warn(`[coaPreview] Cannot normalize imageUrl "${imageUrl}":`, (normErr as Error)?.message ?? normErr);
+      return null;
+    }
+
+    const file = await svc.getObjectEntityFile(normalizedPath);
     const [downloaded] = await file.download();
     const buf = Buffer.from(downloaded);
 
