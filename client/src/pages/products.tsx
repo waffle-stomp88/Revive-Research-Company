@@ -1059,6 +1059,11 @@ function ProductsComponent() {
                                       <span className="sm:hidden">BAC WATER</span>
                                       <span className="hidden sm:inline">{product.name}</span>
                                     </>
+                                  ) : /acetic acid/i.test(product.name) ? (
+                                    <>
+                                      <span className="sm:hidden">AA WATER</span>
+                                      <span className="hidden sm:inline">{product.name}</span>
+                                    </>
                                   ) : product.name}
                                 </h3>
                                 <p className="hidden sm:block text-muted-foreground/70 sm:mb-1 line-clamp-1 text-center text-[11px]">
