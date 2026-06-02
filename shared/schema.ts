@@ -209,9 +209,12 @@ export const orders = pgTable("orders", {
   // Test/sandbox indicator - true for PayPal sandbox or test orders
   isTest: boolean("is_test").default(false),
   // batchNumber is a POST-FULFILLMENT admin attribute — never set at checkout.
-  // It is assigned by the admin at ship time from the active batch for the product.
-  // For multi-item orders, one batch covers the whole order (order-level granularity).
-  // Per-item batchNumber is deferred to task #1045 (COA auto-assign logic).
+  // It is auto-stamped at ship time: if exactly one active batch exists for the
+  // order's productId, that batch is stamped; 0 or 2+ active batches → null
+  // (falls back to product-level COA). See routes.ts fulfillment PATCH handler.
+  // For genuine multi-item orders (productId = 'multi-item'), auto-assign is skipped
+  // and the order falls back to the product-level COA (B2 state). Per-item
+  // batchNumber tracking is a future enhancement, not currently implemented.
   batchNumber: text("batch_number"),
   // Full cart line items stored at checkout time.
   //
