@@ -1,17 +1,14 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useEffect, useMemo, lazy, Suspense } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Package,
   FileCheck,
@@ -23,49 +20,20 @@ import {
   GraduationCap,
   Clock,
   Truck,
-  Trophy,
   Crown,
   RefreshCw,
   Sparkles,
   ChevronRight,
   Boxes,
   Settings,
-  Home,
   Diamond,
   FlaskConical,
   Bell,
   Lock,
   FileText,
   Activity,
-  ShieldCheck,
-  Calendar,
-  Plus,
-  ExternalLink,
-  Trash2,
-  Users,
-  BookMarked,
-  HelpCircle,
-  Zap,
-  Shield,
-  Heart,
-  X,
-  Bookmark,
-  Brain,
-  User,
-  MessageSquare,
-  Mail,
-  Smartphone,
-  AlertTriangle,
-  Monitor,
-  Award,
-  MapPin,
-  Edit3,
-  History as HistoryIcon,
 } from "lucide-react";
-import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-
-import { CompoundFinder } from "@/components/compound-finder";
+import type { Order, Product, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
 
 // Extended Order type returned by /api/orders/my-orders — includes server-side
 // COA existence check so the client never shows a broken batch-level link.
