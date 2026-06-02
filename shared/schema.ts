@@ -208,10 +208,24 @@ export const orders = pgTable("orders", {
   paypalCapturedAmount: decimal("paypal_captured_amount", { precision: 10, scale: 2 }),
   // Test/sandbox indicator - true for PayPal sandbox or test orders
   isTest: boolean("is_test").default(false),
-  // Batch/lot number linked at fulfillment time (optional; enables B1 COA link)
+  // batchNumber is a POST-FULFILLMENT admin attribute — never set at checkout.
+  // It is assigned by the admin at ship time from the active batch for the product.
+  // For multi-item orders, one batch covers the whole order (order-level granularity).
+  // Per-item batchNumber is deferred to task #1045 (COA auto-assign logic).
   batchNumber: text("batch_number"),
-  // Full cart line items stored at checkout time
-  // Array<{ productId, name, dosage?, quantity, unitPrice }>
+  // Full cart line items stored at checkout time.
+  //
+  // CANONICAL SHAPE: Array<{ productId, name, dosage?, quantity, unitPrice }>
+  //   - productId: the product's UUID from the products table
+  //   - name: the real product name at time of order (never a raw UUID)
+  //   - dosage: optional vial size / concentration string (e.g. "5mg")
+  //   - quantity: positive integer — number of units ordered for this line
+  //   - unitPrice: the ACTUAL per-unit price charged at checkout (dollars, 2dp).
+  //               Stored at order creation time. NEVER derived from totalAmount.
+  //               For pack-tier discounts, this is the post-discount per-unit price.
+  //
+  // Both write paths (admin manual order and PayPal capture) populate this array
+  // with one entry per distinct cart product before persisting the order row.
   items: jsonb("items").$type<Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }>>().default(sql`'[]'::jsonb`),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -668,53 +682,17 @@ export const insertWishlistSchema = createInsertSchema(wishlists).omit({ id: tru
 export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
 export type Wishlist = typeof wishlists.$inferSelect;
 
-// Subscriptions table - Track PayPal subscriptions
-export const subscriptionFrequencyEnum = ["weekly", "biweekly", "monthly"] as const;
-export const subscriptionStatusEnum = ["pending", "active", "cancelled", "suspended", "expired"] as const;
-
-export const subscriptions = pgTable("subscriptions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  // PayPal subscription details
-  paypalSubscriptionId: varchar("paypal_subscription_id").unique(),
-  paypalPlanId: varchar("paypal_plan_id"),
-  paypalProductId: varchar("paypal_product_id"),
-  // Subscription configuration
-  frequency: text("frequency").notNull(), // weekly, biweekly, monthly
-  status: text("status").default("pending"), // pending, active, cancelled, suspended, expired
-  // Pricing
-  basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
-  discountPercent: decimal("discount_percent", { precision: 5, scale: 2 }).notNull(),
-  finalPrice: decimal("final_price", { precision: 10, scale: 2 }).notNull(),
-  // Product details (JSON for flexibility - can have multiple products)
-  items: jsonb("items").$type<Array<{
-    productId: string;
-    productName: string;
-    dosage?: string;
-    quantity: number;
-    price: number;
-  }>>(),
-  // Shipping info
-  shippingAddress: jsonb("shipping_address").$type<{
-    firstName: string;
-    lastName: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  }>(),
-  // Timestamps
-  nextBillingDate: timestamp("next_billing_date"),
-  lastBilledAt: timestamp("last_billed_at"),
-  cancelledAt: timestamp("cancelled_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({ id: true, createdAt: true, updatedAt: true });
-export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
-export type Subscription = typeof subscriptions.$inferSelect;
+// NOTE: The Neon database contains a `subscriptions` table, but it is NOT owned
+// by this application. It is a Stripe-sync table managed by an external service
+// (columns include _raw_data, _last_synced_at, livemode, customer, plan, id).
+// The source of that sync is unconfirmed — worth investigating if Stripe is ever
+// used intentionally. DO NOT DROP or ALTER that table; it is externally managed.
+//
+// The PayPal-shaped Drizzle ORM definition that previously mapped app columns
+// onto that Stripe-sync table has been removed. The business does not currently
+// do subscriptions, and the phantom definition caused incorrect DB queries.
+// The /api/user/subscriptions endpoint returns [] and /api/subscriptions/cancel
+// returns 404 until subscriptions are formally scoped.
 
 // Saved Addresses table - Multiple addresses per user
 export const savedAddresses = pgTable("saved_addresses", {
