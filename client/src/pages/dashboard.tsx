@@ -1165,14 +1165,26 @@ export default function Dashboard() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      <p className="font-medium truncate">{getProductName(order.productId)}</p>
+                                      {order.items && order.items.length > 0 ? (
+                                        <p className="font-medium truncate">
+                                          {order.items.length === 1
+                                            ? order.items[0].name
+                                            : `${order.items.length} items`}
+                                        </p>
+                                      ) : (
+                                        <p className="font-medium truncate">{getProductName(order.productId)}</p>
+                                      )}
                                       <span className="text-xs text-muted-foreground font-mono">{getOrderNumber(order.id)}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
                                       <Calendar className="h-3 w-3" />
                                       <span>{formatDate(order.createdAt)}</span>
-                                      <span>•</span>
-                                      <span>Qty: {order.quantity}</span>
+                                      {(!order.items || order.items.length === 0) && (
+                                        <>
+                                          <span>•</span>
+                                          <span>Qty: {order.quantity}</span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                   <div className="text-right shrink-0">
@@ -1189,6 +1201,26 @@ export default function Dashboard() {
                                     </Button>
                                   </div>
                                 </div>
+
+                                {/* Line items breakdown — shown when order.items is populated */}
+                                {order.items && order.items.length > 0 && (
+                                  <div className="mb-3 rounded-md border border-white/8 bg-white/[0.03] divide-y divide-white/8" data-testid={`order-line-items-${order.id}`}>
+                                    {order.items.map((item, itemIdx) => (
+                                      <div key={itemIdx} className="flex items-center justify-between gap-3 px-3 py-2.5" data-testid={`order-line-item-${order.id}-${itemIdx}`}>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-sm font-medium truncate">{item.name}</p>
+                                          {item.dosage && (
+                                            <p className="text-xs text-muted-foreground">{item.dosage}</p>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-4 shrink-0 text-sm text-muted-foreground">
+                                          <span data-testid={`order-line-item-qty-${order.id}-${itemIdx}`}>×{item.quantity}</span>
+                                          <span className="font-medium text-foreground" data-testid={`order-line-item-price-${order.id}-${itemIdx}`}>${Number(item.unitPrice).toFixed(2)}</span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
 
                                 {order.trackingNumber && order.carrier && (
                                   <div className="p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 mb-3" data-testid={`tracking-info-${order.id}`}>
