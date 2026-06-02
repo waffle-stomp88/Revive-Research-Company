@@ -567,8 +567,7 @@ export default function Dashboard() {
                               Place your first order{/* COMPLIANCE PENDING */}
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                              {/* COMPLIANCE PENDING: founding-member offer & "25% off for life" copy needs legal review */}
-                              The first 50 customers receive Founding Member status — a permanent 25% discount on every future order.{/* COMPLIANCE PENDING */}
+                              The first 50 customers receive exclusive Founding Member status.
                             </p>
                           </div>
                           <Link href="/peptides">
@@ -1112,8 +1111,7 @@ export default function Dashboard() {
                             <Skeleton className="h-3 w-32 mt-0.5" />
                           ) : (
                             <p className="text-xs text-muted-foreground">
-                              {isFoundingMember ? 'Founding member perks active' : 'Loyalty rewards & perks'}
-                              {/* COMPLIANCE PENDING */}
+                              {isFoundingMember ? 'Founding member status' : 'Loyalty rewards & perks'}
                             </p>
                           )}
                         </div>
