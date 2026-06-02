@@ -1,0 +1,50 @@
+# dashboard.tsx — repair undefined references left by the Phase 2.5 refactor
+
+## Run AFTER #1068 (foundation validation) completes. Do not fold into #1068.
+#1068 is clean and de-risked on its own scope (it only touches shared/schema.ts and migration 008). This task is separate. Let #1068 finish and pass its two gates first, then run this. They don't conflict (different files), but they get verified separately.
+
+## Why this exists
+Commit archaeology found that the Phase 2.5 sub-pages refactor (commit `c5701b3c`) left dashboard.tsx with ~28 references to functions, hooks, mutations, and imports that are USED in the JSX but NEVER DEFINED or imported. The app runs in dev only because Vite doesn't enforce TypeScript at runtime — these are real broken code paths that will throw if exercised (order status bar, order-number display, carrier tracking link, stack toggle/delete, address CRUD, notification preferences). The Phase 2.5 "8/8 route walk" passed because it tested that pages MOUNT, not that every code path RESOLVES. TypeScript would have caught this; it wasn't being enforced as a gate.
+
+This is the classic "lose something in the move" risk from Phase 2.5: when sections moved out to sub-pages, dashboard.tsx kept dangling references to things that either moved with them or should have been deleted.
+
+## The confirmed missing names (from the TypeScript errors)
+**Missing function definitions (called in JSX, defined nowhere):**
+- `getStatusStep`, `getOrderNumber`, `getCarrierTrackingUrl`
+
+**Missing hooks / mutations / state (referenced, never declared):**
+- `toggleStackVisibilityMutation`, `deleteStackMutation`, `setDefaultAddressMutation`, `deleteAddressMutation`, `updateNotificationPrefsMutation`
+- `notificationPrefs`, `prefsLoading`, `batchHistory`, `badges`
+- (plus several `useState` setters referenced but not declared — enumerate from the TS errors)
+
+**Missing lucide-react imports:**
+- `Calendar`, `Plus`, `ExternalLink`, `Trash2`, `Users`, `BookMarked`, `HelpCircle`, `Zap`, `Shield`, `Heart`, `Mail`, `Smartphone`, `AlertTriangle`, `Edit3`, `MapPin`
+
+## CRITICAL: decide per-name — restore vs. delete. Do NOT blindly re-add everything.
+This is the core of the task. For EACH missing reference, the Phase 2.5 refactor moved its owning section to a sub-page. So the question per name is:
+
+- **Did the FEATURE move to a sub-page?** → then dashboard.tsx should NOT reference it at all. The reference is leftover/dead and should be DELETED, not defined. (e.g. if stack toggle/delete now lives on `/dashboard/stacks`, dashboard.tsx shouldn't have those mutations — remove the dead JSX that references them.)
+- **Does dashboard.tsx (the account home) still legitimately render this?** → then the function/hook/import is genuinely needed and should be RESTORED (define the function, declare the hook, add the import).
+
+Blindly re-adding all 28 would re-introduce code that was correctly removed and recreate the long-page problem. Each name needs the judgment: is this reference dead (delete) or live (restore)?
+
+Cross-check against the sub-pages: if a name's logic already exists in a sub-page (e.g. `dashboard-stacks.tsx` has the stack mutations), that confirms the dashboard.tsx reference is dead and should be deleted.
+
+## Steps
+1. **Enumerate** — get the full, exact list of TypeScript errors in dashboard.tsx (`tsc --noEmit` or the editor's check). Confirm the complete set of missing names, including any not listed above.
+2. **Classify each name** — for each missing reference, determine whether its owning feature moved to a sub-page (→ delete the dead reference + its JSX) or still belongs on the account home (→ restore the definition/import). Cross-reference the 7 sub-page files to confirm where each feature actually lives now.
+3. **Apply** — delete dead references and their orphaned JSX; restore genuinely-needed functions, hooks, mutations, and imports. Lucide imports for icons that are still legitimately used on the home get added; icons only used by now-moved sections get neither imported nor referenced (delete the reference).
+4. **Verify TypeScript is clean** — `tsc --noEmit` shows ZERO errors in dashboard.tsx. This is the hard gate. Not "it loads in dev" — actual zero TS errors.
+5. **Reverse-check the sub-pages** — quick check that the 7 sub-pages don't have the same problem in reverse (referencing things that stayed on the home and are now undefined there). The Phase 2.5 move could have broken references in both directions.
+6. **Browser-verify the repaired paths** — load the account home and exercise the paths that were broken: order status bar renders, order number shows, any home-level buttons work. For anything that was correctly deleted (moved to a sub-page), confirm the sub-page still has it working.
+
+## Hard gate
+- **`tsc --noEmit` reports ZERO TypeScript errors in dashboard.tsx.** Show the actual command output, not a summary. This is the gate the Phase 2.5 "8/8 walk" should have been but wasn't.
+
+## Out of scope
+- Redesigning the account home or any sub-page
+- New features
+- #1068's foundation work (separate, runs first)
+
+## Note on why this slipped through
+The Phase 2.5 verification was a route-mount walk (pages load = pass). It cannot catch undefined references in code paths that aren't exercised on mount. TypeScript can and does. Going forward, TS-clean should be a gate on any refactor that moves code between files, "it mounts" is necessary but not sufficient.

@@ -1,0 +1,21 @@
+Right call, and to be clear about what that means in practice so it actually happens rather than becoming a vague "we'll check later":
+
+You're choosing the first-real-buyer path. So #1068 closes now on everything that's already done (migration 008 clean, subscriptions removed, schema documented, gate #2 passed, e2e suite once Replit's back in Build mode), and the PayPal `items` write becomes a **verified-on-first-real-order** item rather than code-inspection-only. The key is that it's a *hard, owned checklist item*, not a hope.
+
+Here's the message to send Replit so it closes #1068 correctly and doesn't quietly mark the PayPal gate "passed" on code inspection:
+
+> Close #1068 on the completed items (migration 008, subscriptions removal, schema docs, gate #2, e2e suite). Do NOT mark Gate #1 (PayPal items write) as passed. Mark it explicitly as DEFERRED — to be verified on the first real PayPal order, before launch. Add it as a pre-launch checklist item with the exact query to run: pull that order's row and confirm the `items` array has one entry per product with real product names (not UUIDs), correct quantities, server-computed per-item `unitPrice` (not total ÷ quantity), and that the sum of unitPrice × quantity reconciles to the order total. Until that check passes on a real order, Gate #1 is open, not closed.
+
+That wording matters because it keeps the gate honest. The risk with "we'll check the first order" is that the first order comes through during the chaos of launch, nobody remembers to query the row, and the unverified path just silently becomes "production." Writing the exact query into the checklist now means whoever places that first order (you) knows precisely what to look at.
+
+One thing to set up so this is easy on yourself: since you're pre-launch, **place that first order yourself, deliberately, before you open to real customers.** Don't wait for an organic customer order to be your test. Buy 2-3 products through the real PayPal flow as your own first transaction, then run the query (or have Replit run it) on that row. That way the gate gets met by *your* controlled order, before any real customer, and if something's wrong you find it in a transaction you placed on purpose, not in a stranger's first purchase.
+
+So the state after this:
+
+- **#1068 closes** with Gate #1 marked deferred-to-first-real-order, not passed.
+- **Your pre-launch checklist** gains one hard item: place a real multi-product PayPal order, query the row, confirm `items` is correct.
+- **#1069** (the dashboard.tsx repair, ~60 references) runs next, with its `tsc`-clean gate.
+
+That's a clean place to land. You protected prod, you didn't close the most important gate on code-inspection-only, and you turned it into a real verification that happens on a real order you control before launch.
+
+Send Replit the close-with-deferred-gate message, let it wrap #1068 and run the e2e suite, then move to #1069. When #1069 reports done, the show-me is the `tsc --noEmit` output with zero errors. And keep that PayPal first-order check somewhere you'll actually see it at launch, it's the last piece of the foundation, just verified later instead of now.
