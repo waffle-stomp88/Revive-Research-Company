@@ -1,0 +1,23 @@
+Good investigation, and one of those three findings is more important than it looks, so let me make sure it gets handled right before the plan locks.
+
+**The subscriptions answer is exactly what you needed, and it changes the action correctly.** The Neon `subscriptions` table is a Stripe sync table (`_raw_data`, `_last_synced_at`, `livemode`, `customer`, `plan`), managed by an external Stripe sync service, not your app migrations. So the table itself **must stay** (something external writes to it), and what gets removed is only the app's wrong Drizzle ORM definition that maps PayPal columns onto it, plus the endpoint/UI that queries it. That's the "don't drop blind" guard paying off, if you'd deleted the table, you'd have broken an external sync. Confirmed: remove the ORM mapping and the app code, leave the table. Make sure the plan says exactly that and doesn't let any "clean up the subscriptions table" instruction slip in.
+
+But this raises one small follow-up worth a sentence in the plan: *why* is a Stripe sync running at all if you don't do subscriptions? Not something to fix now, but worth you knowing, it suggests there's a Stripe integration somewhere syncing data into your DB. Probably benign (leftover, or syncing for some other reason), but "an external service is writing a table into my DB and I'm not sure why" is the kind of thing to have an answer to eventually. Flag it as a question, not a task.
+
+**The two `006_` files is the finding I want you to slow down on, because renumbering a migration is not as safe as it sounds.** You have `006_add_batch_number_to_orders.sql` AND `006_add_order_items.sql`, a numbering collision. The instinct is "renumber one to 008." Here's the trap: **the migration runner tracks applied migrations by filename in `schema_migrations`.** If `006_add_order_items.sql` has already run and been recorded under that filename on dev (and possibly prod), and you rename it to `008_add_order_items.sql`, the runner now sees `008_...` as a *new, unapplied* migration and tries to run it again, while the old `006_...` record points at a file that no longer exists. Depending on how the runner behaves, you either get a re-run (hopefully idempotent, so harmless) or a tracking-state mismatch that's exactly the journal-divergence mess you spent hours untangling earlier this session.
+
+So renumbering a migration that's *already been applied somewhere* is risky. Before the plan renames anything, answer: **have both 006 files already run and been recorded in `schema_migrations` on dev and prod?**
+
+- If **neither has been applied anywhere** (purely local, uncommitted, never run) → renaming is safe, just rename one to the next free number.
+- If **either has already run and is recorded** → renaming changes its tracking identity and the runner may re-run or lose track of it. In that case the safer move is *not* to rename the file but to reconcile carefully: keep the filenames as-is if the runner can tolerate the collision, or rename AND update the `schema_migrations` record to match, in one coordinated step, so tracking stays consistent.
+
+Given how the `is_founding_member` / two-systems saga went, I would not let "just renumber the collision" go into the plan without first confirming the applied-state of both files. The collision is real and does need fixing, but *how* you fix it depends entirely on whether those migrations have already run and been recorded. Renaming a recorded migration is how you manufacture a fresh tracking divergence.
+
+**The UUID-as-name backfill is confirmed and straightforward**, both 006 and 007 stored `product_id` as the `name`. Corrective migration to resolve UUIDs to real product names, fallback for deleted products, idempotent, in `server/migrations/`. That one's clean, no hidden trap, just make sure the corrective migration itself gets a non-colliding number (which loops back to fixing the collision first).
+
+So before the plan finalizes, two confirmations:
+
+1. **Applied-state of both `006_` files** on dev and prod, because that determines whether renumbering is a safe rename or a tracking-divergence risk. Don't renumber a recorded migration without reconciling its `schema_migrations` record in the same step.
+2. **Plan says explicitly: remove the subscriptions ORM mapping + endpoint + UI, but DO NOT touch the Stripe-synced table** (external service owns it).
+
+The subscriptions and UUID findings are ready to go into the plan as-is. The renumbering one needs the applied-state check first, because "fix the collision by renaming" is the kind of move that looks trivial and recreates the exact migration-tracking problem you already paid to fix once. What's the applied-state of the two 006 files?

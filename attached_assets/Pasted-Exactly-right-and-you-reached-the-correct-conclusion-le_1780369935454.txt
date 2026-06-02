@@ -1,0 +1,19 @@
+Exactly right, and you reached the correct conclusion: **leave both `006_` filenames alone.** That's the answer the data forces. Both are recorded by their current filenames, so renaming either changes its tracking identity, the runner sees the new name as unapplied, and you've manufactured a re-run or a tracking divergence, the precise mess you already paid to fix once this session. The collision is cosmetic, and the fix is to *not* fix it. New migrations start at `008_` and stay clear.
+
+One small thing to verify so the "cosmetic, no consequence" conclusion fully holds, the fresh-DB ordering. You noted that on a fresh database they run in alphabetical order: `006_add_batch_number_to_orders.sql` before `006_add_order_items.sql`. Two quick confirmations on that:
+
+First, confirm the runner actually sorts the two same-numbered files **deterministically** (alphabetically by full filename), and not by filesystem read order, which can vary by environment. If it's filesystem-order rather than a stable sort, two files sharing `006_` could theoretically run in different orders on different machines. You said alphabetical, just confirm that's the runner's actual sort logic, not an assumption, because "same prefix, undefined tiebreak" is the kind of thing that's fine on dev and surprises you on a fresh prod build. If the runner does a stable alphabetical sort on the full filename, you're genuinely fine and it's truly cosmetic.
+
+Second, you said there's no dependency between the two 006 files (batch_number vs order_items, both additive `ALTER TABLE`s on orders, independent columns). Confirm that's actually true, that neither references the other's column, so order genuinely doesn't matter. If they're independent additive columns, the ordering question is moot regardless and you're doubly safe. From what you've described they are, just confirm it so "no dependency" is verified, not assumed.
+
+If both check out, stable alphabetical sort and genuinely independent columns, then the collision is confirmed harmless and leaving it is unambiguously correct. If the sort is filesystem-dependent, you'd want a tiny note in the plan that the two are order-independent so nobody panics about it later, but you still don't rename them.
+
+The rest is locked and correct:
+
+- **Subscriptions:** remove the ORM mapping + endpoint + UI, leave the Stripe-synced table (external service owns it). Confirmed.
+- **UUID-as-name backfill:** corrective migration, numbered `008_`+, idempotent, in `server/migrations/`, resolves UUIDs to real names with a fallback for deleted products.
+- **Collision:** leave both `006_` files as-is; new work starts at `008_`.
+
+So the plan's solid. Just fold in the two confirmations on the 006 ordering (stable sort + independent columns) so "cosmetic, no consequence" is verified rather than assumed, and add the one-line flag I mentioned earlier: *why does a Stripe sync run at all if you don't do subscriptions?*, as a question to answer eventually, not a task for now.
+
+Write the plan. The hard gates when it runs are still the same two: the real multi-item order writing correct data with stored per-item prices (#2), and the `/dashboard/orders` 500 disappearing from server logs after the subscriptions removal (#6). Everything else is now de-risked.

@@ -1,0 +1,66 @@
+# Order `items` — foundation validation (do this BEFORE more items-dependent features)
+
+## Why this exists
+The `items` JSONB column was added to orders without going through plan review, and since then it has produced: a data-model conflict (`batchNumber` vs `items`), a two-systems migration crash, a runtime "lazy is not defined" bug initially mislabeled transient, an untested forward-write path, and a related broken subscriptions path that 500s on every orders-page load. Each was fixed reactively, one crash at a time. The migration now applies cleanly and has a single owner (`server/migrations/006`) — but whether the DATA in `items` is trustworthy has never been validated. Multiple features (revenue reporting #1056, COA auto-assign #1045) already read from `items` and assume it's correct.
+
+This task validates the foundation ONCE, deliberately, so downstream work is safe. It replaces/absorbs the narrow follow-ups #1063 and #1064 — do this as one solid pass, not two patches.
+
+**Until this passes, do not build new features that read from `items`.**
+
+## The six things to settle
+
+### 1. Define the canonical `items` shape — with a REAL stored per-item price
+Currently the per-item price is DERIVED (`total_amount ÷ quantity`), which is meaningless for a multi-item order where products have different prices. The whole point of `items` is mixed-price line items, so each item must store its own real unit price at time of order.
+- Canonical item shape (confirm/adjust against schema): `{ productId, productName, quantity, unitPrice }` — unitPrice is the actual price charged for that line, stored, not derived.
+- `productName` must be the real product name, NOT the raw UUID (see #4).
+- Document this shape in shared/schema.ts as the source of truth.
+
+### 2. Live-test the forward-write path (highest-value check — never been done)
+- Place a REAL 2–3 product order in dev (manual order path or mock PayPal).
+- Inspect the DB row directly: confirm `items` contains one entry per distinct product, each with correct productId, real productName, correct quantity, and the real per-item unitPrice.
+- Confirm the order total equals the sum of (unitPrice × quantity) across items.
+- Confirm the admin order dialog renders all line items, and the shipping email lists all items.
+- This is the check that proves `items` actually works going forward. Everything downstream assumes it; nothing has proven it.
+
+### 3. Resolve the `batchNumber` + `items` conflict (blocks COA #1045)
+A single per-order `batchNumber` cannot represent a multi-item order where different products ship from different batches. Decide and implement ONE model:
+- **If orders are genuinely multi-product:** move batch INTO each item (`items[].batchNumber`), remove/deprecate the order-level `batchNumber`, and rework #1045's COA auto-assign to stamp per line item.
+- **If orders are effectively single-product** (one product per order in practice): keep order-level `batchNumber`, and treat `items` as a 1-entry array — but then be explicit that multi-item carts are NOT supported, and the cart/checkout must enforce it.
+- This decision is a prerequisite for #1045. Do not build COA batch logic until it's made.
+
+### 4. Fix the UUID-as-product-name backfill
+Backfilled historical orders store the raw product UUID in the name field (`'name': product_id`). Fix the backfill (or a one-time corrective migration) to resolve UUIDs to real product names where the product still exists. Where a product no longer exists, store a clear fallback (e.g. "Unavailable product") — never a bare UUID shown to a user or in revenue reporting.
+- Migration goes in `server/migrations/` as a numbered idempotent file (the load-bearing path), per the established rule. Native `IF NOT EXISTS` / guarded updates. NOT drizzle-kit push.
+
+### 5. Confirm migrations apply clean on a FRESH database
+- The two-systems duplication is resolved (`server/migrations/006` sole creator, `0004` no-op for items) — confirm a fresh DB build (the e2e/CI path) runs all migrations with zero errors, including the backfill correction from #4.
+- A fresh prod deploy must build cleanly from migrations alone. Confirm this is true, not assumed.
+
+### 6. Remove the broken subscriptions path (you do NOT do subscriptions)
+Investigation found this is not just dead UI — it's a three-way data-model collision causing a silent 500 on EVERY `/dashboard/orders` load for every authenticated user:
+- The app's Drizzle schema defines a PayPal-subscriptions table that was **never migrated** to the Neon DB.
+- The actual `subscriptions` table in Neon is a **Stripe-synced table with different columns** (no `user_id`, no `paypal_subscription_id`, no `frequency`).
+- `/api/user/subscriptions` queries `WHERE user_id = $1` against that Stripe table → column doesn't exist → Postgres throws → route returns 500. The React render is guarded (`subscriptions && ...`) so the user sees nothing, but the server takes a 500 on every orders-page load. (The `getProductName(sub.productId)` mismatch at line 166 is the same productId-vs-items confusion, but is never reached because the query 500s first.)
+
+Since the business does NOT do subscriptions, remove the whole path:
+- **(a)** Remove the `/api/user/subscriptions` endpoint and the component code that calls it — the old "Active Subscriptions" card (now on `/dashboard/orders`). Deleting it also resolves the line-166 productId mismatch automatically.
+- **(b)** Remove the orphaned Drizzle subscriptions schema definition that was never migrated, so the schema reflects reality (no phantom table the ORM thinks exists).
+- **(c) ANSWER BEFORE DELETING ANYTHING:** Why does a Stripe-synced `subscriptions` table exist in the Neon DB if the business doesn't do subscriptions? Find out what (if anything) writes to it before touching it. If it's leftover from an abandoned integration → safe to remove. If an active Stripe sync writes to it → leave the table, just remove the app code that wrongly queries it. Do NOT drop the table blind.
+
+## Done looks like
+- Canonical `items` shape documented, with stored (not derived) per-item unitPrice.
+- A real multi-item order placed in dev, DB row inspected, items correct (product, name, qty, real price), total reconciles.
+- Admin dialog + shipping email both render all line items from a real multi-item order.
+- batchNumber/items model decided and implemented; #1045's path unblocked or explicitly deferred per the decision.
+- Backfill no longer stores raw UUIDs as names; corrective migration applied.
+- Fresh-DB migration run is green end to end (e2e/CI builds clean).
+- Subscriptions path removed: no 500 on `/dashboard/orders` load (confirm in server logs), orphaned schema gone, and the Stripe-table question answered before any table change.
+- Full e2e suite green.
+
+## Out of scope
+- Building new `items`-dependent features (revenue refinements, COA logic) — those resume AFTER this passes.
+- Multi-item cart UX/redesign (this validates the data layer; UX is separate if multi-item is confirmed in scope).
+
+## Dependencies / ordering
+- This BLOCKS #1045 (COA auto-assign) — the batchNumber decision in #3 is a prerequisite.
+- This SUPERSEDES the narrow #1063/#1064 follow-ups — fold their unit-count and test-coverage concerns in here.

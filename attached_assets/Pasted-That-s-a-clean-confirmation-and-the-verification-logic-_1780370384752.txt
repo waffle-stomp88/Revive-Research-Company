@@ -1,0 +1,15 @@
+That's a clean confirmation and the verification logic is sound. Dev auto-routes to sandbox via the `NODE_ENV` fallback (the `"PAYPAL_MODE not set, using NODE_ENV fallback: sandbox"` log line confirms it on every startup), and the 401-on-mismatch behavior gives you a definitive cross-check: if dev has ever processed a PayPal order without a 401, the credentials must be sandbox, because live creds against the sandbox endpoint would 401. And making the executor read that startup log line as a pre-flight check before placing the order is exactly the right safeguard, it confirms sandbox at runtime rather than assuming it. Good. No real-money risk, gate #1 can run through the real capture path.
+
+So all three are now correctly resolved:
+
+1. **Gate #1** — real PayPal *sandbox* multi-item order through the capture path (`resolvedLineItems`), with the startup-log sandbox check as pre-flight. Tests the actual customer write, not the manual-path stand-in.
+2. **batchNumber** — multi-product confirmed, order-level batch kept, per-item deferred to #1045.
+3. **Gate #2** — log check after Step 4 removes the ORM definition.
+
+One last sequencing thing to make sure made it into the locked plan, since it's the kind of detail that's easy to lose: **gate #2's log check has to come *after* Step 4.** The swallowed 500 originates in the ORM query against the Stripe table; removing the ORM definition (Step 4) is what actually kills it. If the executor checks the log before Step 4, it could see the endpoint returning `[]` and wrongly mark the gate passed while the 500 is still firing underneath. Confirm the plan orders it Step 4 → then log check, not the reverse. If that ordering's locked in, the plan's complete.
+
+That's the foundation task fully de-risked. Every gate now tests the real thing: the PayPal capture write that customers actually hit, and the server log after the ORM mapping is gone. Both are observable, neither can pass on a technicality.
+
+This is the deliberate validation pass the whole `items` saga needed. When it runs, the two results that tell you the foundation is finally sound are the sandbox order writing correct per-item data through the capture path, and a clean `/dashboard/orders` log after the subscriptions removal. Assign it, watch those two, and the downstream work, revenue reporting, COA, anything else reading `items`, finally gets to build on verified ground.
+
+Lock it and assign. You've earned the clean foundation.
