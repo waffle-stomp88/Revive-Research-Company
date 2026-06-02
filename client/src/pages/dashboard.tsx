@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Package,
@@ -21,6 +22,7 @@ import {
   Clock,
   Truck,
   Crown,
+  Trophy,
   RefreshCw,
   Sparkles,
   ChevronRight,
