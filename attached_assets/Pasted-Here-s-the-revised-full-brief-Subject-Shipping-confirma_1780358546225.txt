@@ -1,0 +1,41 @@
+Here's the revised full brief:
+
+---
+
+**Subject: Shipping confirmation email refinements**
+
+The shipping confirmation email is solid but needs some refinements for brand consistency and content completeness. Here's the full list, organized by priority.
+
+**Higher priority:**
+
+1. **Track Package button color → chartreuse `#D4FF1F` with black text.** Currently cyan. The CTA pattern across the restock confirmation, restock notification, and welcome emails uses chartreuse for primary action buttons. Cyan is reserved for status badges and trust elements. Keeping this consistent helps users learn the visual language across all transactional emails. Same glow shadow as the other CTA buttons.
+
+2. **Add order contents section between "Order Progress" and "Questions about your shipment?"** Customers ordering multiple research compounds need to verify what shipped. Doesn't need pricing or quantities, just the compound names. Pull from the order line items already in the database. Format suggestion: a card matching the existing pattern (dark background, cyan accent border, header "What's in this shipment", line items listed below).
+
+**Medium priority:**
+
+3. **Differentiate label vs CTA chartreuse treatments.** The "Order #57352418" pill currently uses the same chartreuse fill + black text styling as a CTA button. This creates visual ambiguity when users see chartreuse pills across emails (sometimes it means "click this," sometimes it's just a label). Suggestion: for label-only chartreuse uses (order number, etc), switch to outlined treatment (transparent background, chartreuse border, chartreuse text). Reserve filled chartreuse pill = "click this action."
+
+**Lower priority:**
+
+4. **"Order Progress" step indicator copy.** Currently shows "Pending" under the Delivered step. "Pending" reads passive. Change it to "On the Way" (matches the "On Its Way!" headline and is more reassuring). The step stays in its inactive visual state (number 3, dashed/muted styling) until the package actually arrives, then flips to a checkmark + "Delivered."
+
+5. **Bump RUO compliance footer text from ~10px to 12px.** For a regulated space like research peptides, the RUO disclaimer is one of our protective elements. A slight size bump increases visibility without being aggressive. Match what we're using on the restock and confirmation emails.
+
+6. **Verify full footer renders consistently.** The current screenshot cuts off the bottom. Confirm the email includes:
+   - "All products are intended for laboratory research purposes only. Not for human or animal consumption."
+   - Revive Research Company, LLC
+   - Frisco, TX 75033
+   - Unsubscribe link
+
+7. **Estimated delivery date format.** Currently shows "June 5, 2026" (single date). Carrier APIs typically return a window. If ShipStation provides a range, use it (e.g., "Jun 5-7, 2026"). If single date is all we get, leave as-is.
+
+**Out of scope for this task:**
+
+- Other order-related emails (order confirmation, order delivered) — separate review later if needed
+- Tracking page redesign
+- Email subject line changes
+
+Send me a scoped plan for review before building.
+
+---
