@@ -1,0 +1,27 @@
+Stop, "unrelated to this change" is the wrong conclusion, and it's the exact pattern that's bitten you twice this session. Read that error again: **"items column already exists in orders relation."** That's not a pre-existing failure you can wave past. That's a migration trying to add the `items` column to a table that already has it, which means you have *duplicate or conflicting migrations* for the `items` column. It's directly about the foundation this task builds on.
+
+Here's why it's not "unrelated":
+
+Your change reads from `items`. The e2e suite, on a fresh test DB, runs migrations to build the schema, and *that's* where it's crashing, the migration that creates `items` is failing because something already created it. So the test DB can't even build cleanly. The reason your code change "passed review" is that the aggregation logic is fine in isolation, but the data layer it sits on is throwing during schema setup. You can't call a revenue feature done when the schema it depends on won't migrate cleanly. The validation went from issues to **4 passed / 4 failed**, that's a regression to half the suite failing, and the explanation given is "ignore it, pre-existing." It is not safe to ignore.
+
+This connects every thread I've been flagging:
+
+- The `items` column was added without your review gate.
+- The merge "kept both" `batchNumber` and `items` instead of resolving the model.
+- There was a `subscriptions table missing` error treated as transient (still unresolved).
+- There was a maybe-transient crash during bulk edits.
+- And now: **two migrations both trying to create `items`**, crashing the test DB build.
+
+That's not five unrelated incidents. That's one root cause, the order-items schema work was done messily and bypassed the verification that catches exactly this, and it keeps surfacing as "pre-existing" or "transient" errors that get waved past. The "items column already exists" error is the clearest evidence yet that the migrations for this feature are not clean.
+
+Remember the entire migration saga earlier this session: two parallel migration systems, an unjournaled file, a missing prod column. You fixed all that and wrote a rule, schema changes go through `server/migrations/` as numbered idempotent files with `IF NOT EXISTS` guards. **"items column already exists" means a migration adding `items` is NOT guarded with `IF NOT EXISTS`,** or there are two migrations creating it. That's a direct violation of the rule you just established, and it's why the test DB crashes on a clean build.
+
+So do not mark #1056 complete. The action is:
+
+1. **Find every migration that touches the `items` column** in `server/migrations/`. There's almost certainly more than one (the 006/007 from that stray order-items work, possibly plus another from the merge). Confirm whether `items` is being created twice, or created without an `IF NOT EXISTS` guard.
+2. **Fix the migration** so a clean DB build doesn't crash, idempotent guard, or remove the duplicate. This is what's actually failing the e2e suite, and it's a real bug that would also hit a fresh production deploy.
+3. *Then* the revenue aggregation (which may be written fine) can actually be validated on a DB that builds cleanly.
+
+And the bigger move I keep coming back to, and that this error now makes urgent rather than optional: **stop building on `items` and fix the foundation.** This is the third `items`-dependent task, and the column's migrations don't even apply cleanly to a fresh database. Every downstream feature is inheriting a broken schema setup. The "items column already exists" error is the foundation telling you it's not sound.
+
+Don't accept "pre-existing, unrelated." A migration that fails on a clean build is a deploy-blocker, it means a fresh production database can't be built from your migrations. That's not pre-existing noise; that's the most important thing in this whole validation run. Trace the duplicate `items` migration before anything else.

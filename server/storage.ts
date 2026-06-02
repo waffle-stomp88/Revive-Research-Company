@@ -1037,18 +1037,39 @@ export class DatabaseStorage implements IStorage {
 
     const productSales: Record<string, { productId: string; productName: string; totalSold: number; revenue: number }> = {};
     for (const order of filteredOrders) {
-      const product = allProducts.find(p => p.id === order.productId);
-      if (product) {
-        if (!productSales[order.productId]) {
-          productSales[order.productId] = {
-            productId: order.productId,
-            productName: product.name,
-            totalSold: 0,
-            revenue: 0
-          };
+      const lineItems = Array.isArray(order.items) && order.items.length > 0 ? order.items : null;
+      if (lineItems) {
+        // Multi-product order: aggregate each line item individually
+        for (const item of lineItems) {
+          const pid = item.productId;
+          if (!pid) continue;
+          if (!productSales[pid]) {
+            const product = allProducts.find(p => p.id === pid);
+            productSales[pid] = {
+              productId: pid,
+              productName: item.name || product?.name || pid,
+              totalSold: 0,
+              revenue: 0
+            };
+          }
+          productSales[pid].totalSold += item.quantity || 1;
+          productSales[pid].revenue += (item.quantity || 1) * (item.unitPrice || 0);
         }
-        productSales[order.productId].totalSold += order.quantity || 1;
-        productSales[order.productId].revenue += parseFloat(order.totalAmount || '0');
+      } else {
+        // Legacy single-product order fallback
+        const product = allProducts.find(p => p.id === order.productId);
+        if (product) {
+          if (!productSales[order.productId]) {
+            productSales[order.productId] = {
+              productId: order.productId,
+              productName: product.name,
+              totalSold: 0,
+              revenue: 0
+            };
+          }
+          productSales[order.productId].totalSold += order.quantity || 1;
+          productSales[order.productId].revenue += parseFloat(order.totalAmount || '0');
+        }
       }
     }
     const topProducts = Object.values(productSales)

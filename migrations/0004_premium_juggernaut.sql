@@ -1,1 +1,4 @@
-ALTER TABLE "orders" ADD COLUMN "items" jsonb;
+-- items column is owned by server/migrations/006_add_order_items.sql (runtime path).
+-- That migration runs at every server start and is the sole authoritative creator.
+-- This Drizzle-generated file is intentionally a no-op for items so that
+-- `drizzle-kit migrate` on a DB that already has the column does not conflict.

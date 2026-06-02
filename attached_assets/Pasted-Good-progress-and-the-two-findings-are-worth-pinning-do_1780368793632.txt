@@ -1,0 +1,26 @@
+Good progress, and the two findings are worth pinning down clearly before you close, because one of them is genuinely important and one needs a beat more scrutiny.
+
+**The ordering anomaly is resolved, and the explanation is solid.** Both 006 and 007 are tracked on the live dev DB (applied together at 02:19:27), so the "006 untracked / 007 tracked" thing was a CI-environment artifact, a different DB state where `items` already existed and 006 was pending. That's a real, coherent explanation, not a guess, and it confirms your `ADD COLUMN IF NOT EXISTS` fix is the right call for exactly that mismatched-state case. Good, that's the contradiction I flagged genuinely closed rather than waved past.
+
+**But look at what the e2e timeout actually was: `lazy is not defined` in `dashboard.tsx:49`.** That is not a migration issue at all, it's a missing React import crashing the dashboard at runtime. And here's why it matters beyond just fixing it: this is almost certainly the **same crash you investigated three messages ago and concluded was "transient HMR."** Remember, you bulk-edited seven dashboard files, the app crashed, you swept everything, found nothing, and concluded it was Vite serving partial modules during rapid edits. I pushed back that "I can't find it now" isn't "I know what it was," and specifically flagged that lazy-route render errors only fire on navigation, not on compile or initial load, so the healthy-now sweep wouldn't catch them.
+
+`lazy is not defined` is exactly that: a runtime error that TypeScript-clean and server-healthy checks would sail right past, because the missing import only explodes when the component actually renders in the browser. It wasn't transient. It was a real missing-import bug that the earlier "transient HMR" conclusion masked, and it sat there until the e2e tests, which actually render the pages in a browser, surfaced it. The dead reckoning here: the bulk seven-file edit (the breadcrumb work, #1050) is when `lazy` usage got introduced or the import got dropped, and the "transient crash" right after was this all along.
+
+I'm not saying this to relitigate, the fix is correct and it's caught now. I'm saying it because it's the third time this session a real error got initially labeled "transient" or "unrelated" (the subscriptions missing-table, this crash, the "pre-existing" e2e failures that were actually the foundation crashing). The pattern is worth naming out loud: **errors that don't reproduce in a healthy-state sweep are not therefore transient, they're often runtime/navigation bugs that only a real browser walk surfaces.** The e2e suite is doing the job the manual sweeps couldn't. Trust it over "looks healthy now."
+
+So where you are:
+
+- Migration fix: correct, ordering anomaly explained, `IF NOT EXISTS` on 006 right, Drizzle 0004 guarded.
+- `lazy is not defined`: real bug, now fixed, and it retroactively explains the "transient" crash from before.
+- `stacks-curation-e2e`: green (5 passed).
+- `pk-chart-key-e2e`: you're checking the final result, that's the one outstanding.
+
+Before you call this done, three things:
+
+1. **Confirm `pk-chart-key-e2e` actually passes**, the full suite to genuine green, since "items column already exists" and "lazy is not defined" were both blocking it. Both should be cleared now, but confirm the green rather than assume.
+
+2. **The two-systems `items` duplication, did you actually resolve it or just guard it?** You guarded `0004_premium_juggernaut.sql` with `IF NOT EXISTS`, good, that stops the crash. But the deeper issue I raised, the *same column being owned by two migration systems*, is still there. Guarding both means neither crashes, but you still have two competing definitions of `items`. Per your own rule, `server/migrations/` owns prod schema; the Drizzle file should be a no-op or not the authority. Confirm you've decided the ownership, not just silenced both. Otherwise this drifts again on the next `items`-adjacent change.
+
+3. **The `items` foundation validation is still owed.** Migrations now apply cleanly (good), but the original concerns from #1056 stand: untested multi-item forward-write, UUID-as-product-name in backfill, derived-not-stored per-item price, and the `batchNumber` conflict. The migrations applying cleanly means the *column exists* reliably; it doesn't mean the *data in it* is correct. Revenue reporting (#1056) and COA (#1045) both still need `items` to be trustworthy, not just present.
+
+Confirm the pk-chart suite goes green and tell me whether the two-systems duplication is *resolved* (ownership decided) or just *guarded* (both silenced). Those are the two that determine whether this is actually closed or just quiet.
