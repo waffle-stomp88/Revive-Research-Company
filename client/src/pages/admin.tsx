@@ -4497,8 +4497,24 @@ function OrderViewDialog({
               <h4 className="font-medium mb-2">Order Details</h4>
               <div className="text-sm space-y-1">
                 <p><span className="text-muted-foreground">Type:</span> {order.orderType === 'subscription' ? 'Subscription' : 'One-time'}</p>
-                <p><span className="text-muted-foreground">Product:</span> {product?.name || "Unknown"}</p>
-                <p><span className="text-muted-foreground">Quantity:</span> {order.quantity}</p>
+                {order.items && order.items.length > 0 ? (
+                  <div>
+                    <span className="text-muted-foreground">Items:</span>
+                    <ul className="mt-1 space-y-1 pl-2">
+                      {(order.items as Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }>).map((item, idx) => (
+                        <li key={idx} className="flex justify-between gap-2">
+                          <span className="font-medium">{item.name}{item.dosage ? <span className="text-muted-foreground font-normal"> ({item.dosage})</span> : null} &times;{item.quantity}</span>
+                          <span className="text-muted-foreground whitespace-nowrap">${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <>
+                    <p><span className="text-muted-foreground">Product:</span> {product?.name || "Unknown"}</p>
+                    <p><span className="text-muted-foreground">Quantity:</span> {order.quantity}</p>
+                  </>
+                )}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-muted-foreground">Order Total:</span>
                   <span>${Number(order.totalAmount).toFixed(2)}</span>

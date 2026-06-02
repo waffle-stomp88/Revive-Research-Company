@@ -723,7 +723,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const [order] = await db.insert(orders).values(insertOrder).returning();
+    const [order] = await db.insert(orders).values(insertOrder as any).returning();
     return order;
   }
 

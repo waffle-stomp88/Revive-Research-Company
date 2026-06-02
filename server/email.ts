@@ -733,6 +733,7 @@ export function getShippedNotificationTemplate(order: {
   state?: string;
   zipCode?: string;
   country?: string;
+  items?: Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }> | null;
 }, trackingNumber: string, carrier: string, estimatedDelivery?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
@@ -743,6 +744,12 @@ export function getShippedNotificationTemplate(order: {
   
   const subject = `Your Order Has Shipped! #${shortRef}`;
   
+  const shipmentItems = order.items && order.items.length > 0 ? order.items : null;
+  const itemsText = shipmentItems
+    ? '\n\nWHAT\'S IN THIS SHIPMENT\n-----------------------\n' +
+      shipmentItems.map(i => `${i.name}${i.dosage ? ` (${i.dosage})` : ''} x${i.quantity}`).join('\n')
+    : '';
+
   const text = `
 REVIVE RESEARCH
 Your Order Has Shipped!
@@ -755,7 +762,7 @@ TRACKING INFORMATION
 --------------------
 Carrier: ${carrier}
 Tracking Number: ${trackingNumber}
-Track your package: ${trackingUrl}
+Track your package: ${trackingUrl}${itemsText}
 
 SHIPPING TO
 -----------
@@ -900,6 +907,29 @@ ${getSharedFooterText(order.email, 'shipping')}
                 </tr>
               </table>
               
+              ${shipmentItems ? `
+              <!-- What's in this shipment -->
+              <div style="background-color: #2a2a30; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 20px;">
+                <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                  WHAT'S IN THIS SHIPMENT
+                </p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  ${shipmentItems.map(item => `
+                  <tr>
+                    <td style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                      <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0;">
+                        ${item.name}${item.dosage ? ` <span style="color: #aaaaaa; font-weight: 400;">(${item.dosage})</span>` : ''}
+                      </p>
+                    </td>
+                    <td style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: right; white-space: nowrap;">
+                      <p style="color: #cccccc; font-size: 14px; margin: 0;">x${item.quantity}</p>
+                    </td>
+                  </tr>
+                  `).join('')}
+                </table>
+              </div>
+              ` : ''}
+
               <!-- Order Progress Timeline - Step 2 Active -->
               <div style="background: linear-gradient(135deg, #1a3a4a 0%, #1a2a35 100%); border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
                 <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
@@ -981,6 +1011,7 @@ export async function sendShippedNotificationEmail(order: {
   state?: string;
   zipCode?: string;
   country?: string;
+  items?: Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }> | null;
 }, trackingNumber: string, carrier: string, estimatedDelivery?: string): Promise<EmailResult> {
   const template = getShippedNotificationTemplate(order, trackingNumber, carrier, estimatedDelivery);
   const timestamp = new Date().toISOString();

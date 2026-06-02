@@ -210,10 +210,23 @@ export const orders = pgTable("orders", {
   isTest: boolean("is_test").default(false),
   // Batch/lot number linked at fulfillment time (optional; enables B1 COA link)
   batchNumber: text("batch_number"),
+  // Full cart line items stored at checkout time
+  // Array<{ productId, name, dosage?, quantity, unitPrice }>
+  items: jsonb("items").$type<Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }>>().default(sql`'[]'::jsonb`),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true });
+const orderItemSchema = z.object({
+  productId: z.string(),
+  name: z.string(),
+  dosage: z.string().optional(),
+  quantity: z.number(),
+  unitPrice: z.number(),
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true }).extend({
+  items: z.array(orderItemSchema).nullable().optional(),
+});
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 

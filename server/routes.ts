@@ -1126,6 +1126,13 @@ export async function registerRoutes(
         fulfillmentStatus: 'pending',
         paymentMethod: paymentMethod,
         isTest: Boolean(isTestOrder),
+        items: items.map((i: any) => ({
+          productId: i.productId || 'unknown',
+          name: i.name || 'Product',
+          dosage: i.dosage || undefined,
+          quantity: Number(i.quantity) || 1,
+          unitPrice: Number(i.price) || 0,
+        })),
         notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
       };
 
@@ -1367,11 +1374,13 @@ export async function registerRoutes(
       const PACK_DISCOUNTS: Record<number, number> = { 1: 0, 3: 0.10, 5: 0.15, 10: 0.20 };
 
       let serverSubtotal = 0;
+      const resolvedLineItems: Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }> = [];
       for (const item of sanitizedItems) {
         const qty = Number(item.quantity);
 
         // Free BAC water (first order) — contributes $0 to server subtotal
         if (bacWaterProductId && item.productId === bacWaterProductId && item.dosage?.toLowerCase() === '3ml' && parseFloat(String(item.price ?? '0')) === 0) {
+          resolvedLineItems.push({ productId: item.productId, name: item.name || 'BAC Water', dosage: item.dosage || undefined, quantity: qty, unitPrice: 0 });
           continue;
         }
 
@@ -1401,6 +1410,7 @@ export async function registerRoutes(
         const discount = PACK_DISCOUNTS[qty] ?? 0;
         const unitPrice = Math.round(baseUnitPrice * (1 - discount));
         serverSubtotal += unitPrice * qty;
+        resolvedLineItems.push({ productId: item.productId, name: item.name || productData.name, dosage: item.dosage || undefined, quantity: qty, unitPrice });
       }
 
       const serverShipping = serverSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
@@ -1453,6 +1463,7 @@ export async function registerRoutes(
         paypalOrderId,
         paypalCapturedAmount: paypalDetails.capturedAmount.toFixed(2),
         isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
+        items: resolvedLineItems,
         fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}`,
       };
 
@@ -3349,7 +3360,20 @@ export async function registerRoutes(
       if (isNewTracking) {
         try {
           const { sendShippedNotificationEmail } = await import('./email');
-          await sendShippedNotificationEmail(order, trackingNumber, carrier, estimatedDelivery || undefined);
+          // Prefer stored items; fall back to product-name lookup for historical orders
+          let shippingItems = (order.items && (order.items as any[]).length > 0)
+            ? order.items as Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }>
+            : null;
+          if (!shippingItems) {
+            const fallbackProduct = await storage.getProduct(order.productId);
+            shippingItems = [{
+              productId: order.productId,
+              name: fallbackProduct?.name || order.productId,
+              quantity: order.quantity,
+              unitPrice: parseFloat(order.totalAmount) / Math.max(order.quantity, 1),
+            }];
+          }
+          await sendShippedNotificationEmail({ ...order, items: shippingItems }, trackingNumber, carrier, estimatedDelivery || undefined);
           console.log(`[Shipping] Sent shipping notification for order ${order.id} - ${carrier} ${trackingNumber}`);
         } catch (emailError) {
           console.error(`[Shipping] Failed to send shipping email for order ${order.id}:`, emailError);
