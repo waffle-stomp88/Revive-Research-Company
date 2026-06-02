@@ -110,10 +110,21 @@ export default function CoaVerification() {
     };
   }, []);
 
+  // Read ?batch= (or ?batchNumber=) from the URL so links from the customer
+  // dashboard COA row arrive pre-filled. Auto-submit when the param is present.
+  const urlBatch = (() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get("batch") ?? params.get("batchNumber") ?? "").trim();
+    } catch {
+      return "";
+    }
+  })();
+
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
-      batchNumber: "",
+      batchNumber: urlBatch,
     },
   });
 
@@ -143,6 +154,15 @@ export default function CoaVerification() {
     setNotFound(false);
     searchMutation.mutate(data);
   };
+
+  // Auto-submit when a batch number arrives via URL param (e.g. from dashboard COA link)
+  useEffect(() => {
+    if (urlBatch) {
+      form.setValue("batchNumber", urlBatch);
+      searchMutation.mutate({ batchNumber: urlBatch });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const parseResults = (results: string[] | null): TestResult[] => {
     if (!results) return [];

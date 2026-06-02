@@ -1909,14 +1909,27 @@ export async function registerRoutes(
       const userEmail = req.user.claims.email;
       
       // Get orders by user ID or email
-      let orders = await storage.getOrdersByUserId(userId);
+      let orderRows = await storage.getOrdersByUserId(userId);
       
       // If no orders by userId, try by email for legacy orders
-      if (orders.length === 0 && userEmail) {
-        orders = await storage.getOrdersByEmail(userEmail);
+      if (orderRows.length === 0 && userEmail) {
+        orderRows = await storage.getOrdersByEmail(userEmail);
       }
+
+      // For each order that has a batchNumber, check whether a COA record exists.
+      // This must be done at data-fetch time so the client never shows a broken link.
+      // Orders without a batchNumber get batchHasCoa: false (they fall back to B2).
+      const enriched = await Promise.all(
+        orderRows.map(async (order) => {
+          if (!order.batchNumber) {
+            return { ...order, batchHasCoa: false };
+          }
+          const coa = await storage.getCoaByBatchNumber(order.batchNumber);
+          return { ...order, batchHasCoa: !!coa };
+        })
+      );
       
-      res.json(orders);
+      res.json(enriched);
     } catch (error) {
       console.error("Error fetching user orders:", error);
       res.status(500).json({ error: "Failed to fetch orders" });
@@ -3282,8 +3295,30 @@ export async function registerRoutes(
       if (!existingOrder) {
         return res.status(404).json({ error: "Order not found" });
       }
-      
+
       const isNewTracking = trackingNumber && carrier && !existingOrder.trackingNumber;
+      const isMarkingDelivered = fulfillmentStatus === 'delivered' && existingOrder.fulfillmentStatus !== 'delivered';
+
+      // Auto-assign batch at fulfillment time (tracking added OR marked delivered),
+      // but only when the order doesn't already have a batch stamped.
+      // Rule: exactly ONE active batch for this product → stamp it.
+      //       Zero or 2+ active batches → leave null (fall back to product-level COA).
+      //       This guard ensures ambiguous state never stamps a wrong-lot batch.
+      let autoAssignedBatchNumber: string | null = null;
+      if ((isNewTracking || isMarkingDelivered) && !existingOrder.batchNumber && existingOrder.productId) {
+        try {
+          const activeBatches = (await storage.getBatchesByProductId(existingOrder.productId))
+            .filter((b: any) => b.status === 'active');
+          if (activeBatches.length === 1) {
+            autoAssignedBatchNumber = activeBatches[0].batchNumber;
+            console.log(`[Batch] Auto-assigned batch ${autoAssignedBatchNumber} to order ${req.params.id}`);
+          } else {
+            console.log(`[Batch] Skipping auto-assign for order ${req.params.id}: ${activeBatches.length} active batch(es) found`);
+          }
+        } catch (batchErr) {
+          console.error(`[Batch] Failed to resolve active batch for order ${req.params.id}:`, batchErr);
+        }
+      }
       
       const updateData: any = {
         fulfillmentNotes,
@@ -3294,6 +3329,10 @@ export async function registerRoutes(
         trackingNumber,
         carrier,
       };
+
+      if (autoAssignedBatchNumber) {
+        updateData.batchNumber = autoAssignedBatchNumber;
+      }
       
       if (fulfillmentStatus) {
         updateData.fulfillmentStatus = fulfillmentStatus;

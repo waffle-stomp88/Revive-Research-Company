@@ -33,22 +33,6 @@
     <link rel="stylesheet" href="/fonts/fonts.css">
   </head>
   <body>
-    <script>
-      (function() {
-        try {
-          var LEGAL = ['/terms-of-service', '/terms', '/privacy', '/legal'];
-          var path = window.location.pathname;
-          var onLegal = LEGAL.some(function(r) { return path.indexOf(r) === 0; });
-          if (!onLegal && !document.documentElement.dataset.botBypass && !window.__AGE_BYPASS__ && !localStorage.getItem('revive-research-age-verified')) {
-            var d = document.createElement('div');
-            d.id = 'pre-age-gate';
-            d.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:#1a1a1f;display:flex;align-items:center;justify-content:center;';
-            d.innerHTML = '<div style="text-align:center;color:#fff;font-family:system-ui,-apple-system,sans-serif"><div style="font-size:1.125rem;font-weight:700;letter-spacing:0.18em;color:#D4FF1F;margin-bottom:8px">REVIVE RESEARCH</div><div style="font-size:0.8125rem;opacity:0.55;letter-spacing:0.05em">Age verification required</div></div>';
-            document.body.appendChild(d);
-          }
-        } catch(e) {}
-      })();
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

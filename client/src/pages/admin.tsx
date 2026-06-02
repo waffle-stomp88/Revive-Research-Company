@@ -4294,24 +4294,26 @@ function OrdersTab() {
                   <TableCell className="font-medium">{formatCurrency(Number(order.totalAmount))}</TableCell>
                   <TableCell>{getPaymentStatusBadge(order.status, order.isRefunded ?? undefined)}</TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Select
-                      value={order.fulfillmentStatus || "pending"}
-                      onValueChange={(status) => updateFulfillmentMutation.mutate({ 
-                        id: order.id, 
-                        data: { fulfillmentStatus: status }
-                      })}
-                      disabled={updateFulfillmentMutation.isPending}
-                    >
-                      <SelectTrigger className="w-28" data-testid={`select-fulfillment-${order.id}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="preparing">Preparing</SelectItem>
-                        <SelectItem value="ready">Ready</SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex flex-col gap-1">
+                      <Select
+                        value={order.fulfillmentStatus || "pending"}
+                        onValueChange={(status) => updateFulfillmentMutation.mutate({ 
+                          id: order.id, 
+                          data: { fulfillmentStatus: status }
+                        })}
+                        disabled={updateFulfillmentMutation.isPending}
+                      >
+                        <SelectTrigger className="w-28" data-testid={`select-fulfillment-${order.id}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="preparing">Preparing</SelectItem>
+                          <SelectItem value="ready">Ready</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2">

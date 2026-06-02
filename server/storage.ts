@@ -136,6 +136,7 @@ export interface IStorage {
     packed?: boolean;
     trackingNumber?: string;
     carrier?: string;
+    batchNumber?: string | null;
   }): Promise<Order | undefined>;
   updateOrderEmailStatus(id: string, status: string, error?: string): Promise<Order | undefined>;
   
@@ -770,6 +771,7 @@ export class DatabaseStorage implements IStorage {
     refundReason?: string;
     trackingNumber?: string;
     carrier?: string;
+    batchNumber?: string | null;
   }): Promise<Order | undefined> {
     const updateData: any = { ...data };
     if (data.fulfillmentStatus === 'delivered') {

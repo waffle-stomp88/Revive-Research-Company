@@ -1,0 +1,59 @@
+# #1045 revision — replace admin batch dropdown with automatic batch assignment
+
+This is a SCOPE REDUCTION of the in-flight task, not a redo. Most of #1045 stays. We're removing the admin-selection half and replacing it with automatic batch assignment at fulfillment. The customer-facing experience is unchanged and is the whole point: their order automatically links the correct COA — no searching, and no manual step for the admin either.
+
+## Why
+Operation ships ONE active batch per product at a time (sell through a roll, then move to the next), and that's the intended model even as more batches get tested and held in reserve. So a manual batch dropdown solves a problem the operation is structured to never have. Auto-assign the active batch instead.
+
+## KEEP (unchanged from current #1045)
+- Schema migration: `batchNumber` text (nullable) on the orders table — numbered idempotent file in `server/migrations/`, IF NOT EXISTS guard, NOT drizzle-kit push.
+- Customer-facing order-history COA link with all THREE display states:
+  1. `batchNumber` set + COA exists → "COA for your batch: [batchNumber]" → exact certificate
+  2. `batchNumber` set + no COA yet → silent product-level fallback (never a broken link); COA-existence checked server-side at fetch time
+  3. No `batchNumber` → product-level "View COAs for [product]"
+- Server-side validation that a stored `batchNumber` belongs to a batch whose `productId` matches the order's `productId`.
+- No retroactive backfill of historical orders.
+- All new customer-facing copy marked // COMPLIANCE PENDING.
+- Lucide ShieldCheck icon on the links.
+
+## CUT (remove from the task)
+- The admin batch-select dropdown in the fulfillment panel (client/src/pages/admin.tsx). Remove entirely.
+- The manual `batchNumber` acceptance in `PATCH /api/admin/orders/:id/fulfillment` (no longer hand-selected — see auto-assign below).
+- `GET /api/admin/batches?productId=X` — only needed if still useful elsewhere; if it was added solely to feed the dropdown, remove it. Flag if it has another use.
+
+## REPLACE WITH — automatic batch assignment
+- At ORDER FULFILLMENT (when the order is marked shipped/fulfilled — NOT at order creation), auto-resolve the active batch for the order's product and write it to the order's `batchNumber`.
+- Resolution rule:
+  - Exactly ONE batch with status = 'active' for that product → stamp its `batchNumber` onto the order.
+  - ZERO active batches, OR MORE THAN ONE active batch for that product → leave `batchNumber` null. The customer side falls back to the product-level COA. Do NOT guess which batch when ambiguous.
+- The multi-active case shouldn't happen in normal operation (one batch at a time), but the guard exists so a stray/mistaken 'active' status flag can never stamp a wrong-lot COA onto an order. The system refuses to guess when the data is ambiguous.
+
+## Why fulfillment-time, not order-creation
+Stamp at fulfillment because that's when the product physically ships and the active batch is the one actually going out. Stamping at order creation risks recording a batch that sells out before the order ships.
+
+## Out of scope (unchanged)
+- New COA generation/storage infrastructure
+- Changes to the COA verification page itself
+- Retroactive batch assignment to historical orders
+- Multi-item orders (one product per order row in current schema)
+- Batch-level inventory tracking (a larger future project if ever wanted)
+
+## Browser verification checklist (revised)
+- (a) Fulfilling an order with exactly one active batch for its product auto-stamps that batch number onto the order — confirm by reloading the order.
+- (b) Customer order with a stamped batch + existing COA shows "COA for your batch: [batchNumber]" and the link resolves.
+- (c) Customer order with a stamped batch but no COA yet shows the product-level fallback, not a broken link.
+- (d) Customer order with no batch (historical / ambiguous) shows "View COAs for [product]".
+- (e) If a product is forced into a 2+ active-batch state, fulfillment leaves `batchNumber` null and the order falls back to product-level — no wrong-lot stamp.
+- (f) Server rejects/ignores any `batchNumber` whose productId doesn't match the order's product (the validation guard still holds even though assignment is now automatic).
+- (g) No admin dropdown remains in the fulfillment panel.
+- (h) Historical orders unchanged — product-level fallback, nothing broken.
+
+## Files
+- shared/schema.ts (orders.batchNumber — keep)
+- server/migrations/ (the migration — keep)
+- server/routes.ts (fulfillment endpoint: remove manual batch acceptance, add auto-resolve on fulfill; include batchNumber in orders responses)
+- client/src/pages/admin.tsx (REMOVE the dropdown added for this task)
+- client/src/pages/dashboard.tsx (customer COA link — keep)
+
+## Note on task ordering
+This work touches the inline Orders section of dashboard.tsx. #1046 (routed sub-pages) will later move that section to /dashboard/orders and must carry the COA link with it. Let this revised #1045 fully complete and verify BEFORE starting #1046, so #1046's inventory runs against the finished Orders section.

@@ -36,9 +36,25 @@ import {
   Lock,
   FileText,
   Activity,
+  ShieldCheck,
 } from "lucide-react";
-import type { Order, Product, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
-import { queryClient } from "@/lib/queryClient";
+import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+
+import { CompoundFinder } from "@/components/compound-finder";
+
+// Extended Order type returned by /api/orders/my-orders — includes server-side
+// COA existence check so the client never shows a broken batch-level link.
+type EnrichedOrder = Order & { batchHasCoa?: boolean };
+const LogbookTab = lazy(() =>
+  import("@/components/logbook-tab").then((m) => ({ default: m.LogbookTab }))
+);
+const LogbookWipeCard = lazy(() =>
+  import("@/components/logbook-tab").then((m) => ({ default: m.LogbookWipeCard }))
+);
+const CyclesTab = lazy(() =>
+  import("@/components/cycles/CyclesTab").then((m) => ({ default: m.CyclesTab }))
+);
 
 // ── Configurable research tier ladder ──────────────────────────────────────
 // Thresholds are placeholders; Grayson to tune post-launch. All tier names
@@ -117,7 +133,25 @@ export default function Dashboard() {
     }
   }, [authLoading, isAuthenticated, toast]);
 
-  const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    const validTabs = ["general", "orders", "stacks", "logbook", "cycles", "education", "settings"];
+    if (tab && validTabs.includes(tab)) {
+      const sectionId = `section-${tab}`;
+      const scroll = () => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+          history.replaceState(null, "", `/dashboard#${sectionId}`);
+        }
+      };
+      const timer = setTimeout(scroll, 300);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const { data: orders, isLoading: ordersLoading } = useQuery<EnrichedOrder[]>({
     queryKey: ["/api/orders/my-orders"],
     enabled: isAuthenticated,
   });
@@ -1090,6 +1124,1147 @@ export default function Dashboard() {
 
                 </section>
 
+                {/* Orders Section */}
+                <section id="section-orders" className="space-y-6">
+                  {/* Subscriptions Section */}
+                  {subscriptions && subscriptions.length > 0 && (
+                    <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
+                              Active Subscriptions
+                            </CardTitle>
+                            <CardDescription>Manage your recurring orders</CardDescription>
+                          </div>
+                          <Badge className="bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30">
+                            {subscriptions.filter(s => s.status === 'active').length} active
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {subscriptions.map((sub) => (
+                          <div key={sub.id} className="flex items-center gap-4 p-4 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`subscription-${sub.id}`}>
+                            <div className="h-10 w-10 rounded-full bg-[#21d8ff]/20 flex items-center justify-center">
+                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">{getProductName(sub.productId)}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span className="capitalize">{sub.frequency}</span>
+                                {sub.nextBillingDate && (
+                                  <>
+                                    <span>•</span>
+                                    <span>Next: {formatDate(sub.nextBillingDate)}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <Badge className={sub.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/30' : 'bg-muted text-muted-foreground'}>
+                              {sub.status}
+                            </Badge>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Order History */}
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <ShoppingBag className="h-5 w-5 text-[#9d4edd]" />
+                            Order History
+                          </CardTitle>
+                          <CardDescription>View and track your orders</CardDescription>
+                        </div>
+                        <Link href="/products">
+                          <Button size="sm" className="bg-[#D4FF1F] text-black" data-testid="button-shop-more">
+                            Shop More
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {ordersLoading ? (
+                        <div className="space-y-4">
+                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+                        </div>
+                      ) : orders && orders.length > 0 ? (
+                        <div className="space-y-4">
+                          {orders.map((order, idx) => {
+                            const colors = ['#D4FF1F', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
+                            const color = colors[idx % colors.length];
+                            const statusStep = getStatusStep(order);
+                            return (
+                              <div key={order.id} className="p-4 rounded-lg border" data-testid={`order-item-${order.id}`}>
+                                {/* Order Header */}
+                                <div className="flex items-start gap-4 mb-3">
+                                  <div className="h-12 w-12 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
+                                    <Package className="h-6 w-6" style={{ color }} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <p className="font-medium truncate">{getProductName(order.productId)}</p>
+                                      <span className="text-xs text-muted-foreground font-mono">{getOrderNumber(order.id)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
+                                      <Calendar className="h-3 w-3" />
+                                      <span>{formatDate(order.createdAt)}</span>
+                                      <span>•</span>
+                                      <span>Qty: {order.quantity}</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                    <p className="font-semibold text-lg">${Number(order.totalAmount).toFixed(2)}</p>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="text-[#21d8ff] min-h-[48px]"
+                                      onClick={() => handleReorder(order)}
+                                      data-testid={`button-reorder-${order.id}`}
+                                    >
+                                      <RefreshCw className="h-3 w-3 mr-1" />
+                                      Reorder
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                {order.trackingNumber && order.carrier && (
+                                  <div className="p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 mb-3" data-testid={`tracking-info-${order.id}`}>
+                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                      <div className="flex items-center gap-2">
+                                        <Truck className="h-4 w-4 text-[#21d8ff]" />
+                                        <span className="text-sm font-medium">{order.carrier}</span>
+                                        <span className="text-sm font-mono text-muted-foreground">{order.trackingNumber}</span>
+                                      </div>
+                                      <a 
+                                        href={getCarrierTrackingUrl(order.carrier, order.trackingNumber)} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        data-testid={`link-track-package-${order.id}`}
+                                      >
+                                        <Button size="sm" variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30">
+                                          Track Package
+                                        </Button>
+                                      </a>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Status Timeline */}
+                                <div className="flex items-center gap-1 mt-3 pt-3 border-t border-white/5">
+                                  {['Confirmed', 'Processing', 'Shipped', 'Delivered'].map((step, i) => {
+                                    const isComplete = i <= statusStep;
+                                    const isCurrent = i === statusStep;
+                                    return (
+                                      <div key={step} className="flex-1 flex items-center gap-1">
+                                        <div className={`h-2 w-2 rounded-full shrink-0 ${isComplete ? 'bg-green-500' : 'bg-muted'} ${isCurrent ? 'ring-2 ring-green-500/30' : ''}`} />
+                                        <div className={`flex-1 h-0.5 ${i < 3 ? (i < statusStep ? 'bg-green-500' : 'bg-muted') : 'hidden'}`} />
+                                        <span className={`text-[10px] hidden sm:block ${isComplete ? 'text-green-500' : 'text-muted-foreground'}`}>{step}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* COA reference — per-order batch link (B1) or product-level fallback (B2) */}
+                                {/* COMPLIANCE PENDING: all copy strings below */}
+                                {(() => {
+                                  const hasBatch = !!(order as EnrichedOrder).batchNumber;
+                                  const batchHasCoa = !!(order as EnrichedOrder).batchHasCoa;
+                                  // B1: order has a batch AND that batch has a COA on file
+                                  if (hasBatch && batchHasCoa) {
+                                    return (
+                                      <div className="mt-2 pt-2 border-t border-white/5">
+                                        <a
+                                          href={`/coa/verify-certificate-of-analysis?batch=${encodeURIComponent((order as EnrichedOrder).batchNumber!)}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 text-xs text-[#21d8ff] hover:underline"
+                                          data-testid={`link-coa-batch-${order.id}`}
+                                        >
+                                          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                                          {/* COMPLIANCE PENDING */}
+                                          COA for your batch: {(order as EnrichedOrder).batchNumber}
+                                        </a>
+                                      </div>
+                                    );
+                                  }
+                                  // B2 fallback: no batch, or batch exists but COA not yet uploaded
+                                  return (
+                                    <div className="mt-2 pt-2 border-t border-white/5">
+                                      <a
+                                        href="/coa/verify-certificate-of-analysis"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[#21d8ff] hover:underline transition-colors"
+                                        data-testid={`link-coa-product-${order.id}`}
+                                      >
+                                        <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                                        {/* COMPLIANCE PENDING */}
+                                        View COAs for {getProductName(order.productId)}
+                                      </a>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12">
+                          <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                          <h3 className="font-medium mb-2">No orders yet</h3>
+                          <p className="text-sm text-muted-foreground mb-4">Start shopping to see your order history</p>
+                          <Link href="/products">
+                            <Button className="bg-[#D4FF1F] text-black" data-testid="button-browse-products-history">Browse Products</Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                </section>
+
+                {/* Stacks Section */}
+                <section id="section-stacks" className="space-y-6">
+                  {/* My Stacks */}
+                  <Card className="border-[#2a2a32]">
+                    <CardHeader>
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <FlaskConical className="h-5 w-5 text-[#21d8ff]" />
+                            My Stacks
+                          </CardTitle>
+                          <CardDescription>Research stacks you built in the stack builder</CardDescription>
+                        </div>
+                        <Link href="/research-stacks">
+                          <Button variant="outline" size="sm" className="border-[#21d8ff]/40 text-[#21d8ff]" data-testid="button-build-stack">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Build a Stack
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {savedStacksLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2].map(i => (
+                            <Skeleton key={i} className="h-16 w-full" />
+                          ))}
+                        </div>
+                      ) : !savedStacks || savedStacks.filter(s => !s.sourceShareCode).length === 0 ? (
+                        <div className="text-center py-10 space-y-3" data-testid="empty-my-stacks">
+                          <FlaskConical className="h-10 w-10 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm font-medium text-muted-foreground">No personal stacks yet</p>
+                          <p className="text-xs text-muted-foreground/70 max-w-xs mx-auto">
+                            Build a custom research stack and save it to share with your research community.
+                          </p>
+                          <Link href="/research-stacks">
+                            <Button variant="outline" size="sm" className="border-[#21d8ff]/40 text-[#21d8ff] mt-2" data-testid="button-go-build">
+                              Build a Custom Stack
+                              <ChevronRight className="h-4 w-4 ml-1" />
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-3" data-testid="list-my-stacks">
+                          {savedStacks.filter(s => !s.sourceShareCode).map((stack) => (
+                            <div
+                              key={stack.id}
+                              className="flex items-center justify-between gap-3 p-4 rounded-lg border border-[#2a2a32] bg-[#0f0f12]"
+                              data-testid={`row-stack-${stack.id}`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
+                                  <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-white truncate" data-testid={`text-stack-name-${stack.id}`}>{stack.name}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span className="text-xs text-muted-foreground" data-testid={`text-stack-count-${stack.id}`}>{(stack.peptideNames || []).length} compound{(stack.peptideNames || []).length !== 1 ? "s" : ""}</span>
+                                    {(stack.synergyScore ?? 0) > 0 && (
+                                      <Badge variant="outline" className="text-[10px] border-[#21d8ff]/30 text-[#21d8ff]" data-testid={`badge-synergy-${stack.id}`}>
+                                        {stack.synergyScore}% synergy
+                                      </Badge>
+                                    )}
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-[10px] ${stack.isPublic ? "border-green-500/40 text-green-400" : "border-[#2a2a32] text-muted-foreground"}`}
+                                      data-testid={`badge-visibility-${stack.id}`}
+                                    >
+                                      {stack.isPublic ? "Public" : "Private"}
+                                    </Badge>
+                                    {stack.createdAt && (
+                                      <span className="text-[10px] text-muted-foreground/60">
+                                        {new Date(stack.createdAt).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => toggleStackVisibilityMutation.mutate({ id: stack.id, isPublic: !stack.isPublic })}
+                                  disabled={toggleStackVisibilityMutation.isPending}
+                                  className={`text-xs ${stack.isPublic ? "border-green-500/30 text-green-400" : "border-[#2a2a32] text-muted-foreground"}`}
+                                  data-testid={`button-toggle-visibility-${stack.id}`}
+                                >
+                                  {stack.isPublic ? "Public" : "Private"}
+                                </Button>
+                                {stack.shareCode && stack.isPublic && (
+                                  <Link href={`/stacks/${stack.shareCode}`}>
+                                    <Button variant="outline" size="sm" className="border-[#2a2a32] text-muted-foreground text-xs" data-testid={`button-open-stack-${stack.id}`}>
+                                      <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                                      Open
+                                    </Button>
+                                  </Link>
+                                )}
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="border-red-500/20 text-red-400 min-h-[48px] min-w-[48px]"
+                                  aria-label={`Delete stack "${stack.name}"`}
+                                  onClick={() => {
+                                    if (confirm(`Delete "${stack.name}"? This action cannot be undone.`)) {
+                                      deleteStackMutation.mutate(stack.id);
+                                    }
+                                  }}
+                                  disabled={deleteStackMutation.isPending}
+                                  data-testid={`button-delete-stack-${stack.id}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Saved from Community */}
+                  <Card className="border-[#2a2a32]">
+                    <CardHeader>
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5 text-[#a78bfa]" />
+                            Saved from Community
+                          </CardTitle>
+                          <CardDescription>Stacks you collected from other researchers' share pages</CardDescription>
+                        </div>
+                        <Link href="/research-stacks">
+                          <Button variant="outline" size="sm" className="border-[#a78bfa]/40 text-[#a78bfa]" data-testid="button-browse-community">
+                            <BookMarked className="h-4 w-4 mr-2" />
+                            Explore Stacks
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {savedStacksLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2].map(i => (
+                            <Skeleton key={i} className="h-16 w-full" />
+                          ))}
+                        </div>
+                      ) : !savedStacks || savedStacks.filter(s => !!s.sourceShareCode).length === 0 ? (
+                        <div className="text-center py-10 space-y-3" data-testid="empty-community-stacks">
+                          <Users className="h-10 w-10 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm font-medium text-muted-foreground">No community stacks saved yet</p>
+                          <p className="text-xs text-muted-foreground/70 max-w-xs mx-auto">
+                            Browse shared stacks from other researchers and save them to your collection.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3" data-testid="list-community-stacks">
+                          {savedStacks.filter(s => !!s.sourceShareCode).map((stack) => (
+                            <div
+                              key={stack.id}
+                              className="flex items-center justify-between gap-3 p-4 rounded-lg border border-[#2a2a32] bg-[#0f0f12]"
+                              data-testid={`row-community-stack-${stack.id}`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-8 h-8 rounded-lg bg-[#a78bfa]/10 border border-[#a78bfa]/20 flex items-center justify-center flex-shrink-0">
+                                  <Users className="h-4 w-4 text-[#a78bfa]" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-white truncate" data-testid={`text-community-stack-name-${stack.id}`}>{stack.name}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span className="text-xs text-muted-foreground" data-testid={`text-community-stack-count-${stack.id}`}>{(stack.peptideNames || []).length} compound{(stack.peptideNames || []).length !== 1 ? "s" : ""}</span>
+                                    {(stack.synergyScore ?? 0) > 0 && (
+                                      <Badge variant="outline" className="text-[10px] border-[#a78bfa]/30 text-[#a78bfa]" data-testid={`badge-community-synergy-${stack.id}`}>
+                                        {stack.synergyScore}% synergy
+                                      </Badge>
+                                    )}
+                                    <Badge variant="outline" className="text-[10px] border-[#a78bfa]/30 text-[#a78bfa]" data-testid={`badge-community-source-${stack.id}`}>
+                                      Community
+                                    </Badge>
+                                    {stack.createdAt && (
+                                      <span className="text-[10px] text-muted-foreground/60">
+                                        Saved {new Date(stack.createdAt).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {stack.sourceShareCode && (
+                                  <Link href={`/stacks/${stack.sourceShareCode}`}>
+                                    <Button variant="outline" size="sm" className="border-[#a78bfa]/30 text-[#a78bfa] text-xs" data-testid={`button-view-source-${stack.id}`}>
+                                      <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                                      Original
+                                    </Button>
+                                  </Link>
+                                )}
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="border-red-500/20 text-red-400 min-h-[48px] min-w-[48px]"
+                                  aria-label={`Remove community stack "${stack.name}"`}
+                                  onClick={() => {
+                                    if (confirm(`Remove "${stack.name}" from your collection? This action cannot be undone.`)) {
+                                      deleteStackMutation.mutate(stack.id);
+                                    }
+                                  }}
+                                  disabled={deleteStackMutation.isPending}
+                                  data-testid={`button-remove-community-stack-${stack.id}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </section>
+
+                {/* Logbook Section */}
+                <section id="section-logbook" className="space-y-6">
+                  <Suspense fallback={null}><LogbookTab /></Suspense>
+                </section>
+
+                {/* Cycles Section */}
+                <section id="section-cycles" className="space-y-6">
+                  <Suspense fallback={null}><CyclesTab /></Suspense>
+                </section>
+
+                {/* Education Section */}
+                <section id="section-education" className="space-y-6">
+                  {/* Research Progress */}
+                  {researchProfile && (
+                    <Card className="border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between flex-wrap gap-3">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <GraduationCap className="h-5 w-5 text-[#D4FF1F]" />
+                              Research Progress
+                            </CardTitle>
+                            <CardDescription>Your learning journey</CardDescription>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-[#D4FF1F]/10 border-[#D4FF1F]/40 text-[#D4FF1F]">
+                              {researchProfile.phase}
+                            </Badge>
+                            <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
+                              {researchProfile.title}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#D4FF1F]">{researchProfile.educationCount}</div>
+                            <div className="text-xs text-muted-foreground">Articles Read</div>
+                          </div>
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#21d8ff]">{researchProfile.batchVerificationCount}</div>
+                            <div className="text-xs text-muted-foreground">Batches Verified</div>
+                          </div>
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#22c55e]">{researchProfile.compoundsTrackedCount}</div>
+                            <div className="text-xs text-muted-foreground">Compounds Tracked</div>
+                          </div>
+                        </div>
+
+                        {/* Phase Progress */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Phase Progression</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
+                              const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
+                              const currentIdx = phaseOrder.indexOf(researchProfile.phase);
+                              const isActive = idx <= currentIdx;
+                              const isCurrent = phase === researchProfile.phase;
+                              return (
+                                <div key={phase} className="flex-1">
+                                  <div className={`h-2 rounded-full transition-all ${isActive ? isCurrent ? "bg-[#D4FF1F]" : "bg-[#D4FF1F]/50" : "bg-muted"}`} />
+                                  <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#D4FF1F] font-medium" : "text-muted-foreground"}`}>
+                                    {phase}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {researchProfile.earlyAccessMember && (
+                          <div className="flex items-center gap-2 p-3 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
+                            <Sparkles className="h-4 w-4 text-[#9d4edd]" />
+                            <span className="text-sm text-[#9d4edd]">Early Access Member</span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Two Column: Batch Verification + Achievements */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Batch Verification History - Left Column */}
+                    <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between gap-2">
+                          <div>
+                            <CardTitle className="flex items-center gap-2 text-base">
+                              <History className="h-5 w-5 text-[#21d8ff]" />
+                              Batch Verification
+                            </CardTitle>
+                            <CardDescription>Your verified COA batches</CardDescription>
+                          </div>
+                          <Link href="/coa/verify-certificate-of-analysis">
+                            <Button size="sm" variant="outline" className="border-[#21d8ff]/40" data-testid="button-verify-new">
+                              <FileCheck className="h-4 w-4 mr-1" />
+                              Verify
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {batchHistory && batchHistory.length > 0 ? (
+                          <div className="space-y-2">
+                            {batchHistory.slice(0, 4).map((item) => (
+                              <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`batch-${item.id}`}>
+                                <div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center shrink-0">
+                                  <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-mono text-sm font-medium">{item.batchNumber}</p>
+                                  {item.productName && <p className="text-xs text-muted-foreground truncate">{item.productName}</p>}
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                </div>
+                              </div>
+                            ))}
+                            {batchHistory.length > 4 && (
+                              <p className="text-xs text-muted-foreground text-center pt-2">+{batchHistory.length - 4} more</p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6">
+                            <FileCheck className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                            <p className="text-sm text-muted-foreground mb-3">No verifications yet</p>
+                            <Link href="/coa/verify-certificate-of-analysis">
+                              <Button size="sm" className="bg-[#21d8ff] text-black" data-testid="button-verify-first">
+                                Verify First Batch
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Achievements - Right Column (Vertical Stack with Animations) */}
+                    <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <div className="p-1.5 rounded-lg bg-[#f97316]/20">
+                              <Trophy className="h-4 w-4 text-[#f97316]" />
+                            </div>
+                            Research Badges
+                          </CardTitle>
+                          <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
+                            {badges.filter(b => b.earned).length}/{badges.length}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {badges.slice(0, 5).map((badge, index) => {
+                            const Icon = badge.icon;
+                            const hexToRgb = (hex: string) => {
+                              const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                              return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
+                            };
+                            return (
+                              <div 
+                                key={badge.id}
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${badge.earned ? '' : 'opacity-50'}`}
+                                style={badge.earned ? { borderColor: `${badge.color}66`, backgroundColor: `${badge.color}15` } : undefined}
+                                data-testid={`badge-education-${badge.id}`}
+                              >
+                                <div 
+                                  className="p-2 rounded-full" 
+                                  style={badge.earned ? { backgroundColor: `${badge.color}25` } : { backgroundColor: 'hsl(var(--muted)/0.3)' }}
+                                >
+                                  <Icon className="h-5 w-5" style={{ color: badge.earned ? badge.color : 'hsl(var(--muted-foreground))' }} />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="font-medium text-sm">{badge.title}</p>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-[200px]">
+                                        <p className="text-xs">{badge.description}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    {badge.earned ? 'Unlocked!' : badge.progress !== undefined && badge.target ? `${badge.progress}/${badge.target}` : badge.description}
+                                  </p>
+                                </div>
+                                {badge.earned && <CheckCircle className="h-4 w-4" style={{ color: badge.color }} />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Quick Links */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link href="/academy" data-testid="link-academy-education">
+                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#D4FF1F]/30 hover:border-[#D4FF1F]/60 bg-gradient-to-r from-[#D4FF1F]/10 via-[#D4FF1F]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4FF1F]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-3 rounded-xl bg-[#D4FF1F]/20 shadow-lg shadow-[#D4FF1F]/10 group-hover:shadow-[#D4FF1F]/30 transition-shadow">
+                              <GraduationCap className="h-6 w-6 text-[#D4FF1F]" />
+                            </div>
+                            <div>
+                              <p className="font-semibold group-hover:text-[#D4FF1F] transition-colors">Research Academy</p>
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Zap className="h-3 w-3 text-[#D4FF1F]" />
+                                Learn and earn XP
+                              </p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#D4FF1F] group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </Card>
+                    </Link>
+                    <Link href="/coa/verify-certificate-of-analysis" data-testid="link-coa-education">
+                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#21d8ff]/30 hover:border-[#21d8ff]/60 bg-gradient-to-r from-[#21d8ff]/10 via-[#21d8ff]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#21d8ff]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-3 rounded-xl bg-[#21d8ff]/20 shadow-lg shadow-[#21d8ff]/10 group-hover:shadow-[#21d8ff]/30 transition-shadow">
+                              <FileCheck className="h-6 w-6 text-[#21d8ff]" />
+                            </div>
+                            <div>
+                              <p className="font-semibold group-hover:text-[#21d8ff] transition-colors">Verify COA</p>
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Shield className="h-3 w-3 text-[#21d8ff]" />
+                                Check batch authenticity
+                              </p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#21d8ff] group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+
+                  {/* Wishlist Section */}
+                  <Card className="border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 to-transparent">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="p-1.5 rounded-lg bg-[#ec4899]/20">
+                          <Heart className="h-4 w-4 text-[#ec4899]" />
+                        </div>
+                        Wishlist
+                        {wishlistProducts.length > 0 && (
+                          <Badge variant="secondary" className="ml-2 bg-[#ec4899]/10 text-[#ec4899] border-[#ec4899]/30">{wishlistProducts.length}</Badge>
+                        )}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {wishlistProducts.length > 0 ? (
+                        <div className="space-y-2">
+                          {wishlistProducts.slice(0, 5).map(product => (
+                            <div key={product.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#ec4899]/20 bg-[#ec4899]/5 hover-elevate transition-all" data-testid={`wishlist-item-${product.id}`}>
+                              <div className="flex-1 min-w-0">
+                                <Link href={`/product/${product.id}`}>
+                                  <p className="font-medium text-sm truncate hover:text-[#ec4899] transition-colors cursor-pointer">{product.name}</p>
+                                </Link>
+                                <p className="text-xs text-muted-foreground">${Math.round(Number(product.price))}</p>
+                              </div>
+                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} className="shrink-0 min-h-[48px] min-w-[48px]" aria-label={`Add ${product.name} to cart`} data-testid={`button-add-to-cart-${product.id}`}>
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="text-muted-foreground shrink-0 min-h-[48px] min-w-[48px]" onClick={() => removeMutation.mutate(product.id)} aria-label={`Remove ${product.name} from wishlist`} data-testid={`button-remove-wishlist-${product.id}`}>
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {wishlistProducts.length > 5 && (
+                            <p className="text-xs text-muted-foreground text-center pt-2">
+                              +{wishlistProducts.length - 5} more items
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">No items saved yet</p>
+                          <Link href="/products">
+                            <Button variant="outline" size="sm" className="border-[#ec4899]/40 text-[#ec4899]" data-testid="button-browse-products-wishlist">
+                              Browse Products
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Research Quiz Recommendation Card */}
+                  <Card className="relative overflow-hidden border-[#f97316]/30 bg-gradient-to-r from-[#f97316]/10 via-[#f97316]/5 to-transparent">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#f97316]/20 rounded-full blur-3xl" />
+                    <CardContent className="p-5">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#D4FF1F]/20 shadow-lg">
+                          <Brain className="h-7 w-7 text-[#f97316]" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
+                            Research Knowledge Quiz
+                            <Badge variant="outline" className="bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/40 text-xs">Coming Soon</Badge>
+                          </h3>
+                          <p className="text-sm text-muted-foreground">Test your peptide research knowledge and earn bonus XP for your progress.</p>
+                        </div>
+                        <Button variant="outline" className="border-[#f97316]/40 text-[#f97316] shrink-0" disabled data-testid="button-research-quiz">
+                          <Zap className="h-4 w-4 mr-2" />
+                          Take Quiz
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </section>
+
+                {/* Settings Section */}
+                <section id="section-settings">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Column */}
+                    <div className="space-y-6">
+                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#21d8ff]/20">
+                          <User className="h-5 w-5 text-[#21d8ff]" />
+                        </div>
+                        <span>Profile Information</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4">
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <User className="h-3 w-3" />
+                            Name
+                          </div>
+                          <div className="font-medium">
+                            {user?.firstName || user?.lastName 
+                              ? `${user.firstName || ''} ${user.lastName || ''}`.trim() 
+                              : 'Not set'}
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <MessageSquare className="h-3 w-3" />
+                            Email
+                          </div>
+                          <div className="font-medium">{user?.email || 'Not set'}</div>
+                        </div>
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <Calendar className="h-3 w-3" />
+                            Member Since
+                          </div>
+                          <div className="font-medium">{formatDate(user?.createdAt || new Date())}</div>
+                        </div>
+                      </div>
+                      <Link href="/account-settings">
+                        <Button className="w-full bg-[#D4FF1F] text-black" data-testid="button-account-settings">
+                          Edit Profile
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+
+                  {/* Security & Login Activity - in left column */}
+                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#f97316]/20">
+                          <Lock className="h-5 w-5 text-[#f97316]" />
+                        </div>
+                        <span>Security & Login Activity</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Shield className="h-4 w-4 text-green-500" />
+                            <div>
+                              <p className="text-sm font-medium">Account Security</p>
+                              <p className="text-xs text-muted-foreground">Your account is protected</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-green-500/10 text-green-500 border-green-500/30">Secure</Badge>
+                        </div>
+                        
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="text-sm font-medium">Password & Account</p>
+                              <p className="text-xs text-muted-foreground">Managed securely by Auth0</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">Auth0</Badge>
+                        </div>
+                        
+                        <div className="pt-2">
+                          <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                            <History className="h-4 w-4" />
+                            Recent Login Activity
+                          </p>
+                          {loginHistoryLoading ? (
+                            <div className="space-y-2">
+                              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                            </div>
+                          ) : loginHistory && loginHistory.length > 0 ? (
+                            <div className="space-y-2">
+                              {loginHistory.slice(0, 3).map((login, idx) => (
+                                <div key={login.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 text-sm" data-testid={`login-${login.id}`}>
+                                  <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {login.userAgent?.split(' ').slice(0, 3).join(' ') || 'Unknown device'}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground shrink-0">{formatDate(login.loginAt)}</span>
+                                  {idx === 0 && <Badge className="bg-green-500/10 text-green-500 border-green-500/30 text-xs">Current</Badge>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground text-center py-4">No login history available</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Affiliate Status - in left column */}
+                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#9d4edd]/20">
+                          <Award className="h-5 w-5 text-[#9d4edd]" />
+                        </div>
+                        <span>Affiliate Program</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {affiliate?.id ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/10 border border-green-500/40">
+                            <div className="p-2 rounded-full bg-green-500/20">
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            </div>
+                            <div>
+                              <span className="text-green-400 font-semibold">Active Affiliate</span>
+                              <p className="text-xs text-muted-foreground">Earning commissions on referrals</p>
+                            </div>
+                          </div>
+                          <Link href="/affiliate/dashboard">
+                            <Button variant="outline" className="w-full border-[#9d4edd]/40" data-testid="button-affiliate-dashboard">
+                              View Dashboard
+                              <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="p-4 rounded-xl border border-[#9d4edd]/20 bg-[#9d4edd]/5">
+                            <p className="text-sm text-muted-foreground flex items-start gap-2">
+                              <Sparkles className="h-4 w-4 text-[#9d4edd] shrink-0 mt-0.5" />
+                              Join our affiliate program and earn commissions on referrals. Get 10% on every sale!
+                            </p>
+                          </div>
+                          <Link href="/affiliate">
+                            <Button className="w-full bg-gradient-to-r from-[#9d4edd] to-[#9d4edd]/80 text-white" data-testid="button-join-affiliate">
+                              Join Now
+                              <ArrowRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-6">
+                  {/* Saved Addresses */}
+                  <Card className="border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          <div className="p-2 rounded-lg bg-[#D4FF1F]/20">
+                            <MapPin className="h-5 w-5 text-[#D4FF1F]" />
+                          </div>
+                          <span>Saved Addresses</span>
+                        </CardTitle>
+                        <Button size="sm" variant="outline" className="border-[#D4FF1F]/40" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-address">
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {addressesLoading ? (
+                        <div className="space-y-2">
+                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+                        </div>
+                      ) : savedAddresses && savedAddresses.length > 0 ? (
+                        <div className="space-y-3">
+                          {savedAddresses.map((addr) => (
+                            <div key={addr.id} className="p-4 rounded-lg border border-[#D4FF1F]/20 bg-[#D4FF1F]/5 flex items-start justify-between gap-3 group" data-testid={`address-${addr.id}`}>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium">{addr.label || "Address"}</p>
+                                  {addr.isDefault && (
+                                    <Badge className="bg-[#D4FF1F]/10 text-[#D4FF1F] border-[#D4FF1F]/30 text-xs">Default</Badge>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {addr.firstName} {addr.lastName}
+                                </p>
+                                <p className="text-sm text-muted-foreground truncate">
+                                  {addr.street}, {addr.city}, {addr.state} {addr.zipCode}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {!addr.isDefault && (
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    disabled={setDefaultAddressMutation.isPending}
+                                    onClick={() => setDefaultAddressMutation.mutate(addr.id)}
+                                    data-testid={`button-set-default-${addr.id}`}
+                                  >
+                                    <CheckCircle className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  onClick={() => {
+                                    setEditingAddress({
+                                      id: addr.id,
+                                      label: addr.label,
+                                      firstName: addr.firstName,
+                                      lastName: addr.lastName,
+                                      street: addr.street,
+                                      city: addr.city,
+                                      state: addr.state,
+                                      zipCode: addr.zipCode,
+                                      country: addr.country,
+                                    });
+                                    setAddressEditDialogOpen(true);
+                                  }}
+                                  data-testid={`button-edit-address-${addr.id}`}
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  className="text-red-500"
+                                  disabled={deleteAddressMutation.isPending}
+                                  onClick={() => deleteAddressMutation.mutate(addr.id)}
+                                  data-testid={`button-delete-address-${addr.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <MapPin className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">No saved addresses</p>
+                          <Button size="sm" variant="outline" onClick={() => setNewAddressDialogOpen(true)} data-testid="button-add-first-address">
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add Address
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Notification Preferences */}
+                  <Card className="border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#ec4899]/20">
+                          <Bell className="h-5 w-5 text-[#ec4899]" />
+                        </div>
+                        <span>Notification Preferences</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {prefsLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                        </div>
+                      ) : notificationPrefs ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Package className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Order Updates</p>
+                                <p className="text-xs text-muted-foreground">Shipping and delivery notifications</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.emailShippingUpdates ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailShippingUpdates: !notificationPrefs.emailShippingUpdates })}
+                              data-testid="toggle-order-updates"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailShippingUpdates ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Sparkles className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Promotions</p>
+                                <p className="text-xs text-muted-foreground">Deals and special offers</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.emailPromotions ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailPromotions: !notificationPrefs.emailPromotions })}
+                              data-testid="toggle-promotions"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailPromotions ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Mail className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Newsletter</p>
+                                <p className="text-xs text-muted-foreground">Research updates and news</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.emailNewsletter ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailNewsletter: !notificationPrefs.emailNewsletter })}
+                              data-testid="toggle-newsletter"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailNewsletter ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Smartphone className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">SMS Alerts</p>
+                                <p className="text-xs text-muted-foreground">Text message notifications</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.smsOrderUpdates ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ smsOrderUpdates: !notificationPrefs.smsOrderUpdates })}
+                              data-testid="toggle-sms"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.smsOrderUpdates ? "On" : "Off"}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <Bell className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground">Loading preferences...</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                    </div>
+                  </div>
+
+                  {/* Danger Zone - Full Width */}
+                  <div className="mt-6">
+                  <Card className="border-red-500/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-red-500">
+                        <AlertTriangle className="h-5 w-5" />
+                        Danger Zone
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Suspense fallback={null}><LogbookWipeCard /></Suspense>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Permanently delete your account and all associated data.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="border-red-500/50 text-red-500"
+                        onClick={() => setDeleteDialogOpen(true)}
+                        data-testid="button-delete-account"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  </div>
+                </section>
               </div>
             </motion.div>
           </motion.div>

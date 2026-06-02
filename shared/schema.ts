@@ -208,6 +208,8 @@ export const orders = pgTable("orders", {
   paypalCapturedAmount: decimal("paypal_captured_amount", { precision: 10, scale: 2 }),
   // Test/sandbox indicator - true for PayPal sandbox or test orders
   isTest: boolean("is_test").default(false),
+  // Batch/lot number linked at fulfillment time (optional; enables B1 COA link)
+  batchNumber: text("batch_number"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
