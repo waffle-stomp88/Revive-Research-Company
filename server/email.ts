@@ -186,7 +186,7 @@ function getSharedFooterHtml(email: string, reason: EmailReason, theme: 'dark' |
                 <p style="color: ${ruoHeadingColor}; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 4px 0;">
                   Research Use Only
                 </p>
-                <p style="color: ${ruoTextColor}; font-size: 10px; line-height: 1.5; margin: 0;">
+                <p style="color: ${ruoTextColor}; font-size: 12px; line-height: 1.5; margin: 0;">
                   All products are intended for laboratory research purposes only. Not for human or animal consumption.
                 </p>
               </div>
@@ -734,7 +734,7 @@ export function getShippedNotificationTemplate(order: {
   zipCode?: string;
   country?: string;
   items?: Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }> | null;
-}, trackingNumber: string, carrier: string, estimatedDelivery?: string): { subject: string; text: string; html: string } {
+}, trackingNumber: string, carrier: string, estimatedDelivery?: string, itemNames?: string[]): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
@@ -836,7 +836,7 @@ ${getSharedFooterText(order.email, 'shipping')}
                   On Its Way!
                 </h1>
                 
-                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.4);">
+                <span style="display: inline-block; background: transparent; border: 1px solid #D4FF1F; color: #D4FF1F; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px;">
                   ORDER #${shortRef}
                 </span>
               </div>
@@ -858,7 +858,7 @@ ${getSharedFooterText(order.email, 'shipping')}
                 </p>
                 <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
                   <tr>
-                    <td style="background: ${styles.accentColor}; padding: 14px 32px; border-radius: 100px; box-shadow: 0 0 20px rgba(33, 216, 255, 0.4);">
+                    <td style="background: #D4FF1F; padding: 14px 32px; border-radius: 100px; box-shadow: 0 0 30px rgba(212, 255, 31, 0.4);">
                       <a href="${trackingUrl}" target="_blank" style="color: #000000; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 1px;">TRACK PACKAGE &rarr;</a>
                     </td>
                   </tr>
@@ -967,11 +967,21 @@ ${getSharedFooterText(order.email, 'shipping')}
                         <span style="color: #999999; font-size: 18px; font-weight: 700;">3</span>
                       </div>
                       <p style="color: #999999; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
-                      <p style="color: #666666; font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #666666; font-size: 11px; margin: 0;">On the Way</p>
                     </td>
                   </tr>
                 </table>
               </div>
+              
+              ${itemNames && itemNames.length > 0 ? `
+              <!-- What's in this shipment -->
+              <div style="background-color: #1e2a2d; border: 1px solid rgba(33,216,255,0.3); border-radius: 16px; padding: 24px; margin-top: 20px;">
+                <p style="color: #21d8ff; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                  What's in this shipment
+                </p>
+                ${itemNames.map(name => `<p style="color: #ffffff; font-size: 14px; font-weight: 500; margin: 0 0 8px 0; padding: 8px 12px; background: rgba(255,255,255,0.04); border-radius: 8px;">${name}</p>`).join('')}
+              </div>
+              ` : ''}
               
             </td>
           </tr>
@@ -1012,8 +1022,8 @@ export async function sendShippedNotificationEmail(order: {
   zipCode?: string;
   country?: string;
   items?: Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }> | null;
-}, trackingNumber: string, carrier: string, estimatedDelivery?: string): Promise<EmailResult> {
-  const template = getShippedNotificationTemplate(order, trackingNumber, carrier, estimatedDelivery);
+}, trackingNumber: string, carrier: string, estimatedDelivery?: string, itemNames?: string[]): Promise<EmailResult> {
+  const template = getShippedNotificationTemplate(order, trackingNumber, carrier, estimatedDelivery, itemNames);
   const timestamp = new Date().toISOString();
   
   const result = await sendEmail({

@@ -3328,20 +3328,25 @@ export async function registerRoutes(
       if (isNewTracking) {
         try {
           const { sendShippedNotificationEmail } = await import('./email');
-          // Prefer stored items; fall back to product-name lookup for historical orders
-          let shippingItems = (order.items && (order.items as any[]).length > 0)
-            ? order.items as Array<{ productId: string; name: string; dosage?: string; quantity: number; unitPrice: number }>
-            : null;
-          if (!shippingItems) {
-            const fallbackProduct = await storage.getProduct(order.productId);
-            shippingItems = [{
-              productId: order.productId,
-              name: fallbackProduct?.name || order.productId,
-              quantity: order.quantity,
-              unitPrice: parseFloat(order.totalAmount) / Math.max(order.quantity, 1),
-            }];
+          // Build itemNames: prefer stored line items, then stack lookup, then single product
+          let itemNames: string[] | undefined;
+          try {
+            if (order.items && (order.items as any[]).length > 0) {
+              itemNames = (order.items as Array<{ name: string }>).map(i => i.name);
+            } else if (order.productId) {
+              const stack = await storage.getResearchStackById(order.productId);
+              if (stack && stack.peptideIds && stack.peptideIds.length > 0) {
+                const products = await Promise.all(stack.peptideIds.map((id: string) => storage.getProduct(id)));
+                itemNames = products.filter(Boolean).map((p: any) => p!.name);
+              } else {
+                const product = await storage.getProduct(order.productId);
+                if (product) itemNames = [product.name];
+              }
+            }
+          } catch (lookupError) {
+            console.warn(`[Shipping] Could not resolve item names for order ${order.id}:`, lookupError);
           }
-          await sendShippedNotificationEmail({ ...order, items: shippingItems }, trackingNumber, carrier, estimatedDelivery || undefined);
+          await sendShippedNotificationEmail(order, trackingNumber, carrier, estimatedDelivery || undefined, itemNames);
           console.log(`[Shipping] Sent shipping notification for order ${order.id} - ${carrier} ${trackingNumber}`);
         } catch (emailError) {
           console.error(`[Shipping] Failed to send shipping email for order ${order.id}:`, emailError);
