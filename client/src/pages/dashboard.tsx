@@ -338,6 +338,24 @@ export default function Dashboard() {
     ? (orderCount - currentTier.minOrders) / (nextTier.minOrders - currentTier.minOrders)
     : 1;
 
+  // Progress-aware sub-greeting — highest-signal fact about this user's state
+  const subGreeting = useMemo(() => {
+    if (reorderNudge?.dueCompounds?.length) {
+      const top = reorderNudge.dueCompounds[0];
+      return { icon: RefreshCw, text: `${top.name} is due for reorder` };
+    }
+    if (nextTier && ordersToNextTier > 0 && ordersToNextTier <= 3) {
+      return { icon: Trophy, text: `${ordersToNextTier} order${ordersToNextTier !== 1 ? 's' : ''} to ${nextTier.name}` };
+    }
+    if (researchProfile?.currentModuleId && completedLessons.length > 0) {
+      return { icon: BookOpen, text: `${completedLessons.length} lesson${completedLessons.length !== 1 ? 's' : ''} completed in the Academy` };
+    }
+    if (isEmpty && isFoundingMember) {
+      return { icon: Crown, text: 'Your Founding Member spot is reserved' };
+    }
+    return null;
+  }, [reorderNudge, nextTier, ordersToNextTier, researchProfile, completedLessons, isEmpty, isFoundingMember]);
+
   // Deduplicated "order again" cards — one card per distinct product, most recent
   // order wins, live catalog price used (NOT historical order amount). Products
   // absent from the catalog are silently omitted.
@@ -435,37 +453,54 @@ export default function Dashboard() {
             {/* Compact Greeting Header */}
             <motion.div variants={itemVariants} className="mb-8">
               <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h1
-                    className="font-['Bebas_Neue'] text-3xl md:text-4xl tracking-wide text-white leading-none"
-                    data-testid="text-user-name"
-                  >
-                    {isEmpty
-                      ? `Welcome, ${user?.firstName || 'Researcher'}`
-                      : (() => {
-                          const hour = new Date().getHours();
-                          const g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-                          return `${g}, ${user?.firstName || 'Researcher'}`;
-                        })()}
-                  </h1>
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    {/* Standing tier chip — chartreuse */}
-                    <span
-                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#D4FF1F]/40 bg-[#D4FF1F]/10 text-[#D4FF1F] text-xs font-medium"
-                      data-testid="badge-standing-tier"
+                <div className="flex items-center gap-4">
+                  {/* Profile avatar */}
+                  <Avatar className="h-14 w-14 shrink-0 border-2 border-white/10">
+                    <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? 'Profile'} />
+                    <AvatarFallback className="bg-[#D4FF1F]/10 text-[#D4FF1F] font-semibold text-lg">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div>
+                    <h1
+                      className="font-['Bebas_Neue'] text-3xl md:text-4xl tracking-wide text-white leading-none"
+                      data-testid="text-user-name"
                     >
-                      <FlaskConical className="h-3 w-3" />
-                      {currentTier.name}{/* COMPLIANCE PENDING */}
-                    </span>
-                    {/* Founding Member chip — only in populated state (spec: empty state shows Tier 1 chip only) */}
-                    {isFoundingMember && !isEmpty && (
+                      {isEmpty
+                        ? `Welcome, ${user?.firstName || 'Researcher'}`
+                        : (() => {
+                            const hour = new Date().getHours();
+                            const g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                            return `${g}, ${user?.firstName || 'Researcher'}`;
+                          })()}
+                    </h1>
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      {/* Standing tier chip — chartreuse */}
                       <span
-                        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#9d4edd]/40 bg-[#9d4edd]/10 text-[#9d4edd] text-xs font-medium"
-                        data-testid="badge-founding-member"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#D4FF1F]/40 bg-[#D4FF1F]/10 text-[#D4FF1F] text-xs font-medium"
+                        data-testid="badge-standing-tier"
                       >
-                        <Crown className="h-3 w-3" />
-                        Founding Member{/* COMPLIANCE PENDING */}
+                        <FlaskConical className="h-3 w-3" />
+                        {currentTier.name}{/* COMPLIANCE PENDING */}
                       </span>
+                      {/* Founding Member chip — only in populated state */}
+                      {isFoundingMember && !isEmpty && (
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-[#9d4edd]/40 bg-[#9d4edd]/10 text-[#9d4edd] text-xs font-medium"
+                          data-testid="badge-founding-member"
+                        >
+                          <Crown className="h-3 w-3" />
+                          Founding Member{/* COMPLIANCE PENDING */}
+                        </span>
+                      )}
+                    </div>
+                    {/* Progress-aware sub-greeting */}
+                    {subGreeting && (
+                      <p className="flex items-center gap-1.5 mt-1.5 text-xs text-white/50" data-testid="text-sub-greeting">
+                        <subGreeting.icon className="h-3 w-3 shrink-0" />
+                        {subGreeting.text}
+                      </p>
                     )}
                   </div>
                 </div>
