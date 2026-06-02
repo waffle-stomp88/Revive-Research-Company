@@ -1,0 +1,23 @@
+Replit has marked this "complete," but read what's actually in that summary, because two of the items it lists as casual asides are the exact silent-break risks I flagged, and a third undercuts a claim it's making. I would not merge this yet.
+
+**Follow-up #1051 — "Order Details dialog trigger wiring."** Look at what that means. We deliberately *moved* the Order Details dialog to `dashboard-orders.tsx` instead of deleting it, on the theory that it was a real feature whose trigger we hadn't found. This follow-up confirms the dialog has *no working trigger*, it's sitting on the orders page unwired. So one of two things is true: either it was genuinely dead all along (in which case moving it was harmless but it's still non-functional clutter), or its trigger was supposed to exist and doesn't. Either way, "Order history with an Order Details dialog you can't open" is a half-finished feature on a customer-facing page. That's not a "be aware of" footnote, it's the orders page not being done. Decide now: either wire the trigger (a row click opens the detail) as part of *this* work since it's core order-history function, or consciously accept the orders page ships without a detail view and the dialog should've been deleted, not moved. Don't let it merge as dead UI on a live page by default.
+
+**The "Continue module" deep-link is broken.** Replit says the home's Continue CTA now points to `/dashboard/academy?module=...` but the academy page doesn't read that param, "so deep-linking into a specific module won't work." That's a regression. Before the move, Continue presumably took the user to their in-progress module. Now it dumps them on the academy page with the param ignored, so "Continue where you left off" lands you on a generic page, not your module. The whole point of the Continue card (from the original research, the return-driver) is that it resumes you. If it doesn't resume, it's decorative. This needs handling now, either the academy page consumes the param and scrolls/opens the right module, or the Continue card links somewhere that actually works. Not a follow-up.
+
+**The completion claim rests on a compile, and I still don't see the authenticated walk.** The summary lists what was *built* and that the line count dropped, but nothing here says "I loaded the authenticated home and all 8 sections render with real data" or "I walked all 7 sub-pages against the 16-item checklist." Given the strip took six-plus corrective passes and already accidentally deleted `orderCount` once, "complete" on the strength of structure-plus-compile isn't enough. The three checks from my last message still haven't been confirmed:
+
+1. Authenticated home renders all 8 sections with real data, hero products, standing tier, recap numbers, order count especially.
+2. All 7 sub-pages walked, privacy note on logbook, all six settings blocks with working dialogs, and now specifically the Order Details dialog situation on the orders page.
+3. A clean final validation, not 7-passed-1-failed-then-marked-complete.
+
+**On the two proposed follow-ups (#1050 breadcrumbs, #1051 dialog wiring):** breadcrumbs are reasonable to defer, that's genuine new polish. But #1051 isn't really a "follow-up," it's "this task's orders page isn't functionally complete." Pushing it to a future task means shipping a known-broken detail view in the meantime. I'd fold #1051 into this task's completion, not defer it.
+
+So my call: **this is structurally done and the architecture is right, but it's not merge-ready on these three open threads.** Before merge:
+
+- Resolve the Order Details dialog: wire its trigger or delete it. No dead UI on the orders page.
+- Fix the Continue deep-link so it actually resumes the module, or repoint it. No broken return-path.
+- Do the authenticated walk (home + 7 sub-pages) and get a clean validation. Compile-passing isn't the bar; rendering-with-real-data is.
+
+The breadcrumbs (#1050) can be a real follow-up. The other two are this task finishing its job.
+
+You've run the verify-before-trust play on every prior phase and it's caught something real every single time. This summary is asking you to accept "complete" on a compile plus a line count, with two functional gaps disclosed as asides. Same instinct as always: load the authenticated pages and look before you merge. Want me to write the pre-merge punch list as a reply to Replit?

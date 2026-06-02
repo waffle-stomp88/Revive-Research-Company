@@ -30,6 +30,13 @@ import CoaVerification from "@/pages/coa";
 import CoaLibrary from "@/pages/coa-library";
 import Dashboard from "@/pages/dashboard";
 import DashboardSummary from "@/pages/dashboard-summary";
+const DashboardOrders = lazy(() => import("@/pages/dashboard-orders"));
+const DashboardStacks = lazy(() => import("@/pages/dashboard-stacks"));
+const DashboardLogbook = lazy(() => import("@/pages/dashboard-logbook"));
+const DashboardCycles = lazy(() => import("@/pages/dashboard-cycles"));
+const DashboardAcademy = lazy(() => import("@/pages/dashboard-academy"));
+const DashboardWishlist = lazy(() => import("@/pages/dashboard-wishlist"));
+const DashboardSettings = lazy(() => import("@/pages/dashboard-settings"));
 import AccountSettings from "@/pages/account-settings";
 import Admin from "@/pages/admin";
 import CompoundAudit from "@/pages/admin/compound-audit";
@@ -219,6 +226,55 @@ function Router() {
         <Route path="/dashboard/summary">
           <ProtectedRoute>
             <DashboardSummary />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/orders">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardOrders />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/stacks">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardStacks />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/logbook">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardLogbook />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/cycles">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardCycles />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/academy">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardAcademy />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/wishlist">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardWishlist />
+            </Suspense>
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/settings">
+          <ProtectedRoute>
+            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
+              <DashboardSettings />
+            </Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard" component={Dashboard} />
