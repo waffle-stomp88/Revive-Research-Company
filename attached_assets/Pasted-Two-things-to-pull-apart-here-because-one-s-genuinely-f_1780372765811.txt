@@ -1,0 +1,21 @@
+Two things to pull apart here, because one's genuinely fine and one is a number that just jumped and deserves a beat of attention before you move on.
+
+**Gate #2 is properly closed.** The earlier "no 500 from an unauth curl" was correctly flagged as insufficient (an unauthenticated hit doesn't exercise the same path), and Replit went back and showed the *authenticated* result: `GET /api/user/subscriptions → STATUS:200 BODY:[]`, hardcoded empty array, no DB query, post-Step-4. That's the real proof, and the route now can't throw because there's no ORM query left to fail. Done correctly. Good that the validation caught the unauth-curl shortcut and it got fixed rather than waved through.
+
+**Gate #1 deferred with the SQL written to a checklist file, exactly right.** It's marked DEFERRED (not faked-passed), the exact verification query is saved to `.local/tasks/prelaunch-paypal-gate.md`, and it's yours to run on the first real PayPal order before launch. That's the honest close we agreed on. Just, make sure you actually know where that file is and that it surfaces at launch, a checklist item in a file you forget exists is the same as no checklist item. Put a note somewhere you'll see it (wherever you track launch tasks), not just buried in `.local/tasks/`.
+
+**Now the thing to not skate past: dashboard.tsx went from "~60 references" to "123 errors."** Earlier in this thread the count was 28, then the #1069 plan said ~60, now this says 123. I'm not alarmed, TypeScript error counts inflate because one undefined name throws multiple errors across every place it's used, so 60 missing *names* can easily produce 123 *errors*. That's the likely explanation and it's benign. But confirm it's that and not that the number is genuinely growing as more gets touched. The quick check: is 123 the count of *errors* (expected to be higher than the name count) or *distinct undefined names* (which should still be ~60)? If it's errors-from-the-same-~60-names, fine, #1069 handles it. If the distinct-name count is climbing, something's actively breaking more, and that's worth knowing before #1069 runs.
+
+The "all 123 present in commit `4ec99422` before #1068" claim is the reassuring part and it's the right kind of evidence, commit archaeology, not assertion. It confirms #1068's schema work didn't cause them (dashboard.tsx imports nothing from the removed subscriptions exports). So #1068 is genuinely clean on its own scope, and the 123 are #1069's job. That separation holds.
+
+So where you are: **#1068 is done, correctly.** Both gates honestly resolved (one verified, one deferred-with-SQL), migration clean, e2e green, and its own TS footprint is zero errors. The 123 dashboard.tsx errors are pre-existing and belong to #1069, which is exactly the task queued next.
+
+Two quick things before you fire #1069:
+
+1. Confirm the 123 is error-count-from-~60-names, not 123 distinct broken names. One line: have Replit show the count of unique undefined identifiers, not the raw error count. If it's ~60 names → expected, proceed. If it's 123 names → something grew, look before running.
+
+2. Make sure that PayPal pre-launch checklist file is somewhere you'll actually see it at launch, not just on disk.
+
+Then run #1069. Its gate is the `tsc --noEmit` output going to **zero** errors, shown in full. That's the number that proves the dashboard repair worked, 123 → 0, with the actual command output, not "it's clean now." That single number dropping to zero is the cleanest possible proof this whole cleanup arc is finished.
+
+You're basically there. #1068 closed honestly, #1069 is the last repair, and its success is a number you can read at a glance.

@@ -59,3 +59,28 @@ npx playwright install chromium
 - **CDN**: Google Fonts (DM Sans, Bebas Neue)
 - **UI Libraries**: Radix UI, shadcn/ui, cmdk, embla-carousel-react, lucide-react
 - **Form & Validation**: react-hook-form, @hookform/resolvers, zod, drizzle-zod
+
+## Pre-Launch Checklist
+
+### PayPal items write — verify on first real multi-product order (BEFORE opening to customers)
+Place a deliberate 2–3 product order through the real PayPal checkout as your own first transaction, then run this query and confirm all five checks pass:
+
+```sql
+SELECT id, paypal_order_id, total_amount, is_test, items, created_at
+FROM orders
+WHERE paypal_order_id IS NOT NULL
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+**Must confirm:**
+1. `items` has one entry per distinct product (2 products in cart → array length 2)
+2. Each `name` is a real product name — not a UUID like `3f2504e0-4f89-...`
+3. Each `unitPrice` is the per-item price, not `totalAmount ÷ quantity`
+4. `SUM(unitPrice × quantity)` across all items ≈ `total_amount` (within $0.50)
+5. Order created with correct payment method and status
+
+Full diagnostic detail: `.local/tasks/prelaunch-paypal-gate.md`
+
+### TypeScript gate — standing rule for all future refactors
+Any task that moves code between files must include a `tsc --noEmit` zero-errors check, not just a route-mount walk. A walk cannot detect undefined references in unexercised code paths.

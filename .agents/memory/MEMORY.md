@@ -7,3 +7,4 @@
 - [Drizzle migration discipline](drizzle-migration-discipline.md) — all schema changes must go through drizzle-kit generate; only acceptable hand-edit is IF NOT EXISTS / DO block guards; journal repair pattern documented
 - [Auth storage state fallback](auth-storage-state-fallback.md) — tests/setup/auth-storage-state.json is machine-written by globalSetup every run; hand-editing it corrupts the fallback that Playwright uses when globalSetup throws under race conditions; file is .gitignored
 - [ADD COLUMN idempotency on Neon](add-column-idempotency.md) — information_schema inside DO blocks silently misses columns; always use native ADD COLUMN IF NOT EXISTS syntax instead
+- [TS error count inflation](ts-error-inflation.md) — raw tsc error count ≠ distinct broken names; one undefined name causes one error per usage site; always check unique-name count to size repair work
