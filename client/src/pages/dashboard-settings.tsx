@@ -148,12 +148,16 @@ export function DashboardSettings() {
       <main className="min-h-screen pt-32 md:pt-40 pb-24 relative">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="mb-6">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" data-testid="button-back-to-dashboard">
-                <ChevronLeft className="h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground px-2 h-8" data-testid="button-back-to-dashboard">
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  Dashboard
+                </Button>
+              </Link>
+              <span className="text-muted-foreground/40 select-none">/</span>
+              <span className="text-sm font-medium text-foreground" aria-current="page">Settings</span>
+            </nav>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
