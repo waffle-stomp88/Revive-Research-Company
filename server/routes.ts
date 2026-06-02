@@ -4881,7 +4881,8 @@ Return ONLY valid JSON, no markdown, no explanation.`,
       // Get product details for each notification
       const notificationsWithProducts = await Promise.all(
         notifications.map(async (n) => {
-          const product = await storage.getProductBySlug(n.productId);
+          const product = (await storage.getProductBySlug(n.productId))
+                      ?? (await storage.getProduct(n.productId));
           return {
             ...n,
             productName: product?.name || n.productId
