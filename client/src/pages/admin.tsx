@@ -4464,8 +4464,8 @@ function OrderViewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
           <DialogTitle className="flex items-center gap-2">
             Order {order.id.slice(-8).toUpperCase()}
             <Badge variant={isPaid ? "default" : "secondary"}>
@@ -4477,7 +4477,7 @@ function OrderViewDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto min-h-0 px-6 pb-2 space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <h4 className="font-medium mb-2">Customer</h4>
@@ -4717,30 +4717,31 @@ function OrderViewDialog({
             </div>
           )}
 
-          <div className="flex gap-2 justify-end border-t pt-4">
-            <Button variant="outline" onClick={handleSaveChecklist} data-testid="button-save-checklist">
-              Save Changes
+        </div>
+
+        <div className="shrink-0 flex gap-2 justify-end border-t px-6 py-4">
+          <Button variant="outline" onClick={handleSaveChecklist} data-testid="button-save-checklist">
+            Save Changes
+          </Button>
+          {order.fulfillmentStatus !== "delivered" && (
+            <Button
+              onClick={handleMarkDelivered}
+              disabled={isFulfillmentPending}
+              data-testid="button-mark-delivered"
+            >
+              {isFulfillmentPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4 mr-1" />
+                  Mark Delivered
+                </>
+              )}
             </Button>
-            {order.fulfillmentStatus !== "delivered" && (
-              <Button 
-                onClick={handleMarkDelivered} 
-                disabled={isFulfillmentPending}
-                data-testid="button-mark-delivered"
-              >
-                {isFulfillmentPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    Updating...
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4 mr-1" />
-                    Mark Delivered
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
