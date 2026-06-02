@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Package,
   FileCheck,
@@ -37,6 +38,29 @@ import {
   FileText,
   Activity,
   ShieldCheck,
+  Calendar,
+  Plus,
+  ExternalLink,
+  Trash2,
+  Users,
+  BookMarked,
+  HelpCircle,
+  Zap,
+  Shield,
+  Heart,
+  X,
+  Bookmark,
+  Brain,
+  User,
+  MessageSquare,
+  Mail,
+  Smartphone,
+  AlertTriangle,
+  Monitor,
+  Award,
+  MapPin,
+  Edit3,
+  History as HistoryIcon,
 } from "lucide-react";
 import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -109,6 +133,28 @@ function getStatusColor(status: string | null): "default" | "secondary" | "outli
     default:
       return "outline";
   }
+}
+
+function getStatusStep(order: any) {
+  const fulfillment = order.fulfillmentStatus || "pending";
+  if (fulfillment === "delivered") return 3;
+  if (order.trackingNumber || fulfillment === "ready") return 2;
+  if (fulfillment === "preparing") return 1;
+  if (order.status === "paid") return 0;
+  return 0;
+}
+
+function getOrderNumber(orderId: string) {
+  return `#${orderId.slice(-8).toUpperCase()}`;
+}
+
+function getCarrierTrackingUrl(carrier: string, trackingNumber: string) {
+  const c = carrier.toLowerCase();
+  if (c.includes("usps")) return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+  if (c.includes("ups")) return `https://www.ups.com/track?tracknum=${trackingNumber}`;
+  if (c.includes("fedex")) return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+  if (c.includes("dhl")) return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+  return `https://www.google.com/search?q=${carrier}+tracking+${trackingNumber}`;
 }
 
 export default function Dashboard() {

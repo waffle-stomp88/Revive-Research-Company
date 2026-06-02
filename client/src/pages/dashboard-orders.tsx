@@ -24,6 +24,7 @@ import {
   MapPin,
   ExternalLink,
   FlaskConical,
+  Eye,
 } from "lucide-react";
 import type { Order, Product } from "@shared/schema";
 
@@ -241,7 +242,8 @@ export function DashboardOrders() {
                                   onClick={() => setViewOrderDetails(order)}
                                   data-testid={`button-view-details-${order.id}`}
                                 >
-                                  Details
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  View details
                                 </Button>
                                 <Button
                                   size="sm"
@@ -338,6 +340,54 @@ export function DashboardOrders() {
                   {viewOrderDetails.status || "pending"}
                 </Badge>
               </div>
+
+              {/* Fulfillment progress */}
+              <div className="p-3 rounded-lg border border-white/10 bg-white/5">
+                <p className="text-xs text-muted-foreground mb-3">Fulfillment Progress</p>
+                <div className="flex items-center gap-1">
+                  {["Confirmed", "Processing", "Shipped", "Delivered"].map((step, i) => {
+                    const statusStep = getStatusStep(viewOrderDetails);
+                    const isComplete = i <= statusStep;
+                    const isCurrent = i === statusStep;
+                    return (
+                      <div key={step} className="flex-1 flex flex-col items-center gap-1">
+                        <div className="flex items-center w-full">
+                          <div className={`h-2.5 w-2.5 rounded-full shrink-0 ${isComplete ? "bg-green-500" : "bg-muted"} ${isCurrent ? "ring-2 ring-green-500/30" : ""}`} />
+                          {i < 3 && <div className={`flex-1 h-0.5 ${i < statusStep ? "bg-green-500" : "bg-muted"}`} />}
+                        </div>
+                        <span className={`text-[9px] text-center ${isComplete ? "text-green-500" : "text-muted-foreground"}`}>{step}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Tracking info */}
+              {(viewOrderDetails as any).trackingNumber && (viewOrderDetails as any).carrier && (
+                <div className="p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Truck className="h-4 w-4 text-[#21d8ff]" />
+                    <p className="text-xs text-muted-foreground">Tracking</p>
+                  </div>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="text-sm font-medium">{(viewOrderDetails as any).carrier}</p>
+                      <p className="text-xs font-mono text-muted-foreground">{(viewOrderDetails as any).trackingNumber}</p>
+                    </div>
+                    <a
+                      href={getCarrierTrackingUrl((viewOrderDetails as any).carrier, (viewOrderDetails as any).trackingNumber)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="link-dialog-track-package"
+                    >
+                      <Button size="sm" variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30">
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Track
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              )}
               <Link href={`/peptides/${viewOrderDetails.productId}`}>
                 <div className="p-4 rounded-lg border border-[#D4FF1F]/20 bg-gradient-to-br from-[#D4FF1F]/5 to-transparent cursor-pointer hover-elevate transition-all">
                   <div className="flex items-start gap-4">
