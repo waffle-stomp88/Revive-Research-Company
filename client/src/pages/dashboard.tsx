@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
@@ -1126,50 +1126,6 @@ export default function Dashboard() {
 
                 {/* Orders Section */}
                 <section id="section-orders" className="space-y-6">
-                  {/* Subscriptions Section */}
-                  {subscriptions && subscriptions.length > 0 && (
-                    <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle className="flex items-center gap-2">
-                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
-                              Active Subscriptions
-                            </CardTitle>
-                            <CardDescription>Manage your recurring orders</CardDescription>
-                          </div>
-                          <Badge className="bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30">
-                            {subscriptions.filter(s => s.status === 'active').length} active
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {subscriptions.map((sub) => (
-                          <div key={sub.id} className="flex items-center gap-4 p-4 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`subscription-${sub.id}`}>
-                            <div className="h-10 w-10 rounded-full bg-[#21d8ff]/20 flex items-center justify-center">
-                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{getProductName(sub.productId)}</p>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <span className="capitalize">{sub.frequency}</span>
-                                {sub.nextBillingDate && (
-                                  <>
-                                    <span>•</span>
-                                    <span>Next: {formatDate(sub.nextBillingDate)}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <Badge className={sub.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/30' : 'bg-muted text-muted-foreground'}>
-                              {sub.status}
-                            </Badge>
-                          </div>
-                        ))}
-                      </CardContent>
-                    </Card>
-                  )}
-
                   {/* Order History */}
                   <Card>
                     <CardHeader>

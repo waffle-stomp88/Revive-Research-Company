@@ -9,7 +9,7 @@ import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db, pool } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote, firstOrderPromos } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote, firstOrderPromos } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
 import { setupAuth, isAuthenticated } from "./sessionAuth";
 import { verifySupabaseToken } from "./supabaseAuth";
@@ -480,40 +480,8 @@ export async function registerRoutes(
   });
 
   app.post("/api/subscriptions/cancel", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ error: "Authentication required" });
-      }
-
-      const { subscriptionId } = req.body;
-      if (!subscriptionId) {
-        return res.status(400).json({ error: "Subscription ID is required" });
-      }
-
-      // Verify the subscription exists and belongs to the authenticated user.
-      // This prevents one user from cancelling another user's subscription
-      // using only a guessed or leaked PayPal subscription ID.
-      const [subscription] = await db.select().from(subscriptions)
-        .where(eq(subscriptions.paypalSubscriptionId, subscriptionId));
-
-      if (!subscription) {
-        return res.status(404).json({ error: "Subscription not found" });
-      }
-
-      if (subscription.userId !== userId) {
-        console.warn(
-          `[Subscriptions] User ${userId} attempted to cancel subscription ` +
-          `${subscriptionId} belonging to user ${subscription.userId}`
-        );
-        return res.status(403).json({ error: "Access denied: subscription does not belong to this account" });
-      }
-
-      await cancelPayPalSubscription(req, res);
-    } catch (error: any) {
-      console.error("Error in subscription cancel authorization:", error);
-      res.status(500).json({ error: "Failed to process cancellation request" });
-    }
+    // Subscriptions deferred to v1.1 — table does not exist yet.
+    return res.status(404).json({ error: "Subscriptions not available" });
   });
 
   // PayPal Webhook handler
@@ -6645,17 +6613,9 @@ Return ONLY valid JSON in this exact format:
   });
 
   // ============== USER SUBSCRIPTIONS ==============
-  app.get("/api/user/subscriptions", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const userSubscriptions = await db.select().from(subscriptions)
-        .where(eq(subscriptions.userId, userId))
-        .orderBy(desc(subscriptions.createdAt));
-      res.json(userSubscriptions);
-    } catch (error) {
-      console.error("Error fetching user subscriptions:", error);
-      res.status(500).json({ error: "Failed to fetch subscriptions" });
-    }
+  app.get("/api/user/subscriptions", isAuthenticated, async (_req: any, res) => {
+    // Subscriptions deferred to v1.1 — table does not exist yet.
+    res.json([]);
   });
 
   // =====================================
