@@ -3880,6 +3880,28 @@ function OrdersTab() {
     },
   });
 
+  const markPaidMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/orders/${id}/mark-paid`);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      toast({
+        title: data.alreadyPaid
+          ? "Order already marked as paid"
+          : data.emailSent
+          ? "Marked as paid — confirmation email sent"
+          : "Order marked as paid",
+      });
+    },
+    onError: () => {
+      toast({ title: "Failed to mark order as paid", variant: "destructive" });
+    },
+  });
+
   const deleteOrderMutation = useMutation({
     mutationFn: async (id: string) => {
       const response = await apiRequest("DELETE", `/api/admin/orders/${id}`);
@@ -4011,13 +4033,13 @@ function OrdersTab() {
   };
 
   // Compute needsAttention flag per order:
-  // (paid AND fulfillment ≠ delivered) OR emailStatus = failed OR isRefunded = true
+  // paid but not yet shipped (no tracking) OR email failed OR refunded
   const computeNeedsAttention = (order: Order): boolean => {
     const isPaid = order.status === "paid";
-    const notDelivered = order.fulfillmentStatus !== "delivered";
+    const notShipped = !order.trackingNumber;
     const emailFailed = order.emailStatus === "failed";
     const isRefunded = order.isRefunded === true;
-    return (isPaid && notDelivered) || emailFailed || isRefunded;
+    return (isPaid && notShipped) || emailFailed || isRefunded;
   };
 
   const needsAttentionOrders = allOrders?.filter(computeNeedsAttention) || [];
@@ -4030,7 +4052,7 @@ function OrdersTab() {
     if (activeFilter === "needs-attention") return computeNeedsAttention(order);
     if (activeFilter === "paid") return order.status === "paid";
     if (activeFilter === "pending") {
-      return order.status === "paid" && order.fulfillmentStatus !== "delivered";
+      return order.status === "paid" && !order.trackingNumber;
     }
     if (activeFilter === "email-failed") return order.emailStatus === "failed";
     return true;
@@ -4361,6 +4383,7 @@ function OrdersTab() {
         onOpenChange={setIsViewDialogOpen}
         products={products || []}
         isFulfillmentPending={updateFulfillmentMutation.isPending}
+        isMarkPaidPending={markPaidMutation.isPending}
         onUpdateFulfillment={(data, closeAfter = false) => {
           if (selectedOrder) {
             updateFulfillmentMutation.mutate({ id: selectedOrder.id, data }, {
@@ -4382,6 +4405,11 @@ function OrdersTab() {
             updateStatusMutation.mutate({ id: selectedOrder.id, status });
           }
         }}
+        onMarkPaid={() => {
+          if (selectedOrder) {
+            markPaidMutation.mutate(selectedOrder.id);
+          }
+        }}
       />
     </div>
   );
@@ -4393,18 +4421,22 @@ function OrderViewDialog({
   onOpenChange, 
   products,
   isFulfillmentPending,
+  isMarkPaidPending,
   onUpdateFulfillment,
   onResendEmail,
-  onUpdateStatus
+  onUpdateStatus,
+  onMarkPaid,
 }: { 
   order: Order | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   products: Product[];
   isFulfillmentPending?: boolean;
+  isMarkPaidPending?: boolean;
   onUpdateFulfillment: (data: any, closeAfter?: boolean) => void;
   onResendEmail: () => void;
   onUpdateStatus: (status: string) => void;
+  onMarkPaid?: () => void;
 }) {
   const [notes, setNotes] = useState(order?.fulfillmentNotes || "");
   const [paymentConfirmed, setPaymentConfirmed] = useState(order?.paymentConfirmed || false);
@@ -4445,19 +4477,6 @@ function OrderViewDialog({
       carrier: carrier || undefined,
       estimatedDelivery: formatEstimatedDelivery(estimatedDelivery),
     });
-  };
-
-  const handleMarkDelivered = () => {
-    onUpdateFulfillment({
-      fulfillmentStatus: "delivered",
-      paymentConfirmed: true,
-      addressCollected: true,
-      packed: true,
-      fulfillmentNotes: notes,
-      trackingNumber: trackingNumber || undefined,
-      carrier: carrier || undefined,
-      estimatedDelivery: formatEstimatedDelivery(estimatedDelivery),
-    }, true);
   };
 
   const isPaid = order.status === "paid";
@@ -4696,13 +4715,6 @@ function OrderViewDialog({
             />
           </div>
 
-          {order.fulfilledAt && (
-            <div className="border-t pt-4 text-sm text-muted-foreground">
-              Delivered on {new Date(order.fulfilledAt).toLocaleString()}
-              {order.fulfilledBy && ` by ${order.fulfilledBy}`}
-            </div>
-          )}
-
           {order.isRefunded && (
             <div className="border-t pt-4">
               <div className="flex items-center gap-2 text-destructive">
@@ -4723,13 +4735,13 @@ function OrderViewDialog({
           <Button variant="outline" onClick={handleSaveChecklist} data-testid="button-save-checklist">
             Save Changes
           </Button>
-          {order.fulfillmentStatus !== "delivered" && (
+          {!isPaid && onMarkPaid && (
             <Button
-              onClick={handleMarkDelivered}
-              disabled={isFulfillmentPending}
-              data-testid="button-mark-delivered"
+              onClick={onMarkPaid}
+              disabled={isMarkPaidPending}
+              data-testid="button-mark-paid"
             >
-              {isFulfillmentPending ? (
+              {isMarkPaidPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                   Updating...
@@ -4737,7 +4749,7 @@ function OrderViewDialog({
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-1" />
-                  Mark Delivered
+                  Mark as Paid
                 </>
               )}
             </Button>
