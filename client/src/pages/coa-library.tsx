@@ -43,6 +43,8 @@ import {
   CheckCircle,
   XCircle,
   Info,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   Tooltip,
@@ -117,6 +119,13 @@ export default function CoaLibrary() {
   const [searchBatch, setSearchBatch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string>("all");
   const [showGlossary, setShowGlossary] = useState(false);
+  const [copiedBatch, setCopiedBatch] = useState<string | null>(null);
+
+  const copyBatch = (batch: string) => {
+    navigator.clipboard.writeText(batch);
+    setCopiedBatch(batch);
+    setTimeout(() => setCopiedBatch(null), 2000);
+  };
 
   useEffect(() => {
     const script = document.createElement("script");
