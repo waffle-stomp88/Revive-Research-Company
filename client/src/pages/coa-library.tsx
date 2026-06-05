@@ -42,7 +42,13 @@ import {
   Building2,
   CheckCircle,
   XCircle,
+  Info,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Coa, Product, CoaGlossaryTerm } from "@shared/schema";
 
 interface TestResult {
@@ -50,6 +56,55 @@ interface TestResult {
   specification: string;
   result: string;
   status: "pass" | "fail";
+}
+
+const TEST_SPECS: Record<string, { specification: string; tooltip: string }> = {
+  "HPLC Purity": {
+    specification: "≥99.0%",
+    tooltip:
+      "Measures the percentage of the sample that is the target compound. Our ≥99.0% standard exceeds the industry baseline of ≥98.0%, meaning less than 1% of impurities or synthesis byproducts.",
+  },
+  "Mass Spectrometry": {
+    specification: "Confirmed",
+    tooltip:
+      "Verifies molecular identity by confirming the compound's molecular weight matches the target peptide. This ensures the vial contains exactly what the label says.",
+  },
+  "Mass Spectrometry (MS)": {
+    specification: "Confirmed",
+    tooltip:
+      "Verifies molecular identity by confirming the compound's molecular weight matches the target peptide. This ensures the vial contains exactly what the label says.",
+  },
+  "Peptide Content": {
+    specification: "≥85% of labeled amount",
+    tooltip:
+      "Measures the actual amount of active peptide in the vial. Due to natural moisture, counterions, and salts in lyophilized powder, net content can vary. Results above 100% indicate the vial contains more than the labeled amount.",
+  },
+  "Appearance": {
+    specification: "White to off-white lyophilized powder",
+    tooltip:
+      "Visual confirmation that the product was properly freeze-dried and stored. Discoloration or non-powder consistency may indicate degradation or contamination.",
+  },
+};
+
+function evaluateStatus(compound: string, result: string): "pass" | "fail" {
+  const name = compound.toLowerCase();
+  const val = result.trim();
+  if (name.includes("hplc") || (name.includes("purity") && !name.includes("content"))) {
+    const num = parseFloat(val.replace("%", ""));
+    return !isNaN(num) && num >= 99.0 ? "pass" : "fail";
+  }
+  if (name.includes("mass spectrometry") || name === "ms") {
+    return val.toLowerCase() === "confirmed" ? "pass" : "fail";
+  }
+  if (name.includes("peptide content")) {
+    const num = parseFloat(val.replace("%", ""));
+    return !isNaN(num) && num >= 85 ? "pass" : "fail";
+  }
+  if (name.includes("appearance")) {
+    const lower = val.toLowerCase();
+    return lower.includes("lyophilized") || lower.includes("powder") ? "pass" : "fail";
+  }
+  return "pass";
 }
 
 export default function CoaLibrary() {
@@ -126,22 +181,31 @@ export default function CoaLibrary() {
     return results.map((result) => {
       if (result.includes("|")) {
         const parts = result.split("|");
+        const compound = parts[0] || "Unknown";
+        const rawSpec = parts[1] || "N/A";
+        const value = parts[2] || "N/A";
+        const specLookup = TEST_SPECS[compound];
         return {
-          compound: parts[0] || "Unknown",
-          specification: parts[1] || "N/A",
-          result: parts[2] || "N/A",
-          status: parts[3] === "pass" ? "pass" : "fail",
+          compound,
+          specification: rawSpec === "N/A" || rawSpec === "—"
+            ? (specLookup?.specification ?? rawSpec)
+            : rawSpec,
+          result: value,
+          status: parts[3] === "pass" || parts[3] === "fail"
+            ? (parts[3] as "pass" | "fail")
+            : evaluateStatus(compound, value),
         };
       }
       const colonIndex = result.indexOf(":");
       if (colonIndex > 0) {
         const label = result.substring(0, colonIndex).trim();
         const value = result.substring(colonIndex + 1).trim();
+        const specLookup = TEST_SPECS[label];
         return {
           compound: label,
-          specification: "—",
+          specification: specLookup?.specification ?? "—",
           result: value,
-          status: "pass" as const,
+          status: evaluateStatus(label, value),
         };
       }
       return {
@@ -490,36 +554,64 @@ export default function CoaLibrary() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {results.map((result, index) => (
-                                <TableRow
-                                  key={index}
-                                  className="border-[#9d4edd]/10"
-                                >
-                                  <TableCell className="font-medium">
-                                    {result.compound}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {result.specification}
-                                  </TableCell>
-                                  <TableCell>{result.result}</TableCell>
-                                  <TableCell className="text-right">
-                                    <Badge
-                                      className={
-                                        result.status === "pass"
-                                          ? "bg-green-500/20 text-green-400"
-                                          : "bg-red-500/20 text-red-400"
-                                      }
-                                    >
-                                      {result.status === "pass" ? (
-                                        <CheckCircle className="h-3 w-3 mr-1" />
-                                      ) : (
-                                        <XCircle className="h-3 w-3 mr-1" />
-                                      )}
-                                      {result.status.toUpperCase()}
-                                    </Badge>
-                                  </TableCell>
-                                </TableRow>
-                              ))}
+                              {results.map((result, index) => {
+                                const specInfo = TEST_SPECS[result.compound];
+                                return (
+                                  <TableRow
+                                    key={index}
+                                    className="border-[#9d4edd]/10"
+                                  >
+                                    <TableCell className="font-medium">
+                                      <div className="flex items-center gap-1.5">
+                                        <span>{result.compound}</span>
+                                        {specInfo && (
+                                          <Tooltip delayDuration={300}>
+                                            <TooltipTrigger asChild>
+                                              <button
+                                                type="button"
+                                                className="inline-flex items-center focus:outline-none"
+                                                aria-label={`Info about ${result.compound}`}
+                                              >
+                                                <Info className="h-3.5 w-3.5 text-[#21d8ff] opacity-70 hover:opacity-100 transition-opacity" />
+                                              </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent
+                                              side="top"
+                                              className="max-w-[280px] text-[13px] text-white leading-relaxed"
+                                              style={{
+                                                backgroundColor: "#1a1a1f",
+                                                border: "1px solid #21d8ff",
+                                              }}
+                                            >
+                                              {specInfo.tooltip}
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                      {result.specification}
+                                    </TableCell>
+                                    <TableCell>{result.result}</TableCell>
+                                    <TableCell className="text-right">
+                                      <Badge
+                                        className={
+                                          result.status === "pass"
+                                            ? "bg-green-500/20 text-green-400"
+                                            : "bg-red-500/20 text-red-400"
+                                        }
+                                      >
+                                        {result.status === "pass" ? (
+                                          <CheckCircle className="h-3 w-3 mr-1" />
+                                        ) : (
+                                          <XCircle className="h-3 w-3 mr-1" />
+                                        )}
+                                        {result.status.toUpperCase()}
+                                      </Badge>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
                             </TableBody>
                           </Table>
                         </div>
