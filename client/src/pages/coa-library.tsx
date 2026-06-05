@@ -459,17 +459,6 @@ export default function CoaLibrary() {
                                 </Button>
                               </a>
                             )}
-                            <Link href={`/coa?batch=${coa.batchNumber}`}>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-[#9d4edd]/30 hover:border-[#9d4edd]"
-                                data-testid={`button-view-coa-${coa.batchNumber}`}
-                              >
-                                <ExternalLink className="h-4 w-4 mr-1" />
-                                View Full
-                              </Button>
-                            </Link>
                             {coa.imageUrl && (
                               <a
                                 href={coa.imageUrl}
