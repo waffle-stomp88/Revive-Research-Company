@@ -1,0 +1,25 @@
+Replit Task: Update COA Display with Specification Standards + Tooltips
+What: Add specification values to the COA results table and add tooltip icons explaining what each test means and why it matters.
+COA Specs to add (all products):
+TestSpecificationTooltip TextHPLC Purity≥99.0%"Measures the percentage of the sample that is the target compound. Our ≥99.0% standard exceeds the industry baseline of ≥98.0%, meaning less than 1% of impurities or synthesis byproducts."Mass Spectrometry (MS)Confirmed"Verifies molecular identity by confirming the compound's molecular weight matches the target peptide. This ensures the vial contains exactly what the label says."Peptide Content≥85% of labeled amount"Measures the actual amount of active peptide in the vial. Due to natural moisture, counterions, and salts in lyophilized powder, net content can vary. Results above 100% indicate the vial contains more than the labeled amount."AppearanceWhite to off-white lyophilized powder"Visual confirmation that the product was properly freeze-dried and stored. Discoloration or non-powder consistency may indicate degradation or contamination."
+UI Implementation:
+
+Fill the currently empty "Specification" column (the dashes in the screenshot) with the spec values above
+Add a small info icon (ℹ️ or question mark circle) next to each test name in the "Test" column
+On hover (desktop) or tap (mobile), show the tooltip text in a dark-themed tooltip bubble matching the site's existing style
+Tooltip should have a slight delay on hover (~300ms) so it doesn't trigger accidentally
+On mobile, tap to open, tap anywhere else to close
+
+Pass/Fail logic update (if not already implemented):
+
+HPLC Purity: PASS if result ≥ 99.0
+Mass Spectrometry: PASS if result = "Confirmed"
+Peptide Content: PASS if result ≥ 85% of labeled dosage
+Appearance: PASS if result contains "lyophilized" or "powder"
+
+Design notes:
+
+Keep the existing dark theme, green PASS badges, and current table layout
+Tooltip background: #1a1a1f (card color), border: 1px solid #21d8ff (cyan accent)
+Tooltip text: white, 13px, max-width 280px
+Info icon: cyan (#21d8ff), subtle, doesn't compete with the data
