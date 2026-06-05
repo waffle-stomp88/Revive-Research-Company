@@ -89,19 +89,25 @@ const TEST_SPECS: Record<string, { specification: string; tooltip: string }> = {
   },
 };
 
+function extractPercent(val: string): number {
+  const parenMatch = val.match(/\(([0-9.]+)%\)/);
+  if (parenMatch) return parseFloat(parenMatch[1]);
+  return parseFloat(val.replace("%", ""));
+}
+
 function evaluateStatus(compound: string, result: string): "pass" | "fail" {
   const name = compound.toLowerCase();
   const val = result.trim();
 
   if (name.includes("hplc") || (name.includes("purity") && !name.includes("content"))) {
-    const num = parseFloat(val.replace("%", ""));
+    const num = extractPercent(val);
     return !isNaN(num) && num >= 99.0 ? "pass" : "fail";
   }
   if (name.includes("mass spectrometry") || name === "ms") {
     return val.toLowerCase() === "confirmed" ? "pass" : "fail";
   }
   if (name.includes("peptide content")) {
-    const num = parseFloat(val.replace("%", ""));
+    const num = extractPercent(val);
     return !isNaN(num) && num >= 85 ? "pass" : "fail";
   }
   if (name.includes("appearance")) {
