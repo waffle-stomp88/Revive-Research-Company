@@ -525,35 +525,53 @@ export default function CoaLibrary() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2">
-                            {coa.labVerificationUrl && (
-                              <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer">
-                                <Button
-                                  size="sm"
-                                  className="bg-[#9d4edd] text-white"
-                                  data-testid={`button-verify-lab-${coa.batchNumber}`}
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="flex flex-wrap gap-2">
+                              {coa.labVerificationUrl && (
+                                <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer">
+                                  <Button
+                                    size="sm"
+                                    className="bg-[#9d4edd] text-white"
+                                    data-testid={`button-verify-lab-${coa.batchNumber}`}
+                                  >
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    Verify with Lab
+                                  </Button>
+                                </a>
+                              )}
+                              {coa.imageUrl && (
+                                <a
+                                  href={coa.imageUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                 >
-                                  <ExternalLink className="h-4 w-4 mr-1" />
-                                  Verify with Lab
-                                </Button>
-                              </a>
-                            )}
-                            {coa.imageUrl && (
-                              <a
-                                href={coa.imageUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-[#9d4edd]/30 hover:border-[#9d4edd]"
+                                    data-testid={`button-download-coa-${coa.batchNumber}`}
+                                  >
+                                    <Download className="h-4 w-4 mr-1" />
+                                    {coa.imageUrl.toLowerCase().endsWith(".pdf") ? "View PDF" : "View Document"}
+                                  </Button>
+                                </a>
+                              )}
+                            </div>
+                            {coa.searchCode && (
+                              <button
+                                type="button"
+                                onClick={() => copyBatch(coa.searchCode!)}
+                                className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-[#21d8ff] transition-colors"
+                                data-testid={`button-copy-search-code-${coa.batchNumber}`}
+                                title="Copy lab search code"
                               >
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-[#9d4edd]/30 hover:border-[#9d4edd]"
-                                  data-testid={`button-download-coa-${coa.batchNumber}`}
-                                >
-                                  <Download className="h-4 w-4 mr-1" />
-                                  {coa.imageUrl.toLowerCase().endsWith(".pdf") ? "View PDF" : "View Document"}
-                                </Button>
-                              </a>
+                                {copiedBatch === coa.searchCode ? (
+                                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
+                                ) : (
+                                  <Copy className="h-3 w-3 flex-shrink-0" />
+                                )}
+                                <span>Search code: {coa.searchCode}</span>
+                              </button>
                             )}
                           </div>
                         </div>
