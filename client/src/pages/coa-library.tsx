@@ -404,7 +404,7 @@ export default function CoaLibrary() {
                         <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-display text-xl font-bold">
+                              <h3 className="font-display font-bold text-[25px]">
                                 {getProductName(coa.productId)}
                                 {coa.dosage && <span className="text-muted-foreground ml-2 text-base font-normal">({coa.dosage})</span>}
                               </h3>
