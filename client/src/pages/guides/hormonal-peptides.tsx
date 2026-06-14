@@ -553,7 +553,7 @@ export default function HormonalPeptidesGuide() {
       title="Hormonal Axis Peptides: HPG Cascade, GnRH Signaling, and Endocrine Research"
       metaTitle="Hormonal Axis Peptides: HPG Cascade & GnRH Signaling Guide | Revive Research"
       metaDescription="An in-depth research guide covering the HPG axis, GnRH cascade, and how hormonal peptides — Gonadorelin, Kisspeptin, PT-141, Triptorelin, Oxytocin, Enclomiphene, and more — interact with endocrine signaling pathways."
-      canonicalPath="/systems/hormonal"
+      canonicalPath="/guides/hormonal-peptides"
       badgeText="Hormonal System"
       badgeColor="#f43f5e"
       publishDate="2025-10-15"

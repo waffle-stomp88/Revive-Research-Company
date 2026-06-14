@@ -49,6 +49,120 @@ function makeBreadcrumbList(items: Array<{name: string; url: string}>) {
   };
 }
 
+// Body-system data shared across STATIC_ROUTES, getMetaForUrl, and getPreRenderedContent
+const BODY_SYSTEMS: Array<{
+  id: string;
+  name: string;
+  description: string;
+  guideSlug: string;
+  guideTitle: string;
+  guideMetaTitle: string;
+  guideMetaDescription: string;
+  guidePublishDate: string;
+  keyPeptides: string[];
+}> = [
+  {
+    id: 'healing',
+    name: 'Healing & Recovery',
+    description: 'Tissue repair, wound healing, and injury recovery through growth factor activation. Research peptides in this system target collagen synthesis, angiogenesis, and cellular regeneration pathways.',
+    guideSlug: 'healing-peptides',
+    guideTitle: 'Healing Peptides: Tissue Repair Pathways, Angiogenesis Signaling, and Growth Factor Cascades',
+    guideMetaTitle: 'Healing Peptides Guide: BPC-157, TB-500, GHK-Cu & Tissue Repair Pathways | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering the three-phase tissue repair cascade and how healing peptides — BPC-157, TB-500, GHK-Cu, KPV, LL-37, and KLOW Complex — interact with angiogenesis signaling, growth factor activation, and extracellular matrix remodelling.',
+    guidePublishDate: '2025-11-07',
+    keyPeptides: ['BPC-157', 'TB-500', 'GHK-Cu', 'KPV', 'LL-37', 'KLOW Complex'],
+  },
+  {
+    id: 'metabolic',
+    name: 'Metabolic & Energy',
+    description: 'Energy production, fat metabolism, and mitochondrial function optimization. Compounds in this system are studied for their roles in lipolysis, insulin signaling, and thermogenesis.',
+    guideSlug: 'metabolic-peptides',
+    guideTitle: 'Metabolic Peptides: AMPK, Incretin Signaling, and Energy Research',
+    guideMetaTitle: 'Metabolic Peptides: AMPK, GLP-1 Signaling & Energy Research Guide | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering metabolic-cluster peptides — MOTS-C, AICAR, AOD-9604, GLP-1 agonists, 5-Amino-1MQ, SLU-PP-332, and more — and how they interact with AMPK activation, fat oxidation, incretin signaling, and mitochondrial biogenesis.',
+    guidePublishDate: '2025-11-10',
+    keyPeptides: ['MOTS-C', 'AICAR', 'AOD-9604', '5-Amino-1MQ', 'SLU-PP-332'],
+  },
+  {
+    id: 'growth',
+    name: 'Growth & Muscle',
+    description: 'Growth hormone pathways supporting muscle, bone, and cellular development. Research peptides here target GHRH receptors, IGF-1 production, and nitrogen retention.',
+    guideSlug: 'growth-peptides',
+    guideTitle: 'Growth Peptides: GH Secretagogues, IGF-1 Variants, and Muscle Research',
+    guideMetaTitle: 'Growth Peptides: GH Secretagogues, IGF-1 & Muscle Growth Research Guide | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering growth-cluster peptides — GHRH analogs, GHRPs, IGF-1 LR3, IGF-DES, MGF, follistatin, myostatin inhibitors, and more — explaining the GH/IGF-1 axis and how each compound fits into growth factor signaling research.',
+    guidePublishDate: '2025-11-03',
+    keyPeptides: ['CJC-1295', 'Ipamorelin', 'IGF-1 LR3', 'IGF-DES', 'MGF', 'GHRP-2'],
+  },
+  {
+    id: 'growth-hormone',
+    name: 'Growth Hormone Axis',
+    description: 'GHRH/GHRP axis, GH secretagogue receptor pharmacology, and the GH → IGF-1 cascade. Comprehensive coverage of the anterior pituitary growth hormone release pathway.',
+    guideSlug: 'growth-hormone-peptides',
+    guideTitle: 'Growth Hormone Peptides: GHRH/GHRP Axis, GH Secretagogue Mechanisms, and the GH → IGF-1 Cascade',
+    guideMetaTitle: 'Growth Hormone Peptides Guide: CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3 & IGF-DES | Revive Research',
+    guideMetaDescription: 'An in-depth research guide to the growth hormone peptide cluster — covering the GHRH/GHRP axis, GH secretagogue receptor pharmacology, the GH → IGF-1 cascade, and the structural differences between CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES.',
+    guidePublishDate: '2025-10-29',
+    keyPeptides: ['CJC-1295', 'Ipamorelin', 'Tesamorelin', 'IGF-1 LR3', 'IGF-DES', 'GHRP-2', 'Mod GRF 1-29'],
+  },
+  {
+    id: 'cognitive',
+    name: 'Cognitive & Brain Health',
+    description: 'Neuroprotection, focus enhancement, and brain-derived growth factors. Compounds in this system are studied for BDNF upregulation, synaptic plasticity, and neuroinflammation reduction.',
+    guideSlug: 'cognitive-peptides',
+    guideTitle: 'Cognitive Peptides: Neuropeptide Signaling, BDNF Pathways, and Neuro Cluster Research',
+    guideMetaTitle: 'Cognitive Peptides Guide: Semax, Selank, Dihexa, DSIP & Neuropeptide Research | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering the cognitive/neuro neuropeptide cluster — Semax, Selank, Dihexa, DSIP, PT-141, Noopept, NSI-189, and Khavinson bioregulators — their BDNF, GABA, melanocortin, and HGF receptor mechanisms.',
+    guidePublishDate: '2025-10-22',
+    keyPeptides: ['Semax', 'Selank', 'Dihexa', 'DSIP', 'Noopept', 'NSI-189'],
+  },
+  {
+    id: 'skin',
+    name: 'Skin & Aesthetics',
+    description: 'Collagen synthesis, elastin production, and dermal regeneration. Research peptides in this system act on fibroblast activity, copper-dependent enzymes, and melanin regulation.',
+    guideSlug: 'skin-peptides',
+    guideTitle: 'Skin Peptides: Collagen Synthesis, SNARE Modulation, and Dermal Research',
+    guideMetaTitle: 'Skin Peptides: Collagen, SNARE Modulation & Skin Aging Research Guide | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering skin-cluster peptides — Matrixyl, GHK-Cu, Argireline, Snap-8, Leuphasyl, Melanotan, Palmitoyl Tripeptide-1, and more — explaining collagen synthesis, matrikine signaling, neuromuscular modulation, and dermal aging mechanisms.',
+    guidePublishDate: '2025-10-31',
+    keyPeptides: ['GHK-Cu', 'Matrixyl', 'Argireline', 'Snap-8', 'Melanotan II', 'Palmitoyl Tripeptide-1'],
+  },
+  {
+    id: 'longevity',
+    name: 'Longevity & Anti-Aging',
+    description: 'Anti-aging mechanisms including telomere support, autophagy activation, and cellular renewal. Compounds studied for NAD+ pathway support and oxidative stress reduction.',
+    guideSlug: 'longevity-peptides',
+    guideTitle: 'Longevity Peptides: Telomeres, Senescence, Mitochondria, and Anti-Aging Research',
+    guideMetaTitle: 'Longevity Peptides: Telomeres, Senescent Cells & Mitochondrial Research Guide | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering longevity-cluster peptides — Epithalon, FOXO4-DRI, SS-31, Humanin, Glutathione, NAD+ precursors, thymic peptides, and more — mapped to the hallmarks of aging framework and key longevity signaling pathways.',
+    guidePublishDate: '2025-11-14',
+    keyPeptides: ['Epithalon', 'FOXO4-DRI', 'SS-31', 'Humanin', 'Glutathione', 'Thymosin Alpha-1'],
+  },
+  {
+    id: 'hormonal',
+    name: 'Hormonal & Reproductive',
+    description: 'Reproductive axis, endocrine signaling, and sexual health research. Peptides in this system target the hypothalamic-pituitary-gonadal axis and steroidogenesis pathways.',
+    guideSlug: 'hormonal-peptides',
+    guideTitle: 'Hormonal Axis Peptides: HPG Cascade, GnRH Signaling, and Endocrine Research',
+    guideMetaTitle: 'Hormonal Axis Peptides: HPG Cascade & GnRH Signaling Guide | Revive Research',
+    guideMetaDescription: 'An in-depth research guide covering the HPG axis, GnRH cascade, and how hormonal peptides — Gonadorelin, Kisspeptin, PT-141, Triptorelin, Oxytocin, Enclomiphene, and more — interact with endocrine signaling pathways.',
+    guidePublishDate: '2025-10-15',
+    keyPeptides: ['Gonadorelin', 'Kisspeptin-10', 'PT-141', 'Triptorelin', 'Oxytocin', 'Enclomiphene'],
+  },
+];
+
+// Build a lookup map keyed by guide slug (e.g. 'healing-peptides')
+const BODY_SYSTEM_BY_GUIDE_SLUG: Record<string, typeof BODY_SYSTEMS[0]> = {};
+for (const sys of BODY_SYSTEMS) {
+  BODY_SYSTEM_BY_GUIDE_SLUG[sys.guideSlug] = sys;
+}
+
+// Build a lookup map keyed by system id (e.g. 'healing')
+const BODY_SYSTEM_BY_ID: Record<string, typeof BODY_SYSTEMS[0]> = {};
+for (const sys of BODY_SYSTEMS) {
+  BODY_SYSTEM_BY_ID[sys.id] = sys;
+}
+
 const STATIC_ROUTES: Record<string, PageMeta> = {
   "/": {
     title: ROUTE_META["/"].title,
@@ -348,6 +462,182 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
       "datePublished": "2025-12-01"
     }]
   },
+  "/guides/healing-peptides": {
+    title: `Healing Peptides Guide: BPC-157, TB-500, GHK-Cu & Tissue Repair Pathways | ${SITE_NAME}`,
+    description: "An in-depth research guide covering the three-phase tissue repair cascade and how healing peptides — BPC-157, TB-500, GHK-Cu, KPV, LL-37, and KLOW Complex — interact with angiogenesis signaling, growth factor activation, and extracellular matrix remodelling.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Healing Peptides: Tissue Repair Pathways, Angiogenesis Signaling, and Growth Factor Cascades",
+        "description": "An in-depth research guide covering the three-phase tissue repair cascade and how healing peptides — BPC-157, TB-500, GHK-Cu, KPV, LL-37, and KLOW Complex — interact with angiogenesis signaling, growth factor activation, and extracellular matrix remodelling.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-11-07",
+        "url": `${SITE_URL}/guides/healing-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Healing Peptides Guide", url: `${SITE_URL}/guides/healing-peptides` }
+      ])
+    ]
+  },
+  "/guides/metabolic-peptides": {
+    title: `Metabolic Peptides: AMPK, GLP-1 Signaling & Energy Research Guide | ${SITE_NAME}`,
+    description: "An in-depth research guide covering metabolic-cluster peptides — MOTS-C, AICAR, AOD-9604, GLP-1 agonists, 5-Amino-1MQ, SLU-PP-332, and more — and how they interact with AMPK activation, fat oxidation, incretin signaling, and mitochondrial biogenesis.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Metabolic Peptides: AMPK, Incretin Signaling, and Energy Research",
+        "description": "An in-depth research guide covering metabolic-cluster peptides — MOTS-C, AICAR, AOD-9604, GLP-1 agonists, 5-Amino-1MQ, SLU-PP-332, and more — and how they interact with AMPK activation, fat oxidation, incretin signaling, and mitochondrial biogenesis.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-11-10",
+        "url": `${SITE_URL}/guides/metabolic-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Metabolic Peptides Guide", url: `${SITE_URL}/guides/metabolic-peptides` }
+      ])
+    ]
+  },
+  "/guides/growth-peptides": {
+    title: `Growth Peptides: GH Secretagogues, IGF-1 & Muscle Growth Research Guide | ${SITE_NAME}`,
+    description: "An in-depth research guide covering growth-cluster peptides — GHRH analogs, GHRPs, IGF-1 LR3, IGF-DES, MGF, follistatin, myostatin inhibitors, and more — explaining the GH/IGF-1 axis and how each compound fits into growth factor signaling research.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Growth Peptides: GH Secretagogues, IGF-1 Variants, and Muscle Research",
+        "description": "An in-depth research guide covering growth-cluster peptides — GHRH analogs, GHRPs, IGF-1 LR3, IGF-DES, MGF, follistatin, myostatin inhibitors, and more — explaining the GH/IGF-1 axis and how each compound fits into growth factor signaling research.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-11-03",
+        "url": `${SITE_URL}/guides/growth-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Growth Peptides Guide", url: `${SITE_URL}/guides/growth-peptides` }
+      ])
+    ]
+  },
+  "/guides/growth-hormone-peptides": {
+    title: `Growth Hormone Peptides Guide: CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3 & IGF-DES | ${SITE_NAME}`,
+    description: "An in-depth research guide to the growth hormone peptide cluster — covering the GHRH/GHRP axis, GH secretagogue receptor pharmacology, the GH → IGF-1 cascade, and the structural differences between CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Growth Hormone Peptides: GHRH/GHRP Axis, GH Secretagogue Mechanisms, and the GH → IGF-1 Cascade",
+        "description": "An in-depth research guide to the growth hormone peptide cluster — covering the GHRH/GHRP axis, GH secretagogue receptor pharmacology, the GH → IGF-1 cascade, and the structural differences between CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-10-29",
+        "url": `${SITE_URL}/guides/growth-hormone-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Growth Hormone Peptides Guide", url: `${SITE_URL}/guides/growth-hormone-peptides` }
+      ])
+    ]
+  },
+  "/guides/cognitive-peptides": {
+    title: `Cognitive Peptides Guide: Semax, Selank, Dihexa, DSIP & Neuropeptide Research | ${SITE_NAME}`,
+    description: "An in-depth research guide covering the cognitive/neuro neuropeptide cluster — Semax, Selank, Dihexa, DSIP, PT-141, Noopept, NSI-189, and Khavinson bioregulators — their BDNF, GABA, melanocortin, and HGF receptor mechanisms.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Cognitive Peptides: Neuropeptide Signaling, BDNF Pathways, and Neuro Cluster Research",
+        "description": "An in-depth research guide covering the cognitive/neuro neuropeptide cluster — Semax, Selank, Dihexa, DSIP, PT-141, Noopept, NSI-189, and Khavinson bioregulators — their BDNF, GABA, melanocortin, and HGF receptor mechanisms.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-10-22",
+        "url": `${SITE_URL}/guides/cognitive-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Cognitive Peptides Guide", url: `${SITE_URL}/guides/cognitive-peptides` }
+      ])
+    ]
+  },
+  "/guides/skin-peptides": {
+    title: `Skin Peptides: Collagen, SNARE Modulation & Skin Aging Research Guide | ${SITE_NAME}`,
+    description: "An in-depth research guide covering skin-cluster peptides — Matrixyl, GHK-Cu, Argireline, Snap-8, Leuphasyl, Melanotan, Palmitoyl Tripeptide-1, and more — explaining collagen synthesis, matrikine signaling, neuromuscular modulation, and dermal aging mechanisms.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Skin Peptides: Collagen Synthesis, SNARE Modulation, and Dermal Research",
+        "description": "An in-depth research guide covering skin-cluster peptides — Matrixyl, GHK-Cu, Argireline, Snap-8, Leuphasyl, Melanotan, Palmitoyl Tripeptide-1, and more — explaining collagen synthesis, matrikine signaling, neuromuscular modulation, and dermal aging mechanisms.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-10-31",
+        "url": `${SITE_URL}/guides/skin-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Skin Peptides Guide", url: `${SITE_URL}/guides/skin-peptides` }
+      ])
+    ]
+  },
+  "/guides/longevity-peptides": {
+    title: `Longevity Peptides: Telomeres, Senescent Cells & Mitochondrial Research Guide | ${SITE_NAME}`,
+    description: "An in-depth research guide covering longevity-cluster peptides — Epithalon, FOXO4-DRI, SS-31, Humanin, Glutathione, NAD+ precursors, thymic peptides, and more — mapped to the hallmarks of aging framework and key longevity signaling pathways.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Longevity Peptides: Telomeres, Senescence, Mitochondria, and Anti-Aging Research",
+        "description": "An in-depth research guide covering longevity-cluster peptides — Epithalon, FOXO4-DRI, SS-31, Humanin, Glutathione, NAD+ precursors, thymic peptides, and more — mapped to the hallmarks of aging framework and key longevity signaling pathways.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-11-14",
+        "url": `${SITE_URL}/guides/longevity-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Longevity Peptides Guide", url: `${SITE_URL}/guides/longevity-peptides` }
+      ])
+    ]
+  },
+  "/guides/hormonal-peptides": {
+    title: `Hormonal Axis Peptides: HPG Cascade & GnRH Signaling Guide | ${SITE_NAME}`,
+    description: "An in-depth research guide covering the HPG axis, GnRH cascade, and how hormonal peptides — Gonadorelin, Kisspeptin, PT-141, Triptorelin, Oxytocin, Enclomiphene, and more — interact with endocrine signaling pathways.",
+    ogType: "article",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Hormonal Axis Peptides: HPG Cascade, GnRH Signaling, and Endocrine Research",
+        "description": "An in-depth research guide covering the HPG axis, GnRH cascade, and how hormonal peptides — Gonadorelin, Kisspeptin, PT-141, Triptorelin, Oxytocin, Enclomiphene, and more — interact with endocrine signaling pathways.",
+        "author": { "@type": "Organization", "name": "Revive Research" },
+        "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+        "datePublished": "2025-10-15",
+        "url": `${SITE_URL}/guides/hormonal-peptides`
+      },
+      makeBreadcrumbList([
+        { name: "Home", url: SITE_URL },
+        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+        { name: "Hormonal Peptides Guide", url: `${SITE_URL}/guides/hormonal-peptides` }
+      ])
+    ]
+  },
 };
 
 async function getProductMeta(slug: string): Promise<PageMeta | null> {
@@ -473,13 +763,18 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
     const route = STATIC_ROUTES[cleanUrl];
     const meta: PageMeta = { ...route, canonicalUrl: `${SITE_URL}${cleanUrl}` };
     if (cleanUrl.startsWith('/guides/')) {
-      const leafTitle = route.title.replace(` | ${SITE_NAME}`, '');
-      const breadcrumb = makeBreadcrumbList([
-        { name: "Home", url: SITE_URL },
-        { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
-        { name: leafTitle, url: `${SITE_URL}${cleanUrl}` }
-      ]);
-      meta.jsonLd = [...(route.jsonLd || []), breadcrumb];
+      const alreadyHasBreadcrumb = (route.jsonLd || []).some(
+        (s: any) => s['@type'] === 'BreadcrumbList'
+      );
+      if (!alreadyHasBreadcrumb) {
+        const leafTitle = route.title.replace(` | ${SITE_NAME}`, '');
+        const breadcrumb = makeBreadcrumbList([
+          { name: "Home", url: SITE_URL },
+          { name: "Guides", url: `${SITE_URL}/guides/peptide-education-center` },
+          { name: leafTitle, url: `${SITE_URL}${cleanUrl}` }
+        ]);
+        meta.jsonLd = [...(route.jsonLd || []), breadcrumb];
+      }
     }
     return meta;
   }
@@ -497,6 +792,49 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
   if (articleMatch) {
     const meta = await getArticleMeta(articleMatch[1]);
     if (meta) return { ...meta, canonicalUrl: `${SITE_URL}${cleanUrl}` };
+  }
+
+  const systemMatch = cleanUrl.match(/^\/systems\/(.+)$/);
+  if (systemMatch) {
+    const systemId = systemMatch[1];
+    const system = BODY_SYSTEM_BY_ID[systemId];
+    if (system) {
+      return {
+        title: `${system.name} Research Peptides | ${SITE_NAME}`,
+        description: system.description,
+        ogType: "website",
+        canonicalUrl: `${SITE_URL}/systems/${systemId}`,
+        jsonLd: [
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": `${system.name} Research Compounds`,
+            "description": system.description,
+            "url": `${SITE_URL}/systems/${systemId}`,
+            "publisher": { "@type": "Organization", "name": "Revive Research", "logo": { "@type": "ImageObject", "url": DEFAULT_IMAGE } },
+            ...(system.guideSlug ? { "relatedLink": `${SITE_URL}/guides/${system.guideSlug}` } : {})
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": `${system.name} Key Research Compounds`,
+            "url": `${SITE_URL}/systems/${systemId}`,
+            "numberOfItems": system.keyPeptides.length,
+            "itemListElement": system.keyPeptides.map((name, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "name": name,
+              "url": `${SITE_URL}/peptides?system=${systemId}`
+            }))
+          },
+          makeBreadcrumbList([
+            { name: "Home", url: SITE_URL },
+            { name: "Research Systems", url: `${SITE_URL}/peptides` },
+            { name: system.name, url: `${SITE_URL}/systems/${systemId}` }
+          ])
+        ]
+      };
+    }
   }
 
   const stackMatch = cleanUrl.match(/^\/stacks\/([A-Za-z0-9]{6,12})$/);
@@ -801,20 +1139,53 @@ ${items}
     }
   }
 
-  // /systems/:slug — body system pages (data inlined; no LucideIcon dependency on server)
-  const SYSTEMS = [
-    { id: 'healing',   name: 'Healing & Recovery',       description: 'Tissue repair, wound healing, and injury recovery through growth factor activation. Research peptides in this system target collagen synthesis, angiogenesis, and cellular regeneration pathways.' },
-    { id: 'metabolic', name: 'Metabolic & Energy',        description: 'Energy production, fat metabolism, and mitochondrial function optimization. Compounds in this system are studied for their roles in lipolysis, insulin signaling, and thermogenesis.' },
-    { id: 'growth',    name: 'Growth & Muscle',           description: 'Growth hormone pathways supporting muscle, bone, and cellular development. Research peptides here target GHRH receptors, IGF-1 production, and nitrogen retention.' },
-    { id: 'cognitive', name: 'Cognitive & Brain Health',  description: 'Neuroprotection, focus enhancement, and brain-derived growth factors. Compounds in this system are studied for BDNF upregulation, synaptic plasticity, and neuroinflammation reduction.' },
-    { id: 'skin',      name: 'Skin & Aesthetics',         description: 'Collagen synthesis, elastin production, and dermal regeneration. Research peptides in this system act on fibroblast activity, copper-dependent enzymes, and melanin regulation.' },
-    { id: 'longevity', name: 'Longevity & Anti-Aging',    description: 'Anti-aging mechanisms including telomere support, autophagy activation, and cellular renewal. Compounds studied for NAD+ pathway support and oxidative stress reduction.' },
-    { id: 'hormonal',  name: 'Hormonal & Reproductive',   description: 'Reproductive axis, endocrine signaling, and sexual health research. Peptides in this system target the hypothalamic-pituitary-gonadal axis and steroidogenesis pathways.' },
-  ];
+  // /guides/*-peptides — body-system long-form guide pages
+  const guidePeptidesMatch = cleanUrl.match(/^\/guides\/([a-z-]+-peptides)$/);
+  if (guidePeptidesMatch) {
+    const guideSlug = guidePeptidesMatch[1];
+    const sys = BODY_SYSTEM_BY_GUIDE_SLUG[guideSlug];
+    if (sys) {
+      const peptideList = sys.keyPeptides.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+      return `<article itemscope itemtype="https://schema.org/Article">
+  <header>
+    <h1 itemprop="headline">${escapeHtml(sys.guideTitle)}</h1>
+    <p>${escapeHtml(sys.name)} — In-depth research guide</p>
+    <span itemprop="author" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Revive Research" /></span>
+    <meta itemprop="datePublished" content="${sys.guidePublishDate}" />
+  </header>
+  <section itemprop="description">
+    <p>${escapeHtml(sys.guideMetaDescription)}</p>
+  </section>
+  <section>
+    <h2>Key Research Compounds in This Guide</h2>
+    <ul>${peptideList}</ul>
+  </section>
+  <section>
+    <h2>About This System</h2>
+    <p>${escapeHtml(sys.description)}</p>
+  </section>
+  <section>
+    <h2>Research Use Only</h2>
+    <p>All compounds are sold strictly for laboratory and scientific research purposes. Not for human or animal consumption. Every batch is independently tested with a Certificate of Analysis.</p>
+  </section>
+  <footer>
+    <nav>
+      <a href="/systems/${escapeHtml(sys.id)}">View ${escapeHtml(sys.name)} Hub</a> |
+      <a href="/peptides">Browse All Compounds</a> |
+      <a href="/guides/peptide-education-center">Education Center</a> |
+      <a href="/coa/verify-certificate-of-analysis">Verify COA</a>
+    </nav>
+    <p>Revive Research — Premium research compounds with third-party COA verification.</p>
+  </footer>
+</article>`;
+    }
+  }
+
+  // /systems/:slug — body system hub pages
   const systemSlugMatch = cleanUrl.match(/^\/systems\/(.+)$/);
   if (systemSlugMatch) {
     const urlSlug = systemSlugMatch[1];
-    const system = SYSTEMS.find(s => s.id === urlSlug);
+    const system = BODY_SYSTEM_BY_ID[urlSlug];
     if (system) {
       try {
         const allProducts = await storage.getAllProductsWithDisplayPrices();
@@ -827,10 +1198,19 @@ ${items}
               return `<li><a href="/peptides/${escapeHtml(p.slug || '')}">${escapeHtml(p.name)}</a>${price > 0 ? ` — $${price.toFixed(2)}` : ''}${p.inStock ? ' — In Stock' : ' — Out of Stock'}</li>`;
             }).join('')}</ul></section>`
           : '';
+        const keyPeptides = system.keyPeptides.map(p => `<li>${escapeHtml(p)}</li>`).join('');
         return `<main>
   <h1>${escapeHtml(system.name)} Research Compounds | Revive Research</h1>
   <p>${escapeHtml(system.description)}</p>
+  <section>
+    <h2>Key Peptides in This System</h2>
+    <ul>${keyPeptides}</ul>
+  </section>
   ${productSection}
+  <section>
+    <h2>In-Depth Research Guide</h2>
+    <p><a href="/guides/${escapeHtml(system.guideSlug)}">${escapeHtml(system.guideTitle)}</a> — ${escapeHtml(system.guideMetaDescription)}</p>
+  </section>
   <section>
     <h2>Research Use Only</h2>
     <p>All compounds are sold strictly for laboratory and scientific research purposes. Not for human or animal consumption. Every batch is third-party tested with a Certificate of Analysis available for verification.</p>

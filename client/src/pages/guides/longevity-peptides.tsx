@@ -274,7 +274,7 @@ export default function LongevityPeptidesGuide() {
       title="Longevity Peptides: Telomeres, Senescence, Mitochondria, and Anti-Aging Research"
       metaTitle="Longevity Peptides: Telomeres, Senescent Cells & Mitochondrial Research Guide | Revive Research"
       metaDescription="An in-depth research guide covering longevity-cluster peptides — Epithalon, FOXO4-DRI, SS-31, Humanin, Glutathione, NAD+ precursors, thymic peptides, and more — mapped to the hallmarks of aging framework and key longevity signaling pathways."
-      canonicalPath="/systems/longevity"
+      canonicalPath="/guides/longevity-peptides"
       badgeText="Longevity System"
       badgeColor={LONGEVITY_COLOR}
       publishDate="2025-11-14"

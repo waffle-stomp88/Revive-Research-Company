@@ -285,7 +285,7 @@ export default function GrowthPeptidesGuide() {
       title="Growth Peptides: GH Secretagogues, IGF-1 Variants, and Muscle Research"
       metaTitle="Growth Peptides: GH Secretagogues, IGF-1 & Muscle Growth Research Guide | Revive Research"
       metaDescription="An in-depth research guide covering growth-cluster peptides — GHRH analogs, GHRPs, IGF-1 LR3, IGF-DES, MGF, follistatin, myostatin inhibitors, and more — explaining the GH/IGF-1 axis and how each compound fits into growth factor signaling research."
-      canonicalPath="/systems/growth"
+      canonicalPath="/guides/growth-peptides"
       badgeText="Growth System"
       badgeColor={GROWTH_COLOR}
       publishDate="2025-11-03"
