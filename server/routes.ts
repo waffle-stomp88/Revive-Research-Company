@@ -256,8 +256,11 @@ export async function registerRoutes(
         ...BODY_SYSTEM_SLUGS.map(s => ({ loc: `/systems/${s}`, priority: '0.7', changefreq: 'weekly' })),
         // Tools & resources
         { loc: '/tools/peptide-reconstitution-calculator', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/tools/peptide-pk-catalog', priority: '0.7', changefreq: 'monthly' },
         { loc: '/reconstitution-wizard', priority: '0.7', changefreq: 'monthly' },
         { loc: '/academy', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/galaxy', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/wholesale', priority: '0.6', changefreq: 'monthly' },
         { loc: '/peptide-research-faq', priority: '0.7', changefreq: 'monthly' },
         // COA & quality
         { loc: '/coa/verify-certificate-of-analysis', priority: '0.7', changefreq: 'weekly' },

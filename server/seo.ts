@@ -638,6 +638,21 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
       ])
     ]
   },
+  "/wholesale": {
+    title: `Wholesale Inquiry | ${SITE_NAME}`,
+    description: "Wholesale pricing for institutions and resellers. Contact us for volume discounts.",
+    ogType: "website",
+  },
+  "/galaxy": {
+    title: `Peptide Synergy Galaxy | ${SITE_NAME}`,
+    description: "Explore every research peptide as a star in a 3D galaxy. Discover synergy connections between peptides, filter by body system, and find researched stack combinations.",
+    ogType: "website",
+  },
+  "/tools/peptide-pk-catalog": {
+    title: `Peptide Half-Life Catalog — IV vs SC Route Comparison | ${SITE_NAME}`,
+    description: "Compare pharmacokinetic half-lives for research peptides side-by-side. Filter by route, identify dual-route compounds, and see IV vs SC differences at a glance.",
+    ogType: "website",
+  },
 };
 
 async function getProductMeta(slug: string): Promise<PageMeta | null> {
