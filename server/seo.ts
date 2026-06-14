@@ -3,8 +3,9 @@ import { db } from "./db";
 import { savedStacks } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { ROUTE_META, SITE_NAME as SHARED_SITE_NAME } from "@shared/seo-meta";
 
-const SITE_NAME = "Revive Research Company";
+const SITE_NAME = SHARED_SITE_NAME;
 const SITE_URL = "https://reviveresearch.co";
 const DEFAULT_IMAGE = `${SITE_URL}/assets/logo.png`;
 const DEFAULT_DESCRIPTION = "Premium research compounds. Third-party tested, COA verified. Engineered with intention, built for those who don't wait for permission.";
@@ -50,8 +51,8 @@ function makeBreadcrumbList(items: Array<{name: string; url: string}>) {
 
 const STATIC_ROUTES: Record<string, PageMeta> = {
   "/": {
-    title: `Home | ${SITE_NAME}`,
-    description: "Premium research compounds with third-party COA verification. Engineered with intention, built for those who don't wait for permission.",
+    title: ROUTE_META["/"].title,
+    description: ROUTE_META["/"].description,
     ogType: "website",
     jsonLd: [{
       "@context": "https://schema.org",
@@ -914,6 +915,11 @@ export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?
   html = html.replace(
     /<meta property="og:url" content="[^"]*" \/>/,
     `<meta property="og:url" content="${escapedCanonical}" />`
+  );
+
+  html = html.replace(
+    /<meta property="og:locale" content="[^"]*" \/>/,
+    `<meta property="og:locale" content="en_US" />`
   );
 
   html = html.replace(

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { ROUTE_META } from "@shared/seo-meta";
 
 interface SEOHeadProps {
   title: string;
@@ -14,19 +15,22 @@ export function SEOHead({
   ogImage 
 }: SEOHeadProps) {
   const hasRun = useRef(false);
-  // Always use the canonical non-www domain for SEO consistency
   const canonicalDomain = 'https://reviveresearch.co';
-  const path = canonicalPath || (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const rawPath = canonicalPath || (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const path = rawPath === '/' ? '/' : rawPath.replace(/\/$/, '');
   const fullCanonicalUrl = `${canonicalDomain}${path}`;
 
+  const sharedMeta = ROUTE_META[path];
+  const resolvedTitle = sharedMeta ? sharedMeta.title : (title.includes('Revive Research') ? title : `${title} | Revive Research Company`);
+  const resolvedDescription = sharedMeta ? sharedMeta.description : description;
+
   useEffect(() => {
-    const fullTitle = title.includes('Revive Research') ? title : `${title} | Revive Research Company`;
-    if (hasRun.current && document.title === fullTitle) {
+    if (hasRun.current && document.title === resolvedTitle) {
       return;
     }
     hasRun.current = true;
-    
-    document.title = fullTitle;
+
+    document.title = resolvedTitle;
 
     const head = document.head;
     const updateMetaTag = (name: string, content: string, isProperty = false) => {
@@ -54,20 +58,21 @@ export function SEOHead({
       }
     };
 
-    updateMetaTag('description', description);
-    updateMetaTag('og:title', fullTitle, true);
-    updateMetaTag('og:description', description, true);
+    updateMetaTag('description', resolvedDescription);
+    updateMetaTag('og:title', resolvedTitle, true);
+    updateMetaTag('og:description', resolvedDescription, true);
     updateMetaTag('og:url', fullCanonicalUrl, true);
-    updateMetaTag('twitter:title', fullTitle);
-    updateMetaTag('twitter:description', description);
-    
+    updateMetaTag('og:locale', 'en_US', true);
+    updateMetaTag('twitter:title', resolvedTitle);
+    updateMetaTag('twitter:description', resolvedDescription);
+
     if (ogImage) {
       updateMetaTag('og:image', ogImage, true);
       updateMetaTag('twitter:image', ogImage);
     }
 
     updateLinkTag('canonical', fullCanonicalUrl);
-  }, [title, description, fullCanonicalUrl, ogImage]);
+  }, [resolvedTitle, resolvedDescription, fullCanonicalUrl, ogImage]);
 
   return null;
 }
