@@ -329,7 +329,6 @@ export async function registerRoutes(
         { loc: '/peptide-shipping-and-handling', priority: '0.6', changefreq: 'monthly' },
         // Legal
         { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
-        { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
         { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
         { loc: '/disclaimer', priority: '0.3', changefreq: 'yearly' },
         { loc: '/legal', priority: '0.3', changefreq: 'yearly' },
@@ -429,6 +428,7 @@ export async function registerRoutes(
     '/ethical-pricing':  '/guides/peptide-pricing-breakdown',
     '/products':         '/peptides',
     '/troubleshooting':  '/guides/peptide-handling-troubleshooting',
+    '/terms':            '/terms-of-service',
   };
 
   Object.entries(legacyPageRedirects).forEach(([oldPath, newPath]) => {

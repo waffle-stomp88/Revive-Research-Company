@@ -1,0 +1,64 @@
+# Revive Research
+
+> Revive Research is a premium peptide research compound supplier focused on scientific transparency, third-party lab verification, and researcher education. All compounds are sold for research use only (RUO) and are not intended for human consumption.
+
+## Most Important Sections
+
+- [Peptide Catalog](/peptides): Full index of research peptides with purity specs and COA links.
+- [Shop](/shop): Purchase individual research compounds.
+- [Research Stacks](/research-stacks): Pre-built and custom peptide bundles with synergy analysis.
+- [Certificate of Analysis Verification](/coa/verify-certificate-of-analysis): Verify third-party COA authenticity by batch number.
+- [Batch Testing Archive](/coa/batch-testing-archive): Historical COA records for all released batches.
+- [Peptide Education Center](/guides/peptide-education-center): Comprehensive research library covering mechanisms, safety, and handling.
+- [Reconstitution Wizard](/reconstitution-wizard): Step-by-step guided calculator for peptide reconstitution math.
+- [Peptide Reconstitution Calculator](/tools/peptide-reconstitution-calculator): Quick math tool for BAC water and dosing volumes.
+- [Peptide Research FAQ](/peptide-research-faq): Answers to common researcher questions.
+- [Peptide Academy](/academy): Gamified learning platform covering peptide science fundamentals.
+- [Galaxy Explorer](/galaxy): Interactive 3D visualization of peptides organized by body system and synergy.
+- [Research Resources](/peptide-research-resources): Curated external links to peer-reviewed literature.
+
+## Body System Guides
+
+- [Healing & Recovery](/systems/healing)
+- [Metabolic Health](/systems/metabolic)
+- [Growth & Repair](/systems/growth)
+- [Cognitive Function](/systems/cognitive)
+- [Skin & Aesthetics](/systems/skin)
+- [Longevity & Anti-Aging](/systems/longevity)
+- [Hormonal Balance](/systems/hormonal)
+
+## Quality & Transparency
+
+- [Quality Assurance Process](/guides/peptide-quality-assurance-process)
+- [Our Transparency Commitment](/about/our-transparency-commitment)
+- [Vendor Ethics Standards](/guides/peptide-vendor-ethics-standards)
+- [Lab Research Archive](/guides/peptide-lab-research-archive)
+- [How to Read COAs](/guides/how-to-read-coas)
+- [How Batch Testing Works](/guides/how-batch-testing-works)
+- [Are Peptide COAs Trustworthy?](/guides/are-peptide-coas-trustworthy)
+- [Peptide Purity Explained](/guides/peptide-purity-explained)
+- [Why Cheap Peptides Are Cheap](/guides/why-cheap-peptides-are-cheap)
+- [How to Verify Peptide Quality](/guides/how-to-verify-peptide-quality)
+
+## Handling & Safety
+
+- [Storage 101](/guides/storage-101)
+- [Lab Safety Guidelines](/guides/lab-safety-guidelines)
+- [Peptide Handling Troubleshooting](/guides/peptide-handling-troubleshooting)
+- [Peptide Package Arrived Warm?](/guides/peptide-package-arrived-warm)
+- [Understanding Batches](/guides/understanding-batches)
+- [Ordering Expectations](/guides/ordering-expectations)
+
+## Legal & Compliance
+
+- [Terms of Service](/terms-of-service)
+- [Privacy Policy](/privacy)
+- [Legal Disclaimer](/disclaimer)
+- [Legal Hub](/legal)
+- [What "Research Use Only" Means](/guides/what-research-use-only-means)
+- [Shipping & Handling Policy](/peptide-shipping-and-handling)
+
+## Contact & Affiliate
+
+- [Contact Us](/contact)
+- [Affiliate Program](/affiliate)
