@@ -330,6 +330,11 @@ export default function CartPage() {
       toast({ title: "Cart is empty", description: "Add some products before checking out.", variant: "destructive" });
       return;
     }
+    const hasPaidItems = items.some((i) => !i.isFree);
+    if (!hasPaidItems) {
+      toast({ title: "Add a product first", description: "Free BAC water is included with a product purchase — add a compound to your cart.", variant: "destructive" });
+      return;
+    }
     setLocation("/checkout?fromCart=true");
   };
 

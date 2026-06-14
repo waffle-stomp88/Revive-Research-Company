@@ -8,6 +8,9 @@ export interface CartItem {
   name: string;
   price: number;
   originalPrice?: number;
+  /** Undiscounted per-vial base price — stored so pack discounts can be
+   *  recalculated correctly when the user changes quantity in the cart. */
+  basePrice?: number;
   quantity: number;
   dosage: string;
   image?: string;
@@ -265,6 +268,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, [authUser, firstOrderStatus]);
 
+  // Auto-evict free items when the cart has no paid items left.
+  // This prevents a guest from checking out with only the free BAC water.
+  useEffect(() => {
+    const hasPaid = items.some((i) => !i.isFree);
+    const hasFree = items.some((i) => i.isFree);
+    if (!hasPaid && hasFree) {
+      setItems((prev) => prev.filter((i) => !i.isFree));
+    }
+  }, [items]);
+
   // Debounced server sync — runs on every cart change while logged in
   // Free items are excluded from server persistence.
   useEffect(() => {
@@ -386,11 +399,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) =>
       prev.map((i) => {
         if (i.isFree && i.productId === productId) return i;
-        return i.productId === productId &&
+        if (
+          i.productId === productId &&
           i.dosage === dosage &&
           (i.packSize || undefined) === (packSize || undefined)
-          ? { ...i, quantity }
-          : i;
+        ) {
+          // Recalculate per-vial price when the quantity crosses a pack tier
+          // boundary. Only possible when basePrice was stored at add-to-cart time.
+          if (i.basePrice && i.basePrice > 0 && !i.isSubscription && !i.isBundle) {
+            const discount =
+              quantity >= 10 ? 0.20
+              : quantity >= 5 ? 0.15
+              : quantity >= 3 ? 0.10
+              : 0;
+            const newPrice = Math.round(i.basePrice * (1 - discount));
+            return { ...i, quantity, price: newPrice };
+          }
+          return { ...i, quantity };
+        }
+        return i;
       })
     );
   };
