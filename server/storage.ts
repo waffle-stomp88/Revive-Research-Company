@@ -2832,9 +2832,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getResearchStackById(id: string): Promise<ResearchStack | undefined> {
-    const [stack] = await db.select().from(researchStacks)
+    // Try direct UUID lookup first
+    const [byId] = await db.select().from(researchStacks)
       .where(and(eq(researchStacks.id, id), eq(researchStacks.isActive, true)));
-    return stack || undefined;
+    if (byId) return byId;
+    // Fall back to name-slug lookup so slug-based API calls resolve correctly
+    const nameSlug = id.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const all = await db.select().from(researchStacks).where(eq(researchStacks.isActive, true));
+    return all.find(s => s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === nameSlug);
   }
 
   async upsertResearchStack(data: { id: string } & Partial<InsertResearchStack>): Promise<ResearchStack> {

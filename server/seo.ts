@@ -1107,7 +1107,7 @@ ${items}
       const urlSlug = stackSlugMatch[1];
       const stack = stacks.find(s => {
         const nameSlug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        return nameSlug === urlSlug || s.id === urlSlug || s.detailPageId === urlSlug;
+        return nameSlug === urlSlug;
       });
       if (stack) {
         const benefits = Array.isArray(stack.keyBenefits) ? stack.keyBenefits : [];

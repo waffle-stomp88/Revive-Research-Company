@@ -41,6 +41,10 @@ import { BODY_SYSTEMS, getSystemColor } from "@/data/body-systems";
 
 const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
+function toStackSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 interface ResearchStack {
   id: string;
   name: string;
@@ -3598,7 +3602,7 @@ function ResearchStacks() {
       color: s.color,
       description: s.description,
       synergyBonus: s.synergyBonus ?? 0,
-      detailPageId: s.id,
+      detailPageId: toStackSlug(s.name),
     }));
   }, [stacksApiData]);
 
@@ -3883,7 +3887,7 @@ function ResearchStacks() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
               >
-                <Link href={`/research-stacks/${stack.id}`}>
+                <Link href={`/research-stacks/${toStackSlug(stack.name)}`}>
                   <motion.div
                     whileHover={hoverIf(hoverCapable, { scale: 1.02 })}
                     transition={{ type: "tween", duration: 0.15 }}
@@ -4051,7 +4055,7 @@ function ResearchStacks() {
                                     <p className="text-[11px] text-muted-foreground">
                                       Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
                                     </p>
-                                    <a href={`/research-stacks/${stack.id}#pathway-overlap`} className="inline-block mt-1.5 text-[11px] text-amber-300 hover:text-amber-200 underline underline-offset-2" data-testid={`link-overlap-details-${stack.id}`}>
+                                    <a href={`/research-stacks/${toStackSlug(stack.name)}#pathway-overlap`} className="inline-block mt-1.5 text-[11px] text-amber-300 hover:text-amber-200 underline underline-offset-2" data-testid={`link-overlap-details-${stack.id}`}>
                                       View details
                                     </a>
                                   </TooltipContent>

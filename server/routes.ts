@@ -437,6 +437,29 @@ export async function registerRoutes(
     });
   });
 
+  // 301 redirects: any non-canonical /research-stacks/:segment → slug-based URL
+  // Accepts nameSlug, id (any format), or detailPageId and redirects to the
+  // name-slug canonical form. If segment is already canonical, passes through.
+  const toStackSlug = (name: string) =>
+    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  app.get('/research-stacks/:segment', async (req, res, next) => {
+    const { segment } = req.params;
+    try {
+      const stacks = await storage.getResearchStacks();
+      const stack = stacks.find(s => {
+        const nameSlug = toStackSlug(s.name);
+        return nameSlug === segment || s.id === segment || s.detailPageId === segment;
+      });
+      if (!stack) return next();
+      const canonicalSlug = toStackSlug(stack.name);
+      if (segment === canonicalSlug) return next(); // already canonical → SPA handles it
+      return res.redirect(301, `/research-stacks/${canonicalSlug}`);
+    } catch (err) {
+      console.error('[redirect] research-stack canonicalization failed:', err);
+      return next();
+    }
+  });
+
   // PayPal payment routes
   app.get("/paypal/setup", async (req, res) => {
     await loadPaypalDefault(req, res);

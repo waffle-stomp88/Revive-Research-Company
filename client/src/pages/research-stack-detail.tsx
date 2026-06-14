@@ -58,6 +58,10 @@ interface StackDetail {
 
 const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
+function toStackSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 export default function ResearchStackDetail() {
   const [match, params] = useRoute("/research-stacks/:id");
   const [, setLocation] = useLocation();
@@ -200,7 +204,7 @@ export default function ResearchStackDetail() {
       <SEOHead 
         title={`${stack.name} | Research Stack`}
         description={stack.description}
-        canonicalPath={`/research-stacks/${stack.id}`}
+        canonicalPath={`/research-stacks/${toStackSlug(stack.name)}`}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-2 md:mb-4">

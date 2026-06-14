@@ -272,7 +272,7 @@ export default function SystemHub() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {relatedStacks.map((stack) => (
-                <Link key={stack.id} href={`/research-stacks/${stack.id}`}>
+                <Link key={stack.id} href={`/research-stacks/${stack.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}>
                   <Card
                     className="p-4 hover-elevate cursor-pointer h-full flex flex-col gap-3"
                     style={{ borderColor: `${stack.color}25` }}

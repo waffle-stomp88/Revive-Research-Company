@@ -85,7 +85,7 @@ export function RelatedStacks({ peptideNames }: RelatedStacksProps) {
                 {stack.description}
               </p>
 
-              <Link href={`/research-stacks/${stack.id}`} data-testid={`link-related-stack-${stack.id}`}>
+              <Link href={`/research-stacks/${stack.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`} data-testid={`link-related-stack-${stack.id}`}>
                 <Button
                   variant="outline"
                   size="sm"
