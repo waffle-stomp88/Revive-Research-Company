@@ -604,7 +604,7 @@ function ProductsComponent() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Shop Peptides" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, RR-A1 & more." canonicalPath="/products" />
+      <SEOHead title="Shop Peptides" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, RR-A1 & more." canonicalPath="/peptides" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Category Navigation Tabs */}
         <div className="mb-6">
