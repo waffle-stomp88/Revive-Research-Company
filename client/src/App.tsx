@@ -434,7 +434,7 @@ function AppShell() {
       <MobileStickyEmailBar />
       <MobileBottomNav />
       <Suspense fallback={null}>
-        <ChatBot />
+        {!location.startsWith('/cart') && !location.startsWith('/checkout') && <ChatBot />}
         <BackToTopButton />
       </Suspense>
       <Toaster />
