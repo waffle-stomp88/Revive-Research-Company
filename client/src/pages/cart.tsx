@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -181,6 +182,7 @@ interface AppliedDiscount {
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart, declineFreeItem } = useCart();
   const [, setLocation] = useLocation();
+  const { user, login } = useAuth();
   const { toast } = useToast();
   const [bannerDismissed, setBannerDismissed] = useState(() =>
     typeof window !== "undefined" && !!localStorage.getItem("revive-bac-banner-dismissed")
@@ -333,6 +335,11 @@ export default function CartPage() {
     const hasPaidItems = items.some((i) => !i.isFree);
     if (!hasPaidItems) {
       toast({ title: "Add a product first", description: "Free BAC water is included with a product purchase — add a compound to your cart.", variant: "destructive" });
+      return;
+    }
+    if (!user) {
+      toast({ title: "Account required", description: "Please sign in or create an account to complete your purchase." });
+      login();
       return;
     }
     setLocation("/checkout?fromCart=true");

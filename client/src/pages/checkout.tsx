@@ -792,6 +792,28 @@ export default function Checkout() {
     );
   };
 
+  // ─── Auth gate — account required to purchase ─────────────────────────────
+  // After the auth query resolves, if the user is not logged in, trigger the
+  // login modal and redirect back to the cart so they land on a valid page.
+  if (!userLoading && !user) {
+    login();
+    return (
+      <main className="min-h-screen pt-32 flex flex-col items-center justify-center gap-4 bg-[#1a1a1f] px-4">
+        <Lock className="h-8 w-8 text-[#D4FF1F]" />
+        <p className="text-lg font-semibold text-center">Sign in to continue</p>
+        <p className="text-sm text-muted-foreground text-center max-w-xs">
+          An account is required to complete your purchase.
+        </p>
+        <Link href="/cart">
+          <Button variant="ghost" size="sm" className="gap-1.5 mt-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Cart
+          </Button>
+        </Link>
+      </main>
+    );
+  }
+
   // ─── Main 2-step fromCart flow ────────────────────────────────────────────
 
   if (fromCart) {
@@ -922,24 +944,7 @@ export default function Checkout() {
                           <LogOut className="h-3.5 w-3.5" />
                         </Button>
                       </>
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <User className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">Checking out as guest</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1.5 text-[#21d8ff] text-xs"
-                          onClick={() => login()}
-                          data-testid="button-checkout-login"
-                        >
-                          <LogIn className="h-3 w-3" />
-                          Sign In
-                        </Button>
-                      </>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
