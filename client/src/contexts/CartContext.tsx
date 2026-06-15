@@ -242,12 +242,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [authUser, toast]);
 
-  // Auto-inject free BAC water for first-time buyers
+  // Auto-inject free BAC water for first-time buyers.
+  // Depends on `items` so it re-evaluates whenever the cart changes — this
+  // ensures the injection fires after the server cart restore populates paid
+  // items, even when firstOrderStatus resolved earlier while the cart was empty.
+  // The hasPaid guard inside the functional update means we never inject into
+  // an empty cart (avoiding the "BAC water alone" scenario), and the
+  // alreadyFree guard means we never double-inject.
   useEffect(() => {
     if (!authUser || !firstOrderStatus?.isFirstOrder || !firstOrderStatus.bacWaterProductId) return;
-    // Respect the user's explicit decline
     if (typeof window !== "undefined" && localStorage.getItem(BAC_PROMO_DECLINED_KEY)) return;
     setItems((prev) => {
+      // Never inject if no paid items exist yet
+      const hasPaid = prev.some((i) => !i.isFree);
+      if (!hasPaid) return prev;
       const alreadyFree = prev.some(
         (i) => i.isFree && i.productId === firstOrderStatus.bacWaterProductId
       );
@@ -266,7 +274,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
       ];
     });
-  }, [authUser, firstOrderStatus]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser, firstOrderStatus, items]);
 
   // Debounced server sync — runs on every cart change while logged in
   // Free items are excluded from server persistence.
