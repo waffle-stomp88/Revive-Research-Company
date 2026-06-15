@@ -268,16 +268,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, [authUser, firstOrderStatus]);
 
-  // Auto-evict free items when the cart has no paid items left.
-  // This prevents a guest from checking out with only the free BAC water.
-  useEffect(() => {
-    const hasPaid = items.some((i) => !i.isFree);
-    const hasFree = items.some((i) => i.isFree);
-    if (!hasPaid && hasFree) {
-      setItems((prev) => prev.filter((i) => !i.isFree));
-    }
-  }, [items]);
-
   // Debounced server sync — runs on every cart change while logged in
   // Free items are excluded from server persistence.
   useEffect(() => {
@@ -374,16 +364,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const removeFromCart = (productId: string, dosage: string, packSize?: number) => {
-    setItems((prev) =>
-      prev.filter((i) => {
+    setItems((prev) => {
+      const next = prev.filter((i) => {
         if (i.isFree && i.productId === productId) return true;
         return !(
           i.productId === productId &&
           i.dosage === dosage &&
           (i.packSize || undefined) === (packSize || undefined)
         );
-      })
-    );
+      });
+      // If no paid items remain after removal, also evict free items.
+      // This is done inside the functional update (not a separate useEffect)
+      // so it is atomic and never races with the BAC water injection on mount.
+      const hasPaid = next.some((i) => !i.isFree);
+      return hasPaid ? next : next.filter((i) => !i.isFree);
+    });
   };
 
   const removeBundleFromCart = (bundleId: string) => {
