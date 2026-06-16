@@ -603,11 +603,11 @@ function ProductsComponent() {
 
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-24">
+    <main className="min-h-screen pt-24 md:pt-40 pb-24">
       <SEOHead title="Shop Peptides" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, RR-A1 & more." canonicalPath="/peptides" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Category Navigation Tabs */}
-        <div className="mb-6">
+        <div className="mb-3 md:mb-6">
           <CategoryTabs />
         </div>
 
@@ -616,16 +616,16 @@ function ProductsComponent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8"
+          className="text-center mb-4 md:mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-2 md:mb-4">
             <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-sm font-medium text-[#21d8ff]">Research Peptides</span>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="font-display text-2xl md:text-5xl font-bold mb-2 md:mb-4">
             Peptides
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+          <p className="hidden md:block text-muted-foreground max-w-2xl mx-auto text-lg">
             Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
           </p>
         </motion.div>
