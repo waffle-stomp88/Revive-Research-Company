@@ -386,12 +386,31 @@ export function Navigation() {
                   <SearchAutocomplete />
                 </div>
                 
+                {/* Mobile: tap cart icon → go straight to /cart (no dropdown, hover-delete doesn't work on touch) */}
+                <Link href="/cart" className="md:hidden">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] transition-all duration-300"
+                    data-testid="button-cart-mobile"
+                    aria-label="View shopping cart"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartItemCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#D4FF1F] text-black border-0">
+                        {cartItemCount > 9 ? "9+" : cartItemCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
+
+                {/* Desktop: dropdown with hover-to-delete */}
                 <DropdownMenu open={isCartOpen} onOpenChange={setIsCartOpen}>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="relative hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] transition-all duration-300" 
+                      className="relative hidden md:flex hover:bg-[#D4FF1F]/10 hover:text-[#D4FF1F] transition-all duration-300" 
                       data-testid="button-cart"
                       aria-label="View shopping cart"
                     >
