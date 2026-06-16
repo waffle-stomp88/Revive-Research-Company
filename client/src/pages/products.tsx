@@ -622,9 +622,7 @@ function ProductsComponent() {
             <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-sm font-medium text-[#21d8ff]">Research Peptides</span>
           </div>
-          <h1 className="font-display text-2xl md:text-5xl font-bold mb-2 md:mb-4">
-            Peptides
-          </h1>
+
           <p className="hidden md:block text-muted-foreground max-w-2xl mx-auto text-lg">
             Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
           </p>
