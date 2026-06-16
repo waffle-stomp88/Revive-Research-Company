@@ -618,11 +618,9 @@ function ProductsComponent() {
           transition={{ duration: 0.5 }}
           className="text-center mb-4 md:mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-2 md:mb-4">
-            <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-sm font-medium text-[#21d8ff]">Research Peptides</span>
-          </div>
-
+          <h1 className="font-display text-2xl md:text-5xl font-bold mb-2 md:mb-4">
+            Peptides
+          </h1>
           <p className="hidden md:block text-muted-foreground max-w-2xl mx-auto text-lg">
             Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
           </p>
