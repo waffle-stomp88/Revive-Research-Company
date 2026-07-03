@@ -801,8 +801,48 @@ export default function CartPage() {
                   )}
                 </div>
 
-                {/* Discount code — collapsed by default, expands on tap */}
-                {!appliedDiscount ? (
+                {/* Discount code chip — shown once a discount-slot code is applied */}
+                {appliedDiscount && (
+                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-3 w-3 text-green-500" />
+                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-code">{appliedDiscount.code}</span>
+                      <span className="text-[10px] text-muted-foreground">applied</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
+                      onClick={removeDiscount}
+                      data-testid="button-remove-discount"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+
+                {/* Shipping code chip — separate slot so it can stack with a discount code */}
+                {appliedShippingCode && (
+                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-3 w-3 text-green-500" />
+                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-shipping-code">{appliedShippingCode.code}</span>
+                      <span className="text-[10px] text-muted-foreground">free shipping applied</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
+                      onClick={removeShippingCode}
+                      data-testid="button-remove-shipping-code"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+
+                {/* Code entry — stays available as long as at least one slot (discount or shipping) is free */}
+                {(!appliedDiscount || !appliedShippingCode) && (
                   <div className="mb-2.5">
                     {!showDiscountInput ? (
                       <button
@@ -811,7 +851,7 @@ export default function CartPage() {
                         data-testid="button-show-discount-input"
                       >
                         <Tag className="h-3 w-3" />
-                        Have a discount code?
+                        {appliedDiscount || appliedShippingCode ? "Have another code?" : "Have a discount code?"}
                       </button>
                     ) : (
                       <div className="flex gap-2">
@@ -836,43 +876,6 @@ export default function CartPage() {
                         </Button>
                       </div>
                     )}
-                  </div>
-                ) : (
-                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Tag className="h-3 w-3 text-green-500" />
-                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-code">{appliedDiscount.code}</span>
-                      <span className="text-[10px] text-muted-foreground">applied</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
-                      onClick={removeDiscount}
-                      data-testid="button-remove-discount"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
-
-                {/* Shipping code — separate slot so it can stack with a discount code */}
-                {appliedShippingCode && (
-                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Tag className="h-3 w-3 text-green-500" />
-                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-shipping-code">{appliedShippingCode.code}</span>
-                      <span className="text-[10px] text-muted-foreground">free shipping applied</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
-                      onClick={removeShippingCode}
-                      data-testid="button-remove-shipping-code"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
                   </div>
                 )}
 
