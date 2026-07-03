@@ -175,8 +175,13 @@ interface FirstOrderStatus {
 interface AppliedDiscount {
   code: string;
   percentage: number;
-  type: "basic" | "personal";
+  type: "basic" | "personal" | string;
   freeShipping?: boolean;
+}
+
+interface AppliedShippingCode {
+  code: string;
+  freeShipping: true;
 }
 
 export default function CartPage() {
@@ -223,6 +228,10 @@ export default function CartPage() {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
   });
+  const [appliedShippingCode, setAppliedShippingCode] = useState<AppliedShippingCode | null>(() => {
+    const saved = localStorage.getItem("appliedShippingCode");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const applyDiscountMutation = useMutation({
     mutationFn: async (code: string) => {
@@ -230,6 +239,22 @@ export default function CartPage() {
       return response.json();
     },
     onSuccess: (data) => {
+      // A "shipping" category code (0% discount + free shipping) goes into its
+      // own slot so it can stack alongside a separate percentage discount code
+      // instead of overwriting it. A "discount" category code always replaces
+      // whatever was previously in the discount slot.
+      if (data.category === "shipping") {
+        const shippingCode: AppliedShippingCode = { code: data.code, freeShipping: true };
+        setAppliedShippingCode(shippingCode);
+        localStorage.setItem("appliedShippingCode", JSON.stringify(shippingCode));
+        setDiscountCode("");
+        toast({
+          title: "Code Applied!",
+          description: "Free shipping has been applied to your order.",
+        });
+        return;
+      }
+
       const discount: AppliedDiscount = {
         code: data.code,
         percentage: data.percentage,
@@ -264,6 +289,12 @@ export default function CartPage() {
     setAppliedDiscount(null);
     localStorage.removeItem("appliedDiscount");
     toast({ title: "Discount Removed", description: "The discount code has been removed from your order." });
+  };
+
+  const removeShippingCode = () => {
+    setAppliedShippingCode(null);
+    localStorage.removeItem("appliedShippingCode");
+    toast({ title: "Code Removed", description: "The shipping code has been removed from your order." });
   };
 
   const { data: allProducts = [] } = useQuery<Product[]>({
@@ -346,7 +377,7 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
+  const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || appliedShippingCode?.freeShipping || false;
   const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
   const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
   const total = subtotal - discountAmount + shipping;
@@ -819,6 +850,26 @@ export default function CartPage() {
                       className="h-5 w-5 text-muted-foreground hover:text-red-400"
                       onClick={removeDiscount}
                       data-testid="button-remove-discount"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+
+                {/* Shipping code — separate slot so it can stack with a discount code */}
+                {appliedShippingCode && (
+                  <div className="mb-2.5 px-2.5 py-1.5 bg-green-950/30 border border-green-500/30 rounded-lg flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-3 w-3 text-green-500" />
+                      <span className="text-xs font-medium text-green-500" data-testid="text-applied-shipping-code">{appliedShippingCode.code}</span>
+                      <span className="text-[10px] text-muted-foreground">free shipping applied</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 text-muted-foreground hover:text-red-400"
+                      onClick={removeShippingCode}
+                      data-testid="button-remove-shipping-code"
                     >
                       <X className="h-3 w-3" />
                     </Button>

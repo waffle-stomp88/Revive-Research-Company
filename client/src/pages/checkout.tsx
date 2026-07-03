@@ -92,6 +92,14 @@ export default function Checkout() {
     zip: "",
   });
   const [copied, setCopied] = useState(false);
+  const [appliedDiscount] = useState<{ code: string; percentage: number; freeShipping?: boolean } | null>(() => {
+    const saved = localStorage.getItem("appliedDiscount");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [appliedShippingCode] = useState<{ code: string; freeShipping: true } | null>(() => {
+    const saved = localStorage.getItem("appliedShippingCode");
+    return saved ? JSON.parse(saved) : null;
+  });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [summaryExpanded, setSummaryExpanded] = useState(false);
   const [addressPickerOpen, setAddressPickerOpen] = useState(false);
@@ -464,6 +472,8 @@ export default function Checkout() {
       shippingAddress: typeof shippingAddress;
       items: typeof cartItems;
       total: number;
+      discountCode?: string;
+      shippingCode?: string;
     }) => {
       const response = await apiRequest("POST", "/api/orders/manual", data);
       return response.json();
@@ -480,9 +490,9 @@ export default function Checkout() {
           quantity: item.quantity,
           price: item.price,
         })),
-        subtotal: cartSubtotal,
+        subtotal: cartSubtotalBeforeDiscount,
         shipping: cartShipping,
-        discount: 0,
+        discount: discountAmount,
         total: cartTotal,
         customerEmail: customerEmail,
         customerName: customerName,
@@ -499,6 +509,7 @@ export default function Checkout() {
       clearCart();
       clearCheckoutStorage();
       localStorage.removeItem("appliedDiscount");
+      localStorage.removeItem("appliedShippingCode");
       window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;
     },
     onError: (error: Error) => {
@@ -538,6 +549,8 @@ export default function Checkout() {
           tax: cartTax,
           taxState: shippingAddress.state,
           total: cartTotal,
+          discountCode: appliedDiscount?.code,
+          shippingCode: appliedShippingCode?.code,
         }),
       });
 
@@ -574,10 +587,10 @@ export default function Checkout() {
         quantity: item.quantity,
         price: item.price,
       })),
-      subtotal: cartSubtotal,
+      subtotal: cartSubtotalBeforeDiscount,
       shipping: cartShipping,
       tax: cartTax,
-      discount: 0,
+      discount: discountAmount,
       total: cartTotal,
       customerEmail: user?.email || customerEmail,
       customerName: customerName,
@@ -595,6 +608,7 @@ export default function Checkout() {
     clearCart();
     clearCheckoutStorage();
     localStorage.removeItem("appliedDiscount");
+    localStorage.removeItem("appliedShippingCode");
     window.location.href = `/order-confirmation?paypalOrderId=${paypalOrderId}`;
   };
 
@@ -633,6 +647,8 @@ export default function Checkout() {
       shippingAddress,
       items: cartItems,
       total: cartTotal,
+      discountCode: appliedDiscount?.code,
+      shippingCode: appliedShippingCode?.code,
     });
   };
 
@@ -646,9 +662,12 @@ export default function Checkout() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const cartSubtotal = getSubtotal();
+  const cartSubtotalBeforeDiscount = getSubtotal();
+  const discountAmount = appliedDiscount ? (cartSubtotalBeforeDiscount * appliedDiscount.percentage) / 100 : 0;
+  const cartSubtotal = cartSubtotalBeforeDiscount - discountAmount;
+  const hasFreeShippingFromCode = appliedDiscount?.freeShipping || appliedShippingCode?.freeShipping || false;
   const hasSubscriptionItemsForShipping = hasSubscriptionItems;
-  const baseShipping = hasSubscriptionItemsForShipping ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
+  const baseShipping = (hasSubscriptionItemsForShipping || hasFreeShippingFromCode) ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
   const cartShipping = shippingMethod === 'express' ? EXPRESS_SHIPPING_COST : baseShipping;
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
@@ -1785,8 +1804,20 @@ export default function Checkout() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${Math.round(cartSubtotal)}</span>
+                      <span>${Math.round(cartSubtotalBeforeDiscount)}</span>
                     </div>
+                    {appliedDiscount && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-green-400 text-xs" data-testid="text-checkout-discount-code">Discount ({appliedDiscount.code})</span>
+                        <span className="text-green-400" data-testid="text-checkout-discount-amount">-${Math.round(discountAmount)}</span>
+                      </div>
+                    )}
+                    {appliedShippingCode && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-green-400 text-xs" data-testid="text-checkout-shipping-code">Shipping code ({appliedShippingCode.code})</span>
+                        <span className="text-green-400">Free shipping</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
                         Shipping

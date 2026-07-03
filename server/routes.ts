@@ -166,6 +166,69 @@ async function recordDeadLink(type: "product" | "guide", slug: string): Promise<
   await storage.upsertDeadLinkHit(type, slug);
 }
 
+// ---------------------------------------------------------------------------
+// Discount / shipping code resolution — single source of truth used by both
+// the client-facing validate endpoint and the order-creation endpoints below.
+// A code is category "shipping" only when it grants free shipping and carries
+// NO percentage discount — that's what lets it stack alongside a separate
+// discount code (e.g. an affiliate's own referral code) without letting two
+// percentage discounts ever combine.
+// ---------------------------------------------------------------------------
+interface ResolvedDiscountCode {
+  code: string;
+  percentage: number;
+  type: string;
+  freeShipping: boolean;
+  category: "discount" | "shipping";
+}
+
+async function resolveDiscountCode(
+  rawCode: string
+): Promise<{ ok: true; data: ResolvedDiscountCode } | { ok: false; error: string }> {
+  const upperCode = rawCode.toUpperCase().trim();
+  if (!upperCode) {
+    return { ok: false, error: "Code is required" };
+  }
+
+  const affiliateByBasicCode = await storage.getAffiliateByBasicReferralCode(upperCode);
+  if (affiliateByBasicCode && affiliateByBasicCode.isActive) {
+    return {
+      ok: true,
+      data: { code: upperCode, percentage: 10, type: "basic", freeShipping: false, category: "discount" },
+    };
+  }
+
+  const affiliateByPersonalCode = await storage.getAffiliateByReferralCode(upperCode);
+  if (affiliateByPersonalCode && affiliateByPersonalCode.isActive) {
+    return {
+      ok: true,
+      data: { code: upperCode, percentage: 20, type: "personal", freeShipping: false, category: "discount" },
+    };
+  }
+
+  const discountCode = await storage.getDiscountCodeByCode(upperCode);
+  if (discountCode) {
+    if (!discountCode.isActive) {
+      return { ok: false, error: "This discount code is no longer active" };
+    }
+    if (discountCode.expiresAt && new Date(discountCode.expiresAt) < new Date()) {
+      return { ok: false, error: "This discount code has expired" };
+    }
+    if (discountCode.maxUsages && discountCode.usageCount && discountCode.usageCount >= discountCode.maxUsages) {
+      return { ok: false, error: "This discount code has reached its usage limit" };
+    }
+    const percentage = parseFloat(discountCode.discountPercent);
+    const freeShipping = discountCode.freeShipping || false;
+    const category: "discount" | "shipping" = percentage <= 0 && freeShipping ? "shipping" : "discount";
+    return {
+      ok: true,
+      data: { code: discountCode.code, percentage, type: discountCode.type, freeShipping, category },
+    };
+  }
+
+  return { ok: false, error: "Invalid discount code" };
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -1084,7 +1147,25 @@ export async function registerRoutes(
         items, 
         total,
         isTest: isTestOrder = false,
+        discountCode,
+        shippingCode,
       } = req.body;
+
+      // Manual (cashapp/zelle/venmo) orders are payment-unverified until an
+      // admin manually confirms funds received, so the client-supplied total
+      // is trusted the same way it always has been. Any discount/shipping
+      // codes are still re-resolved here (never trusted at face value) purely
+      // so the admin sees a legitimate code name in fulfillment notes.
+      let manualValidatedDiscountCode: string | undefined;
+      let manualValidatedShippingCode: string | undefined;
+      if (discountCode) {
+        const resolved = await resolveDiscountCode(String(discountCode));
+        if (resolved.ok) manualValidatedDiscountCode = resolved.data.code;
+      }
+      if (shippingCode) {
+        const resolved = await resolveDiscountCode(String(shippingCode));
+        if (resolved.ok && resolved.data.freeShipping) manualValidatedShippingCode = resolved.data.code;
+      }
 
       // Validate required fields
       if (!paymentMethod || !customerEmail || !customerName || !shippingAddress || !items || !total) {
@@ -1127,7 +1208,7 @@ export async function registerRoutes(
           quantity: Number(i.quantity) || 1,
           unitPrice: Number(i.price) || 0,
         })),
-        notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
+        notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}${manualValidatedDiscountCode ? `. Discount code: ${manualValidatedDiscountCode}` : ''}${manualValidatedShippingCode ? `. Shipping code: ${manualValidatedShippingCode}` : ''}`,
       };
 
       // If user is authenticated, link order to their account
@@ -1260,7 +1341,9 @@ export async function registerRoutes(
         shipping,
         tax,
         taxState,
-        total 
+        total,
+        discountCode,
+        shippingCode,
       } = req.body;
 
       // Validate required fields
@@ -1407,7 +1490,43 @@ export async function registerRoutes(
         resolvedLineItems.push({ productId: item.productId, name: item.name || productData.name, dosage: item.dosage || undefined, quantity: qty, unitPrice });
       }
 
-      const serverShipping = serverSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+      // --- Server-side discount / shipping code resolution ---
+      // Codes are never trusted from the client's stated percentage — each
+      // code is re-resolved here against the live affiliate/discount tables.
+      // A discount-slot code and a shipping-slot code may both apply, but
+      // only the discount-slot code's percentage is ever used, and only a
+      // shipping-slot code's freeShipping flag is honored — this keeps two
+      // percentage discounts from ever being combined.
+      let serverDiscountPercent = 0;
+      let serverFreeShipping = false;
+      let validatedDiscountCode: string | undefined;
+      let validatedShippingCode: string | undefined;
+
+      if (discountCode) {
+        const resolved = await resolveDiscountCode(String(discountCode));
+        if (resolved.ok) {
+          serverDiscountPercent = resolved.data.percentage;
+          if (resolved.data.freeShipping) serverFreeShipping = true;
+          validatedDiscountCode = resolved.data.code;
+        } else {
+          console.warn(`[PayPal Order] Discount code rejected at order creation: ${discountCode} — ${resolved.error}`);
+        }
+      }
+
+      if (shippingCode) {
+        const resolved = await resolveDiscountCode(String(shippingCode));
+        if (resolved.ok && resolved.data.freeShipping) {
+          serverFreeShipping = true;
+          validatedShippingCode = resolved.data.code;
+        } else {
+          console.warn(`[PayPal Order] Shipping code rejected at order creation: ${shippingCode}`);
+        }
+      }
+
+      const serverSubtotalBeforeDiscount = serverSubtotal;
+      serverSubtotal = serverSubtotalBeforeDiscount * (1 - serverDiscountPercent / 100);
+
+      const serverShipping = serverFreeShipping || serverSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
       const shippingState = (shippingAddress?.state || "").toUpperCase().trim();
       const serverTax = calculateTax(shippingState, serverSubtotal);
       const serverTotal = serverSubtotal + serverShipping + serverTax;
@@ -1458,7 +1577,7 @@ export async function registerRoutes(
         paypalCapturedAmount: paypalDetails.capturedAmount.toFixed(2),
         isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
         items: resolvedLineItems,
-        fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}`,
+        fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}${validatedDiscountCode ? `. Discount code: ${validatedDiscountCode}` : ''}${validatedShippingCode ? `. Shipping code: ${validatedShippingCode}` : ''}`,
       };
 
       // If user is authenticated, link order to their account
@@ -5068,51 +5187,13 @@ Return ONLY valid JSON, no markdown, no explanation.`,
         return res.status(400).json({ error: "Code is required" });
       }
 
-      const upperCode = code.toUpperCase().trim();
-
-      // First check if it's a basic referral code (ends with "10" and 10% discount)
-      const affiliateByBasicCode = await storage.getAffiliateByBasicReferralCode(upperCode);
-      if (affiliateByBasicCode && affiliateByBasicCode.isActive) {
-        return res.json({
-          code: upperCode,
-          percentage: 10,
-          type: "basic",
-          affiliateId: affiliateByBasicCode.id,
-        });
+      const resolved = await resolveDiscountCode(code);
+      if (!resolved.ok) {
+        const status = resolved.error === "Invalid discount code" ? 404 : 400;
+        return res.status(status).json({ error: resolved.error });
       }
 
-      // Check if it's a personal code (affiliate's referralCode for 20% discount)
-      const affiliateByPersonalCode = await storage.getAffiliateByReferralCode(upperCode);
-      if (affiliateByPersonalCode && affiliateByPersonalCode.isActive) {
-        return res.json({
-          code: upperCode,
-          percentage: 20,
-          type: "personal",
-          affiliateId: affiliateByPersonalCode.id,
-        });
-      }
-
-      // Check discount codes table
-      const discountCode = await storage.getDiscountCodeByCode(upperCode);
-      if (discountCode) {
-        if (!discountCode.isActive) {
-          return res.status(400).json({ error: "This discount code is no longer active" });
-        }
-        if (discountCode.expiresAt && new Date(discountCode.expiresAt) < new Date()) {
-          return res.status(400).json({ error: "This discount code has expired" });
-        }
-        if (discountCode.maxUsages && discountCode.usageCount && discountCode.usageCount >= discountCode.maxUsages) {
-          return res.status(400).json({ error: "This discount code has reached its usage limit" });
-        }
-        return res.json({
-          code: discountCode.code,
-          percentage: parseFloat(discountCode.discountPercent),
-          type: discountCode.type,
-          freeShipping: discountCode.freeShipping || false,
-        });
-      }
-
-      return res.status(404).json({ error: "Invalid discount code" });
+      return res.json(resolved.data);
     } catch (error) {
       console.error("Error validating discount code:", error);
       res.status(500).json({ error: "Failed to validate discount code" });
