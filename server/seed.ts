@@ -1752,6 +1752,19 @@ Research shows IGF-1 LR3 may affect both:
     console.log("Inserted IGF-1 LR3 education article");
   }
 
+  // Ensure RR-A2 education article is linked to the RR-A2 product (upsert for both fresh and existing databases)
+  const rrA2Article = await db.select({ id: educationArticles.id, relatedProductIds: educationArticles.relatedProductIds }).from(educationArticles).where(eq(educationArticles.slug, "what-is-rr-a2-peptide"));
+  if (rrA2Article.length > 0) {
+    const existingLinks = rrA2Article[0].relatedProductIds ?? [];
+    const rrA2Product = await db.select({ id: products.id }).from(products).where(eq(products.slug, "rr-a2")).limit(1);
+    if (rrA2Product.length > 0 && !existingLinks.includes(rrA2Product[0].id)) {
+      await db.update(educationArticles)
+        .set({ relatedProductIds: [...existingLinks, rrA2Product[0].id] })
+        .where(eq(educationArticles.id, rrA2Article[0].id));
+      console.log("Linked RR-A2 education article to RR-A2 product");
+    }
+  }
+
   // Ensure IGF-DES article exists (upsert for both fresh and existing databases)
   const igfDesArticle = await db.select({ id: educationArticles.id }).from(educationArticles).where(eq(educationArticles.slug, "what-is-igf-des-peptide"));
   if (igfDesArticle.length === 0) {

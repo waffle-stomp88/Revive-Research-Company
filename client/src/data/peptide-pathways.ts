@@ -31,6 +31,12 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["PGC-1α pathway", "Metabolic regulation", "Energy production"],
     systems: ["Metabolic", "Energy", "Longevity"],
   },
+  "rr-a2": {
+    name: "RR-A2",
+    pathways: ["Incretin Receptor", "GIP", "GLP-1"],
+    mechanisms: ["Dual receptor agonist", "Enhanced insulin sensitivity", "Lipid metabolism"],
+    systems: ["Metabolic", "Weight"],
+  },
   "rr-a3": {
     name: "RR-A3",
     pathways: ["Incretin Receptor", "GIP", "Glucagon"],

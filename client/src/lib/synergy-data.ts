@@ -116,6 +116,14 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 88,
   },
   {
+    name: "Dual Metabolic Support",
+    peptides: ["rr-a2", "bpc-157"],
+    icon: RefreshCw,
+    color: getSystemColor("metabolic")!,
+    description: "Dual GLP-1/GIP receptor agonism for enhanced metabolic signaling + BPC-157 gut cytoprotection to support GI integrity during metabolic compound research",
+    synergyBonus: 86,
+  },
+  {
     name: "Metabolic Optimizer",
     peptides: ["rr-a3", "tesamorelin"],
     icon: Target,
