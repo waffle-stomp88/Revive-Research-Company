@@ -5869,7 +5869,7 @@ function StockNotificationsTab() {
 
 interface EmailEvent {
   id: string;
-  orderId: string;
+  orderId: string | null;
   type: string;
   recipientEmail: string;
   subject: string;
@@ -6291,7 +6291,8 @@ function EmailLogsTab() {
     });
   };
 
-  const getShortOrderRef = (orderId: string) => {
+  const getShortOrderRef = (orderId: string | null) => {
+    if (!orderId) return "—";
     return `#${orderId.slice(-8).toUpperCase()}`;
   };
 
@@ -6496,15 +6497,19 @@ function EmailLogsTab() {
                             {formatDate(event.createdAt)}
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="p-1 h-auto font-mono text-xs text-primary hover:underline"
-                              onClick={() => setSelectedOrderId(event.orderId)}
-                              data-testid={`btn-order-${event.orderId}`}
-                            >
-                              {getShortOrderRef(event.orderId)}
-                            </Button>
+                            {event.orderId ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="p-1 h-auto font-mono text-xs text-primary hover:underline"
+                                onClick={() => setSelectedOrderId(event.orderId)}
+                                data-testid={`btn-order-${event.orderId}`}
+                              >
+                                {getShortOrderRef(event.orderId)}
+                              </Button>
+                            ) : (
+                              <span className="font-mono text-xs text-muted-foreground">—</span>
+                            )}
                           </TableCell>
                           <TableCell className="text-xs">{event.recipientEmail}</TableCell>
                           <TableCell>{getTypeBadge(event.type)}</TableCell>
