@@ -826,10 +826,14 @@ export async function registerRoutes(
   // Fire-and-forget from the client — no body required, just the session.
   app.post('/api/promo/bac-water-declined', async (req: any, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (userId) {
-        await db.insert(firstOrderPromos).values({ userId, status: 'declined' }).catch(() => {});
-        console.log(`[Promo] First-order BAC water declined by user=${userId}`);
+      const sessionUserId = (req.session as any)?.userId;
+      const canonicalUserId: string =
+        (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub)
+          ? req.user.claims.sub
+          : sessionUserId;
+      if (canonicalUserId) {
+        await db.insert(firstOrderPromos).values({ userId: canonicalUserId, status: 'declined' }).catch(() => {});
+        console.log(`[Promo] First-order BAC water declined by user=${canonicalUserId}`);
       }
       res.status(204).end();
     } catch {
