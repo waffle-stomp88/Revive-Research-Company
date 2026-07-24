@@ -682,6 +682,17 @@ export async function registerRoutes(
         profileImageUrl,
       });
 
+      // Retroactively claim any guest orders placed with this email address.
+      // Guest checkout leaves userId NULL; stamping it now means
+      // getOrdersByUserId() will find these orders on every subsequent
+      // request without relying on the email fallback.
+      if (email) {
+        const claimed = await storage.linkGuestOrdersByEmail(email, supabaseId);
+        if (claimed > 0) {
+          console.log(`[Auth] Linked ${claimed} guest order(s) to user ${supabaseId}`);
+        }
+      }
+
       const user = await storage.getUser(supabaseId);
       (req.session as any).userId = supabaseId;
       res.json(user);
@@ -2077,10 +2088,16 @@ export async function registerRoutes(
       const userId = req.user.claims.sub;
       const userEmail = req.user.claims.email;
       
-      // Get orders by user ID or email
+      // Primary lookup: orders claimed via userId.
+      // linkGuestOrdersByEmail() in /api/auth/sync stamps guest orders with the
+      // user's ID on every login, so the vast majority of orders will be found
+      // here.  The email fallback below is a backstop for:
+      //   • orders placed before this linking logic existed (one-time legacy)
+      //   • edge cases where sync hasn't been called yet in a session
       let orderRows = await storage.getOrdersByUserId(userId);
       
-      // If no orders by userId, try by email for legacy orders
+      // Email fallback: catches any remaining unlinked guest orders.
+      // These rows will be permanently claimed on the user's next login via sync.
       if (orderRows.length === 0 && userEmail) {
         orderRows = await storage.getOrdersByEmail(userEmail);
       }

@@ -140,6 +140,11 @@ export interface IStorage {
     batchNumber?: string | null;
   }): Promise<Order | undefined>;
   updateOrderEmailStatus(id: string, status: string, error?: string): Promise<Order | undefined>;
+  // Claims all guest orders (userId IS NULL) whose email matches the given
+  // address, stamping them with the now-known userId so getOrdersByUserId()
+  // finds them without relying on the email fallback.  Returns the count of
+  // rows updated.
+  linkGuestOrdersByEmail(email: string, userId: string): Promise<number>;
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
@@ -748,6 +753,14 @@ export class DatabaseStorage implements IStorage {
 
   async getOrdersByEmail(email: string): Promise<Order[]> {
     return db.select().from(orders).where(eq(orders.email, email)).orderBy(desc(orders.createdAt));
+  }
+
+  async linkGuestOrdersByEmail(email: string, userId: string): Promise<number> {
+    const result = await db
+      .update(orders)
+      .set({ userId })
+      .where(and(eq(orders.email, email), isNull(orders.userId)));
+    return result.rowCount ?? 0;
   }
 
   async getAllOrders(): Promise<Order[]> {
