@@ -59,18 +59,29 @@ const {
   mockGetAllProducts,
   mockGetProductWithDosageStock,
   mockDbSelect,
-} = vi.hoisted(() => ({
-  mockGetPaypalOrderDetails: vi.fn(),
-  mockCreateOrder: vi.fn().mockResolvedValue({
-    id: 'order-stub-1',
-    email: 'test@example.com',
-  }),
-  mockGetOrdersByUserId: vi.fn(),
-  mockHasRedeemedFirstOrderPromo: vi.fn().mockResolvedValue(false),
-  mockGetAllProducts: vi.fn(),
-  mockGetProductWithDosageStock: vi.fn(),
-  mockDbSelect: vi.fn(),
-}));
+  mockDbInsertReturning,
+} = vi.hoisted(() => {
+  // Shared spy for the terminal step of the promo INSERT chain:
+  //   db.insert(firstOrderPromos).values(…).returning(…)
+  // Default: resolves to a single promo row (simulates a successful INSERT).
+  // Individual tests can override with .mockRejectedValueOnce() to simulate
+  // a unique-constraint violation (PostgreSQL error code 23505) from the DB.
+  const mockDbInsertReturning = vi.fn().mockResolvedValue([{ id: 'promo-slot-default' }]);
+
+  return {
+    mockGetPaypalOrderDetails: vi.fn(),
+    mockCreateOrder: vi.fn().mockResolvedValue({
+      id: 'order-stub-1',
+      email: 'test@example.com',
+    }),
+    mockGetOrdersByUserId: vi.fn(),
+    mockHasRedeemedFirstOrderPromo: vi.fn().mockResolvedValue(false),
+    mockGetAllProducts: vi.fn(),
+    mockGetProductWithDosageStock: vi.fn(),
+    mockDbSelect: vi.fn(),
+    mockDbInsertReturning,
+  };
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module mocks — must be declared before any import of server code.
@@ -154,8 +165,12 @@ vi.mock('../paypal', () => ({
   SUBSCRIPTION_DISCOUNTS: [],
 }));
 
-// Drizzle fluent-chain stub for the replay-attack check.
-// The route does: db.select({…}).from(table).where(eq(…)).limit(1)
+// Drizzle fluent-chain stub for the replay-attack check and promo inserts.
+// The route does:
+//   db.select({…}).from(table).where(eq(…)).limit(1)          — replay-attack guard
+//   await db.insert(firstOrderPromos).values(…).returning(…)  — optimistic promo lock
+//   db.update(…).set(…).where(…).catch(…)                     — orderId back-fill
+//   db.delete(…).where(…).catch(…)                            — compensating delete on order failure
 // mockDbSelect is a hoisted spy so individual tests can override its return
 // value to simulate a pre-existing order (replay) or a clean slate.
 // The global beforeEach (below) resets it to the "no existing order" default.
@@ -164,14 +179,19 @@ vi.mock('../db', () => ({
     select: mockDbSelect,
     insert: vi.fn(() => ({
       values: vi.fn(() => ({
-        returning: vi.fn().mockResolvedValue([{ id: 'order-stub-1' }]),
-        // Used by fire-and-forget promo tracking: db.insert(...).values(...).catch(...)
-        catch: vi.fn().mockResolvedValue(undefined),
+        returning: mockDbInsertReturning,
       })),
     })),
     update: vi.fn(() => ({
       set: vi.fn(() => ({
-        where: vi.fn().mockResolvedValue([]),
+        where: vi.fn(() => ({
+          catch: vi.fn().mockResolvedValue(undefined),
+        })),
+      })),
+    })),
+    delete: vi.fn(() => ({
+      where: vi.fn(() => ({
+        catch: vi.fn().mockResolvedValue(undefined),
       })),
     })),
   },
@@ -1408,5 +1428,128 @@ describe('POST /api/orders/paypal — duplicate-order replay-attack guard', () =
     // Side-effects must not have fired for the losing concurrent request.
     expect(decrementStock).not.toHaveBeenCalled();
     expect(updateOrderEmailStatus).not.toHaveBeenCalled();
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 11 — Promo race-condition backstop (optimistic lock)
+//
+// The read-based guard (getOrdersByUserId + hasRedeemedFirstOrderPromo) has a
+// TOCTOU window: two simultaneous first-order requests can both pass the read
+// check before either writes the firstOrderPromos row.
+//
+// The fix inserts the firstOrderPromos row *before* creating the order, using a
+// partial unique index (user_id WHERE status = 'redeemed') as an optimistic
+// lock.  A concurrent request that also passed the read guard will hit a
+// PostgreSQL unique-constraint violation (code 23505) on the INSERT and
+// receive a 409 instead of silently receiving a second free BAC water unit.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — promo race-condition backstop', () => {
+  const RACING_USER = 'user-first-order-racing';
+
+  const bacWaterBody = () => {
+    setTestSession(RACING_USER);
+    return buildPaypalBody({
+      items: [
+        {
+          productId: BPC157_ID,
+          name: 'BPC-157',
+          dosage: '5mg',
+          quantity: 1,
+          price: '300',
+        },
+        {
+          productId: BAC_WATER_ID,
+          name: 'Bacteriostatic Water',
+          dosage: '3ml',
+          quantity: 1,
+          price: '0',
+        },
+      ],
+      total: '300',
+    });
+  };
+
+  beforeEach(() => {
+    mockGetAllProducts.mockResolvedValue([
+      { id: BAC_WATER_ID, slug: 'bacteriostatic-water', name: 'Bacteriostatic Water' },
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    // Both concurrent requests see no prior orders and no redeemed promo —
+    // both would pass the read-based guard.
+    mockGetOrdersByUserId.mockResolvedValue([]);
+    mockHasRedeemedFirstOrderPromo.mockResolvedValue(false);
+
+    mockCreateOrder.mockClear();
+    // Reset to default (success) so each test that needs a failure can override.
+    mockDbInsertReturning.mockResolvedValue([{ id: 'promo-slot-1' }]);
+  });
+
+  it('succeeds (201) for the first request — optimistic promo lock acquired', async () => {
+    // The first request wins the INSERT race; the DB returns the new promo row.
+    mockDbInsertReturning.mockResolvedValueOnce([{ id: 'promo-slot-1' }]);
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(bacWaterBody());
+
+    expect(res.status).toBe(201);
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
+  });
+
+  it('returns 409 for the second concurrent request — unique-constraint violation on promo insert', async () => {
+    // Simulate the DB rejecting the INSERT because a concurrent request already
+    // holds the unique slot (user_id WHERE status = 'redeemed').
+    const uniqueViolation = Object.assign(new Error('duplicate key value violates unique constraint'), {
+      code: '23505',
+    });
+    mockDbInsertReturning.mockRejectedValueOnce(uniqueViolation);
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(bacWaterBody());
+
+    // The second concurrent request must be rejected, not silently creating
+    // a second order with free BAC water.
+    expect(res.status).toBe(409);
+    expect(typeof res.body.error).toBe('string');
+    expect(res.body.error.toLowerCase()).toContain('promo');
+
+    // Order must NOT have been created for the racing second request.
+    expect(mockCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('does not block the order when a non-unique DB error occurs during promo insert', async () => {
+    // Transient / unexpected DB errors on the promo insert must not prevent a
+    // paid order from completing.  The lock reservation is best-effort for
+    // non-constraint errors.
+    const transientError = Object.assign(new Error('connection timeout'), { code: 'ECONNRESET' });
+    mockDbInsertReturning.mockRejectedValueOnce(transientError);
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(bacWaterBody());
+
+    // Order proceeds despite the promo-tracking failure.
+    expect(res.status).toBe(201);
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
   });
 });

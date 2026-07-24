@@ -8,7 +8,7 @@ import path from "path";
 import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db, pool } from "./db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote, firstOrderPromos } from "@shared/schema";
 import { detectCycles } from "@shared/cycle-detection";
 import { setupAuth, isAuthenticated } from "./sessionAuth";
@@ -1649,6 +1649,40 @@ export async function registerRoutes(
         // Still create the order since PayPal payment is already captured, but log the warning
       }
 
+      // ── Optimistic promo lock ──────────────────────────────────────────────
+      // If the cart contains a free BAC water unit, claim the promo slot
+      // BEFORE creating the order.  The partial unique index on
+      // (user_id) WHERE status = 'redeemed' makes this atomic: a second
+      // concurrent request that also passed the read-based guard above will
+      // hit a unique-constraint violation here and receive a 409 instead of
+      // silently receiving a second free unit.
+      //
+      // orderId is left null for now; it is updated fire-and-forget once the
+      // order row exists.  If order creation fails we delete the slot so the
+      // user can retry.
+      let promoRowId: string | null = null;
+      if (hasFreeBacWater) {
+        try {
+          const [promoRow] = await db.insert(firstOrderPromos).values({
+            userId: canonicalUserId,
+            orderId: null,
+            status: 'redeemed',
+          }).returning({ id: firstOrderPromos.id });
+          promoRowId = promoRow?.id ?? null;
+          console.log(`[Promo] Reserved promo slot id=${promoRowId} for user=${canonicalUserId}`);
+        } catch (e: any) {
+          // PostgreSQL unique-violation code 23505 means a concurrent request
+          // already claimed this user's promo slot.
+          if (e?.code === '23505') {
+            console.warn(`[Promo] Race: promo already claimed for user=${canonicalUserId}`);
+            return res.status(409).json({ error: 'First-order promo has already been claimed. Please refresh and try again.' });
+          }
+          // Any other DB error: log and continue — we won't block a paid order
+          // over a promo tracking failure.
+          console.error('[Promo] Failed to reserve promo slot (non-unique error):', e.message);
+        }
+      }
+
       const validatedData = insertOrderSchema.parse(orderData);
 
       // Guard against the SELECT→INSERT race: two concurrent requests can both
@@ -1670,19 +1704,26 @@ export async function registerRoutes(
           );
           return res.status(409).json({ error: "This PayPal order has already been finalized" });
         }
+        // Order creation failed after we reserved the promo slot.
+        // Release the slot so the user can retry without getting a 409 on
+        // their next attempt.
+        if (promoRowId) {
+          db.delete(firstOrderPromos)
+            .where(and(eq(firstOrderPromos.id, promoRowId), eq(firstOrderPromos.userId, canonicalUserId)))
+            .catch((delErr: any) => console.error('[Promo] Failed to release promo slot on order failure:', delErr.message));
+        }
         throw insertErr;
       }
 
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
 
-      // Track promo redemption if a free BAC water unit was included.
-      // Use canonicalUserId so the backstop check in future orders finds this row.
-      if (hasFreeBacWater) {
-        db.insert(firstOrderPromos).values({
-          userId: canonicalUserId,
-          orderId: order.id,
-          status: 'redeemed',
-        }).catch((e: any) => console.error('[Promo] Failed to track redemption:', e.message));
+      // Now that we have the order id, back-fill it into the promo row so the
+      // record is fully auditable.  Fire-and-forget — the lock is already held.
+      if (promoRowId) {
+        db.update(firstOrderPromos)
+          .set({ orderId: order.id })
+          .where(eq(firstOrderPromos.id, promoRowId))
+          .catch((e: any) => console.error('[Promo] Failed to update promo orderId:', e.message));
       }
       
       // Decrement stock for all items in this order
