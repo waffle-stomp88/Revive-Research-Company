@@ -270,6 +270,7 @@ beforeEach(() => {
       }),
     }),
   });
+
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1496,7 +1497,9 @@ describe('POST /api/orders/paypal — promo race-condition backstop', () => {
     mockHasRedeemedFirstOrderPromo.mockResolvedValue(false);
 
     mockCreateOrder.mockClear();
-    // Reset to default (success) so each test that needs a failure can override.
+    // Reset to default (success) and clear call history so each test starts
+    // with a clean slate — call counts from previous tests must not bleed in.
+    mockDbInsertReturning.mockClear();
     mockDbInsertReturning.mockResolvedValue([{ id: 'promo-slot-1' }]);
   });
 
@@ -1551,5 +1554,20 @@ describe('POST /api/orders/paypal — promo race-condition backstop', () => {
     // Order proceeds despite the promo-tracking failure.
     expect(res.status).toBe(201);
     expect(mockCreateOrder).toHaveBeenCalledOnce();
+  });
+
+  it('does not trigger the promo INSERT when the order contains no free BAC water', async () => {
+    // Plain paid order: only BPC-157, no $0 BAC water item.
+    // The optimistic-lock INSERT into firstOrderPromos must NOT fire.
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(buildPaypalBody()); // no BAC water item
+
+    expect(res.status).toBe(201);
+    // The promo INSERT uses the .returning() chain — if it fires,
+    // mockDbInsertReturning will have been called. For a non-promo order it must not.
+    expect(mockDbInsertReturning).not.toHaveBeenCalled();
   });
 });
