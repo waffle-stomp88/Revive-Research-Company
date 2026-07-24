@@ -1611,10 +1611,11 @@ export async function registerRoutes(
         fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${sanitizedItems.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity} @ $${i.price}`).join(', ')}${validatedDiscountCode ? `. Discount code: ${validatedDiscountCode}` : ''}${validatedShippingCode ? `. Shipping code: ${validatedShippingCode}` : ''}`,
       };
 
-      // If user is authenticated, link order to their account
-      if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
-        orderData.userId = req.user.claims.sub;
-      }
+      // Link the order to the canonical user ID so getOrdersByUserId() finds it
+      // on future requests. canonicalUserId is either the auth-provider sub (OIDC)
+      // or the session userId — the same value used by the BAC water guard above,
+      // ensuring the dual-check (order history + firstOrderPromos) is actually dual.
+      orderData.userId = canonicalUserId;
 
       // Validate stock before creating the order (use sanitizedItems — authoritative list)
       const stockItems = sanitizedItems.map((item: any) => ({
