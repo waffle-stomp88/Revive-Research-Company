@@ -2,7 +2,7 @@ import { buildProductKeywords, filterArticlesByProduct } from "./articleMatching
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
+  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics, firstOrderPromos,
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
   cycleTags,
   deadLinkHits,
@@ -123,6 +123,7 @@ export interface IStorage {
   getOrder(id: string): Promise<Order | undefined>;
   getOrdersByUserId(userId: string): Promise<Order[]>;
   getOrdersByEmail(email: string): Promise<Order[]>;
+  hasRedeemedFirstOrderPromo(userId: string): Promise<boolean>;
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
   getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined>;
@@ -734,6 +735,15 @@ export class DatabaseStorage implements IStorage {
 
   async getOrdersByUserId(userId: string): Promise<Order[]> {
     return db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
+  }
+
+  async hasRedeemedFirstOrderPromo(userId: string): Promise<boolean> {
+    const [row] = await db
+      .select({ id: firstOrderPromos.id })
+      .from(firstOrderPromos)
+      .where(and(eq(firstOrderPromos.userId, userId), eq(firstOrderPromos.status, 'redeemed')))
+      .limit(1);
+    return !!row;
   }
 
   async getOrdersByEmail(email: string): Promise<Order[]> {

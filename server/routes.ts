@@ -772,11 +772,21 @@ export async function registerRoutes(
   // No auth required — guests are always first-time buyers
   app.get('/api/my-first-order-status', async (req: any, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      // Guests have no orders → treat as first-time buyer
-      const isFirstOrder = userId
-        ? (await storage.getOrdersByUserId(userId)).length === 0
-        : true;
+      // Canonical user ID: prefer the auth-provider sub (same ID stored on orders),
+      // fall back to session userId. Guests have neither → always a first-time buyer.
+      const userId: string | undefined =
+        req.user?.claims?.sub || (req.session as any)?.userId || undefined;
+
+      // isFirstOrder is false if the user has any prior paid order OR has already
+      // redeemed the promo (backstop for edge cases where order.userId wasn't saved).
+      let isFirstOrder = true;
+      if (userId) {
+        const [priorOrders, hasRedeemed] = await Promise.all([
+          storage.getOrdersByUserId(userId),
+          storage.hasRedeemedFirstOrderPromo(userId),
+        ]);
+        isFirstOrder = priorOrders.length === 0 && !hasRedeemed;
+      }
 
       const allProducts = await storage.getAllProducts();
       const bacWater = allProducts.find((p) =>
@@ -1410,6 +1420,16 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Authentication required to create an order" });
       }
 
+      // Canonical user ID: prefer the auth-provider sub (same ID that gets stored on
+      // orders via orderData.userId below), fall back to session userId. Using a single
+      // canonical ID for both the guard lookup and the order write prevents the
+      // split-identity bug where getOrdersByUserId(sessionUserId) finds 0 rows because
+      // previous orders were stored under req.user.claims.sub.
+      const canonicalUserId: string =
+        (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub)
+          ? req.user.claims.sub
+          : sessionUserId;
+
       // Identify the BAC water product for the eligibility abuse guard below.
       const allProds = await storage.getAllProducts();
       const bacWaterProduct = allProds.find((p) =>
@@ -1428,16 +1448,23 @@ export async function registerRoutes(
       );
       // Pre-check: line count and item shape; first-order DB check runs inside
       {
-        // Determine first-order status only if there is a free BAC item to evaluate
-        const isUserFirstOrderForGuard = zeroPricedBacItems.length === 1
-          ? (await storage.getOrdersByUserId(sessionUserId)).length === 0
-          : false;
+        // Determine first-order status only if there is a free BAC item to evaluate.
+        // Check both order history AND firstOrderPromos (backstop for edge cases where
+        // an order was placed without userId being saved to the order row).
+        let isUserFirstOrderForGuard = false;
+        if (zeroPricedBacItems.length === 1) {
+          const [priorOrders, hasRedeemed] = await Promise.all([
+            storage.getOrdersByUserId(canonicalUserId),
+            storage.hasRedeemedFirstOrderPromo(canonicalUserId),
+          ]);
+          isUserFirstOrderForGuard = priorOrders.length === 0 && !hasRedeemed;
+        }
         const guardError = validateFreeBacWater(zeroPricedBacItems, isUserFirstOrderForGuard);
         if (guardError) {
           return res.status(400).json({ error: guardError });
         }
         if (zeroPricedBacItems.length === 1) {
-          console.log(`[Promo] First-order BAC water confirmed for user=${sessionUserId}`);
+          console.log(`[Promo] First-order BAC water confirmed for user=${canonicalUserId}`);
         }
       }
 
@@ -1602,10 +1629,11 @@ export async function registerRoutes(
       
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
 
-      // Track promo redemption if a free BAC water unit was included
+      // Track promo redemption if a free BAC water unit was included.
+      // Use canonicalUserId so the backstop check in future orders finds this row.
       if (hasFreeBacWater) {
         db.insert(firstOrderPromos).values({
-          userId: sessionUserId,
+          userId: canonicalUserId,
           orderId: order.id,
           status: 'redeemed',
         }).catch((e: any) => console.error('[Promo] Failed to track redemption:', e.message));
