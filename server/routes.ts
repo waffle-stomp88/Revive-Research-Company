@@ -1121,9 +1121,15 @@ export async function registerRoutes(
     try {
       const orderData = { ...req.body };
       
-      // If user is authenticated, link order to their account
-      if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
-        orderData.userId = req.user.claims.sub;
+      // Canonical user ID: prefer the auth-provider sub (stable across sessions),
+      // fall back to session userId so guests with a session are also linked.
+      // This matches the same pattern used by the PayPal confirmation route.
+      const canonicalUserIdForOrder: string | undefined =
+        (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub)
+          ? req.user.claims.sub
+          : ((req.session as any)?.userId ?? undefined);
+      if (canonicalUserIdForOrder) {
+        orderData.userId = canonicalUserIdForOrder;
       }
       
       // Security: Always force status to pending_payment for new orders
@@ -1225,9 +1231,15 @@ export async function registerRoutes(
         notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}${manualValidatedDiscountCode ? `. Discount code: ${manualValidatedDiscountCode}` : ''}${manualValidatedShippingCode ? `. Shipping code: ${manualValidatedShippingCode}` : ''}`,
       };
 
-      // If user is authenticated, link order to their account
-      if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
-        orderData.userId = req.user.claims.sub;
+      // Canonical user ID: prefer the auth-provider sub (stable across sessions),
+      // fall back to session userId so guests with a session are also linked.
+      // This matches the same pattern used by the PayPal confirmation route.
+      const canonicalUserIdForManual: string | undefined =
+        (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub)
+          ? req.user.claims.sub
+          : ((req.session as any)?.userId ?? undefined);
+      if (canonicalUserIdForManual) {
+        orderData.userId = canonicalUserIdForManual;
       }
 
       // Validate stock before creating the order (skip for test orders)
