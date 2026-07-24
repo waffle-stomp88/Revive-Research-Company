@@ -9,3 +9,4 @@
 - [ADD COLUMN idempotency on Neon](add-column-idempotency.md) — information_schema inside DO blocks silently misses columns; always use native ADD COLUMN IF NOT EXISTS syntax instead
 - [TS error count inflation](ts-error-inflation.md) — raw tsc error count ≠ distinct broken names; one undefined name causes one error per usage site; always check unique-name count to size repair work
 - [runTest Supabase auth limitation](runtest-supabase-auth-limitation.md) — testReplitAuth/OIDC bypass only works for Replit Auth; Supabase/Google OAuth pages get stuck; use existing Playwright storageState suites or direct API tests instead
+- [Replit deploy schema diff](replit-deploy-schema-diff.md) — publish introspects both DBs, runs diff before app starts; fix data conflicts by dropping the object in dev (keep migration record), publish, then resync dev after
