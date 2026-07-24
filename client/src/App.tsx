@@ -18,18 +18,18 @@ import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
 import Home from "@/pages/home";
-import Products from "@/pages/products";
 
-import Wholesale from "@/pages/wholesale";
-import ProductDetail from "@/pages/product-detail";
-import BundleDetail from "@/pages/bundle-detail";
-import Cart from "@/pages/cart";
-import Checkout from "@/pages/checkout";
-import CheckoutSuccess from "@/pages/checkout-success";
-import CoaVerification from "@/pages/coa";
-import CoaLibrary from "@/pages/coa-library";
-import Dashboard from "@/pages/dashboard";
-import DashboardSummary from "@/pages/dashboard-summary";
+const Products = lazy(() => import("@/pages/products"));
+const Wholesale = lazy(() => import("@/pages/wholesale"));
+const ProductDetail = lazy(() => import("@/pages/product-detail"));
+const BundleDetail = lazy(() => import("@/pages/bundle-detail"));
+const Cart = lazy(() => import("@/pages/cart"));
+const Checkout = lazy(() => import("@/pages/checkout"));
+const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
+const CoaVerification = lazy(() => import("@/pages/coa"));
+const CoaLibrary = lazy(() => import("@/pages/coa-library"));
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const DashboardSummary = lazy(() => import("@/pages/dashboard-summary"));
 const DashboardOrders = lazy(() => import("@/pages/dashboard-orders"));
 const DashboardStacks = lazy(() => import("@/pages/dashboard-stacks"));
 const DashboardLogbook = lazy(() => import("@/pages/dashboard-logbook"));
@@ -37,66 +37,75 @@ const DashboardCycles = lazy(() => import("@/pages/dashboard-cycles"));
 const DashboardAcademy = lazy(() => import("@/pages/dashboard-academy"));
 const DashboardWishlist = lazy(() => import("@/pages/dashboard-wishlist"));
 const DashboardSettings = lazy(() => import("@/pages/dashboard-settings"));
-import AccountSettings from "@/pages/account-settings";
-import Admin from "@/pages/admin";
-import CompoundAudit from "@/pages/admin/compound-audit";
-import BlendAudit from "@/pages/admin/blend-audit";
-import Affiliate from "@/pages/affiliate";
-import AffiliateDashboard from "@/pages/affiliate-dashboard";
-import FAQ from "@/pages/faq";
-import Shipping from "@/pages/shipping";
-import TermsOfService from "@/pages/terms-of-service";
-import PrivacyPolicy from "@/pages/privacy-policy";
-import Disclaimer from "@/pages/disclaimer";
-import Contact from "@/pages/contact";
-import Legal from "@/pages/legal";
-import WhatWeDontDo from "@/pages/what-we-dont-do";
-import Education from "@/pages/education";
-import QualityProcess from "@/pages/quality-process";
-import PackageWarm from "@/pages/package-warm";
-import Transparency from "@/pages/transparency";
-import EthicalPricing from "@/pages/ethical-pricing";
-import BuyerChecklist from "@/pages/buyer-checklist";
-import Troubleshooting from "@/pages/troubleshooting";
-import BatchArchive from "@/pages/batch-archive";
-import LabNotes from "@/pages/lab-notes";
-import ResourcesHub from "@/pages/resources";
-import ProductsHub from "@/pages/products-hub";
-import DosageCalculator from "@/pages/dosage-calculator";
-import ReconstitutionWizard from "@/pages/reconstitution-wizard";
-import InfographicBuilder from "@/pages/infographic-builder";
+const AccountSettings = lazy(() => import("@/pages/account-settings"));
+const Admin = lazy(() => import("@/pages/admin"));
+const CompoundAudit = lazy(() => import("@/pages/admin/compound-audit"));
+const BlendAudit = lazy(() => import("@/pages/admin/blend-audit"));
+const Affiliate = lazy(() => import("@/pages/affiliate"));
+const AffiliateDashboard = lazy(() => import("@/pages/affiliate-dashboard"));
+const FAQ = lazy(() => import("@/pages/faq"));
+const Shipping = lazy(() => import("@/pages/shipping"));
+const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+const Disclaimer = lazy(() => import("@/pages/disclaimer"));
+const Contact = lazy(() => import("@/pages/contact"));
+const Legal = lazy(() => import("@/pages/legal"));
+const WhatWeDontDo = lazy(() => import("@/pages/what-we-dont-do"));
+const Education = lazy(() => import("@/pages/education"));
+const QualityProcess = lazy(() => import("@/pages/quality-process"));
+const PackageWarm = lazy(() => import("@/pages/package-warm"));
+const Transparency = lazy(() => import("@/pages/transparency"));
+const EthicalPricing = lazy(() => import("@/pages/ethical-pricing"));
+const BuyerChecklist = lazy(() => import("@/pages/buyer-checklist"));
+const Troubleshooting = lazy(() => import("@/pages/troubleshooting"));
+const BatchArchive = lazy(() => import("@/pages/batch-archive"));
+const LabNotes = lazy(() => import("@/pages/lab-notes"));
+const ResourcesHub = lazy(() => import("@/pages/resources"));
+const ProductsHub = lazy(() => import("@/pages/products-hub"));
+const DosageCalculator = lazy(() => import("@/pages/dosage-calculator"));
+const ReconstitutionWizard = lazy(() => import("@/pages/reconstitution-wizard"));
+const InfographicBuilder = lazy(() => import("@/pages/infographic-builder"));
 const PkCatalog = lazy(() => import("@/pages/pk-catalog"));
-import ResearchStacks from "@/pages/research-stacks";
+const ResearchStacks = lazy(() => import("@/pages/research-stacks"));
 const GalaxyPage = lazy(() => import("@/pages/galaxy"));
-import ResearchStackDetail from "@/pages/research-stack-detail";
-import StackShare from "@/pages/stack-share";
-import Academy from "@/pages/academy";
-import Login from "@/pages/login";
-import AuthCallback from "@/pages/auth-callback";
-import Unsubscribe from "@/pages/unsubscribe";
-import SubscriptionSuccess from "@/pages/subscription-success";
-import OrderConfirmation from "@/pages/order-confirmation";
-import NotFound from "@/pages/not-found";
+const ResearchStackDetail = lazy(() => import("@/pages/research-stack-detail"));
+const StackShare = lazy(() => import("@/pages/stack-share"));
+const Academy = lazy(() => import("@/pages/academy"));
+const Login = lazy(() => import("@/pages/login"));
+const AuthCallback = lazy(() => import("@/pages/auth-callback"));
+const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
+const SubscriptionSuccess = lazy(() => import("@/pages/subscription-success"));
+const OrderConfirmation = lazy(() => import("@/pages/order-confirmation"));
+const NotFound = lazy(() => import("@/pages/not-found"));
 
-import CoaTrust from "@/pages/guides/coa-trust";
-import BatchTesting from "@/pages/guides/batch-testing";
-import ResearchUseOnly from "@/pages/guides/research-use-only";
-import VerifyQuality from "@/pages/guides/verify-quality";
-import PurityExplained from "@/pages/guides/purity-explained";
-import CheapPeptides from "@/pages/guides/cheap-peptides";
-import HormonalPeptidesGuide from "@/pages/guides/hormonal-peptides";
-import HealingPeptidesGuide from "@/pages/guides/healing-peptides";
-import MetabolicPeptidesGuide from "@/pages/guides/metabolic-peptides";
-import GrowthPeptidesGuide from "@/pages/guides/growth-peptides";
-import GrowthHormonePeptidesGuide from "@/pages/guides/growth-hormone-peptides";
-import CognitivePeptidesGuide from "@/pages/guides/cognitive-peptides";
-import SkinPeptidesGuide from "@/pages/guides/skin-peptides";
-import LongevityPeptidesGuide from "@/pages/guides/longevity-peptides";
-import SystemHub from "@/pages/systems/system-hub";
+const CoaTrust = lazy(() => import("@/pages/guides/coa-trust"));
+const BatchTesting = lazy(() => import("@/pages/guides/batch-testing"));
+const ResearchUseOnly = lazy(() => import("@/pages/guides/research-use-only"));
+const VerifyQuality = lazy(() => import("@/pages/guides/verify-quality"));
+const PurityExplained = lazy(() => import("@/pages/guides/purity-explained"));
+const CheapPeptides = lazy(() => import("@/pages/guides/cheap-peptides"));
+const HormonalPeptidesGuide = lazy(() => import("@/pages/guides/hormonal-peptides"));
+const HealingPeptidesGuide = lazy(() => import("@/pages/guides/healing-peptides"));
+const MetabolicPeptidesGuide = lazy(() => import("@/pages/guides/metabolic-peptides"));
+const GrowthPeptidesGuide = lazy(() => import("@/pages/guides/growth-peptides"));
+const GrowthHormonePeptidesGuide = lazy(() => import("@/pages/guides/growth-hormone-peptides"));
+const CognitivePeptidesGuide = lazy(() => import("@/pages/guides/cognitive-peptides"));
+const SkinPeptidesGuide = lazy(() => import("@/pages/guides/skin-peptides"));
+const LongevityPeptidesGuide = lazy(() => import("@/pages/guides/longevity-peptides"));
+const SystemHub = lazy(() => import("@/pages/systems/system-hub"));
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
+const PageFallback = () => <div className="min-h-screen bg-[#1a1a1f]" />;
+
+function Lazy({ component: Component }: { component: React.ComponentType }) {
+  return (
+    <Suspense fallback={<PageFallback />}>
+      <Component />
+    </Suspense>
+  );
+}
 
 function ScrollManager() {
   const [location] = useLocation();
@@ -176,163 +185,149 @@ function Router() {
       <AnalyticsTracker />
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/shop" component={ProductsHub} />
-        <Route path="/peptides" component={Products} />
-        <Route path="/peptides/:id" component={ProductDetail} />
+        <Route path="/shop">{() => <Lazy component={ProductsHub} />}</Route>
+        <Route path="/peptides">{() => <Lazy component={Products} />}</Route>
+        <Route path="/peptides/:id">{() => <Lazy component={ProductDetail} />}</Route>
         <Route path="/products">{() => { window.location.replace("/peptides" + window.location.search); return null; }}</Route>
         <Route path="/products/:id">{({ id }) => { window.location.replace(`/peptides/${id}`); return null; }}</Route>
         <Route path="/bulk-packs">{() => { window.location.replace("/peptides"); return null; }}</Route>
-        <Route path="/wholesale" component={Wholesale} />
-        <Route path="/research-stacks" component={ResearchStacks} />
-        <Route path="/research-stacks/:id" component={ResearchStackDetail} />
+        <Route path="/wholesale">{() => <Lazy component={Wholesale} />}</Route>
+        <Route path="/research-stacks">{() => <Lazy component={ResearchStacks} />}</Route>
+        <Route path="/research-stacks/:id">{() => <Lazy component={ResearchStackDetail} />}</Route>
         <Route path="/galaxy">
           <Suspense fallback={<div className="min-h-screen bg-[#0d0d10]" />}>
             <GalaxyPage />
           </Suspense>
         </Route>
-        <Route path="/stacks/:shareCode" component={StackShare} />
-        <Route path="/bundles/:id" component={BundleDetail} />
+        <Route path="/stacks/:shareCode">{() => <Lazy component={StackShare} />}</Route>
+        <Route path="/bundles/:id">{() => <Lazy component={BundleDetail} />}</Route>
         <Route path="/cart">
           <ProtectedRoute title="Your Cart" description="Sign in to view your cart and complete your research compound order.">
-            <Cart />
+            <Suspense fallback={<PageFallback />}><Cart /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/checkout">
           <ProtectedRoute title="Checkout" description="Sign in to complete your order. First-time customers receive a free 3ml BAC water with their first order.">
-            <Checkout />
+            <Suspense fallback={<PageFallback />}><Checkout /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/checkout/success">
           <ProtectedRoute>
-            <CheckoutSuccess />
+            <Suspense fallback={<PageFallback />}><CheckoutSuccess /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/subscription/success">
           <ProtectedRoute>
-            <SubscriptionSuccess />
+            <Suspense fallback={<PageFallback />}><SubscriptionSuccess /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/order-confirmation">
           <ProtectedRoute>
-            <OrderConfirmation />
+            <Suspense fallback={<PageFallback />}><OrderConfirmation /></Suspense>
           </ProtectedRoute>
         </Route>
-        <Route path="/coa/verify-certificate-of-analysis" component={CoaVerification} />
+        <Route path="/coa/verify-certificate-of-analysis">{() => <Lazy component={CoaVerification} />}</Route>
         <Route path="/coa-library">
           <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
-            <CoaLibrary />
+            <Suspense fallback={<PageFallback />}><CoaLibrary /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/summary">
           <ProtectedRoute>
-            <DashboardSummary />
+            <Suspense fallback={<PageFallback />}><DashboardSummary /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/orders">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardOrders />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardOrders /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/stacks">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardStacks />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardStacks /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/logbook">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardLogbook />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardLogbook /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/cycles">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardCycles />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardCycles /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/academy">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardAcademy />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardAcademy /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/wishlist">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardWishlist />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardWishlist /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/dashboard/settings">
           <ProtectedRoute>
-            <Suspense fallback={<div className="min-h-screen bg-[#1a1a1f]" />}>
-              <DashboardSettings />
-            </Suspense>
+            <Suspense fallback={<PageFallback />}><DashboardSettings /></Suspense>
           </ProtectedRoute>
         </Route>
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/account-settings" component={AccountSettings} />
-        <Route path="/admin/compound-audit" component={CompoundAudit} />
-        <Route path="/admin/blend-audit" component={BlendAudit} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/affiliate" component={Affiliate} />
-        <Route path="/affiliate-dashboard" component={AffiliateDashboard} />
-        <Route path="/terms-of-service" component={TermsOfService} />
+        <Route path="/dashboard">{() => <Lazy component={Dashboard} />}</Route>
+        <Route path="/account-settings">{() => <Lazy component={AccountSettings} />}</Route>
+        <Route path="/admin/compound-audit">{() => <Lazy component={CompoundAudit} />}</Route>
+        <Route path="/admin/blend-audit">{() => <Lazy component={BlendAudit} />}</Route>
+        <Route path="/admin">{() => <Lazy component={Admin} />}</Route>
+        <Route path="/affiliate">{() => <Lazy component={Affiliate} />}</Route>
+        <Route path="/affiliate-dashboard">{() => <Lazy component={AffiliateDashboard} />}</Route>
+        <Route path="/terms-of-service">{() => <Lazy component={TermsOfService} />}</Route>
         <Route path="/terms">{() => { window.location.replace("/terms-of-service"); return null; }}</Route>
-        <Route path="/privacy" component={PrivacyPolicy} />
-        <Route path="/disclaimer" component={Disclaimer} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/legal" component={Legal} />
+        <Route path="/privacy">{() => <Lazy component={PrivacyPolicy} />}</Route>
+        <Route path="/disclaimer">{() => <Lazy component={Disclaimer} />}</Route>
+        <Route path="/contact">{() => <Lazy component={Contact} />}</Route>
+        <Route path="/legal">{() => <Lazy component={Legal} />}</Route>
         {/* Specific /guides/ pages (must come before catch-all /guides/:slug) */}
-        <Route path="/guides/peptide-vendor-ethics-standards" component={WhatWeDontDo} />
-        <Route path="/guides/peptide-quality-assurance-process" component={QualityProcess} />
-        <Route path="/guides/peptide-package-arrived-warm" component={PackageWarm} />
-        <Route path="/guides/peptide-pricing-breakdown" component={EthicalPricing} />
-        <Route path="/guides/peptide-vendor-checklist" component={BuyerChecklist} />
-        <Route path="/guides/peptide-handling-troubleshooting" component={Troubleshooting} />
-        <Route path="/guides/peptide-lab-research-archive" component={LabNotes} />
-        <Route path="/guides/are-peptide-coas-trustworthy" component={CoaTrust} />
-        <Route path="/guides/how-batch-testing-works" component={BatchTesting} />
-        <Route path="/guides/what-research-use-only-means" component={ResearchUseOnly} />
-        <Route path="/guides/how-to-verify-peptide-quality" component={VerifyQuality} />
-        <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
-        <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
-        <Route path="/guides/healing-peptides" component={HealingPeptidesGuide} />
-        <Route path="/guides/metabolic-peptides" component={MetabolicPeptidesGuide} />
-        <Route path="/guides/growth-peptides" component={GrowthPeptidesGuide} />
-        <Route path="/guides/growth-hormone-peptides" component={GrowthHormonePeptidesGuide} />
-        <Route path="/guides/cognitive-peptides" component={CognitivePeptidesGuide} />
-        <Route path="/guides/skin-peptides" component={SkinPeptidesGuide} />
-        <Route path="/guides/longevity-peptides" component={LongevityPeptidesGuide} />
-        <Route path="/guides/hormonal-peptides" component={HormonalPeptidesGuide} />
-        <Route path="/guides/peptide-education-center" component={Education} />
+        <Route path="/guides/peptide-vendor-ethics-standards">{() => <Lazy component={WhatWeDontDo} />}</Route>
+        <Route path="/guides/peptide-quality-assurance-process">{() => <Lazy component={QualityProcess} />}</Route>
+        <Route path="/guides/peptide-package-arrived-warm">{() => <Lazy component={PackageWarm} />}</Route>
+        <Route path="/guides/peptide-pricing-breakdown">{() => <Lazy component={EthicalPricing} />}</Route>
+        <Route path="/guides/peptide-vendor-checklist">{() => <Lazy component={BuyerChecklist} />}</Route>
+        <Route path="/guides/peptide-handling-troubleshooting">{() => <Lazy component={Troubleshooting} />}</Route>
+        <Route path="/guides/peptide-lab-research-archive">{() => <Lazy component={LabNotes} />}</Route>
+        <Route path="/guides/are-peptide-coas-trustworthy">{() => <Lazy component={CoaTrust} />}</Route>
+        <Route path="/guides/how-batch-testing-works">{() => <Lazy component={BatchTesting} />}</Route>
+        <Route path="/guides/what-research-use-only-means">{() => <Lazy component={ResearchUseOnly} />}</Route>
+        <Route path="/guides/how-to-verify-peptide-quality">{() => <Lazy component={VerifyQuality} />}</Route>
+        <Route path="/guides/peptide-purity-explained">{() => <Lazy component={PurityExplained} />}</Route>
+        <Route path="/guides/why-cheap-peptides-are-cheap">{() => <Lazy component={CheapPeptides} />}</Route>
+        <Route path="/guides/healing-peptides">{() => <Lazy component={HealingPeptidesGuide} />}</Route>
+        <Route path="/guides/metabolic-peptides">{() => <Lazy component={MetabolicPeptidesGuide} />}</Route>
+        <Route path="/guides/growth-peptides">{() => <Lazy component={GrowthPeptidesGuide} />}</Route>
+        <Route path="/guides/growth-hormone-peptides">{() => <Lazy component={GrowthHormonePeptidesGuide} />}</Route>
+        <Route path="/guides/cognitive-peptides">{() => <Lazy component={CognitivePeptidesGuide} />}</Route>
+        <Route path="/guides/skin-peptides">{() => <Lazy component={SkinPeptidesGuide} />}</Route>
+        <Route path="/guides/longevity-peptides">{() => <Lazy component={LongevityPeptidesGuide} />}</Route>
+        <Route path="/guides/hormonal-peptides">{() => <Lazy component={HormonalPeptidesGuide} />}</Route>
+        <Route path="/guides/peptide-education-center">{() => <Lazy component={Education} />}</Route>
         {/* Catch-all: compound-name guide URLs intentionally not routed — do not create */}
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
-        <Route path="/guides/:slug" component={Education} />
-        <Route path="/login" component={Login} />
-        <Route path="/academy" component={Academy} />
-        <Route path="/about/our-transparency-commitment" component={Transparency} />
-        <Route path="/coa/batch-testing-archive" component={BatchArchive} />
-        <Route path="/tools/peptide-reconstitution-calculator" component={DosageCalculator} />
-        <Route path="/tools/infographic-builder" component={InfographicBuilder} />
+        <Route path="/guides/:slug">{() => <Lazy component={Education} />}</Route>
+        <Route path="/login">{() => <Lazy component={Login} />}</Route>
+        <Route path="/academy">{() => <Lazy component={Academy} />}</Route>
+        <Route path="/about/our-transparency-commitment">{() => <Lazy component={Transparency} />}</Route>
+        <Route path="/coa/batch-testing-archive">{() => <Lazy component={BatchArchive} />}</Route>
+        <Route path="/tools/peptide-reconstitution-calculator">{() => <Lazy component={DosageCalculator} />}</Route>
+        <Route path="/tools/infographic-builder">{() => <Lazy component={InfographicBuilder} />}</Route>
         <Route path="/tools/peptide-pk-catalog">
           <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f]" />}>
             <PkCatalog />
           </Suspense>
         </Route>
-        <Route path="/reconstitution-wizard" component={ReconstitutionWizard} />
-        <Route path="/peptide-research-resources" component={ResourcesHub} />
-        <Route path="/peptide-research-faq" component={FAQ} />
-        <Route path="/peptide-shipping-and-handling" component={Shipping} />
-        <Route path="/unsubscribe" component={Unsubscribe} />
-        <Route path="/auth/callback" component={AuthCallback} />
+        <Route path="/reconstitution-wizard">{() => <Lazy component={ReconstitutionWizard} />}</Route>
+        <Route path="/peptide-research-resources">{() => <Lazy component={ResourcesHub} />}</Route>
+        <Route path="/peptide-research-faq">{() => <Lazy component={FAQ} />}</Route>
+        <Route path="/peptide-shipping-and-handling">{() => <Lazy component={Shipping} />}</Route>
+        <Route path="/unsubscribe">{() => <Lazy component={Unsubscribe} />}</Route>
+        <Route path="/auth/callback">{() => <Lazy component={AuthCallback} />}</Route>
 
         {/* 301 Redirects for old URLs */}
         <Route path="/coa">{() => { window.location.replace("/coa/verify-certificate-of-analysis"); return null; }}</Route>
@@ -352,9 +347,9 @@ function Router() {
         <Route path="/dosage-calculator">{() => { window.location.replace("/tools/peptide-reconstitution-calculator"); return null; }}</Route>
         <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
         {/* Body System Hub pages */}
-        <Route path="/systems/:slug" component={SystemHub} />
+        <Route path="/systems/:slug">{() => <Lazy component={SystemHub} />}</Route>
         {/* Compound-name product URLs intentionally not routed — do not create */}
-        <Route component={NotFound} />
+        <Route>{() => <Lazy component={NotFound} />}</Route>
       </Switch>
     </>
   );
