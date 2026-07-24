@@ -19,6 +19,7 @@ import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail, sendRestockSignupConfirmationEmail } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { validateFreeBacWater } from "./lib/bac-water-guard";
+import { resolvePromoUserId } from "./lib/promo-identity";
 import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { generateCoaPreview, backfillCoaPreviews } from "./coaPreview";
@@ -837,11 +838,7 @@ export async function registerRoutes(
   // Fire-and-forget from the client — no body required, just the session.
   app.post('/api/promo/bac-water-declined', async (req: any, res) => {
     try {
-      const sessionUserId = (req.session as any)?.userId;
-      const canonicalUserId: string =
-        (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub)
-          ? req.user.claims.sub
-          : sessionUserId;
+      const canonicalUserId = resolvePromoUserId(req);
       if (canonicalUserId) {
         await db.insert(firstOrderPromos).values({ userId: canonicalUserId, status: 'declined' }).catch(() => {});
         console.log(`[Promo] First-order BAC water declined by user=${canonicalUserId}`);
