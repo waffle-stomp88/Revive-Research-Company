@@ -58,6 +58,7 @@ const {
   mockHasRedeemedFirstOrderPromo,
   mockGetAllProducts,
   mockGetProductWithDosageStock,
+  mockDbSelect,
 } = vi.hoisted(() => ({
   mockGetPaypalOrderDetails: vi.fn(),
   mockCreateOrder: vi.fn().mockResolvedValue({
@@ -68,6 +69,7 @@ const {
   mockHasRedeemedFirstOrderPromo: vi.fn().mockResolvedValue(false),
   mockGetAllProducts: vi.fn(),
   mockGetProductWithDosageStock: vi.fn(),
+  mockDbSelect: vi.fn(),
 }));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -154,16 +156,12 @@ vi.mock('../paypal', () => ({
 
 // Drizzle fluent-chain stub for the replay-attack check.
 // The route does: db.select({…}).from(table).where(eq(…)).limit(1)
-// Default returns []: no pre-existing order with this PayPal ID.
+// mockDbSelect is a hoisted spy so individual tests can override its return
+// value to simulate a pre-existing order (replay) or a clean slate.
+// The global beforeEach (below) resets it to the "no existing order" default.
 vi.mock('../db', () => ({
   db: {
-    select: vi.fn(() => ({
-      from: vi.fn(() => ({
-        where: vi.fn(() => ({
-          limit: vi.fn().mockResolvedValue([]),
-        })),
-      })),
-    })),
+    select: mockDbSelect,
     insert: vi.fn(() => ({
       values: vi.fn(() => ({
         returning: vi.fn().mockResolvedValue([{ id: 'order-stub-1' }]),
@@ -236,6 +234,22 @@ beforeAll(async () => {
   app.use(express.json());
   const httpServer = createServer(app);
   await registerRoutes(httpServer, app);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Global default for the Drizzle db.select chain.
+// Every test suite starts with "no pre-existing order" so the replay-attack
+// guard is a no-op by default. Suite 10 overrides this per test.
+// ─────────────────────────────────────────────────────────────────────────────
+
+beforeEach(() => {
+  mockDbSelect.mockReturnValue({
+    from: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        limit: vi.fn().mockResolvedValue([]),
+      }),
+    }),
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1258,5 +1272,106 @@ describe('storage.getOrdersByUserId — rows saved with canonicalUserId are foun
       .send(bacWaterBody(USER_WITHOUT_ORDERS));
 
     expect(res.status).toBe(400);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suite 10 — Duplicate-order replay-attack guard
+//
+// The route checks the database for an existing order with the same
+// paypalOrderId before doing anything else (after field validation). If a row
+// already exists the route must return 409 and must NOT call createOrder.
+//
+// Two scenarios are tested:
+//   A. Replay: the db select returns an existing order row → 409, no insert.
+//   B. Fresh:  the db select returns [] (new order ID)   → proceeds normally.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('POST /api/orders/paypal — duplicate-order replay-attack guard', () => {
+  const DUPLICATE_ORDER_ID = 'PAYPAL-ALREADY-FINALIZED-001';
+  const FRESH_ORDER_ID = 'PAYPAL-FRESH-ORDER-002';
+
+  beforeEach(() => {
+    setTestSession('user-replay-test');
+
+    // Authenticated repeat buyer (no promo concerns — these tests focus purely
+    // on the paypalOrderId uniqueness check that runs before promo logic).
+    mockGetOrdersByUserId.mockResolvedValue([{ id: 'prior-order-irrelevant' }]);
+    mockHasRedeemedFirstOrderPromo.mockResolvedValue(false);
+
+    mockGetAllProducts.mockResolvedValue([
+      { id: BPC157_ID, slug: 'bpc-157', name: 'BPC-157' },
+    ]);
+
+    mockGetProductWithDosageStock.mockResolvedValue({
+      id: BPC157_ID,
+      name: 'BPC-157',
+      price: '300',
+      dosageStocks: [{ dosage: '5mg', price: '300', stock: 100 }],
+    });
+
+    mockGetPaypalOrderDetails.mockResolvedValue({
+      status: 'COMPLETED',
+      currency: 'USD',
+      capturedAmount: 300,
+    });
+
+    mockCreateOrder.mockClear();
+  });
+
+  it('returns 409 when the paypalOrderId is already recorded in the database', async () => {
+    // Configure the db.select chain to return a pre-existing order row,
+    // simulating the replay-attack scenario where the same PayPal order ID
+    // is submitted a second time.
+    mockDbSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          limit: vi.fn().mockResolvedValue([{ id: 'db-order-already-exists' }]),
+        }),
+      }),
+    });
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(buildPaypalBody({ paypalOrderId: DUPLICATE_ORDER_ID }));
+
+    expect(res.status).toBe(409);
+    expect(typeof res.body.error).toBe('string');
+    expect(res.body.error.toLowerCase()).toContain('already been finalized');
+  });
+
+  it('does not call createOrder when the replay-attack guard fires', async () => {
+    // Same setup: pre-existing order row in the database.
+    mockDbSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          limit: vi.fn().mockResolvedValue([{ id: 'db-order-already-exists' }]),
+        }),
+      }),
+    });
+
+    await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(buildPaypalBody({ paypalOrderId: DUPLICATE_ORDER_ID }));
+
+    // The guard must short-circuit before any order creation logic runs.
+    expect(mockCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('allows a fresh paypalOrderId through (no existing row → order proceeds)', async () => {
+    // The global beforeEach already sets mockDbSelect to return [] (no existing
+    // order). This test confirms the happy path: a new, unseen paypalOrderId
+    // must not be rejected by the replay guard.
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(buildPaypalBody({ paypalOrderId: FRESH_ORDER_ID }));
+
+    // The request should proceed past the replay guard and reach order creation.
+    expect(res.status).toBe(201);
+    expect(mockCreateOrder).toHaveBeenCalledOnce();
   });
 });
