@@ -1374,4 +1374,39 @@ describe('POST /api/orders/paypal — duplicate-order replay-attack guard', () =
     expect(res.status).toBe(201);
     expect(mockCreateOrder).toHaveBeenCalledOnce();
   });
+
+  it('returns 409 and skips side-effects when createOrder throws a unique constraint violation (race condition)', async () => {
+    // Simulate the SELECT→INSERT race: the SELECT returns no existing row
+    // (both concurrent requests pass the check), but the INSERT for the losing
+    // request hits the unique constraint on paypal_order_id (pg error 23505).
+    // The handler must catch this, return 409, and NOT proceed to stock
+    // decrement, email sending, or any other side-effect.
+
+    const pgUniqueViolation = Object.assign(
+      new Error('duplicate key value violates unique constraint "orders_paypal_order_id_unique"'),
+      { code: '23505' }
+    );
+    mockCreateOrder.mockRejectedValueOnce(pgUniqueViolation);
+
+    const decrementStock = vi.mocked(
+      (await import('../storage')).storage.decrementStock
+    );
+    const updateOrderEmailStatus = vi.mocked(
+      (await import('../storage')).storage.updateOrderEmailStatus
+    );
+    decrementStock.mockClear();
+    updateOrderEmailStatus.mockClear();
+
+    const res = await request(app)
+      .post('/api/orders/paypal')
+      .set('Content-Type', 'application/json')
+      .send(buildPaypalBody({ paypalOrderId: FRESH_ORDER_ID }));
+
+    expect(res.status).toBe(409);
+    expect(res.body.error).toMatch(/already been finalized/i);
+
+    // Side-effects must not have fired for the losing concurrent request.
+    expect(decrementStock).not.toHaveBeenCalled();
+    expect(updateOrderEmailStatus).not.toHaveBeenCalled();
+  });
 });

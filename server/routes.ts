@@ -1653,8 +1653,29 @@ export async function registerRoutes(
       }
 
       const validatedData = insertOrderSchema.parse(orderData);
-      const order = await storage.createOrder(validatedData);
-      
+
+      // Guard against the SELECT→INSERT race: two concurrent requests can both
+      // pass the SELECT check above before either INSERT lands. The unique
+      // constraint on paypal_order_id (pg error 23505) catches the second one
+      // at the database level. We intercept that error here, before any
+      // side-effects (stock decrement, email, affiliate) have run, and return
+      // 409 so the losing request never triggers duplicate fulfillment.
+      let order: Awaited<ReturnType<typeof storage.createOrder>>;
+      try {
+        order = await storage.createOrder(validatedData);
+      } catch (insertErr: any) {
+        const isUniqueViolation =
+          insertErr?.code === '23505' ||
+          String(insertErr?.message ?? '').toLowerCase().includes('paypal_order_id');
+        if (isUniqueViolation) {
+          console.warn(
+            `[PayPal Order] Concurrent duplicate insert blocked for ${paypalOrderId}: ${insertErr.message}`
+          );
+          return res.status(409).json({ error: "This PayPal order has already been finalized" });
+        }
+        throw insertErr;
+      }
+
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
 
       // Track promo redemption if a free BAC water unit was included.
