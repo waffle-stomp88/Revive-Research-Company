@@ -11,6 +11,26 @@
 --
 -- Idempotent: the DO block checks pg_indexes before creating, so re-running
 -- this migration on a database where the index already exists is a no-op.
+--
+-- Step 1: Remove duplicate 'redeemed' rows, keeping the earliest one per
+-- user_id. This is necessary when the index was not present during the period
+-- when a race condition could produce multiple redeemed rows.
+
+DELETE FROM first_order_promos
+WHERE id IN (
+  SELECT id FROM (
+    SELECT id,
+           ROW_NUMBER() OVER (
+             PARTITION BY user_id
+             ORDER BY redeemed_at ASC NULLS LAST, id ASC
+           ) AS rn
+    FROM first_order_promos
+    WHERE status = 'redeemed'
+  ) ranked
+  WHERE rn > 1
+);
+
+-- Step 2: Create the unique index (skipped if it already exists).
 
 DO $$
 BEGIN
