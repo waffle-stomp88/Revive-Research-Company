@@ -4461,7 +4461,7 @@ function OrderViewDialog({
     queryKey: ["/api/admin/email-events/order", order?.id],
     queryFn: async () => {
       const res = await fetch(`/api/admin/email-events/order/${order!.id}`, { credentials: "include" });
-      if (!res.ok) return [];
+      if (!res.ok) throw new Error(`Failed to load email events (${res.status})`);
       return res.json();
     },
     enabled: open && !!order,
