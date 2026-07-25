@@ -3880,6 +3880,22 @@ function OrdersTab() {
     },
   });
 
+  const resendShippingEmailMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/orders/${id}/resend-shipping-email`);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Shipping email sent successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to send shipping email", variant: "destructive" });
+    },
+    onSettled: (_data, _error, id) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/email-events/order", id] });
+    },
+  });
+
   const markPaidMutation = useMutation({
     mutationFn: async (id: string) => {
       const response = await apiRequest("POST", `/api/admin/orders/${id}/mark-paid`);
@@ -4384,6 +4400,7 @@ function OrdersTab() {
         products={products || []}
         isFulfillmentPending={updateFulfillmentMutation.isPending}
         isMarkPaidPending={markPaidMutation.isPending}
+        isResendShippingEmailPending={resendShippingEmailMutation.isPending}
         onUpdateFulfillment={(data, closeAfter = false) => {
           if (selectedOrder) {
             updateFulfillmentMutation.mutate({ id: selectedOrder.id, data }, {
@@ -4398,6 +4415,11 @@ function OrdersTab() {
         onResendEmail={() => {
           if (selectedOrder) {
             resendEmailMutation.mutate(selectedOrder.id);
+          }
+        }}
+        onResendShippingEmail={() => {
+          if (selectedOrder) {
+            resendShippingEmailMutation.mutate(selectedOrder.id);
           }
         }}
         onUpdateStatus={(status) => {
@@ -4422,8 +4444,10 @@ function OrderViewDialog({
   products,
   isFulfillmentPending,
   isMarkPaidPending,
+  isResendShippingEmailPending,
   onUpdateFulfillment,
   onResendEmail,
+  onResendShippingEmail,
   onUpdateStatus,
   onMarkPaid,
 }: { 
@@ -4433,8 +4457,10 @@ function OrderViewDialog({
   products: Product[];
   isFulfillmentPending?: boolean;
   isMarkPaidPending?: boolean;
+  isResendShippingEmailPending?: boolean;
   onUpdateFulfillment: (data: any, closeAfter?: boolean) => void;
   onResendEmail: () => void;
+  onResendShippingEmail?: () => void;
   onUpdateStatus: (status: string) => void;
   onMarkPaid?: () => void;
 }) {
@@ -4617,6 +4643,18 @@ function OrderViewDialog({
                     <span className="text-sm text-muted-foreground">
                       {new Date(shippingEmailEvent.createdAt).toLocaleString()}
                     </span>
+                    {shippingEmailEvent.status === "failed" && onResendShippingEmail && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={onResendShippingEmail}
+                        disabled={isResendShippingEmailPending}
+                        data-testid="button-retry-shipping-email"
+                      >
+                        <RefreshCw className={`h-3 w-3 mr-1 ${isResendShippingEmailPending ? "animate-spin" : ""}`} />
+                        Retry
+                      </Button>
+                    )}
                     {shippingEmailEvent.error && (
                       <span className="text-sm text-destructive">{shippingEmailEvent.error}</span>
                     )}

@@ -3653,6 +3653,56 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Resend shipping notification email
+  app.post("/api/admin/orders/:id/resend-shipping-email", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      if (!order.trackingNumber) {
+        return res.status(400).json({ error: "Order has no tracking number" });
+      }
+
+      const { sendShippedNotificationEmail } = await import('./email');
+
+      let itemNames: string[] | undefined;
+      try {
+        if (order.items && (order.items as any[]).length > 0) {
+          itemNames = (order.items as Array<{ name: string }>).map(i => i.name);
+        } else if (order.productId) {
+          const stack = await storage.getResearchStackById(order.productId);
+          if (stack && stack.peptideIds && stack.peptideIds.length > 0) {
+            const products = await Promise.all(stack.peptideIds.map((id: string) => storage.getProduct(id)));
+            itemNames = products.filter(Boolean).map((p: any) => p!.name);
+          } else {
+            const product = await storage.getProduct(order.productId);
+            if (product) itemNames = [product.name];
+          }
+        }
+      } catch (lookupError) {
+        console.warn(`[Shipping] Could not resolve item names for order ${order.id}:`, lookupError);
+      }
+
+      const result = await sendShippedNotificationEmail(
+        order,
+        order.trackingNumber,
+        order.carrier || "",
+        undefined,
+        itemNames,
+      );
+
+      if (result && result.success === false) {
+        return res.status(500).json({ success: false, error: result.error || "Failed to send shipping email" });
+      }
+
+      res.json({ success: true, message: "Shipping email sent successfully" });
+    } catch (error: any) {
+      console.error("Error resending shipping email:", error);
+      res.status(500).json({ error: error.message || "Failed to resend shipping email" });
+    }
+  });
+
   // Admin: Mark order as paid and send confirmation email
   app.post("/api/admin/orders/:id/mark-paid", isAuthenticated, isAdmin, async (req, res) => {
     try {
