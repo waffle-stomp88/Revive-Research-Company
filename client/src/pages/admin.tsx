@@ -4457,6 +4457,18 @@ function OrderViewDialog({
     }
   }, [order]);
 
+  const { data: orderEmailEvents } = useQuery<EmailEvent[]>({
+    queryKey: ["/api/admin/email-events/order", order?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/email-events/order/${order!.id}`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: open && !!order,
+  });
+
+  const shippingEmailEvent = orderEmailEvents?.find(e => e.type === "shipped_notification" || e.type === "shipping_notification");
+
   if (!order) return null;
 
   const product = products.find(p => p.id === order.productId);
@@ -4574,24 +4586,45 @@ function OrderViewDialog({
 
           <div className="border-t pt-4">
             <h4 className="font-medium mb-3">Email Status</h4>
-            <div className="flex items-center gap-4">
-              <Badge variant={order.emailStatus === "sent" ? "default" : order.emailStatus === "failed" ? "destructive" : "secondary"}>
-                {order.emailStatus === "sent" ? "Sent" : order.emailStatus === "failed" ? "Failed" : "Pending"}
-              </Badge>
-              {order.emailSentAt && (
-                <span className="text-sm text-muted-foreground">
-                  Sent {new Date(order.emailSentAt).toLocaleString()}
-                </span>
-              )}
-              {order.emailStatus === "failed" && (
-                <Button size="sm" variant="outline" onClick={onResendEmail}>
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Retry
-                </Button>
-              )}
-              {order.emailError && (
-                <span className="text-sm text-destructive">{order.emailError}</span>
-              )}
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-muted-foreground w-36 shrink-0">Order confirmation</span>
+                <Badge variant={order.emailStatus === "sent" ? "default" : order.emailStatus === "failed" ? "destructive" : "secondary"}>
+                  {order.emailStatus === "sent" ? "Sent" : order.emailStatus === "failed" ? "Failed" : "Pending"}
+                </Badge>
+                {order.emailSentAt && (
+                  <span className="text-sm text-muted-foreground">
+                    {new Date(order.emailSentAt).toLocaleString()}
+                  </span>
+                )}
+                {order.emailStatus === "failed" && (
+                  <Button size="sm" variant="outline" onClick={onResendEmail}>
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Retry
+                  </Button>
+                )}
+                {order.emailError && (
+                  <span className="text-sm text-destructive">{order.emailError}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-muted-foreground w-36 shrink-0">Shipping email</span>
+                {shippingEmailEvent ? (
+                  <>
+                    <Badge variant={shippingEmailEvent.status === "sent" ? "default" : shippingEmailEvent.status === "failed" ? "destructive" : "secondary"}>
+                      {shippingEmailEvent.status === "sent" ? "Sent" : shippingEmailEvent.status === "failed" ? "Failed" : shippingEmailEvent.status}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(shippingEmailEvent.createdAt).toLocaleString()}
+                    </span>
+                    {shippingEmailEvent.error && (
+                      <span className="text-sm text-destructive">{shippingEmailEvent.error}</span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-muted-foreground">Not sent</span>
+                )}
+              </div>
             </div>
           </div>
 
