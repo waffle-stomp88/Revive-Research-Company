@@ -43,10 +43,30 @@ const chatRequestSchema = z.object({
   messages: z.array(chatMessageSchema).min(1).max(50)
 });
 
-const openaiClient = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+// OpenAI powers the support chatbot, admin pricing suggestions and stack
+// synergy copy. On Replit the credentials arrive through that platform's AI
+// integration proxy (AI_INTEGRATIONS_*); anywhere else a standard
+// OPENAI_API_KEY is used, with the default api.openai.com endpoint.
+//
+// Built on first use rather than at import. Constructing it eagerly threw
+// during module load when no key was set, which stopped the server from
+// binding a port — taking the whole store down over a chatbot. Every caller
+// is inside a try/catch, so a missing key now fails just those endpoints.
+let _openaiClient: OpenAI | null = null;
+function openaiClient(): OpenAI {
+  if (!_openaiClient) {
+    const apiKey =
+      process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "OpenAI is not configured — set OPENAI_API_KEY to enable AI features.",
+      );
+    }
+    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+    _openaiClient = new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
+  }
+  return _openaiClient;
+}
 
 function generateReferralCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -3872,7 +3892,7 @@ export async function registerRoutes(
         return res.status(400).json({ error: "imageUrl is required" });
       }
 
-      const completion = await openaiClient.chat.completions.create({
+      const completion = await openaiClient().chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
@@ -5350,7 +5370,7 @@ If a user asks about any of these terms, DO NOT explain why they are blocked. DO
 - When relevant, mention the educational guides and Academy as resources
 - Enthusiastically share knowledge about the batch system, COA verification, and quality processes — these are key differentiators`;
 
-      const completion = await openaiClient.chat.completions.create({
+      const completion = await openaiClient().chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
@@ -5411,7 +5431,7 @@ Respond with ONLY valid JSON in this exact format (no markdown, no code blocks):
 
 The synergyScore should be 60-100 based on how complementary the compounds are (higher = more synergistic).`;
 
-      const completion = await openaiClient.chat.completions.create({
+      const completion = await openaiClient().chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
@@ -5534,7 +5554,7 @@ Return ONLY valid JSON in this exact format:
   "totalPotentialRevenue": "Estimated revenue impact if all suggestions are applied"
 }`;
 
-      const completion = await openaiClient.chat.completions.create({
+      const completion = await openaiClient().chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
