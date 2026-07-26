@@ -1,10 +1,24 @@
 import fs from "fs";
 import path from "path";
 import { pool } from "./db";
+import { findRuntimePath, searchedLocations } from "./runtimeAssets";
 
-const MIGRATIONS_DIR = path.resolve(process.cwd(), "server/migrations");
+// Mirrors the repo layout inside dist/ so the same relative path resolves both
+// from the bundle and from a repo checkout. Deliberately not plain
+// "migrations" — that is drizzle-kit's output directory at the repo root, and
+// matching it here would feed the wrong SQL to the runner.
+const MIGRATION_DIR_CANDIDATES = ["server/migrations"];
 
 export async function runMigrations(): Promise<void> {
+  const MIGRATIONS_DIR = findRuntimePath(...MIGRATION_DIR_CANDIDATES);
+  if (!MIGRATIONS_DIR) {
+    throw new Error(
+      "[migrate] Could not find the migrations directory. Looked in:\n  " +
+        searchedLocations(...MIGRATION_DIR_CANDIDATES) +
+        "\nThe build copies server/migrations into dist/ — check that step ran.",
+    );
+  }
+
   const client = await pool.connect();
   try {
     await client.query(`

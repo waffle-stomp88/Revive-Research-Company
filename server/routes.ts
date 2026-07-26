@@ -23,6 +23,7 @@ import { resolvePromoUserId } from "./lib/promo-identity";
 import { addContactToResearchList, debugZohoNewsletter, addContactToRestockSignups } from "./zoho-campaigns";
 import { triggerRestockNotifications } from "./restock-notifications";
 import { generateCoaPreview, backfillCoaPreviews } from "./coaPreview";
+import { findRuntimePath, runtimeCandidates } from "./runtimeAssets";
 import { 
   createPaypalOrder, 
   capturePaypalOrder, 
@@ -279,9 +280,16 @@ export async function registerRoutes(
   // Serve static assets from public folder (e.g., /assets/logo.png)
   // In development: serve from public/assets and client/public/assets
   // In production: serve from dist/public/assets (Vite copies client/public to dist/public)
-  app.use('/assets', express.static(path.resolve(process.cwd(), 'public/assets')));
-  app.use('/assets', express.static(path.resolve(process.cwd(), 'client/public/assets')));
-  app.use('/assets', express.static(path.resolve(process.cwd(), 'dist/public/assets')));
+  // Resolved against the bundle as well as the working directory, so the
+  // production build serves assets whether it is launched from the repo root
+  // or from dist/ itself.
+  for (const assetsDir of runtimeCandidates(
+    'public/assets',
+    'client/public/assets',
+    'dist/public/assets',
+  )) {
+    app.use('/assets', express.static(assetsDir));
+  }
 
   const SITE_URL = "https://reviveresearch.co";
 
@@ -7172,7 +7180,10 @@ Return ONLY valid JSON in this exact format:
 
 
   // Citation report and dismissal endpoints
-  const CITATION_REPORT_PATH = path.join(process.cwd(), "citation-report.json");
+  // Optional: the endpoint reports `available: false` when the CI-generated
+  // report has not been shipped alongside the build.
+  const CITATION_REPORT_PATH =
+    findRuntimePath("citation-report.json") ?? path.join(process.cwd(), "citation-report.json");
   const PMID_RE = /^\d{1,20}$/;
 
   app.get("/api/citation-report", isAuthenticated, async (req: any, res) => {

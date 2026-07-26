@@ -9,6 +9,7 @@ import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 }
 import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty, seedResearchStacksIfEmpty, storage } from "./storage";
 import { runMigrations } from "./migrate";
 import { backfillCoaPreviews } from "./coaPreview";
+import { findRuntimePath, searchedLocations } from "./runtimeAssets";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -124,7 +125,19 @@ export function log(message: string, source = "express") {
     let _pdfjsWorkerCache: string | null = null;
     app.get('/api/pdfjs-worker', (_req, res) => {
       if (!_pdfjsWorkerCache) {
-        const workerPath = path.resolve(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
+        // Copied next to the bundle at build time; falls back to node_modules
+        // when running from a repo checkout (development, repo-style deploys).
+        const workerPath = findRuntimePath(
+          'pdf.worker.min.mjs',
+          'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
+        );
+        if (!workerPath) {
+          console.error(
+            '[pdfjs] worker not found. Looked in:\n  ' +
+              searchedLocations('pdf.worker.min.mjs', 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+          );
+          return res.status(503).type('text/plain').send('pdfjs worker unavailable');
+        }
         const workerCode = fs.readFileSync(workerPath, 'utf-8');
         const polyfills = [
           "if(typeof URL.parse==='undefined'){URL.parse=function(u,b){try{return new URL(u,b);}catch(e){return null;}};} ",
