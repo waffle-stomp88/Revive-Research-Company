@@ -14,12 +14,17 @@ if (!process.env.DATABASE_URL) {
 const connectionString = process.env.DATABASE_URL;
 
 function hostOf(url: string): string {
+  // Split the authority on the *last* '@' rather than handing the string to
+  // new URL().  A password containing an unencoded '@' or '/' makes URL()
+  // silently mis-parse — it reports the password fragment as the hostname
+  // instead of throwing — and the host is what decides which driver we load.
+  const noQuery = url.split("?")[0];
+  const at = noQuery.lastIndexOf("@");
+  if (at >= 0) return noQuery.slice(at + 1).split(/[:/]/)[0] ?? "";
   try {
     return new URL(url).hostname;
   } catch {
-    // Fall back to a regex when the password contains characters that make the
-    // URL unparseable — we only need the host in order to pick a driver.
-    return /@([^:/?]+)/.exec(url)?.[1] ?? "";
+    return "";
   }
 }
 
