@@ -43,10 +43,13 @@ const chatRequestSchema = z.object({
   messages: z.array(chatMessageSchema).min(1).max(50)
 });
 
-// OpenAI powers the support chatbot, admin pricing suggestions and stack
-// synergy copy. On Replit the credentials arrive through that platform's AI
-// integration proxy (AI_INTEGRATIONS_*); anywhere else a standard
-// OPENAI_API_KEY is used, with the default api.openai.com endpoint.
+// OpenAI powers four endpoints: the support chatbot, stack synergy copy and
+// admin pricing suggestions (all gpt-4o-mini), plus admin COA image parsing,
+// which needs vision and so uses the full gpt-4o.
+//
+// On Replit the credentials arrive through that platform's AI integration
+// proxy (AI_INTEGRATIONS_*); anywhere else a standard OPENAI_API_KEY is used,
+// with the default api.openai.com endpoint.
 //
 // Built on first use rather than at import. Constructing it eagerly threw
 // during module load when no key was set, which stopped the server from
