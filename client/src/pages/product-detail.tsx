@@ -38,7 +38,6 @@ import {
   FileCheck,
   Truck,
   RefreshCw,
-  Repeat,
   Percent,
   AlertTriangle,
   TrendingUp,
@@ -163,15 +162,6 @@ function getProductBadges(
   return badges.slice(0, 2);
 }
 
-type PurchaseType = "one-time" | "subscription";
-type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
-
-const subscriptionOptions: { value: SubscriptionInterval; label: string; discount: number }[] = [
-  { value: "weekly", label: "Weekly", discount: 15 },
-  { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
-  { value: "monthly", label: "Monthly", discount: 10 },
-];
-
 const dosageMultipliers: Record<string, number> = {
   "10mg": 1.0,
   "15mg": 1.25,
@@ -212,8 +202,6 @@ export default function ProductDetail() {
   const urlDosageParamRef = useRef(new URLSearchParams(window.location.search).get("dosage") || "");
   const urlDosageParam = urlDosageParamRef.current;
   const [selectedDosage, setSelectedDosage] = useState<string>(urlDosageParam || "10mg");
-  const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
-  const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notifySuccess, setNotifySuccess] = useState(false);
   const [isEducationOpen, setIsEducationOpen] = useState(false);
@@ -632,17 +620,7 @@ export default function ProductDetail() {
     return null;
   };
 
-  const getSelectedDiscount = () => {
-    if (purchaseType === "one-time") return 0;
-    const option = subscriptionOptions.find(o => o.value === subscriptionInterval);
-    return option?.discount || 0;
-  };
-
-  const getDiscountedPrice = () => {
-    const basePrice = getBasePrice();
-    const discount = getSelectedDiscount();
-    return basePrice * (1 - discount / 100);
-  };
+  const getDiscountedPrice = () => getBasePrice();
 
   const getTotalPrice = () => {
     return getDiscountedPrice() * quantity;
@@ -650,7 +628,6 @@ export default function ProductDetail() {
 
   const handleBuyNow = async () => {
     if (product) {
-      const isSubPurchase = purchaseType === "subscription";
       const packPerVialPrice = getPackTotalPrice(getBasePrice(), packQty) / packQty;
       const added = await addToCart({
         productId: product.id,
@@ -661,8 +638,6 @@ export default function ProductDetail() {
         quantity: effectiveQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
-        isSubscription: isSubPurchase,
-        subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
       });
       if (!added) {
         toast({ title: "Out of Stock", description: `${product.name} (${selectedDosage}) is currently out of stock.`, variant: "destructive" });
@@ -674,7 +649,6 @@ export default function ProductDetail() {
 
   const handleAddToCart = async () => {
     if (product) {
-      const isSubPurchase = purchaseType === "subscription";
       const packPerVialPrice = getPackTotalPrice(getBasePrice(), packQty) / packQty;
       const added = await addToCart({
         productId: product.id,
@@ -685,18 +659,14 @@ export default function ProductDetail() {
         quantity: effectiveQty,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
-        isSubscription: isSubPurchase,
-        subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
       });
       if (!added) {
         toast({ title: "Out of Stock", description: `${product.name} (${selectedDosage}) is currently out of stock.`, variant: "destructive" });
         return;
       }
       toast({
-        title: isSubPurchase ? "Subscription added to cart" : "Added to cart",
-        description: isSubPurchase 
-          ? `${effectiveQty}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
-          : `${effectiveQty}x ${product.name} (${selectedDosage}) added to your cart.`,
+        title: "Added to cart",
+        description: `${effectiveQty}x ${product.name} (${selectedDosage}) added to your cart.`,
         action: (
           <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#D4FF1F] text-black border-[#D4FF1F] hover:bg-[#D4FF1F]/90 font-semibold">
             View Cart
@@ -1275,11 +1245,7 @@ export default function ProductDetail() {
                   onClick={handleBuyNow}
                   data-testid="button-buy-now"
                 >
-                  {purchaseType === "subscription" ? (
-                    <><Repeat className="h-5 w-5" />Subscribe Now — ${effectiveTotal}</>
-                  ) : (
-                    <><ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}</>
-                  )}
+                  <ShoppingCart className="h-5 w-5" />Buy Now — ${effectiveTotal}
                 </Button>
 
                 {/* Add to Cart — secondary */}

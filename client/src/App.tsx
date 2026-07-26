@@ -25,7 +25,6 @@ const ProductDetail = lazy(() => import("@/pages/product-detail"));
 const BundleDetail = lazy(() => import("@/pages/bundle-detail"));
 const Cart = lazy(() => import("@/pages/cart"));
 const Checkout = lazy(() => import("@/pages/checkout"));
-const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
 const CoaVerification = lazy(() => import("@/pages/coa"));
 const CoaLibrary = lazy(() => import("@/pages/coa-library"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -74,7 +73,6 @@ const Academy = lazy(() => import("@/pages/academy"));
 const Login = lazy(() => import("@/pages/login"));
 const AuthCallback = lazy(() => import("@/pages/auth-callback"));
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
-const SubscriptionSuccess = lazy(() => import("@/pages/subscription-success"));
 const OrderConfirmation = lazy(() => import("@/pages/order-confirmation"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
@@ -209,16 +207,6 @@ function Router() {
         <Route path="/checkout">
           <ProtectedRoute title="Checkout" description="Sign in to complete your order. First-time customers receive a free 3ml BAC water with their first order.">
             <Suspense fallback={<PageFallback />}><Checkout /></Suspense>
-          </ProtectedRoute>
-        </Route>
-        <Route path="/checkout/success">
-          <ProtectedRoute>
-            <Suspense fallback={<PageFallback />}><CheckoutSuccess /></Suspense>
-          </ProtectedRoute>
-        </Route>
-        <Route path="/subscription/success">
-          <ProtectedRoute>
-            <Suspense fallback={<PageFallback />}><SubscriptionSuccess /></Suspense>
           </ProtectedRoute>
         </Route>
         <Route path="/order-confirmation">

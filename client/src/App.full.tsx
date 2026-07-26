@@ -11,7 +11,6 @@ import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
 import Checkout from "@/pages/checkout";
-import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
@@ -35,7 +34,6 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/products/:id" component={ProductDetail} />
       <Route path="/checkout" component={Checkout} />
-      <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/coa" component={CoaVerification} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />

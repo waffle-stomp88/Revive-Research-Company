@@ -90,11 +90,6 @@ vi.mock('../sessionAuth', () => ({
 
 vi.mock('../supabaseAuth', () => ({ verifySupabaseToken: vi.fn() }));
 
-vi.mock('../stripeClient', () => ({
-  getUncachableStripeClient: vi.fn(),
-  getStripePublishableKey: vi.fn().mockReturnValue('pk_test_stub'),
-}));
-
 vi.mock('../objectStorage', () => ({
   ObjectStorageService: vi.fn().mockImplementation(() => ({})),
   ObjectNotFoundError: class ObjectNotFoundError extends Error {},
@@ -147,12 +142,6 @@ vi.mock('../paypal', () => ({
   createPaypalOrder: vi.fn(),
   capturePaypalOrder: vi.fn(),
   loadPaypalDefault: vi.fn(),
-  createPayPalSubscription: vi.fn(),
-  cancelPayPalSubscription: vi.fn(),
-  getOrCreateSubscriptionPlan: vi.fn(),
-  getSubscriptionDiscounts: vi.fn().mockReturnValue([]),
-  handlePayPalWebhook: vi.fn(),
-  SUBSCRIPTION_DISCOUNTS: [],
 }));
 
 vi.mock('../db', () => ({

@@ -21,7 +21,6 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import PayPalCheckout, { type PayPalCheckoutHandle } from "@/components/PayPalCheckout";
-import SubscriptionCheckout from "@/components/SubscriptionCheckout";
 import { calculateTaxFromZip, getTaxRateDisplay, getStateFromZip, isValidZipCode } from "@shared/taxRates";
 import {
   ArrowLeft,
@@ -57,18 +56,6 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
 type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo" | "card" | "bank";
-
-const subscriptionDiscounts: { [key: string]: number } = {
-  weekly: 15,
-  biweekly: 12,
-  monthly: 10,
-};
-
-const intervalLabels: { [key: string]: string } = {
-  weekly: "Weekly",
-  biweekly: "Every 2 Weeks",
-  monthly: "Monthly",
-};
 
 export default function Checkout() {
   const { toast } = useToast();
@@ -270,16 +257,6 @@ export default function Checkout() {
     enabled: !!bacWater?.id,
   });
 
-  // Detect subscription items in cart
-  const subscriptionItems = cartItems.filter(item => item.isSubscription);
-  const oneTimeItems = cartItems.filter(item => !item.isSubscription);
-  const hasSubscriptionItems = subscriptionItems.length > 0;
-  const hasOneTimeItems = oneTimeItems.length > 0;
-  const hasMixedCart = hasSubscriptionItems && hasOneTimeItems;
-
-  // For single subscription item from cart
-  const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
-
   // Check if user has already acknowledged the RUO reminder this session
   useEffect(() => {
     const hasAcknowledged = sessionStorage.getItem('checkoutRuoAcknowledged');
@@ -372,8 +349,6 @@ export default function Checkout() {
   const productId = searchParams.get("productId");
   const bundleId = searchParams.get("bundleId");
   const quantity = parseInt(searchParams.get("quantity") || "1", 10);
-  const isSubscription = searchParams.get("subscription") === "true";
-  const interval = searchParams.get("interval") || "monthly";
   const fromCart = searchParams.get("fromCart") === "true";
 
   const bundle = bundleId ? getBundleById(bundleId) : null;
@@ -521,7 +496,7 @@ export default function Checkout() {
     },
   });
 
-  const discountPercent = isSubscription ? (subscriptionDiscounts[interval] || 10) : 0;
+  const discountPercent = 0;
 
   // Early Access Mode
   const EARLY_ACCESS_MODE = false;
@@ -666,8 +641,7 @@ export default function Checkout() {
   const discountAmount = appliedDiscount ? (cartSubtotalBeforeDiscount * appliedDiscount.percentage) / 100 : 0;
   const cartSubtotal = cartSubtotalBeforeDiscount - discountAmount;
   const hasFreeShippingFromCode = appliedDiscount?.freeShipping || appliedShippingCode?.freeShipping || false;
-  const hasSubscriptionItemsForShipping = hasSubscriptionItems;
-  const baseShipping = (hasSubscriptionItemsForShipping || hasFreeShippingFromCode) ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
+  const baseShipping = hasFreeShippingFromCode ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
   const cartShipping = shippingMethod === 'express' ? EXPRESS_SHIPPING_COST : baseShipping;
   const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
   const cartTax = taxInfo.tax;
@@ -914,18 +888,6 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* ── Mixed cart warning ── */}
-            {hasMixedCart && (
-              <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-xs text-amber-200">
-                    <p className="font-medium mb-1">Subscription items need separate checkout</p>
-                    <p className="text-muted-foreground">Subscriptions and one-time purchases must be checked out separately.</p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* ════════════════════════════════════════════════════
                 STEP 1: SHIPPING
@@ -1708,7 +1670,7 @@ export default function Checkout() {
                 </div>
 
                 {/* ── Card details panel — only shown when card is selected ── */}
-                {hasValidZip && !EARLY_ACCESS_MODE && !isSubscription && !cartSubscriptionItem && stockErrors.length === 0 && (
+                {hasValidZip && !EARLY_ACCESS_MODE && stockErrors.length === 0 && (
                   <div className={`relative bg-[#141414] rounded-xl p-4 mb-3 border border-[#d4ed1f]/20 overflow-hidden${selectedPaymentMethod !== "card" ? " hidden" : ""}`}>
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#d4ed1f]/6 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-3 mb-4 relative">
@@ -1764,7 +1726,7 @@ export default function Checkout() {
                   <div className="space-y-2 mb-4">
                     {cartItems.map((item) => (
                       <div
-                        key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`}
+                        key={`${item.productId}-${item.dosage}${item.packSize ? `-pack${item.packSize}` : ''}`}
                         className="flex items-center gap-3"
                       >
                         {/* Small 36px thumbnail */}
@@ -1782,9 +1744,6 @@ export default function Checkout() {
                           </p>
                           <p className="text-[10px] text-muted-foreground">
                             {item.dosage} × {item.quantity}
-                            {item.isSubscription && item.subscriptionInterval && (
-                              <span className="ml-1 text-primary"> · {intervalLabels[item.subscriptionInterval]} Sub</span>
-                            )}
                           </p>
                         </div>
                         <p className="text-sm font-semibold tabular-nums flex-shrink-0">
@@ -1965,16 +1924,6 @@ export default function Checkout() {
                           <Clock className="h-5 w-5" />
                           Coming Soon
                         </Button>
-                      ) : isSubscription || cartSubscriptionItem ? (
-                        <Button
-                          size="lg"
-                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
-                          disabled
-                          data-testid="button-subscription-coming-soon"
-                        >
-                          <Clock className="h-5 w-5" />
-                          Subscriptions Coming Soon
-                        </Button>
                       ) : (
                         <>
                           <Button
@@ -2036,16 +1985,6 @@ export default function Checkout() {
                           <Clock className="h-5 w-5" />
                           Coming Soon
                         </Button>
-                      ) : isSubscription || cartSubscriptionItem ? (
-                        <Button
-                          size="lg"
-                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
-                          disabled
-                          data-testid="button-subscription-coming-soon-paypal"
-                        >
-                          <Clock className="h-5 w-5" />
-                          Subscriptions Coming Soon
-                        </Button>
                       ) : (
                         <div ref={paypalSectionRef}>
                           <PayPalCheckout
@@ -2089,16 +2028,6 @@ export default function Checkout() {
                         >
                           <Clock className="h-5 w-5" />
                           Coming Soon
-                        </Button>
-                      ) : isSubscription || cartSubscriptionItem ? (
-                        <Button
-                          size="lg"
-                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
-                          disabled
-                          data-testid="button-subscription-coming-soon-manual"
-                        >
-                          <Clock className="h-5 w-5" />
-                          Subscriptions Coming Soon
                         </Button>
                       ) : (
                         <>
@@ -2188,11 +2117,6 @@ export default function Checkout() {
                     <AlertTriangle className="h-4 w-4" />
                     Enter ZIP
                   </Button>
-                ) : isSubscription || cartSubscriptionItem ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
-                    <Clock className="h-4 w-4" />
-                    Coming Soon
-                  </Button>
                 ) : (
                   <Button
                     size="lg"
@@ -2217,11 +2141,6 @@ export default function Checkout() {
                     <AlertTriangle className="h-4 w-4" />
                     Enter ZIP
                   </Button>
-                ) : isSubscription || cartSubscriptionItem ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
-                    <Clock className="h-4 w-4" />
-                    Coming Soon
-                  </Button>
                 ) : (
                   <Button
                     size="lg"
@@ -2243,11 +2162,6 @@ export default function Checkout() {
                     Enter ZIP
                   </Button>
                 ) : EARLY_ACCESS_MODE ? (
-                  <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
-                    <Clock className="h-4 w-4" />
-                    Coming Soon
-                  </Button>
-                ) : isSubscription || cartSubscriptionItem ? (
                   <Button size="lg" className="font-display gap-2 flex-shrink-0 bg-muted text-muted-foreground cursor-not-allowed" disabled>
                     <Clock className="h-4 w-4" />
                     Coming Soon

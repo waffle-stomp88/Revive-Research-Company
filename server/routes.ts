@@ -13,7 +13,6 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { detectCycles } from "@shared/cycle-detection";
 import { setupAuth, isAuthenticated } from "./sessionAuth";
 import { verifySupabaseToken } from "./supabaseAuth";
-import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured, getOrderConfirmationTemplate, getShippedNotificationTemplate, getAffiliateWelcomeTemplate, getAffiliateRejectionTemplate, getInviteEmailTemplate, sendInviteEmail, sendRestockSignupConfirmationEmail } from "./email";
@@ -25,15 +24,9 @@ import { triggerRestockNotifications } from "./restock-notifications";
 import { generateCoaPreview, backfillCoaPreviews } from "./coaPreview";
 import { findRuntimePath, runtimeCandidates } from "./runtimeAssets";
 import { 
-  createPaypalOrder, 
-  capturePaypalOrder, 
+  createPaypalOrder,
+  capturePaypalOrder,
   loadPaypalDefault,
-  createPayPalSubscription,
-  cancelPayPalSubscription,
-  getOrCreateSubscriptionPlan,
-  getSubscriptionDiscounts,
-  handlePayPalWebhook,
-  SUBSCRIPTION_DISCOUNTS,
   isPayPalSandbox,
   getPaypalOrderDetails,
 } from "./paypal";
@@ -72,28 +65,6 @@ function generateBasicReferralCode(fullName: string): string {
 
 const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
-
-// Short-lived confirmation tokens issued after a successful Stripe checkout.
-// Each token maps to minimal order display data and expires after 15 minutes.
-// This avoids exposing order metadata on the unauthenticated session-lookup URL.
-const CONFIRM_TOKEN_TTL_MS = 15 * 60 * 1000;
-interface ConfirmTokenPayload {
-  shortRef: string;
-  totalAmount: string;
-  status: string;
-  expiresAt: number;
-}
-const confirmationTokens = new Map<string, ConfirmTokenPayload>();
-function createConfirmToken(orderId: string, totalAmount: string, status: string): string {
-  const token = crypto.randomUUID();
-  confirmationTokens.set(token, {
-    shortRef: orderId.slice(-8).toUpperCase(),
-    totalAmount,
-    status,
-    expiresAt: Date.now() + CONFIRM_TOKEN_TTL_MS,
-  });
-  return token;
-}
 
 // Only URL-safe characters: letters, digits, hyphens, underscores, dots
 const SLUG_PATTERN = /^[a-zA-Z0-9_\-\.]{1,200}$/;
@@ -562,29 +533,6 @@ export async function registerRoutes(
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
-  });
-
-  // PayPal Subscription routes
-  app.get("/api/subscriptions/discounts", (req, res) => {
-    getSubscriptionDiscounts(req, res);
-  });
-
-  app.post("/api/subscriptions/plan", async (req, res) => {
-    await getOrCreateSubscriptionPlan(req, res);
-  });
-
-  app.post("/api/subscriptions/create", async (req, res) => {
-    await createPayPalSubscription(req, res);
-  });
-
-  app.post("/api/subscriptions/cancel", isAuthenticated, async (req: any, res) => {
-    // Subscriptions deferred to v1.1 — table does not exist yet.
-    return res.status(404).json({ error: "Subscriptions not available" });
-  });
-
-  // PayPal Webhook handler
-  app.post("/api/paypal/webhook", async (req, res) => {
-    await handlePayPalWebhook(req, res);
   });
 
   // Sync Supabase user to database and establish Express session.
@@ -2849,232 +2797,6 @@ export async function registerRoutes(
       console.error("Error requesting payout:", error);
       res.status(500).json({ error: "Failed to request payout" });
     }
-  });
-
-  // === STRIPE ROUTES ===
-
-  // Get Stripe config
-  app.get("/api/stripe/config", async (req, res) => {
-    try {
-      const publishableKey = await getStripePublishableKey();
-      res.json({ publishableKey });
-    } catch (error) {
-      console.error("Error getting Stripe config:", error);
-      res.status(500).json({ error: "Failed to get Stripe configuration" });
-    }
-  });
-
-  // Create Stripe checkout session
-  app.post("/api/stripe/create-checkout-session", async (req, res) => {
-    // Early Access Mode - block purchases during soft launch
-    const EARLY_ACCESS_MODE = process.env.EARLY_ACCESS_MODE !== 'false'; // Default to true
-    if (EARLY_ACCESS_MODE) {
-      return res.status(503).json({ 
-        error: "Coming Soon! Purchasing will be enabled at launch.",
-        earlyAccess: true 
-      });
-    }
-    
-    try {
-      const { productId, quantity, subscription, interval, affiliateCode } = req.body;
-
-      const product = await storage.getProduct(productId);
-      if (!product) {
-        return res.status(404).json({ error: "Product not found" });
-      }
-
-      const stripe = await getUncachableStripeClient();
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
-        : `http://localhost:${process.env.PORT || 5000}`;
-
-      let unitAmount = Math.round(parseFloat(product.price) * 100);
-      
-      if (subscription) {
-        const discounts: { [key: string]: number } = {
-          weekly: 15,
-          biweekly: 12,
-          monthly: 10,
-        };
-        const discountPercent = discounts[interval] || 10;
-        unitAmount = Math.round(unitAmount * (1 - discountPercent / 100));
-      }
-
-      const metadata: any = {
-        productId: product.id,
-        productName: product.name,
-        quantity: quantity.toString(),
-      };
-
-      if (affiliateCode) {
-        const affiliate = await storage.getAffiliateByReferralCode(affiliateCode);
-        if (affiliate && affiliate.isActive) {
-          metadata.affiliateId = affiliate.id;
-          metadata.affiliateCode = affiliateCode;
-          if (affiliate.uplineId) {
-            metadata.uplineId = affiliate.uplineId;
-          }
-        }
-      }
-
-      const sessionParams: any = {
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: product.name,
-                description: product.shortDescription || product.description.slice(0, 100),
-              },
-              unit_amount: unitAmount,
-            },
-            quantity,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/checkout?productId=${productId}&quantity=${quantity}`,
-        metadata,
-        shipping_address_collection: {
-          allowed_countries: ['US', 'CA', 'GB', 'AU'],
-        },
-      };
-
-      const session = await stripe.checkout.sessions.create(sessionParams);
-
-      res.json({ url: session.url, sessionId: session.id });
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
-      res.status(500).json({ error: "Failed to create checkout session" });
-    }
-  });
-
-  // Verify checkout session and create order
-  app.get("/api/stripe/checkout-session/:sessionId", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      const stripe = await getUncachableStripeClient();
-
-      const existingOrder = await storage.getOrderByStripeSessionId(sessionId);
-      if (existingOrder) {
-        const token = createConfirmToken(existingOrder.id, existingOrder.totalAmount, existingOrder.status ?? 'paid');
-        return res.json({ confirmToken: token, alreadyProcessed: true });
-      }
-
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-      if (session.payment_status !== 'paid') {
-        return res.status(400).json({ error: "Payment not completed" });
-      }
-
-      const shippingDetails = (session as any).shipping_details || (session as any).shipping;
-      const customerDetails = session.customer_details;
-      const metadata = session.metadata || {};
-
-      const order = await storage.createOrder({
-        email: customerDetails?.email || '',
-        firstName: shippingDetails?.name?.split(' ')[0] || customerDetails?.name?.split(' ')[0] || '',
-        lastName: shippingDetails?.name?.split(' ').slice(1).join(' ') || customerDetails?.name?.split(' ').slice(1).join(' ') || '',
-        address: shippingDetails?.address?.line1 || '',
-        city: shippingDetails?.address?.city || '',
-        state: shippingDetails?.address?.state || '',
-        zipCode: shippingDetails?.address?.postal_code || '',
-        country: shippingDetails?.address?.country || 'US',
-        productId: metadata.productId || '',
-        quantity: parseInt(metadata.quantity || '1'),
-        totalAmount: ((session.amount_total || 0) / 100).toFixed(2),
-        status: 'paid',
-        stripeSessionId: sessionId,
-        stripePaymentIntentId: session.payment_intent as string || null,
-      });
-
-      if (metadata.affiliateId) {
-        const orderTotal = parseFloat(order.totalAmount);
-        const tier1Commission = orderTotal * TIER1_COMMISSION_RATE;
-        let tier2Commission = 0;
-
-        if (metadata.uplineId) {
-          tier2Commission = orderTotal * TIER2_COMMISSION_RATE;
-        }
-
-        await storage.createAffiliateSale({
-          affiliateId: metadata.affiliateId,
-          uplineId: metadata.uplineId || null,
-          orderId: order.id,
-          orderTotal: orderTotal.toFixed(2),
-          commissionTier1: tier1Commission.toFixed(2),
-          commissionTier2: tier2Commission.toFixed(2),
-          tier1Status: 'pending',
-          tier2Status: metadata.uplineId ? 'pending' : 'pending',
-        });
-
-        await storage.updateAffiliateEarnings(
-          metadata.affiliateId,
-          tier1Commission,
-          0,
-          tier1Commission
-        );
-
-        if (metadata.uplineId) {
-          await storage.updateAffiliateEarnings(
-            metadata.uplineId,
-            0,
-            tier2Commission,
-            tier2Commission
-          );
-        }
-      }
-
-      // Send notifications for Stripe checkout orders (created directly as 'paid')
-      let notificationResults = null;
-      try {
-        const product = await storage.getProduct(order.productId);
-        const productName = product?.name || order.productId;
-        
-        notificationResults = await sendOrderNotifications({
-          orderId: order.id,
-          email: order.email,
-          phone: customerDetails?.phone || undefined,
-          firstName: order.firstName,
-          lastName: order.lastName,
-          productId: order.productId,
-          productName,
-          quantity: order.quantity,
-          totalAmount: order.totalAmount,
-          address: order.address || undefined,
-          city: order.city || undefined,
-          state: order.state || undefined,
-          zipCode: order.zipCode || undefined,
-          country: order.country || undefined,
-        });
-        
-        console.log(`[Order ${order.id}] Stripe checkout notifications:`, JSON.stringify(notificationResults));
-      } catch (notificationError) {
-        console.error(`[Order ${order.id}] Notification error:`, notificationError);
-      }
-
-      const token = createConfirmToken(order.id, order.totalAmount, order.status ?? 'paid');
-      res.json({ confirmToken: token, alreadyProcessed: false });
-    } catch (error) {
-      console.error("Error verifying checkout session:", error);
-      res.status(500).json({ error: "Failed to verify checkout session" });
-    }
-  });
-
-  // Confirmation token lookup — returns minimal display data for the checkout success page.
-  // The token is a short-lived random UUID issued by the Stripe session endpoint.
-  // It is not guessable and expires after 15 minutes, so no auth is required.
-  app.get("/api/confirm/:token", async (req, res) => {
-    const payload = confirmationTokens.get(req.params.token);
-    if (!payload) {
-      return res.status(404).json({ error: "Confirmation token not found or expired" });
-    }
-    if (Date.now() > payload.expiresAt) {
-      confirmationTokens.delete(req.params.token);
-      return res.status(410).json({ error: "Confirmation token expired" });
-    }
-    res.json({ shortRef: payload.shortRef, totalAmount: payload.totalAmount, status: payload.status });
   });
 
   // === ADMIN ROUTES ===
@@ -5493,17 +5215,12 @@ This system allows full traceability from production to customer. Every batch nu
 - Processing: 24-hour standard, same-day shipping if ordered before 12:00 PM CT
 - Package Warm Guide available at /package-warm for temperature-sensitive compounds
 - Guest checkout available — no account required to purchase
-- Payment via PayPal (one-time and subscriptions)
+- Payment via PayPal (one-time purchases)
 
 ===== REFUND & RETURN POLICY =====
 - All sales are FINAL — NO REFUNDS
 - This is due to the sensitive nature of research compounds and safety/integrity requirements
 - Customers agree to this policy at checkout
-
-===== SUBSCRIPTION SYSTEM =====
-- Recurring subscriptions available via PayPal for regular research supply needs
-- Frequency options with specific discounts: Weekly (15% off), Bi-weekly (12% off), Monthly (10% off)
-- Manage subscriptions through the user dashboard at /dashboard under the Orders tab
 
 ===== RESEARCH STACKS (BUNDLES) =====
 Pre-built Research Stacks are curated bundles of complementary peptides with bundle pricing (each stack shows exact savings vs buying separately):
@@ -5555,7 +5272,7 @@ Each phase unlocks based on engagement thresholds and awards corresponding title
 ===== USER DASHBOARD =====
 Registered users have a tabbed dashboard at /dashboard:
 - General tab: Navigation hub, quick stats, achievements, member perks
-- Orders tab: Subscription management, order history, wishlist
+- Orders tab: Order history, wishlist
 - Settings tab: Account management, preferences
 
 ===== EDUCATIONAL RESOURCES =====
@@ -6902,12 +6619,6 @@ Return ONLY valid JSON in this exact format:
       console.error("Error recording batch verification:", error);
       res.status(500).json({ error: "Failed to record batch verification" });
     }
-  });
-
-  // ============== USER SUBSCRIPTIONS ==============
-  app.get("/api/user/subscriptions", isAuthenticated, async (_req: any, res) => {
-    // Subscriptions deferred to v1.1 — table does not exist yet.
-    res.json([]);
   });
 
   // =====================================

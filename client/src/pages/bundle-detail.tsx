@@ -21,7 +21,6 @@ import {
   ShoppingCart,
   ShoppingBag,
   Truck,
-  Repeat,
   FileCheck,
   RefreshCw,
   AlertTriangle,
@@ -36,15 +35,6 @@ import { SoftGateBanner } from "@/components/soft-gate-banner";
 
 const SOFT_GATE_ENABLED = import.meta.env.VITE_SOFT_GATE_ENABLED !== "false";
 
-type PurchaseType = "one-time" | "subscription";
-type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
-
-const subscriptionOptions: { value: SubscriptionInterval; label: string; discount: number }[] = [
-  { value: "weekly", label: "Weekly", discount: 15 },
-  { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
-  { value: "monthly", label: "Monthly", discount: 10 },
-];
-
 export default function BundleDetail() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
@@ -53,8 +43,6 @@ export default function BundleDetail() {
   const { isAuthenticated } = useAuth();
   const softGated = SOFT_GATE_ENABLED && !isAuthenticated;
   const [quantity, setQuantity] = useState(1);
-  const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
-  const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
 
   const bundle = BUNDLES.find(b => b.id === params.id);
 
@@ -85,21 +73,11 @@ export default function BundleDetail() {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
   };
 
-  const getSelectedDiscount = () => {
-    if (purchaseType === "one-time") return 0;
-    const option = subscriptionOptions.find(o => o.value === subscriptionInterval);
-    return option?.discount || 0;
-  };
-
   const getBasePrice = () => {
     return bundlePricing?.stackPrice ?? 0;
   };
 
-  const getDiscountedPrice = () => {
-    const basePrice = getBasePrice();
-    const discount = getSelectedDiscount();
-    return basePrice * (1 - discount / 100);
-  };
+  const getDiscountedPrice = () => getBasePrice();
 
   const getTotalPrice = () => {
     return getDiscountedPrice() * quantity;
@@ -270,82 +248,6 @@ export default function BundleDetail() {
               </div>
             </div>
 
-            <div className="mb-4">
-              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div 
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "one-time" 
-                      ? "border-[#D4FF1F] bg-[#D4FF1F]/5" 
-                      : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("one-time")}
-                  data-testid="option-one-time"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">One-time</span>
-                    </div>
-                    {!softGated && (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        ${Math.round(getBasePrice())}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                <div 
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "subscription" 
-                      ? "border-[#21d8ff] bg-[#21d8ff]/5" 
-                      : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("subscription")}
-                  data-testid="option-subscription"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <Repeat className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">Subscribe</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Auto-delivery
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {purchaseType === "subscription" && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4"
-              >
-                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {subscriptionOptions.map((option) => {
-                    const discountedPrice = getBasePrice() * (1 - option.discount / 100);
-                    return (
-                      <div 
-                        key={option.value}
-                        className={`relative flex flex-col items-center p-2 rounded-lg border cursor-pointer transition-all ${
-                          subscriptionInterval === option.value 
-                            ? "border-[#21d8ff] bg-[#21d8ff]/5" 
-                            : "border-border hover:border-border/80"
-                        }`}
-                        onClick={() => setSubscriptionInterval(option.value)}
-                        data-testid={`option-interval-${option.value}`}
-                      >
-                        <span className="font-medium text-xs">{option.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
               <span className="flex items-center gap-1">
@@ -385,27 +287,14 @@ export default function BundleDetail() {
                   </Button>
                   <Button
                     size="lg"
-                    className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
-                      purchaseType === "subscription"
-                        ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
-                        : "bg-[#D4FF1F] border-[#D4FF1F] md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(212, 255, 31,0.4)] md:hover:shadow-[0_0_40px_rgba(212, 255, 31,0.6)]"
-                    }`}
+                    className="flex-1 font-display gap-2 transition-shadow duration-300 text-black bg-[#D4FF1F] border-[#D4FF1F] md:hover:bg-[#D4FF1F]/90 shadow-[0_0_20px_rgba(212,255,31,0.4)] md:hover:shadow-[0_0_40px_rgba(212,255,31,0.6)]"
                     onClick={handleBuyNow}
                     disabled={!pricingReady}
                     data-testid="button-buy-now"
                   >
-                    {purchaseType === "subscription" ? (
-                      <><Repeat className="h-5 w-5" />Subscribe</>
-                    ) : (
-                      <><ShoppingCart className="h-5 w-5" />Buy Now</>
-                    )}
+                    <ShoppingCart className="h-5 w-5" />Buy Now
                   </Button>
                 </div>
-                {purchaseType === "subscription" && (
-                  <p className="text-[10px] text-center text-muted-foreground mt-2">
-                    Cancel anytime
-                  </p>
-                )}
               </>
             )}
 

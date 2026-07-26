@@ -15,8 +15,6 @@ export interface CartItem {
   dosage: string;
   image?: string;
   isBundle?: boolean;
-  isSubscription?: boolean;
-  subscriptionInterval?: "weekly" | "biweekly" | "monthly";
   packSize?: number;
   isFree?: boolean;
 }
@@ -76,9 +74,6 @@ function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
     if (localItem.isFree) continue;
     const existingIndex = result.findIndex((s) => {
       if (s.isFree) return false;
-      const sameSubscription =
-        s.isSubscription === localItem.isSubscription &&
-        s.subscriptionInterval === localItem.subscriptionInterval;
       const samePackSize = (s.packSize || undefined) === (localItem.packSize || undefined);
       if (localItem.bundleId) {
         return s.bundleId === localItem.bundleId && s.dosage === localItem.dosage;
@@ -86,7 +81,6 @@ function mergeCartItems(local: CartItem[], server: CartItem[]): CartItem[] {
       return (
         s.productId === localItem.productId &&
         s.dosage === localItem.dosage &&
-        sameSubscription &&
         samePackSize
       );
     });
@@ -349,14 +343,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existingIndex = prev.findIndex((i) => {
         if (i.isFree) return false;
-        const sameSubscriptionType =
-          i.isSubscription === item.isSubscription &&
-          i.subscriptionInterval === item.subscriptionInterval;
         const samePackSize = (i.packSize || undefined) === (item.packSize || undefined);
         return (
           i.productId === item.productId &&
           i.dosage === item.dosage &&
-          sameSubscriptionType &&
           samePackSize
         );
       });
@@ -410,7 +400,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ) {
           // Recalculate per-vial price when the quantity crosses a pack tier
           // boundary. Only possible when basePrice was stored at add-to-cart time.
-          if (i.basePrice && i.basePrice > 0 && !i.isSubscription && !i.isBundle) {
+          if (i.basePrice && i.basePrice > 0 && !i.isBundle) {
             const discount =
               quantity >= 10 ? 0.20
               : quantity >= 5 ? 0.15

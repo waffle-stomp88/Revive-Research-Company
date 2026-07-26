@@ -126,7 +126,6 @@ export interface IStorage {
   hasRedeemedFirstOrderPromo(userId: string): Promise<boolean>;
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
-  getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined>;
   deleteOrder(id: string): Promise<boolean>;
   updateOrderFulfillment(id: string, data: {
     fulfillmentStatus?: string;
@@ -769,11 +768,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
     const [order] = await db.update(orders).set({ status }).where(eq(orders.id, id)).returning();
-    return order || undefined;
-  }
-
-  async getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.stripeSessionId, sessionId));
     return order || undefined;
   }
 

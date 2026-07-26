@@ -28,7 +28,6 @@ import {
   Thermometer,
   FileCheck,
   ExternalLink,
-  RefreshCw,
   Layers,
   Zap,
   Gift,
@@ -40,24 +39,6 @@ import { Badge } from "@/components/ui/badge";
 import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
 import type { Product, ProductDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
-
-function getSubscriptionLabel(interval: "weekly" | "biweekly" | "monthly" | undefined): string {
-  switch (interval) {
-    case "weekly": return "Every week";
-    case "biweekly": return "Every 2 weeks";
-    case "monthly": return "Every 4 weeks";
-    default: return "Subscription";
-  }
-}
-
-function getSubscriptionDiscount(interval: "weekly" | "biweekly" | "monthly" | undefined): number {
-  switch (interval) {
-    case "weekly": return 20;
-    case "biweekly": return 18;
-    case "monthly": return 15;
-    default: return 15;
-  }
-}
 
 function CrossSellCard({
   suggestedProduct,
@@ -526,11 +507,6 @@ export default function CartPage() {
                               <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
                             </Badge>
                           )}
-                          {item.isSubscription && (
-                            <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-subscription-${item.productId}`}>
-                              <RefreshCw className="h-2.5 w-2.5" />Subscribe
-                            </Badge>
-                          )}
                           {(item.isBundle || item.bundleId) && (
                             <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-stack-${item.productId || item.bundleId}`}>
                               <Layers className="h-2.5 w-2.5" />{isCustomStack ? "Custom Stack" : "Stack"}
@@ -562,11 +538,6 @@ export default function CartPage() {
                       >
                         <div>
                           <p className="text-xs text-muted-foreground">{item.dosage}</p>
-                          {item.isSubscription && (
-                            <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
-                              {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
-                            </p>
-                          )}
                         </div>
                         {item.isFree ? (
                           <div className="flex items-center gap-1.5">
@@ -636,11 +607,6 @@ export default function CartPage() {
                             <Package className="h-2.5 w-2.5" />{item.packSize}-Pack
                           </Badge>
                         )}
-                        {item.isSubscription && (
-                          <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-subscription-${item.productId}`}>
-                            <RefreshCw className="h-2.5 w-2.5" />Subscribe
-                          </Badge>
-                        )}
                         {(item.isBundle || item.bundleId) && (
                           <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0" data-testid={`badge-stack-${item.productId || item.bundleId}`}>
                             <Layers className="h-2.5 w-2.5" />{isCustomStack ? "Custom Stack" : "Stack"}
@@ -648,11 +614,6 @@ export default function CartPage() {
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">{item.dosage}</p>
-                      {item.isSubscription && (
-                        <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
-                          {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
-                        </p>
-                      )}
                     </div>
                     <div className="flex flex-col items-end justify-center gap-2 flex-shrink-0">
                       {item.isFree ? (
